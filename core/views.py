@@ -84,6 +84,8 @@ class GenerateQuizView(APIView):
     def post(self, request):
         summary = request.data.get('summary')
         topics = request.data.get('topics', [])
+        print("DEBUG: summary:", summary)
+        print("DEBUG: topics:", topics)
         questions = []
         for topic in topics:
             questions.append(f'What is the significance of "{topic}" in your study material?')

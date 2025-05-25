@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lamla AI - Generate Custom Quiz</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .navbar {
+            width: 100%;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.2em 2em;
+            box-sizing: border-box;
+            border-bottom: 1px solid #222;
+        }
+        .navbar .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFD600;
+            letter-spacing: 1px;
+        }
+        .navbar .nav-links {
+            display: flex;
+            gap: 2em;
+        }
+        .navbar .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1em;
+            transition: color 0.2s;
+        }
+        .navbar .nav-links a.active,
+        .navbar .nav-links a:hover {
+            color: #FFD600;
+        }
+        .navbar .exam-btn {
+            background: #FFD600;
+            color: #111;
+            border: none;
+            border-radius: 12px;
+            padding: 0.6em 1.5em;
+            font-weight: 600;
+            font-size: 1em;
+            margin-left: 2em;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .navbar .exam-btn:hover {
+            background: #fff;
+            color: #FFD600;
+        }
+        .quiz-card {
+            max-width: 600px;
+            margin: 3em auto 2em auto;
+            background: linear-gradient(135deg, #181818 80%, #222 100%);
+            border-radius: 22px;
+            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37);
+            padding: 2.5em 2em 2em 2em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .quiz-card h2 {
+            color: #FFD600;
+            font-size: 1.6em;
+            margin-bottom: 0.2em;
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+        .quiz-card h2 .icon {
+            font-size: 1.3em;
+            background: rgba(255,214,0,0.08);
+            border-radius: 10px;
+            padding: 0.3em 0.5em;
+            color: #FFD600;
+        }
+        .quiz-card p {
+            color: #bbb;
+            margin-bottom: 2em;
+            text-align: center;
+        }
+        .upload-area {
+            background: linear-gradient(135deg, #232323 80%, #181818 100%);
+            border-radius: 16px;
+            border: 1.5px dashed #333;
+            padding: 2.5em 1em 2em 1em;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2em;
+            width: 100%;
+        }
+        .upload-icon {
+            font-size: 2.5em;
+            color: #FFD600;
+            background: rgba(255,214,0,0.07);
+            border-radius: 50%;
+            padding: 0.5em 0.6em;
+            margin-bottom: 1em;
+        }
+        .upload-area label {
+            color: #fff;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 0.5em;
+        }
+        .upload-area small {
+            color: #bbb;
+            font-size: 0.98em;
+            margin-bottom: 1.2em;
+        }
+        .upload-btn {
+            background: #111;
+            color: #FFD600;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7em 2em;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1em;
+            transition: background 0.2s, color 0.2s;
+        }
+        .upload-btn:hover {
+            background: #FFD600;
+            color: #111;
+        }
+        .hidden-input {
+            display: none;
+        }
+        .result, .error {
+            margin-top: 1em;
+            min-height: 1.5em;
+            font-weight: 500;
+            text-align: center;
+        }
+        .result {
+            color: #FFD600;
+        }
+        .error {
+            color: #ff5252;
+        }
+        .generate-btn {
+            background: #FFD600;
+            color: #111;
+            border: none;
+            border-radius: 8px;
+            padding: 0.9em 2.5em;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            margin: 2em auto 0 auto;
+            display: block;
+            transition: background 0.2s, color 0.2s;
+        }
+        .generate-btn:hover {
+            background: #fff;
+            color: #FFD600;
+        }
+        .quiz-section {
+            max-width: 600px;
+            margin: 2em auto 0 auto;
+        }
+        .quiz-question {
+            background: #232323;
+            border-radius: 10px;
+            padding: 1.2em;
+            margin-bottom: 1.5em;
+            color: #fff;
+        }
+        .quiz-question strong {
+            color: #FFD600;
+        }
+        @media (max-width: 800px) {
+            .quiz-card, .quiz-section {
+                padding: 1em 0.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <span class="logo">Lamla <span style="color:#fff;font-weight:400;">AI</span></span>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/quiz/" class="active">Quiz</a>
+            <a href="#">Concepts</a>
+            <a href="#">Flashcards</a>
+            <button class="exam-btn" onclick="window.location.href='/'">Exam Analyzer</button>
+        </div>
+    </div>
+    <div class="quiz-card">
+        <h2><span class="icon">&#129504;</span> Generate Custom Quiz</h2>
+        <p>Upload your study materials to create custom quiz questions.</p>
+        <form id="upload-form" enctype="multipart/form-data">
+            <div class="upload-area" id="upload-area">
+                <span class="upload-icon">&#128196;</span>
+                <label for="file-input">Upload your study materials</label>
+                <small>Upload PDF, DOCX, PPT, PPTX, or text files to analyze</small>
+                <input type="file" id="file-input" name="file" class="hidden-input" required>
+                <button type="button" class="upload-btn" id="select-file-btn">Select file</button>
+                <div id="file-name" style="margin-top:0.7em;color:#FFD600;"></div>
+            </div>
+            <div id="upload-result" class="result"></div>
+            <button type="submit" class="generate-btn" id="generate-btn">Generate Questions</button>
+        </form>
+    </div>
+    <div class="quiz-section" id="quiz-section" style="display:none;">
+        <h2 style="color:#FFD600;">Quiz Questions</h2>
+        <div id="quiz-questions"></div>
+    </div>
+    <script>
+        let uploadedFileId = null;
+        let extractedContentId = null;
+        let quizQuestions = [];
+        let selectedFile = null;
+
+        // File select button triggers file input
+        document.getElementById('select-file-btn').onclick = function() {
+            document.getElementById('file-input').click();
+        };
+
+        // Show selected file name
+        document.getElementById('file-input').onchange = function() {
+            selectedFile = this.files[0];
+            document.getElementById('file-name').innerText = selectedFile ? selectedFile.name : '';
+        };
+
+        // Handle form submit: upload, extract, analyze, then generate quiz from backend
+        document.getElementById('upload-form').onsubmit = async function(e) {
+            e.preventDefault();
+            if (!selectedFile) {
+                document.getElementById('upload-result').innerHTML = "Please select a file.";
+                return;
+            }
+            document.getElementById('upload-result').innerHTML = "Uploading...";
+            // 1. Upload
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            let res = await fetch('/api/upload/', { method: 'POST', body: formData });
+            let data = await res.json();
+            if (!res.ok) {
+                document.getElementById('upload-result').innerHTML = data.error || 'Upload failed.';
+                return;
+            }
+            uploadedFileId = data.id;
+            document.getElementById('upload-result').innerHTML = "Extracting content...";
+            // 2. Extract
+            res = await fetch('/api/extract/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ file_id: uploadedFileId })
+            });
+            data = await res.json();
+            if (!res.ok) {
+                document.getElementById('upload-result').innerHTML = data.error || 'Extraction failed.';
+                return;
+            }
+            extractedContentId = data.id;
+            document.getElementById('upload-result').innerHTML = "Analyzing content...";
+            // 3. Analyze
+            res = await fetch('/api/analyze/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content_id: extractedContentId })
+            });
+            data = await res.json();
+            if (!res.ok) {
+                document.getElementById('upload-result').innerHTML = data.error || 'Analysis failed.';
+                return;
+            }
+            // 4. Generate quiz from backend
+            document.getElementById('upload-result').innerHTML = "Generating quiz...";
+            const quizRes = await fetch('/api/generate-quiz/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    summary: data.summary,
+                    topics: data.likely_topics
+                })
+            });
+            const quizData = await quizRes.json();
+            if (quizRes.ok) {
+                quizQuestions = quizData.questions;
+                document.getElementById('upload-result').innerHTML = "Quiz generated!";
+                showQuiz();
+            } else {
+                document.getElementById('upload-result').innerHTML = quizData.error || 'Quiz generation failed.';
+            }
+        };
+
+        function showQuiz() {
+            const quizSection = document.getElementById('quiz-section');
+            const quizDiv = document.getElementById('quiz-questions');
+            quizDiv.innerHTML = '';
+            quizQuestions.forEach((q, i) => {
+                quizDiv.innerHTML += `
+                    <div class="quiz-question">
+                        <strong>Q${i+1}:</strong> ${q.question}
+                        <div><textarea rows="2" style="width:100%;margin-top:0.7em;border-radius:6px;border:none;padding:0.5em;"></textarea></div>
+                    </div>
+                `;
+            });
+            quizSection.style.display = '';
+            window.scrollTo({ top: quizSection.offsetTop - 40, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

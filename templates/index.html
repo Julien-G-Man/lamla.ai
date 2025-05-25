@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lamla AI - Study Assistant</title>
+    <style>
+        body {
+            background: #0a0a0a;
+            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+        .navbar {
+            width: 100%;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.2em 2em;
+            box-sizing: border-box;
+            border-bottom: 1px solid #222;
+        }
+        .navbar .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #FFD600;
+            letter-spacing: 1px;
+        }
+        .navbar .nav-links {
+            display: flex;
+            gap: 2em;
+        }
+        .navbar .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1em;
+            transition: color 0.2s;
+        }
+        .navbar .nav-links a.active,
+        .navbar .nav-links a:hover {
+            color: #FFD600;
+        }
+        .navbar .exam-btn {
+            background: #FFD600;
+            color: #111;
+            border: none;
+            border-radius: 12px;
+            padding: 0.6em 1.5em;
+            font-weight: 600;
+            font-size: 1em;
+            margin-left: 2em;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .navbar .exam-btn:hover {
+            background: #fff;
+            color: #FFD600;
+        }
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+            text-align: center;
+            margin-top: 2em;
+        }
+        .hero-title {
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 0.2em;
+        }
+        .hero-title .yellow {
+            color: #FFD600;
+        }
+        .hero-title .white {
+            color: #fff;
+        }
+        .hero-desc {
+            color: #bbb;
+            font-size: 1.2em;
+            margin-bottom: 2em;
+            max-width: 700px;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 1.5em;
+            justify-content: center;
+            margin-bottom: 2em;
+        }
+        .hero-actions button, .hero-actions a {
+            background: #FFD600;
+            color: #111;
+            border: none;
+            border-radius: 12px;
+            padding: 0.8em 2em;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            text-decoration: none;
+        }
+        .hero-actions button:hover, .hero-actions a:hover {
+            background: #fff;
+            color: #FFD600;
+        }
+        .notification {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background: #222107;
+            color: #fff;
+            padding: 1.2em 2em;
+            font-size: 1.1em;
+            border-radius: 0 0 18px 18px;
+            box-shadow: 0 -2px 16px 0 rgba(0,0,0,0.25);
+            display: flex;
+            align-items: center;
+            gap: 1em;
+        }
+        .notification .icon {
+            color: #FFD600;
+            font-size: 1.3em;
+        }
+        .notification strong {
+            color: #FFD600;
+        }
+        .features {
+            margin: 3em auto 0 auto;
+            max-width: 1200px;
+            padding: 0 2em 4em 2em;
+        }
+        .features-header {
+            text-align: center;
+            margin-bottom: 2.5em;
+        }
+        .features-header h2 {
+            font-size: 2.3em;
+            margin-bottom: 0.3em;
+            font-weight: 700;
+        }
+        .features-header p {
+            color: #bbb;
+            font-size: 1.15em;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2em;
+        }
+        .feature-card {
+            background: #181818;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px 0 rgba(0,0,0,0.18);
+            padding: 2em 1.5em 1.5em 1.5em;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            min-height: 200px;
+            transition: transform 0.15s, box-shadow 0.15s;
+            border: 1px solid #232323;
+        }
+        .feature-card:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.28);
+            border-color: #FFD600;
+        }
+        .feature-icon {
+            background: rgba(255, 214, 0, 0.07);
+            border-radius: 10px;
+            padding: 0.7em 1em;
+            margin-bottom: 1.2em;
+            font-size: 2em;
+            color: #FFD600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .feature-title {
+            font-size: 1.25em;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5em;
+        }
+        .feature-desc {
+            color: #ccc;
+            font-size: 1.05em;
+        }
+        @media (max-width: 800px) {
+            .hero-title {
+                font-size: 2em;
+            }
+            .navbar {
+                flex-direction: column;
+                gap: 1em;
+                padding: 1em;
+            }
+            .hero-desc {
+                font-size: 1em;
+            }
+            .features {
+                padding: 0 0.5em 2em 0.5em;
+            }
+            .features-header h2 {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <span class="logo">Lamla <span style="color:#fff;font-weight:400;">AI</span></span>
+        <div class="nav-links">
+            <a href="#" class="active">Home</a>
+            <a href="/quiz/">Quiz</a>
+            <a href="#">Concepts</a>
+            <a href="#">Flashcards</a>
+            <button class="exam-btn">Exam Analyzer</button>
+        </div>
+    </div>
+    <div class="hero">
+        <div class="hero-title">
+            <span class="yellow">Last-minute</span> <span class="white">exam<br>mastery</span>
+        </div>
+        <div class="hero-desc">
+            Your intelligent study assistant that helps you efficiently prepare for exams by analyzing trends, generating quizzes, and explaining complex concepts.
+        </div>
+        <div class="hero-actions">
+            <button onclick="window.location.href='/quiz/'">Start Practice Quiz</button>
+            <a href="#">Explore Concepts</a>
+        </div>
+    </div>
+    <div class="notification">
+        <span class="icon">&#9432;</span>
+        <div>
+            <strong>New features available!</strong><br>
+            Upload your own study materials to generate custom quizzes, flashcards, and exam predictions.
+        </div>
+    </div>
+    <section class="features">
+        <div class="features-header">
+            <h2>
+                <span style="color:#fff;font-weight:700;">Smart Features for </span>
+                <span style="color:#FFD600;font-weight:700;">Smart Students</span>
+            </h2>
+            <p>Lamla AI helps you prepare efficiently with these powerful learning tools.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><span>&#128200;</span></div>
+                <div class="feature-title">Exam Pattern Analysis</div>
+                <div class="feature-desc">Identify key trends from past exams and predict likely topics based on frequency.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><span>&#129504;</span></div>
+                <div class="feature-title">Concept Breakdown</div>
+                <div class="feature-desc">Get precise, structured explanations for difficult subjects with step-by-step formats.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><span>&#128300;</span></div>
+                <div class="feature-title">Quiz Generation</div>
+                <div class="feature-desc">Practice with interactive questions of varying difficulty levels with answers and solutions.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><span>&#128161;</span></div>
+                <div class="feature-title">Rapid Learning Mode</div>
+                <div class="feature-desc">Digest complex theories in simple formats for quick comprehension before exams.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><span>&#9201;</span></div>
+                <div class="feature-title">Study Optimization</div>
+                <div class="feature-desc">Access time-efficient strategies and flashcards for high-retention last-minute study.</div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

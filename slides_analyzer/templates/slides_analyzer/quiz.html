@@ -1,0 +1,450 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz - Lamla AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background: #f8f9fa;
+            color: #222;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+        .navbar {
+            background: #fff;
+            color: #222;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            height: 64px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+        }
+        .navbar .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #222;
+            letter-spacing: 0.5px;
+            margin-right: auto;
+        }
+        .navbar .logo .ai {
+            color: #FFD600;
+        }
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            z-index: 3000;
+        }
+        .nav-links a {
+            color: #222;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            padding: 6px 0;
+            white-space: nowrap;
+        }
+        .nav-links a:hover {
+            color: #FFD600;
+        }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3001;
+        }
+        .hamburger span {
+            height: 2px;
+            width: 100%;
+            background: #222;
+            margin: 2px 0;
+            border-radius: 1px;
+            transition: all 0.3s;
+        }
+        @media (max-width: 900px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 64px;
+                right: 0;
+                width: 220px;
+                background: #fff;
+                flex-direction: column;
+                gap: 0;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+                z-index: 2000;
+                padding: 10px 0;
+                border-radius: 0 0 8px 8px;
+                overflow-y: auto;
+                max-height: calc(100vh - 64px);
+            }
+            .nav-links.open {
+                display: flex;
+                right: 15px;
+            }
+            .nav-links a {
+                padding: 12px 20px;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+                box-sizing: border-box;
+            }
+            .nav-links a:last-child {
+                border-bottom: none;
+            }
+            .hamburger {
+                display: flex;
+            }
+        }
+        .quiz-container {
+            background: #fff;
+            color: #222;
+            border-radius: 16px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.07);
+            padding: 32px 24px;
+            margin: 100px auto 40px auto;
+            max-width: 600px;
+        }
+        .quiz-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FFD600;
+            margin-bottom: 18px;
+        }
+        .progress {
+            color: #888;
+            margin-bottom: 18px;
+        }
+        .question-type {
+            color: #FFD600;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .question {
+            font-size: 1.15rem;
+            margin-bottom: 16px;
+        }
+        .options {
+            margin-bottom: 20px;
+        }
+        .option {
+            display: block;
+            background: #f5f5f5;
+            color: #222;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 16px;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s, color 0.2s;
+        }
+        .option.selected, .option:active {
+            background: #FFD600;
+            color: #222;
+        }
+        .nav-btns {
+            display: flex;
+            gap: 15px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            flex: 1;
+            background: #FFD600;
+            color: #222;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            min-width: 120px;
+        }
+        .nav-btn:disabled {
+            background: #eee;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+        .short-answer-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #FFD600;
+            background: #f5f5f5;
+            color: #222;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 800px) {
+            .navbar {
+                flex-direction: column;
+                height: auto;
+                padding: 12px 15px;
+                align-items: flex-start;
+            }
+            .navbar .logo {
+                margin-bottom: 8px;
+            }
+            .nav-links {
+                display: none;
+                position: static;
+                flex-direction: column;
+                width: 100%;
+                gap: 5px;
+                margin-top: 10px;
+            }
+            .nav-links.open {
+                display: flex;
+            }
+            .nav-links a {
+                padding: 10px 0;
+                text-align: center;
+                border-bottom: 1px solid #222;
+            }
+            .hamburger {
+                display: flex;
+                position: absolute;
+                right: 15px;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+            .nav-btns {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .nav-btn {
+                width: 100%;
+                min-width: 0;
+            }
+            .quiz-container {
+                padding: 20px 15px;
+                margin-top: 70px;
+            }
+        }
+        @media (max-width: 500px) {
+            .quiz-container {
+                padding: 15px 10px;
+            }
+            .quiz-title {
+                font-size: 1.6rem;
+            }
+            .question {
+                font-size: 1rem;
+            }
+            .option,
+            .short-answer,
+            .nav-btn {
+                font-size: 0.9rem;
+                padding: 10px 12px;
+            }
+            .nav-btn {
+                padding: 12px 0;
+            }
+        }
+        .question-type {
+            font-size: 0.9rem;
+            color: #FFD600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .short-answer-input:focus {
+            outline: none;
+            border-color: #FFD600;
+        }
+        
+        .feedback {
+            margin-top: 12px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+        
+        .feedback.incorrect {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+        }
+        
+        .expected-answer {
+            margin-top: 8px;
+            font-style: italic;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/" style="display:flex;align-items:center;text-decoration:none;">
+            <img src="{% static 'slides_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo" style="height:40px;">
+        </a>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <a href="/">Home</a>
+            <a href="/quiz/">Quiz</a>
+            <a href="#">Concepts</a>
+            <a href="/flashcards/">Flashcards</a>
+            <a href="#">History</a>
+            <a href="/exam-analyzer/">Exam Analyzer</a>
+            {% if user_authenticated %}
+                <a href="/accounts/logout/">Logout</a>
+            {% else %}
+                <a href="/accounts/login/">Login</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="quiz-container">
+        <div class="quiz-title">Generated Quiz</div>
+        <div class="progress">Question <span id="current-question">1</span> of <span id="total-questions">{{ questions.mcq_questions|length|add:questions.short_questions|length }}</span></div>
+        
+        <div id="question-container">
+            <!-- Questions will be dynamically inserted here -->
+        </div>
+        
+        <div class="nav-btns">
+            <button class="nav-btn" id="prev-btn" disabled>Previous</button>
+            <button class="nav-btn" id="next-btn">Next</button>
+        </div>
+    </div>
+    <script>
+        // Hamburger menu toggle
+        document.getElementById('hamburger').onclick = function() {
+            document.getElementById('navLinks').classList.toggle('open');
+        };
+        const quizData = {
+            mcq: JSON.parse("{{ questions.mcq_questions|default:'[]'|escapejs }}"),
+            short: JSON.parse("{{ questions.short_questions|default:'[]'|escapejs }}")
+        };
+        
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+        
+        function displayQuestion() {
+            const container = document.getElementById('question-container');
+            const isMCQ = currentQuestionIndex < quizData.mcq.length;
+            const question = isMCQ ? quizData.mcq[currentQuestionIndex] : quizData.short[currentQuestionIndex - quizData.mcq.length];
+            
+            let html = `
+                <div class="question-type">${isMCQ ? 'Multiple Choice' : 'Short Answer'}</div>
+                <div class="question">${question.question}</div>
+            `;
+            
+            if (isMCQ) {
+                html += '<div class="options">';
+                question.options.forEach((option, index) => {
+                    const letter = String.fromCharCode(65 + index);
+                    html += `
+                        <button class="option" data-option="${letter}">
+                            ${letter}) ${option}
+                        </button>
+                    `;
+                });
+                html += '</div>';
+            } else {
+                html += `
+                    <textarea class="short-answer-input" placeholder="Type your answer here...">${userAnswers[currentQuestionIndex] || ''}</textarea>
+                `;
+            }
+            
+            // Add feedback if answer was previously submitted
+            if (userAnswers[currentQuestionIndex]) {
+                const feedback = document.createElement('div');
+                feedback.className = `feedback ${isMCQ ? 
+                    (userAnswers[currentQuestionIndex] === question.correct_answer ? 'correct' : 'incorrect') : 
+                    'correct'}`;
+                
+                if (isMCQ) {
+                    feedback.textContent = userAnswers[currentQuestionIndex] === question.correct_answer ? 
+                        'Correct!' : `Incorrect. The correct answer is ${question.correct_answer}.`;
+                } else {
+                    feedback.innerHTML = `
+                        <div>Your answer has been recorded.</div>
+                        <div class="expected-answer">Expected answer: ${question.expected_answer}</div>
+                    `;
+                }
+                html += feedback.outerHTML;
+            }
+            
+            container.innerHTML = html;
+            
+            // Add event listeners
+            if (isMCQ) {
+                document.querySelectorAll('.option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+                        option.classList.add('selected');
+                        userAnswers[currentQuestionIndex] = option.dataset.option;
+                    });
+                });
+            } else {
+                const textarea = document.querySelector('.short-answer-input');
+                textarea.addEventListener('input', (e) => {
+                    userAnswers[currentQuestionIndex] = e.target.value;
+                });
+            }
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
+            document.getElementById('next-btn').textContent = 
+                currentQuestionIndex === quizData.mcq.length + quizData.short.length - 1 ? 'Finish' : 'Next';
+        }
+        
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestion();
+            }
+        });
+        
+        document.getElementById('next-btn').addEventListener('click', () => {
+            if (currentQuestionIndex < quizData.mcq.length + quizData.short.length - 1) {
+                currentQuestionIndex++;
+                displayQuestion();
+            } else {
+                // Handle quiz completion
+                alert('Quiz completed! Your answers have been recorded.');
+                // You can add code here to submit the answers to the server
+            }
+        });
+        
+        // Initialize the quiz
+        displayQuestion();
+        
+        // Mobile menu toggle
+        document.querySelector('.hamburger').addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.toggle('open');
+        });
+    </script>
+</body>
+</html> 

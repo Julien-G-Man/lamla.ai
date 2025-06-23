@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Exam Analyzer - Lamla AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background: #111;
+            color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+        .navbar {
+            background: #000;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            height: 60px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.4);
+        }
+        .navbar .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #FFD600;
+            letter-spacing: 0.5px;
+            margin-right: auto;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            z-index: 3000;
+        }
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: color 0.2s;
+            padding: 6px 0;
+            white-space: nowrap;
+        }
+        .nav-links a:hover {
+            color: #FFD600;
+        }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3001;
+        }
+        .hamburger span {
+            height: 2px;
+            width: 100%;
+            background: #fff;
+            margin: 2px 0;
+            border-radius: 1px;
+            transition: all 0.3s;
+        }
+        .navbar-mobile-btn {
+            background: #FFD600;
+            color: #111;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: background 0.2s;
+            width: 100%;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .navbar-mobile-btn:hover {
+            background: #fff;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto 40px auto;
+            background: #181818;
+            border-radius: 16px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.5);
+            padding: calc(60px + 30px) 25px 30px 25px;
+            position: relative;
+        }
+        .coming-soon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(34,34,34,0.92);
+            color: #FFD600;
+            font-size: 2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            z-index: 10;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+        .coming-soon span {
+            font-size: 1.8rem;
+        }
+        .analyzer-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FFD600;
+            margin-bottom: 12px;
+        }
+        .analyzer-desc {
+            color: #ccc;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .analyzer-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #ccc;
+        }
+        .analyzer-form input[type="file"],
+        .analyzer-form input[type="text"] {
+            background: #222;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            width: 100%;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        .analyzer-form input[type="text"] {
+            margin-bottom: 20px;
+        }
+        .analyzer-form button {
+            background: #FFD600;
+            color: #111;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            width: 100%;
+            cursor: not-allowed;
+            opacity: 0.7;
+            transition: background 0.2s;
+        }
+        .analyzer-form button:hover:not(:disabled) {
+            background: #fff;
+        }
+        @media (max-width: 800px) {
+            .navbar {
+                flex-direction: column;
+                height: auto;
+                padding: 12px 15px;
+                align-items: flex-start;
+            }
+            .navbar .logo {
+                margin-bottom: 8px;
+            }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 60px;
+                right: 0;
+                width: 200px;
+                background: #181818;
+                flex-direction: column;
+                gap: 0;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+                z-index: 2000;
+                padding: 10px 0;
+                border-radius: 0 0 8px 8px;
+                overflow-y: auto;
+                max-height: calc(100vh - 60px);
+            }
+            .nav-links.open {
+                display: flex;
+                right: 15px;
+            }
+            .nav-links a {
+                padding: 12px 20px;
+                text-align: left;
+                border-bottom: 1px solid #222;
+                box-sizing: border-box;
+            }
+            .nav-links a:last-child {
+                border-bottom: none;
+            }
+            .hamburger {
+                display: flex;
+            }
+            .container {
+                padding: 25px 20px;
+                margin-top: 70px;
+                margin-bottom: 30px;
+            }
+            .coming-soon {
+                font-size: 1.6rem;
+                padding: 15px;
+            }
+            .coming-soon span {
+                font-size: 1.4rem;
+            }
+            .analyzer-title {
+                font-size: 1.8rem;
+            }
+            .analyzer-desc {
+                font-size: 0.95rem;
+            }
+            .analyzer-form label {
+                font-size: 0.9rem;
+            }
+            .analyzer-form input[type="file"],
+            .analyzer-form input[type="text"] {
+                padding: 10px;
+                font-size: 0.9rem;
+                margin-bottom: 10px;
+            }
+            .analyzer-form input[type="text"] {
+                margin-bottom: 15px;
+            }
+            .analyzer-form button {
+                font-size: 1rem;
+                padding: 12px 0;
+            }
+        }
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px 15px;
+            }
+            .coming-soon {
+                font-size: 1.4rem;
+            }
+            .coming-soon span {
+                font-size: 1.2rem;
+            }
+            .analyzer-title {
+                font-size: 1.6rem;
+            }
+            .analyzer-desc {
+                font-size: 0.9rem;
+            }
+            .analyzer-form label {
+                font-size: 0.85rem;
+            }
+            .analyzer-form input[type="file"],
+            .analyzer-form input[type="text"] {
+                padding: 8px;
+                font-size: 0.85rem;
+            }
+            .analyzer-form button {
+                font-size: 0.9rem;
+                padding: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/" style="display:flex;align-items:center;text-decoration:none;">
+            <img src="{% static 'slides_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo" style="height:40px;">
+        </a>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <a href="/">Home</a>
+            <a href="/custom-quiz/">Quiz</a>
+            <a href="#">Concepts</a>
+            <a href="/flashcards/">Flashcards</a>
+            <a href="#">History</a>
+            <a href="/exam-analyzer/">Exam Analyzer</a>
+            {% if user_authenticated %}
+                <a href="/accounts/logout/">Logout</a>
+            {% else %}
+                <a href="/accounts/login/">Login</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="container">
+        <div class="coming-soon">
+            <span>🚧<br>Coming Soon</span>
+        </div>
+        <div class="analyzer-title">Exam Analyzer</div>
+        <div class="analyzer-desc">
+            Upload multiple past question files for a course or subject.<br>
+            We'll analyze the topics and generate new questions following the pattern of past exams.
+        </div>
+        <form class="analyzer-form" method="post" enctype="multipart/form-data">
+            <label for="subject">Course/Subject</label>
+            <input type="text" id="subject" name="subject" placeholder="e.g. Biology 101" disabled>
+            <label for="past_files">Upload Past Question Files</label>
+            <input type="file" id="past_files" name="past_files" multiple disabled>
+            <button type="submit" disabled>Analyze & Generate (Coming Soon)</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('hamburger').onclick = function() {
+            document.getElementById('navLinks').classList.toggle('open');
+        };
+        document.querySelectorAll('#navLinks a').forEach(function(link) {
+            link.onclick = function() {
+                document.getElementById('navLinks').classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html> 

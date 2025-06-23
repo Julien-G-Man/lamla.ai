@@ -1,0 +1,465 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LAMLA AI - Create Custom Quiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background: #f8f9fa;
+            color: #222;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+        .navbar {
+            background: #fff;
+            color: #222;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            height: 64px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+        }
+        .navbar .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #222;
+            letter-spacing: 0.5px;
+            margin-right: auto;
+        }
+        .navbar .logo .ai {
+            color: #FFD600;
+        }
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            z-index: 3000;
+        }
+        .nav-links a {
+            color: #222;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            padding: 6px 0;
+            white-space: nowrap;
+        }
+        .nav-links a:hover {
+            color: #FFD600;
+        }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3001;
+        }
+        .hamburger span {
+            height: 2px;
+            width: 100%;
+            background: #222;
+            margin: 2px 0;
+            border-radius: 1px;
+            transition: all 0.3s;
+        }
+        .navbar-mobile-btn {
+            background: #FFD600;
+            color: #111;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: background 0.2s;
+            width: 100%;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .navbar-mobile-btn:hover {
+            background: #fff;
+        }
+        .container {
+            max-width: 600px;
+            margin: 100px auto 40px auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.07);
+            padding: 30px 25px;
+            position: relative;
+            text-align: left;
+        }
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #FFD600;
+            margin-bottom: 15px;
+        }
+        .tab-group {
+            display: flex;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #444;
+        }
+        .tab {
+            flex: 1;
+            background: #2d2d2d;
+            color: #a0a0a0;
+            border: none;
+            padding: 14px 0;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .tab.active {
+            background: #111;
+            color: #fff;
+            border-right: none;
+        }
+        .tab:first-child {
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+            border-right: 1px solid #444;
+        }
+        .tab:last-child {
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+        .tab:first-child.active {
+            border-right-color: #111;
+        }
+        .tab-content {
+            background: #111;
+            border-radius: 0 0 8px 8px;
+            padding: 20px 18px;
+            margin-bottom: 20px;
+        }
+        .upload-zone {
+            border: 2px dashed #444;
+            border-radius: 8px;
+            padding: 30px 20px;
+            text-align: center;
+            background: #111;
+            color: #ccc;
+        }
+        .upload-icon {
+            font-size: 3rem;
+            color: #FFD600;
+            margin-bottom: 10px;
+        }
+        .upload-text {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .upload-description {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+        .hidden-file-input {
+            display: none;
+        }
+        .select-file-button {
+            background: #222;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            display: inline-block;
+        }
+        .select-file-button:hover {
+            background: #333;
+        }
+        .tab-content input[type="file"] {
+            display: none;
+        }
+        .tab-content textarea {
+            width: 100%;
+            min-height: 150px;
+            background: #222;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 1rem;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        .options-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .option-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .option-group span {
+            font-size: 1rem;
+            color: #ccc;
+        }
+        .option-btn {
+            background: #222;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .option-btn.selected, .option-btn:active {
+            background: #FFD600;
+            color: #111;
+        }
+        .actions-row {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .main-btn {
+            background: #FFD600;
+            color: #222;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 0;
+            width: 100%;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .main-btn:hover {
+            background: #222;
+            color: #FFD600;
+        }
+        .clear-btn {
+            flex: 1;
+            background: #222;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 16px 0;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            min-width: 120px;
+        }
+        .clear-btn:hover {
+            background: #FFD600;
+            color: #111;
+        }
+        @media (max-width: 900px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 64px;
+                right: 0;
+                width: 220px;
+                background: #fff;
+                flex-direction: column;
+                gap: 0;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+                z-index: 2000;
+                padding: 10px 0;
+                border-radius: 0 0 8px 8px;
+                overflow-y: auto;
+                max-height: calc(100vh - 64px);
+            }
+            .nav-links.open {
+                display: flex;
+                right: 15px;
+            }
+            .nav-links a {
+                padding: 12px 20px;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+                box-sizing: border-box;
+            }
+            .nav-links a:last-child {
+                border-bottom: none;
+            }
+            .hamburger {
+                display: flex;
+            }
+        }
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px 15px;
+            }
+            .tab,
+            .main-btn,
+            .clear-btn {
+                font-size: 1.1rem;
+                padding: 14px 0;
+            }
+            .tab-content {
+                padding: 15px 10px;
+            }
+            .tab-content input[type="file"],
+            .tab-content textarea {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+            .option-btn {
+                font-size: 0.9rem;
+                padding: 8px 15px;
+            }
+            .option-group span {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/" style="display:flex;align-items:center;text-decoration:none;">
+            <img src="{% static 'slides_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo" style="height:40px;">
+        </a>
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <a href="/">Home</a>
+            <a href="/quiz/">Quiz</a>
+            <a href="#">Concepts</a>
+            <a href="/flashcards/">Flashcards</a>
+            <a href="#">History</a>
+            <a href="/exam-analyzer/">Exam Analyzer</a>
+            {% if user_authenticated %}
+                <a href="/accounts/logout/">Logout</a>
+            {% else %}
+                <a href="/accounts/login/">Login</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="container">
+        <h1> </h1>
+        <form id="quizForm" method="post" enctype="multipart/form-data" action="{% url 'generate_questions' %}">
+            {% csrf_token %}
+            <div style="margin-bottom: 18px;">
+                <b style="font-size:1.3rem;color:#FFD600;">&#129504; Generate Custom Quiz</b>
+                <div style="color:#ccc;font-size:1rem;margin-top:6px;">Upload your study materials or paste content to create custom quiz questions</div>
+            </div>
+            <div class="tab-group">
+                <button type="button" class="tab active" id="textTab">Enter Text</button>
+                <button type="button" class="tab" id="fileTab">Upload File</button>
+            </div>
+            <div class="tab-content" id="textContent">
+                <textarea name="extracted_text" id="studyText" placeholder="Paste your study materials here..."></textarea>
+            </div>
+            <div class="tab-content" id="fileContent" style="display:none;">
+                <div class="upload-zone">
+                    <div class="upload-icon">&#128214;</div>
+                    <div class="upload-text">Upload your study materials</div>
+                    <div class="upload-description">Upload PDF, DOCX, PPT, PPTX, or text files to analyze</div>
+                    <input type="file" name="slide_file" id="slideFile" accept=".pdf,.pptx,.txt" class="hidden-file-input">
+                    <label for="slideFile" class="select-file-button">Select file</label>
+                </div>
+            </div>
+            <div class="options-row">
+                <div class="option-group">
+                    <span>Difficulty Level</span>
+                    <button type="button" class="option-btn selected" data-value="Easy">Easy</button>
+                    <button type="button" class="option-btn" data-value="Medium">Medium</button>
+                    <button type="button" class="option-btn" data-value="Hard">Hard</button>
+                    <input type="hidden" name="difficulty" id="difficultyInput" value="Easy">
+                </div>
+                <div class="option-group">
+                    <span>Number of Questions</span>
+                    <button type="button" class="option-btn selected" data-value="5">5</button>
+                    <button type="button" class="option-btn" data-value="10">10</button>
+                    <button type="button" class="option-btn" data-value="20">20</button>
+                    <button type="button" class="option-btn" data-value="40">40</button>
+                    <input type="hidden" name="num_questions" id="numQuestionsInput" value="5">
+                </div>
+            </div>
+            <div class="actions-row">
+                <button type="submit" class="main-btn">Generate Questions</button>
+                <button type="button" class="clear-btn" id="clearBtn">Clear</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        // Tab switching
+        const textTab = document.getElementById('textTab');
+        const fileTab = document.getElementById('fileTab');
+        const textContent = document.getElementById('textContent');
+        const fileContent = document.getElementById('fileContent');
+        textTab.onclick = function() {
+            textTab.classList.add('active');
+            fileTab.classList.remove('active');
+            textContent.style.display = '';
+            fileContent.style.display = 'none';
+        };
+        fileTab.onclick = function() {
+            fileTab.classList.add('active');
+            textTab.classList.remove('active');
+            fileContent.style.display = '';
+            textContent.style.display = 'none';
+        };
+        // Difficulty selection
+        document.querySelectorAll('.option-group')[0].addEventListener('click', function(e) {
+            if (e.target.classList.contains('option-btn')) {
+                this.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+                e.target.classList.add('selected');
+                document.getElementById('difficultyInput').value = e.target.getAttribute('data-value');
+            }
+        });
+        // Number of questions selection
+        document.querySelectorAll('.option-group')[1].addEventListener('click', function(e) {
+            if (e.target.classList.contains('option-btn')) {
+                this.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+                e.target.classList.add('selected');
+                document.getElementById('numQuestionsInput').value = e.target.getAttribute('data-value');
+            }
+        });
+        // Clear button
+        document.getElementById('clearBtn').onclick = function() {
+            document.getElementById('studyText').value = '';
+            document.getElementById('slideFile').value = '';
+        };
+        // Hamburger menu toggle
+        document.getElementById('hamburger').onclick = function() {
+            document.getElementById('navLinks').classList.toggle('open');
+        };
+    </script>
+</body>
+</html> 

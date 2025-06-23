@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+{% load static %}
+{% block content %}
+{% if user.is_authenticated %}
+    <div class="auth-container">
+        <h2>Welcome back, {{ user.username }}!</h2>
+        <p>You are already signed in.</p>
+        <a href="/" class="auth-btn">Go to Dashboard</a>
+    </div>
+{% else %}
+<div class="auth-container">
+    <h2 style="color:#FFD600;">Sign In to Lamla AI</h2>
+    <p style="color:#444;margin-bottom:18px;">Welcome back! Sign in to access your personalized study tools and resources.</p>
+    <form method="post" action="{% url 'account_login' %}">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <small class="help-text">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="form-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        {% if form.non_field_errors %}
+            <div class="form-error">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <button type="submit" class="auth-btn">Sign In</button>
+    </form>
+    <div class="auth-links">
+        <a href="{% url 'account_signup' %}">Don't have an account? Sign up</a>
+        <a href="{% url 'account_reset_password' %}">Forgot password?</a>
+    </div>
+</div>
+{% endif %}
+<style>
+body {
+    background: #f5f5f5;
+}
+.auth-container {
+    background: #fff;
+    color: #222;
+    max-width: 400px;
+    margin: 60px auto;
+    padding: 32px 28px;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    text-align: center;
+}
+.auth-container h2 {
+    color: #FFD600;
+    margin-bottom: 18px;
+}
+.form-group {
+    margin-bottom: 18px;
+    text-align: left;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #FFD600;
+    font-weight: 500;
+    font-size: 1rem;
+}
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1.5px solid #FFD600;
+    background: #f5f5f5;
+    color: #222;
+    font-size: 1rem;
+    margin-bottom: 2px;
+    box-sizing: border-box;
+    transition: border 0.2s, background 0.2s;
+}
+.form-group input:focus {
+    border: 1.5px solid #FFD600;
+    background: #fff;
+    outline: none;
+}
+.help-text {
+    color: #888;
+    font-size: 0.9rem;
+    margin-top: 2px;
+    display: block;
+}
+.form-error {
+    color: #ff4d4f;
+    background: #fffbe6;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-top: 4px;
+    font-size: 0.95rem;
+}
+.auth-btn {
+    background: #FFD600;
+    color: #222;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 0;
+    width: 100%;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    display: inline-block;
+    text-decoration: none;
+}
+.auth-btn:hover {
+    background: #222;
+    color: #FFD600;
+}
+.auth-links {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.auth-links a {
+    color: #FFD600;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.2s;
+}
+.auth-links a:hover {
+    text-decoration: underline;
+    color: #222;
+}
+</style>
+{% endblock %} 

@@ -274,3 +274,6 @@ def display_text(request):
 
 def error(request, message="An error occurred"):
     return render(request, 'slides_analyzer/error.html', {'message': message, 'user_authenticated': request.user.is_authenticated})
+
+def about(request):
+    return render(request, 'slides_analyzer/about.html')

@@ -9,4 +9,5 @@ urlpatterns = [
     path('quiz/', views.quiz, name='quiz'),
     path('flashcards/', views.flashcards, name='flashcards'),
     path('test-token/', views.test_token, name='test_token'),
+    path('about/', views.about, name='about'),
 ] 

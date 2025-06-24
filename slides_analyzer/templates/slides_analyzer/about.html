@@ -1,0 +1,569 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About LAMLA AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        html { scroll-behavior: smooth; }
+        body {
+            background: #f8f9fa;
+            color: #222;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: #fff;
+            color: #222;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 80px 0 30px;
+            height: 64px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+            box-sizing: border-box;
+        }
+        .navbar .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #FFD600;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+            margin-right: 80px;
+            height: 40px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            z-index: 3000;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+        .nav-links a {
+            color: #222;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            padding: 6px 0;
+            white-space: nowrap;
+        }
+        .nav-links a:hover {
+            color: #FFD600;
+        }
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 3000;
+            margin-left: auto;
+        }
+        .hamburger span {
+            display: block;
+            width: 28px;
+            height: 4px;
+            margin: 4px 0;
+            background: #FFD600;
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+        .about-hero {
+            background: #35373f;
+            color: #fff;
+            padding: 120px 0 40px 0;
+            text-align: center;
+        }
+        .about-hero .about-logo {
+            height: 56px;
+            margin-bottom: 18px;
+        }
+        .about-hero-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #FFD600;
+            margin-bottom: 12px;
+        }
+        .about-hero-desc {
+            font-size: 1.25rem;
+            max-width: 700px;
+            margin: 0 auto 18px auto;
+            color: #eee;
+        }
+        .about-tabs-container {
+            background: #35373f;
+            padding-bottom: 0;
+        }
+        .about-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            border-bottom: 1.5px solid #eee;
+            background: #35373f;
+        }
+        .about-tab {
+            color: #fff;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 18px 32px 14px 32px;
+            cursor: pointer;
+            outline: none;
+            border-bottom: 3px solid transparent;
+            transition: color 0.2s, border-bottom 0.2s;
+        }
+        .about-tab.active {
+            color: #FFD600;
+            border-bottom: 3px solid #FFD600;
+            background: #35373f;
+        }
+        .about-tab:not(.active):hover {
+            color: #FFD600;
+        }
+        .about-tab-content {
+            max-width: 800px;
+            margin: 0 auto 40px auto;
+            background: #fff;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+            padding: 40px 32px 32px 32px;
+            min-height: 220px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(.77,0,.18,1);
+            opacity: 1;
+            z-index: 1;
+        }
+        .about-tab-content.slide-in {
+            animation: slideIn 0.4s cubic-bezier(.77,0,.18,1);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .about-tab-content h2 {
+            color: #FFD600;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .about-tab-content ul {
+            padding-left: 1.2em;
+            margin: 0 0 10px 0;
+        }
+        .about-tab-content li {
+            margin-bottom: 8px;
+        }
+        .about-tab-content strong {
+            color: #FFD600;
+        }
+        .about-tab-content .emoji {
+            font-size: 1.2em;
+            margin-right: 6px;
+        }
+        .about-tab-content p {
+            margin: 0 0 10px 0;
+        }
+        .about-join-section {
+            max-width: 900px;
+            margin: 0 auto 40px auto;
+            background: #f6f7fa;
+            color: #222;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+            padding: 40px 32px 32px 32px;
+            text-align: center;
+        }
+        .about-join-section h2 {
+            color: #222;
+        }
+        .get-started-btn {
+            display: inline-block;
+            margin-top: 24px;
+            background: #222;
+            color: #FFD600;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 14px 36px;
+            border-radius: 10px;
+            text-decoration: none;
+            box-shadow: 0 4px 16px rgba(34, 34, 34, 0.2);
+            transition: background 0.2s, color 0.2s;
+        }
+        .get-started-btn:hover {
+            background: #FFD600;
+            color: #222;
+        }
+        .about-founder-card {
+            max-width: 370px;
+            margin: 0 auto 48px auto;
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+            overflow: hidden;
+            text-align: center;
+            position: relative;
+        }
+        .about-founder-card-top {
+            background: linear-gradient(90deg, #FFD600 60%, #fffbe6 100%);
+            padding: 32px 0 0 0;
+        }
+        .about-founder-photo {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #fff;
+            box-shadow: 0 2px 8px #FFD60033;
+            margin: 0 auto 12px auto;
+            background: #eee;
+        }
+        .about-founder-title {
+            color: #FFD600;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            margin-top: 18px;
+        }
+        .about-founder-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 4px;
+        }
+        .about-founder-role {
+            color: #222;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+        .about-founder-desc {
+            font-size: 1rem;
+            color: #333;
+            padding: 0 18px 18px 18px;
+        }
+        .about-founder-socials {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            margin: 12px 0 18px 0;
+        }
+        .about-founder-socials a {
+            color: #FFD600;
+            font-size: 1.3rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .about-founder-socials a:hover {
+            color: #222;
+        }
+        /* Bottom section and footer styles from home */
+        .bottom-section {
+            background: #35373f;
+            color: #fff;
+            padding: 48px 0 24px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 60px;
+            border-top: 2px solid #35373f;
+        }
+        .bottom-col {
+            min-width: 220px;
+            max-width: 320px;
+        }
+        .bottom-title {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: #FFD600;
+            margin-bottom: 12px;
+        }
+        .bottom-list, .bottom-contact {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .bottom-list li, .bottom-contact li {
+            margin-bottom: 8px;
+        }
+        .bottom-list a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .bottom-list a:hover {
+            color: #FFD600;
+        }
+        .bottom-socials {
+            display: flex;
+            gap: 14px;
+            margin-top: 10px;
+        }
+        .bottom-social-icon {
+            width: 32px;
+            height: 32px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFD600;
+            font-size: 1.3rem;
+            box-shadow: 0 2px 8px #FFD60022;
+            border: 1.5px solid #eee;
+            cursor: pointer;
+        }
+        .bottom-social-icon.inactive {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .footer {
+            background: #35373f;
+            color: #ccc;
+            text-align: center;
+            padding: 18px 0 10px 0;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            border-top: 1.5px solid #35373f;
+        }
+        @media (max-width: 900px) {
+            .navbar {
+                padding: 0 50px 0 20px !important;
+            }
+            .navbar .logo {
+                margin-right: 0;
+            }
+            .hamburger {
+                display: flex;
+                margin-left: auto;
+            }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 64px;
+                right: 0;
+                width: 220px;
+                background: #fff;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+                z-index: 2000;
+                padding: 10px 0;
+                border-radius: 0 0 8px 8px;
+                overflow-y: auto;
+                max-height: calc(100vh - 64px);
+                margin-left: 0;
+            }
+            .nav-links.open {
+                display: flex;
+            }
+            .nav-links a {
+                padding: 14px 24px;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+                box-sizing: border-box;
+            }
+            .nav-links a:last-child {
+                border-bottom: none;
+            }
+            .about-founder-card {
+                margin: 32px auto 40px auto;
+            }
+        }
+        @media (max-width: 700px) {
+            .about-tab-content {
+                padding: 18px 6px;
+            }
+            .about-tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="/" style="display:flex;align-items:center;text-decoration:none;">
+            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo">
+        </a>
+        <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+            <a href="/">Home</a>
+            <a href="/quiz/">Quiz</a>
+            <a href="#">Concepts</a>
+            <a href="/flashcards/">Flashcards</a>
+            <a href="#">History</a>
+            <a href="/exam-analyzer/">Exam Analyzer</a>
+            <a href="/about/">About</a>
+            {% if user_authenticated %}
+                <a href="/accounts/logout/">Logout</a>
+            {% else %}
+                <a href="/accounts/login/">Login</a>
+            {% endif %}
+        </nav>
+    </div>
+    <div class="about-hero">
+        <div class="about-hero-title">About LAMLA</div>
+        <div class="about-hero-desc">
+            <strong>LAMLA</strong> stands for Last Minute Learners Association—but what we stand for goes far beyond last-minute prep.<br>
+            We're building a platform for every student who wants to understand how ready they are, whether it's weeks before an exam or hours before.<br>
+            <b>LAMLA is not a shortcut. It's a smart compass.</b> It helps you test yourself, track your progress, and identify what you need to improve—at any stage of your study journey.
+        </div>
+    </div>
+    <div class="about-tabs-container">
+        <div class="about-tabs">
+            <button class="about-tab active" data-tab="mission">Mission</button>
+            <button class="about-tab" data-tab="vision">Vision</button>
+            <button class="about-tab" data-tab="offers">What We Offer</button>
+            <button class="about-tab" data-tab="values">Values</button>
+        </div>
+        <div class="about-tab-content" id="mission-tab-content">
+            <h2>🎯 Mission</h2>
+            <p>To help students become strategic learners by giving them the tools to:</p>
+            <ul>
+                <li>🧠 Assess their understanding</li>
+                <li>🎯 Focus on what matters most</li>
+                <li>📈 Improve consistently</li>
+                <li>✅ Walk into exams with confidence</li>
+            </ul>
+        </div>
+        <div class="about-tab-content" id="vision-tab-content" style="display:none;">
+            <h2>🚀 Vision</h2>
+            <p>To redefine academic readiness—starting from Africa, for the world.</p>
+            <ul>
+                <li>Have easy access to meaningful, active study tools</li>
+                <li>Feel confident and in control of their academic journey</li>
+                <li>Build mastery over time—not just survival under pressure</li>
+            </ul>
+        </div>
+        <div class="about-tab-content" id="offers-tab-content" style="display:none;">
+            <h2>💡 What LAMLA Offers</h2>
+            <ul>
+                <li>✅ Self-testing tools to check your knowledge</li>
+                <li>✅ Quiz generators to help you revise actively</li>
+                <li>✅ Instant feedback to show your strengths and gaps</li>
+                <li>✅ Performance insights that guide your next steps</li>
+                <li>✅ (Coming soon) Smart upload features for files, notes & flashcards</li>
+            </ul>
+            <p>Whether you're reviewing after a lecture, preparing for a mid-sem, or powering through final week—LAMLA helps you stay on track.</p>
+        </div>
+        <div class="about-tab-content" id="values-tab-content" style="display:none;">
+            <h2>🧭 Our Values</h2>
+            <ul>
+                <li>Discipline beats panic – But tools can support both.</li>
+                <li>Preparation is a process – And everyone starts from somewhere.</li>
+                <li>Smart learners test themselves – Because awareness is power.</li>
+                <li>We don't glorify cramming – We build confidence through practice.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="about-join-section">
+        <h2>🤝 Join the Journey</h2>
+        <p>If you've ever felt unsure before an exam, unsure of what you really know, or where to focus—LAMLA was built for you.</p>
+        <p>This is more than a platform. It's a toolset. A mindset. A movement.</p>
+        <p><strong>Let's prepare better. Not later—just smarter.</strong></p>
+        <a href="/accounts/signup/" class="get-started-btn">Get Started</a>
+    </div>
+    <div class="about-founder-card">
+        <div class="about-founder-card-top">
+            <img src="https://cdn.creazilla.com/icons/3209624/incognito-circle-icon-md.png" alt="Founder Photo" class="about-founder-photo">
+        </div>
+        <div class="about-founder-title">Meet the Founder</div>
+        <div class="about-founder-name">Incognito</div>
+        <div class="about-founder-role">Founder</div>
+        <div class="about-founder-desc">
+            Just some random guy trying to help
+        </div>
+        <div class="about-founder-socials">
+            <a href="#" title="LinkedIn" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#" title="Twitter" target="_blank"><i class="fab fa-twitter"></i></a>
+            <a href="#" title="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" title="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="mailto:founder@email.com" title="Email"><i class="fas fa-envelope"></i></a>
+        </div>
+    </div>
+    <div class="bottom-section">
+        <div class="bottom-col">
+            <div class="bottom-title">Contact Us</div>
+            <ul class="bottom-contact">
+                <li>Email: <a href="mailto:suppport@lamla.ai">suppport@lamla.ai</a></li>
+                <li>Phone: <span>233509341251</span></li>
+            </ul>
+        </div>
+        <div class="bottom-col">
+            <div class="bottom-title">Quick Links</div>
+            <ul class="bottom-list">
+                <li><a href="/">Home</a></li>
+                <li><a href="/quiz/">Quiz</a></li>
+                <li><a href="/flashcards/">Flashcards</a></li>
+                <li><a href="/about/">About</a></li>
+                <li><a href="/accounts/login/">Login</a></li>
+                <li><a href="/accounts/signup/">Sign Up</a></li>
+            </ul>
+        </div>
+        <div class="bottom-col">
+            <div class="bottom-title">Social Media</div>
+            <div class="bottom-socials">
+                <div class="bottom-social-icon inactive" title="Coming soon"><span>F</span></div>
+                <div class="bottom-social-icon inactive" title="Coming soon"><span>T</span></div>
+                <div class="bottom-social-icon inactive" title="Coming soon"><span>I</span></div>
+                <div class="bottom-social-icon inactive" title="Coming soon"><span>L</span></div>
+            </div>
+            <div style="font-size:0.95rem; color:#888; margin-top:8px;">Follow us for updates</div>
+        </div>
+    </div>
+    <div class="footer">
+        Copyright &copy; 2025 All rights reserved | Lamla AI.
+    </div>
+    <script>
+        // Hamburger menu toggle
+        document.getElementById('hamburger').onclick = function() {
+            var nav = document.getElementById('navLinks');
+            var expanded = this.getAttribute('aria-expanded') === 'true';
+            nav.classList.toggle('open');
+            this.setAttribute('aria-expanded', !expanded);
+        };
+        // Close menu when clicking on links
+        document.querySelectorAll('#navLinks a').forEach(function(link) {
+            link.onclick = function() {
+                document.getElementById('navLinks').classList.remove('open');
+                document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
+            }
+        });
+        // About page tab logic
+        const tabs = document.querySelectorAll('.about-tab');
+        const tabContents = {
+            'mission': document.getElementById('mission-tab-content'),
+            'vision': document.getElementById('vision-tab-content'),
+            'offers': document.getElementById('offers-tab-content'),
+            'values': document.getElementById('values-tab-content'),
+        };
+        tabs.forEach(tab => {
+            tab.onclick = function() {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                Object.values(tabContents).forEach(c => { c.style.display = 'none'; c.classList.remove('slide-in'); });
+                const content = tabContents[tab.getAttribute('data-tab')];
+                content.style.display = 'block';
+                content.classList.add('slide-in');
+            };
+        });
+    </script>
+</body>
+</html> 

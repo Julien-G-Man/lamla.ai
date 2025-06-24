@@ -1,28 +1,29 @@
 import os
+import requests
+import json
 from typing import Dict, List, Optional
 from django.conf import settings
-from transformers import pipeline, AutoModelForCausalLM, AutoTokenizer
-import torch
 from .models import Question, QuestionCache
+import logging
+
+logger = logging.getLogger(__name__)
 
 class QuestionGenerator:
     def __init__(self):
-        # Initialize with a smaller model that can run on CPU
-        self.model_name = "distilgpt2"  # Small model that can run on CPU
-        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(self.model_name)
+        self.gemini_api_key = getattr(settings, 'GEMINI_API_KEY', None)
+        self.openai_api_key = getattr(settings, 'OPENAI_API_KEY', None)
+        self.hf_token = getattr(settings, 'HUGGING_FACE_API_TOKEN', None)
         
-        # Move model to CPU if CUDA is not available
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
-        self.model.to(self.device)
-        
-        # Initialize the text generation pipeline
-        self.generator = pipeline(
-            "text-generation",
-            model=self.model,
-            tokenizer=self.tokenizer,
-            device=0 if self.device == "cuda" else -1
-        )
+        # Prefer Gemini, fallback to OpenAI, then Hugging Face
+        if self.gemini_api_key:
+            self.primary_api = 'gemini'
+        elif self.openai_api_key:
+            self.primary_api = 'openai'
+        elif self.hf_token:
+            self.primary_api = 'huggingface'
+        else:
+            self.primary_api = None
+            logger.warning("No API keys configured for question generation")
 
     def _create_prompt(self, text: str, num_mcq: int = 3, num_short: int = 2) -> str:
         return f"""Task: Create {num_mcq} multiple-choice questions and {num_short} short-answer questions based on the following text.
@@ -58,6 +59,61 @@ Expected Answer: [Brief answer]
 
 [Repeat for other short answers]"""
 
+    def _call_gemini_api(self, prompt: str) -> str:
+        """Call Google Gemini API"""
+        try:
+            import google.generativeai as genai
+            genai.configure(api_key=self.gemini_api_key)
+            model = genai.GenerativeModel('gemini-pro')
+            response = model.generate_content(prompt)
+            return response.text
+        except Exception as e:
+            logger.error(f"Gemini API error: {e}")
+            raise
+
+    def _call_openai_api(self, prompt: str) -> str:
+        """Call OpenAI API"""
+        try:
+            import openai
+            client = openai.OpenAI(api_key=self.openai_api_key)
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=1000,
+                temperature=0.7
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            logger.error(f"OpenAI API error: {e}")
+            raise
+
+    def _call_huggingface_api(self, prompt: str) -> str:
+        """Call Hugging Face API"""
+        try:
+            API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
+            headers = {"Authorization": f"Bearer {self.hf_token}"}
+            
+            payload = {
+                "inputs": f"<s>[INST] {prompt} [/INST]",
+                "parameters": {
+                    "max_new_tokens": 800,
+                    "temperature": 0.7,
+                    "top_p": 0.95,
+                    "do_sample": True
+                }
+            }
+            
+            response = requests.post(API_URL, headers=headers, json=payload)
+            response.raise_for_status()
+            
+            result = response.json()
+            if isinstance(result, list) and len(result) > 0:
+                return result[0].get('generated_text', '')
+            return str(result)
+        except Exception as e:
+            logger.error(f"Hugging Face API error: {e}")
+            raise
+
     def generate_questions(self, text: str, num_mcq: int = 3, num_short: int = 2) -> Dict[str, List[Dict]]:
         """
         Generate questions from the provided text, using cache if available.
@@ -74,32 +130,64 @@ Expected Answer: [Brief answer]
         except QuestionCache.DoesNotExist:
             pass
 
+        if not self.primary_api:
+            return {
+                "error": "No API keys configured for question generation",
+                "mcq_questions": [],
+                "short_questions": []
+            }
+
         try:
             prompt = self._create_prompt(text, num_mcq, num_short)
             
-            # Generate text using the local model
-            response = self.generator(
-                prompt,
-                max_length=800,
-                num_return_sequences=1,
-                temperature=0.8,
-                top_p=0.95,
-                repetition_penalty=1.2,
-                do_sample=True
-            )[0]['generated_text']
+            # Try APIs in order of preference
+            response = None
+            last_error = None
+            
+            if self.primary_api == 'gemini':
+                try:
+                    response = self._call_gemini_api(prompt)
+                except Exception as e:
+                    last_error = e
+                    logger.warning(f"Gemini failed, trying OpenAI: {e}")
+                    
+            if not response and self.openai_api_key:
+                try:
+                    response = self._call_openai_api(prompt)
+                except Exception as e:
+                    last_error = e
+                    logger.warning(f"OpenAI failed, trying Hugging Face: {e}")
+                    
+            if not response and self.hf_token:
+                try:
+                    response = self._call_huggingface_api(prompt)
+                except Exception as e:
+                    last_error = e
+                    logger.error(f"All APIs failed: {e}")
+            
+            if not response:
+                return {
+                    "error": f"Failed to generate questions: {last_error}",
+                    "mcq_questions": [],
+                    "short_questions": []
+                }
             
             # Parse the response
             questions = self._parse_response(response)
             
             # Cache the generated questions
-            QuestionCache.objects.create(
-                content_hash=content_hash,
-                questions=questions
-            )
+            try:
+                QuestionCache.objects.create(
+                    content_hash=content_hash,
+                    questions=questions
+                )
+            except Exception as e:
+                logger.warning(f"Failed to cache questions: {e}")
             
             return questions
             
         except Exception as e:
+            logger.error(f"Error generating questions: {e}")
             return {
                 "error": str(e),
                 "mcq_questions": [],
@@ -127,7 +215,7 @@ Expected Answer: [Brief answer]
                 if current_mcq:
                     questions["mcq_questions"].append(current_mcq)
                 current_mcq = {
-                    "question": line.split(':', 1)[1].strip(),
+                    "question": line.split(':', 1)[1].strip() if ':' in line else line,
                     "options": [],
                     "correct_answer": None
                 }
@@ -141,7 +229,7 @@ Expected Answer: [Brief answer]
                 if current_short:
                     questions["short_questions"].append(current_short)
                 current_short = {
-                    "question": line.split(':', 1)[1].strip(),
+                    "question": line.split(':', 1)[1].strip() if ':' in line else line,
                     "expected_answer": None
                 }
             elif line.startswith('Expected Answer:'):

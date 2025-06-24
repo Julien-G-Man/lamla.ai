@@ -26,12 +26,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-6!69751jn(#y^fzwp607$e(h*imnlyx!#^fgi$$%qc+kcl6%_q'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-6!69751jn(#y^fzwp607$e(h*imnlyx!#^fgi$$%qc+kcl6%_q')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 # Application definition
@@ -139,15 +139,17 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Gemini API Settings
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')  # Set in .env or environment
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 # OpenAI API Settings
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')  # Set in .env or environment
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 # Hugging Face API Settings
-HUGGING_FACE_API_TOKEN = os.getenv('HUGGING_FACE_API_TOKEN')  # Set in .env or environment
+HUGGING_FACE_API_TOKEN = os.getenv('HUGGING_FACE_API_TOKEN')
 
-#client = openai.OpenAI(api_key=OPENAI_API_KEY)
+# File upload settings
+MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10MB limit
+ALLOWED_FILE_TYPES = ['.pdf', '.pptx']
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -160,8 +162,16 @@ AUTHENTICATION_BACKENDS = [
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_LOGIN_METHODS = {'username', 'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Security settings
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True

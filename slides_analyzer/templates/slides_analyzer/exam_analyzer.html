@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,22 +56,22 @@
             display: none;
             flex-direction: column;
             justify-content: center;
-            width: 28px;
-            height: 28px;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: none;
             cursor: pointer;
-            position: absolute;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 3001;
+            z-index: 3000;
         }
         .hamburger span {
-            height: 2px;
-            width: 100%;
-            background: #fff;
-            margin: 2px 0;
-            border-radius: 1px;
-            transition: all 0.3s;
+            display: block;
+            width: 28px;
+            height: 4px;
+            margin: 4px 0;
+            background: #FFD600;
+            border-radius: 2px;
+            transition: 0.3s;
         }
         .navbar-mobile-btn {
             background: #FFD600;
@@ -170,25 +171,18 @@
         .analyzer-form button:hover:not(:disabled) {
             background: #fff;
         }
-        @media (max-width: 800px) {
-            .navbar {
-                flex-direction: column;
-                height: auto;
-                padding: 12px 15px;
-                align-items: flex-start;
-            }
-            .navbar .logo {
-                margin-bottom: 8px;
+        @media (max-width: 900px) {
+            .hamburger {
+                display: flex;
             }
             .nav-links {
                 display: none;
+                flex-direction: column;
                 position: absolute;
                 top: 60px;
                 right: 0;
-                width: 200px;
+                width: 220px;
                 background: #181818;
-                flex-direction: column;
-                gap: 0;
                 box-shadow: 0 4px 16px rgba(0,0,0,0.6);
                 z-index: 2000;
                 padding: 10px 0;
@@ -198,10 +192,9 @@
             }
             .nav-links.open {
                 display: flex;
-                right: 15px;
             }
             .nav-links a {
-                padding: 12px 20px;
+                padding: 14px 24px;
                 text-align: left;
                 border-bottom: 1px solid #222;
                 box-sizing: border-box;
@@ -209,71 +202,15 @@
             .nav-links a:last-child {
                 border-bottom: none;
             }
-            .hamburger {
-                display: flex;
-            }
-            .container {
-                padding: 25px 20px;
-                margin-top: 70px;
-                margin-bottom: 30px;
-            }
-            .coming-soon {
-                font-size: 1.6rem;
-                padding: 15px;
-            }
-            .coming-soon span {
-                font-size: 1.4rem;
-            }
-            .analyzer-title {
-                font-size: 1.8rem;
-            }
-            .analyzer-desc {
-                font-size: 0.95rem;
-            }
-            .analyzer-form label {
-                font-size: 0.9rem;
-            }
-            .analyzer-form input[type="file"],
-            .analyzer-form input[type="text"] {
-                padding: 10px;
-                font-size: 0.9rem;
-                margin-bottom: 10px;
-            }
-            .analyzer-form input[type="text"] {
-                margin-bottom: 15px;
-            }
-            .analyzer-form button {
-                font-size: 1rem;
-                padding: 12px 0;
-            }
         }
-        @media (max-width: 500px) {
-            .container {
-                padding: 20px 15px;
+        @media (max-width: 600px) {
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px 8px;
             }
-            .coming-soon {
-                font-size: 1.4rem;
-            }
-            .coming-soon span {
-                font-size: 1.2rem;
-            }
-            .analyzer-title {
-                font-size: 1.6rem;
-            }
-            .analyzer-desc {
-                font-size: 0.9rem;
-            }
-            .analyzer-form label {
-                font-size: 0.85rem;
-            }
-            .analyzer-form input[type="file"],
-            .analyzer-form input[type="text"] {
-                padding: 8px;
-                font-size: 0.85rem;
-            }
-            .analyzer-form button {
-                font-size: 0.9rem;
-                padding: 10px 0;
+            .logo, .student-img {
+                height: 32px !important;
             }
         }
     </style>
@@ -281,14 +218,15 @@
 <body>
     <div class="navbar">
         <a href="/" style="display:flex;align-items:center;text-decoration:none;">
-            <img src="{% static 'slides_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo" style="height:40px;">
+            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo" style="height:40px;">
         </a>
-        <div class="hamburger" id="hamburger">
+        <!-- Student image for demonstration -->
+        <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
             <span></span>
             <span></span>
             <span></span>
-        </div>
-        <div class="nav-links" id="navLinks">
+        </button>
+        <nav class="nav-links" id="navLinks" aria-label="Main navigation">
             <a href="/">Home</a>
             <a href="/custom-quiz/">Quiz</a>
             <a href="#">Concepts</a>
@@ -300,7 +238,7 @@
             {% else %}
                 <a href="/accounts/login/">Login</a>
             {% endif %}
-        </div>
+        </nav>
     </div>
     <div class="container">
         <div class="coming-soon">
@@ -321,11 +259,15 @@
     </div>
     <script>
         document.getElementById('hamburger').onclick = function() {
-            document.getElementById('navLinks').classList.toggle('open');
+            var nav = document.getElementById('navLinks');
+            var expanded = this.getAttribute('aria-expanded') === 'true';
+            nav.classList.toggle('open');
+            this.setAttribute('aria-expanded', !expanded);
         };
         document.querySelectorAll('#navLinks a').forEach(function(link) {
             link.onclick = function() {
                 document.getElementById('navLinks').classList.remove('open');
+                document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
             }
         });
     </script>

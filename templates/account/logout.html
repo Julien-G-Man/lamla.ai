@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="auth-container">
+    <h2 style="color:#FFD600;">You have been logged out</h2>
+    <p style="color:#444;margin-bottom:18px;">You have successfully logged out of your account.</p>
+    <a href="{% url 'account_login' %}" class="auth-btn">Sign out</a>
+    <div class="auth-links">
+        <a href="/">Back to Home</a>
+    </div>
+</div>
+<style>
+body { background: #f5f5f5; }
+.auth-container { background: #fff; color: #222; max-width: 400px; margin: 60px auto; padding: 32px 28px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.07); text-align: center; }
+.auth-container h2 { color: #FFD600; margin-bottom: 18px; }
+.auth-btn { background: #FFD600; color: #222; border: none; border-radius: 8px; padding: 12px 0; width: 100%; font-size: 1.1rem; font-weight: bold; margin-top: 10px; cursor: pointer; transition: background 0.2s, color 0.2s; display: inline-block; text-decoration: none; }
+.auth-btn:hover { background: #222; color: #FFD600; }
+.auth-links { margin-top: 18px; display: flex; flex-direction: column; gap: 8px; }
+.auth-links a { color: #FFD600; text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
+.auth-links a:hover { text-decoration: underline; color: #222; }
+</style>
+{% endblock %} 

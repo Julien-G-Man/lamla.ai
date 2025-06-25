@@ -220,7 +220,7 @@
             display: none;
         }
         .tab-content textarea {
-            width: 100%;
+            width: 89%;
             min-height: 200px;
             background: #f8f9fa;
             color: #222;
@@ -463,7 +463,8 @@
                     <div class="upload-text">Upload your study materials</div>
                     <div class="upload-description">Upload PDF, DOCX, PPT, PPTX, or text files to analyze</div>
                     <input type="file" name="slide_file" id="slideFile" accept=".pdf,.pptx,.txt" class="hidden-file-input">
-                    <label for="slideFile" class="select-file-button">Select file</label>
+                    <label for="slideFile" class="select-file-button" id="selectFileButton">Select file</label>
+                    <span id="fileNameDisplay" style="display:block;margin:10px 0 0 0;color:#222;font-weight:500;"></span>
                 </div>
             </div>
             <div class="options-row">
@@ -482,7 +483,6 @@
             </div>
         </form>
         <div class="extract-spinner" id="extractSpinner">Extracting text... <span class="spinner-border"></span></div>
-        <textarea class="extracted-preview" id="extractedPreview" placeholder="Extracted text will appear here (you can edit it before generating questions)"></textarea>
         <div class="toast" id="toast"></div>
         {% if error_message %}
             <div style="color: #ff4d4f; font-weight: bold; margin-top: 18px;">{{ error_message }}</div>
@@ -587,10 +587,10 @@
         
         // AJAX file upload for extracting text
         const slideFileInput = document.getElementById('slideFile');
-        const selectFileButton = document.querySelector('.select-file-button');
+        const selectFileButton = document.getElementById('selectFileButton');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
         const studyTextArea = document.getElementById('studyText');
         const extractSpinner = document.getElementById('extractSpinner');
-        const extractedPreview = document.getElementById('extractedPreview');
         const toast = document.getElementById('toast');
         
         function showToast(msg, isError=false) {
@@ -601,13 +601,14 @@
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
         
-        if (selectFileButton && slideFileInput && studyTextArea && extractSpinner && extractedPreview) {
+        if (selectFileButton && slideFileInput && studyTextArea && extractSpinner) {
             selectFileButton.onclick = function(e) {
                 e.preventDefault();
                 slideFileInput.click();
             };
             slideFileInput.onchange = function() {
                 if (!slideFileInput.files.length) return;
+                fileNameDisplay.textContent = slideFileInput.files[0].name;
                 selectFileButton.textContent = 'Extracting...';
                 selectFileButton.disabled = true;
                 extractSpinner.style.display = 'block';
@@ -622,8 +623,8 @@
                 .then(data => {
                     if (data.text !== undefined) {
                         studyTextArea.value = data.text;
-                        extractedPreview.value = data.text;
                         showToast('Text extracted successfully!');
+                        textTab.textContent = 'View Uploaded Text';
                     } else {
                         showToast(data.error || 'Failed to extract text.', true);
                     }
@@ -634,13 +635,6 @@
                     selectFileButton.disabled = false;
                     extractSpinner.style.display = 'none';
                 });
-            };
-            // Keep textarea and preview in sync
-            extractedPreview.oninput = function() {
-                studyTextArea.value = extractedPreview.value;
-            };
-            studyTextArea.oninput = function() {
-                extractedPreview.value = studyTextArea.value;
             };
         }
     </script>

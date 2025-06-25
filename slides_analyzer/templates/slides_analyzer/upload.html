@@ -174,10 +174,48 @@
         };
     </script>
     <h1>Upload Slides (PPTX or PDF)</h1>
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" id="uploadForm">
         {% csrf_token %}
-        <input type="file" name="slide_file" required>
-        <button type="submit">Upload</button>
+        <label for="slideFileInput" class="upload-btn" id="fileLabel">Select file</label>
+        <input type="file" name="slide_file" id="slideFileInput" style="display:none;" required>
+        <span id="fileNameDisplay" style="display:block;margin:10px 0 0 0;color:#222;font-weight:500;"></span>
+        <button type="submit" class="upload-btn" id="uploadBtn">Upload</button>
+        <button type="button" class="upload-btn" id="viewTextBtn" style="display:none;margin-top:10px;">Enter Text</button>
     </form>
+    <script>
+        // Hamburger menu toggle
+        document.getElementById('hamburger').onclick = function() {
+            document.getElementById('navLinks').classList.toggle('open');
+        };
+
+        // File input and label logic
+        const fileInput = document.getElementById('slideFileInput');
+        const fileLabel = document.getElementById('fileLabel');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const viewTextBtn = document.getElementById('viewTextBtn');
+        const uploadForm = document.getElementById('uploadForm');
+
+        fileLabel.onclick = function(e) {
+            fileInput.click();
+        };
+        fileInput.onchange = function() {
+            if (fileInput.files.length > 0) {
+                fileNameDisplay.textContent = fileInput.files[0].name;
+            } else {
+                fileNameDisplay.textContent = '';
+            }
+        };
+
+        // After upload, change button text and show 'View Uploaded Text' (simulate for demo)
+        uploadForm.onsubmit = function(e) {
+            // This is a demo for UI; in real use, this should be handled after successful upload (e.g., via redirect or AJAX)
+            setTimeout(function() {
+                uploadBtn.style.display = 'none';
+                viewTextBtn.style.display = 'inline-block';
+                viewTextBtn.textContent = 'View Uploaded Text';
+            }, 100); // Simulate quick response
+        };
+    </script>
 </body>
 </html> 

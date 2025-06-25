@@ -22,29 +22,35 @@
             color: #222;
             display: flex;
             align-items: center;
-            padding: 0 30px;
+            justify-content: space-between;
+            padding: 0 80px 0 30px;
             height: 64px;
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 1000;
             box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+            box-sizing: border-box;
         }
         .navbar .logo {
             font-size: 2rem;
             font-weight: bold;
-            color: #222;
+            color: #FFD600;
             letter-spacing: 0.5px;
-            margin-right: auto;
+            flex-shrink: 0;
+            margin-right: 80px;
+            height: 40px;
         }
         .navbar .logo .ai {
             color: #FFD600;
         }
         .nav-links {
             display: flex;
-            gap: 24px;
+            gap: 20px;
             align-items: center;
             z-index: 3000;
+            margin-left: auto;
+            flex-shrink: 0;
         }
         .nav-links a {
             color: #222;
@@ -62,22 +68,23 @@
             display: none;
             flex-direction: column;
             justify-content: center;
-            width: 28px;
-            height: 28px;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            background: none;
+            border: none;
             cursor: pointer;
-            position: absolute;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 3001;
+            z-index: 3000;
+            margin-left: auto;
         }
         .hamburger span {
-            height: 2px;
-            width: 100%;
-            background: #222;
-            margin: 2px 0;
-            border-radius: 1px;
-            transition: all 0.3s;
+            display: block;
+            width: 28px;
+            height: 4px;
+            margin: 4px 0;
+            background: #FFD600;
+            border-radius: 2px;
+            transition: 0.3s;
         }
         .navbar-mobile-btn {
             background: #FFD600;
@@ -115,102 +122,120 @@
         }
         .tab-group {
             display: flex;
+            justify-content: center;
+            gap: 0;
+            border-bottom: 1.5px solid #eee;
+            background: #fff;
             margin-bottom: 20px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #444;
+            border-radius: 0;
         }
         .tab {
-            flex: 1;
-            background: #2d2d2d;
-            color: #a0a0a0;
+            color: #222;
+            background: none;
             border: none;
-            padding: 14px 0;
-            font-size: 1rem;
-            font-weight: bold;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 18px 32px 14px 32px;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-            text-align: center;
-            box-sizing: border-box;
+            outline: none;
+            border-bottom: 3px solid transparent;
+            transition: color 0.2s, border-bottom 0.2s;
         }
         .tab.active {
-            background: #111;
-            color: #fff;
-            border-right: none;
+            color: #FFD600;
+            border-bottom: 3px solid #FFD600;
+            background: #fff;
         }
-        .tab:first-child {
-            border-top-left-radius: 12px;
-            border-bottom-left-radius: 12px;
-            border-right: 1px solid #444;
-        }
-        .tab:last-child {
-            border-top-right-radius: 12px;
-            border-bottom-right-radius: 12px;
-        }
-        .tab:first-child.active {
-            border-right-color: #111;
+        .tab:not(.active):hover {
+            color: #FFD600;
         }
         .tab-content {
-            background: #111;
-            border-radius: 0 0 8px 8px;
-            padding: 20px 18px;
+            background: #fff;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+            padding: 40px 32px 32px 32px;
             margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(.77,0,.18,1);
+            opacity: 1;
+            z-index: 1;
+        }
+        .tab-content.slide-in {
+            animation: slideIn 0.4s cubic-bezier(.77,0,.18,1);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
         }
         .upload-zone {
-            border: 2px dashed #444;
-            border-radius: 8px;
-            padding: 30px 20px;
+            border: 2px dashed #ddd;
+            border-radius: 12px;
+            padding: 40px 20px;
             text-align: center;
-            background: #111;
-            color: #ccc;
+            background: #f8f9fa;
+            color: #555;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .upload-zone:hover {
+            border-color: #FFD600;
+            background: #fffbe6;
         }
         .upload-icon {
             font-size: 3rem;
             color: #FFD600;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         .upload-text {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            color: #222;
         }
         .upload-description {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-bottom: 20px;
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 25px;
         }
         .hidden-file-input {
             display: none;
         }
         .select-file-button {
-            background: #222;
-            color: #fff;
+            background: #FFD600;
+            color: #222;
             border: none;
-            border-radius: 6px;
-            padding: 10px 20px;
+            border-radius: 8px;
+            padding: 12px 24px;
             font-size: 1rem;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: background 0.2s, color 0.2s;
             display: inline-block;
         }
         .select-file-button:hover {
-            background: #333;
+            background: #222;
+            color: #FFD600;
         }
         .tab-content input[type="file"] {
             display: none;
         }
         .tab-content textarea {
             width: 100%;
-            min-height: 150px;
-            background: #222;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 14px;
+            min-height: 200px;
+            background: #f8f9fa;
+            color: #222;
+            border: 1.5px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
             font-size: 1rem;
             resize: vertical;
-            line-height: 1.5;
+            line-height: 1.6;
+            transition: border-color 0.2s;
+        }
+        .tab-content textarea:focus {
+            outline: none;
+            border-color: #FFD600;
+            background: #fff;
         }
         .options-row {
             display: flex;
@@ -227,22 +252,28 @@
         }
         .option-group span {
             font-size: 1rem;
-            color: #ccc;
+            color: #222;
+            font-weight: 500;
         }
         .option-btn {
-            background: #222;
-            color: #fff;
-            border: none;
+            background: #f8f9fa;
+            color: #222;
+            border: 1.5px solid #ddd;
             border-radius: 8px;
             padding: 10px 20px;
             font-size: 0.95rem;
             font-weight: 500;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
         }
         .option-btn.selected, .option-btn:active {
             background: #FFD600;
-            color: #111;
+            color: #222;
+            border-color: #FFD600;
+        }
+        .option-btn:hover:not(.selected) {
+            border-color: #FFD600;
+            background: #fffbe6;
         }
         .actions-row {
             display: flex;
@@ -254,68 +285,78 @@
             background: #FFD600;
             color: #222;
             border: none;
-            border-radius: 8px;
-            padding: 12px 0;
+            border-radius: 10px;
+            padding: 16px 0;
             width: 100%;
             font-size: 1.1rem;
             font-weight: bold;
             margin-top: 10px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.2s;
+            box-shadow: 0 4px 16px rgba(255, 214, 0, 0.3);
         }
         .main-btn:hover {
             background: #222;
             color: #FFD600;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
         }
         .clear-btn {
             flex: 1;
-            background: #222;
-            color: #fff;
-            border: none;
+            background: #f8f9fa;
+            color: #222;
+            border: 1.5px solid #ddd;
             border-radius: 10px;
             padding: 16px 0;
             font-size: 1.2rem;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
             min-width: 120px;
         }
         .clear-btn:hover {
             background: #FFD600;
-            color: #111;
+            color: #222;
+            border-color: #FFD600;
         }
         @media (max-width: 900px) {
+            .navbar {
+                padding: 0 50px 0 20px !important;
+            }
+            .navbar .logo {
+                margin-right: 0;
+            }
+            .hamburger {
+                display: flex;
+                margin-left: auto;
+            }
             .nav-links {
                 display: none;
+                flex-direction: column;
                 position: absolute;
                 top: 64px;
                 right: 0;
                 width: 220px;
                 background: #fff;
-                flex-direction: column;
-                gap: 0;
-                box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+                box-shadow: 0 4px 16px rgba(0,0,0,0.1);
                 z-index: 2000;
                 padding: 10px 0;
                 border-radius: 0 0 8px 8px;
                 overflow-y: auto;
                 max-height: calc(100vh - 64px);
+                margin-left: 0;
             }
             .nav-links.open {
                 display: flex;
-                right: 15px;
             }
             .nav-links a {
-                padding: 12px 20px;
+                padding: 14px 24px;
                 text-align: left;
                 border-bottom: 1px solid #eee;
                 box-sizing: border-box;
             }
             .nav-links a:last-child {
                 border-bottom: none;
-            }
-            .hamburger {
-                display: flex;
             }
         }
         @media (max-width: 500px) {
@@ -344,35 +385,66 @@
                 font-size: 0.9rem;
             }
         }
+        .extracted-preview {
+            background: #f8f9fa;
+            border: 1.5px solid #FFD600;
+            border-radius: 10px;
+            padding: 18px;
+            margin: 18px 0 10px 0;
+            min-height: 120px;
+            font-size: 1rem;
+            color: #222;
+            width: 100%;
+            resize: vertical;
+        }
+        .extract-spinner {
+            display: none;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: #FFD600;
+            color: #222;
+            padding: 14px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #FFD60033;
+            font-weight: bold;
+            z-index: 9999;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="navbar">
         <a href="/" style="display:flex;align-items:center;text-decoration:none;">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo" style="height:40px;">
+            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo">
         </a>
-        <div class="hamburger" id="hamburger">
+        <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
             <span></span>
             <span></span>
             <span></span>
-        </div>
-        <div class="nav-links" id="navLinks">
+        </button>
+        <nav class="nav-links" id="navLinks" aria-label="Main navigation">
             <a href="/">Home</a>
             <a href="/quiz/">Quiz</a>
             <a href="#">Concepts</a>
             <a href="/flashcards/">Flashcards</a>
             <a href="#">History</a>
             <a href="/exam-analyzer/">Exam Analyzer</a>
+            <a href="/about/">About</a>
             {% if user_authenticated %}
                 <a href="/accounts/logout/">Logout</a>
             {% else %}
                 <a href="/accounts/login/">Login</a>
             {% endif %}
-        </div>
+        </nav>
     </div>
     <div class="container">
         <h1> </h1>
-        <form id="quizForm" method="post" enctype="multipart/form-data" action="{% url 'generate_questions' %}">
+        <form id="quizForm" method="post" enctype="multipart/form-data" action="">
             {% csrf_token %}
             <div style="margin-bottom: 18px;">
                 <b style="font-size:1.3rem;color:#FFD600;">&#129504; Generate Custom Quiz</b>
@@ -383,7 +455,7 @@
                 <button type="button" class="tab" id="fileTab">Upload File</button>
             </div>
             <div class="tab-content" id="textContent">
-                <textarea name="extracted_text" id="studyText" placeholder="Paste your study materials here..."></textarea>
+                <textarea name="extractedText" id="studyText" placeholder="Paste your study materials here..."></textarea>
             </div>
             <div class="tab-content" id="fileContent" style="display:none;">
                 <div class="upload-zone">
@@ -396,19 +468,12 @@
             </div>
             <div class="options-row">
                 <div class="option-group">
-                    <span>Difficulty Level</span>
-                    <button type="button" class="option-btn selected" data-value="Easy">Easy</button>
-                    <button type="button" class="option-btn" data-value="Medium">Medium</button>
-                    <button type="button" class="option-btn" data-value="Hard">Hard</button>
-                    <input type="hidden" name="difficulty" id="difficultyInput" value="Easy">
+                    <span>MCQ Questions</span>
+                    <input type="number" name="num_mcq" id="numMcqInput" value="5" min="0" max="20" style="width:60px;">
                 </div>
                 <div class="option-group">
-                    <span>Number of Questions</span>
-                    <button type="button" class="option-btn selected" data-value="5">5</button>
-                    <button type="button" class="option-btn" data-value="10">10</button>
-                    <button type="button" class="option-btn" data-value="20">20</button>
-                    <button type="button" class="option-btn" data-value="40">40</button>
-                    <input type="hidden" name="num_questions" id="numQuestionsInput" value="5">
+                    <span>Short Answer</span>
+                    <input type="number" name="num_short" id="numShortInput" value="3" min="0" max="20" style="width:60px;">
                 </div>
             </div>
             <div class="actions-row">
@@ -416,25 +481,70 @@
                 <button type="button" class="clear-btn" id="clearBtn">Clear</button>
             </div>
         </form>
+        <div class="extract-spinner" id="extractSpinner">Extracting text... <span class="spinner-border"></span></div>
+        <textarea class="extracted-preview" id="extractedPreview" placeholder="Extracted text will appear here (you can edit it before generating questions)"></textarea>
+        <div class="toast" id="toast"></div>
+        {% if error_message %}
+            <div style="color: #ff4d4f; font-weight: bold; margin-top: 18px;">{{ error_message }}</div>
+        {% endif %}
+        {% if quiz_results %}
+            <div style="margin-top: 28px; background: #fffbe6; border: 1.5px solid #FFD600; border-radius: 10px; padding: 24px;">
+                <h3 style="color:#FFD600;">Generated Questions</h3>
+                {% if quiz_results.mcq_questions %}
+                    <h4>Multiple Choice Questions</h4>
+                    <ol>
+                    {% for q in quiz_results.mcq_questions %}
+                        <li style="margin-bottom: 12px;">
+                            <div><b>{{ q.question }}</b></div>
+                            <ul style="margin: 6px 0 0 18px;">
+                                {% for opt in q.options %}
+                                    <li>{{ opt }}</li>
+                                {% endfor %}
+                            </ul>
+                            <div style="color:#888; font-size:0.95em;">Answer: <b>{{ q.answer }}</b></div>
+                        </li>
+                    {% endfor %}
+                    </ol>
+                {% endif %}
+                {% if quiz_results.short_questions %}
+                    <h4>Short Answer Questions</h4>
+                    <ol>
+                    {% for q in quiz_results.short_questions %}
+                        <li style="margin-bottom: 12px;">
+                            <div><b>{{ q.question }}</b></div>
+                            <div style="color:#888; font-size:0.95em;">Answer: <b>{{ q.answer }}</b></div>
+                        </li>
+                    {% endfor %}
+                    </ol>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
     <script>
-        // Tab switching
+        // Tab switching with animation
         const textTab = document.getElementById('textTab');
         const fileTab = document.getElementById('fileTab');
         const textContent = document.getElementById('textContent');
         const fileContent = document.getElementById('fileContent');
+        
         textTab.onclick = function() {
             textTab.classList.add('active');
             fileTab.classList.remove('active');
             textContent.style.display = '';
             fileContent.style.display = 'none';
+            textContent.classList.add('slide-in');
+            setTimeout(() => textContent.classList.remove('slide-in'), 400);
         };
+        
         fileTab.onclick = function() {
             fileTab.classList.add('active');
             textTab.classList.remove('active');
             fileContent.style.display = '';
             textContent.style.display = 'none';
+            fileContent.classList.add('slide-in');
+            setTimeout(() => fileContent.classList.remove('slide-in'), 400);
         };
+        
         // Difficulty selection
         document.querySelectorAll('.option-group')[0].addEventListener('click', function(e) {
             if (e.target.classList.contains('option-btn')) {
@@ -443,6 +553,7 @@
                 document.getElementById('difficultyInput').value = e.target.getAttribute('data-value');
             }
         });
+        
         // Number of questions selection
         document.querySelectorAll('.option-group')[1].addEventListener('click', function(e) {
             if (e.target.classList.contains('option-btn')) {
@@ -451,15 +562,87 @@
                 document.getElementById('numQuestionsInput').value = e.target.getAttribute('data-value');
             }
         });
+        
         // Clear button
         document.getElementById('clearBtn').onclick = function() {
             document.getElementById('studyText').value = '';
             document.getElementById('slideFile').value = '';
         };
+        
         // Hamburger menu toggle
         document.getElementById('hamburger').onclick = function() {
-            document.getElementById('navLinks').classList.toggle('open');
+            var nav = document.getElementById('navLinks');
+            var expanded = this.getAttribute('aria-expanded') === 'true';
+            nav.classList.toggle('open');
+            this.setAttribute('aria-expanded', !expanded);
         };
+        
+        // Close menu when clicking on links
+        document.querySelectorAll('#navLinks a').forEach(function(link) {
+            link.onclick = function() {
+                document.getElementById('navLinks').classList.remove('open');
+                document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
+            }
+        });
+        
+        // AJAX file upload for extracting text
+        const slideFileInput = document.getElementById('slideFile');
+        const selectFileButton = document.querySelector('.select-file-button');
+        const studyTextArea = document.getElementById('studyText');
+        const extractSpinner = document.getElementById('extractSpinner');
+        const extractedPreview = document.getElementById('extractedPreview');
+        const toast = document.getElementById('toast');
+        
+        function showToast(msg, isError=false) {
+            toast.textContent = msg;
+            toast.style.background = isError ? '#ff4d4f' : '#FFD600';
+            toast.style.color = isError ? '#fff' : '#222';
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+        
+        if (selectFileButton && slideFileInput && studyTextArea && extractSpinner && extractedPreview) {
+            selectFileButton.onclick = function(e) {
+                e.preventDefault();
+                slideFileInput.click();
+            };
+            slideFileInput.onchange = function() {
+                if (!slideFileInput.files.length) return;
+                selectFileButton.textContent = 'Extracting...';
+                selectFileButton.disabled = true;
+                extractSpinner.style.display = 'block';
+                const formData = new FormData();
+                formData.append('slide_file', slideFileInput.files[0]);
+                fetch('/ajax/extract-text/', {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.text !== undefined) {
+                        studyTextArea.value = data.text;
+                        extractedPreview.value = data.text;
+                        showToast('Text extracted successfully!');
+                    } else {
+                        showToast(data.error || 'Failed to extract text.', true);
+                    }
+                })
+                .catch(() => showToast('Failed to extract text.', true))
+                .finally(() => {
+                    selectFileButton.textContent = 'Select file';
+                    selectFileButton.disabled = false;
+                    extractSpinner.style.display = 'none';
+                });
+            };
+            // Keep textarea and preview in sync
+            extractedPreview.oninput = function() {
+                studyTextArea.value = extractedPreview.value;
+            };
+            studyTextArea.oninput = function() {
+                extractedPreview.value = studyTextArea.value;
+            };
+        }
     </script>
 </body>
 </html> 

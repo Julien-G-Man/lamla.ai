@@ -10,4 +10,5 @@ urlpatterns = [
     path('flashcards/', views.flashcards, name='flashcards'),
     path('test-token/', views.test_token, name='test_token'),
     path('about/', views.about, name='about'),
+    path('ajax/extract-text/', views.ajax_extract_text, name='ajax_extract_text'),
 ] 

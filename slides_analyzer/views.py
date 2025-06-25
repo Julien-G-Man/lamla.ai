@@ -14,6 +14,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.core.exceptions import ValidationError
 import mimetypes
+from django.views.decorators.csrf import csrf_exempt
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -66,59 +67,54 @@ def test_token(request):
             'message': 'Token not found in environment variables'
         }, status=500)
 
+def extract_text_from_file(uploaded_file):
+    """Extract text from pptx, pdf, or txt file-like object. Returns extracted text or raises Exception."""
+    from io import TextIOWrapper
+    file_name = uploaded_file.name
+    fs = FileSystemStorage()
+    filename = fs.save(uploaded_file.name, uploaded_file)
+    file_path = fs.path(filename)
+    extracted_text = ""
+    try:
+        if file_name.lower().endswith('.pptx'):
+            prs = Presentation(file_path)
+            for slide in prs.slides:
+                for shape in slide.shapes:
+                    if hasattr(shape, "text_frame") and shape.text_frame:
+                        extracted_text += shape.text_frame.text + "\n"
+        elif file_name.lower().endswith('.pdf'):
+            reader = PdfReader(file_path)
+            for page in reader.pages:
+                page_text = page.extract_text()
+                if page_text:
+                    extracted_text += page_text + "\n"
+        elif file_name.lower().endswith('.txt'):
+            with open(file_path, 'r', encoding='utf-8') as f:
+                extracted_text = f.read()
+        else:
+            raise Exception('Unsupported file type.')
+    finally:
+        try:
+            fs.delete(filename)
+        except Exception:
+            pass
+    return extracted_text
+
 @login_required
 def upload_slides(request):
     extracted_text = ""
     if request.method == 'POST' and request.FILES.get('slide_file'):
         uploaded_file = request.FILES['slide_file']
-        
         try:
-            # Validate file
             validate_file_upload(uploaded_file)
-            
-            file_name = uploaded_file.name
-            fs = FileSystemStorage()
-            
-            filename = fs.save(uploaded_file.name, uploaded_file)
-            file_path = fs.path(filename)
-            
-            try:
-                if file_name.lower().endswith('.pptx'):
-                    prs = Presentation(file_path)
-                    for slide in prs.slides:
-                        for shape in slide.shapes:
-                            if hasattr(shape, "text_frame") and shape.text_frame:
-                                extracted_text += shape.text_frame.text + "\n"
-                elif file_name.lower().endswith('.pdf'):
-                    reader = PdfReader(file_path)
-                    for page in reader.pages:
-                        page_text = page.extract_text()
-                        if page_text:
-                            extracted_text += page_text + "\n"
-                
-                # Store extracted text in session
-                request.session['extracted_text'] = extracted_text
-                
-            except Exception as e:
-                logger.error(f"Error processing file {file_name}: {e}")
-                return render(request, 'slides_analyzer/error.html', {
-                    'message': f'Error processing file: {str(e)}'
-                })
-            finally:
-                # Clean up temporary file
-                try:
-                    fs.delete(filename)
-                except Exception as e:
-                    logger.warning(f"Failed to delete temporary file {filename}: {e}")
-            
-            return render(request, 'slides_analyzer/display_text.html', {'text': extracted_text})
-            
+            extracted_text = extract_text_from_file(uploaded_file)
+            request.session['extracted_text'] = extracted_text
         except ValidationError as e:
             return render(request, 'slides_analyzer/error.html', {'message': str(e)})
         except Exception as e:
             logger.error(f"File upload failed: {e}")
             return render(request, 'slides_analyzer/error.html', {'message': f'File upload failed: {str(e)}'})
-    
+        return render(request, 'slides_analyzer/display_text.html', {'text': extracted_text})
     return render(request, 'slides_analyzer/upload.html')
 
 @require_http_methods(["POST"])
@@ -238,14 +234,64 @@ def generate_questions(request):
 
 @login_required
 def custom_quiz(request):
-    return render(request, 'slides_analyzer/custom_quiz.html', {'user_authenticated': request.user.is_authenticated})
+    quiz_results = None
+    error_message = None
+    if request.method == 'POST':
+        extracted_text = request.POST.get('extractedText', '').strip()
+        try:
+            num_mcq = int(request.POST.get('num_mcq', 5))
+            num_short = int(request.POST.get('num_short', 3))
+        except Exception:
+            num_mcq = 5
+            num_short = 3
+        if not extracted_text:
+            error_message = 'No extracted text provided.'
+        else:
+            try:
+                questions = question_generator.generate_questions(
+                    text=extracted_text,
+                    num_mcq=num_mcq,
+                    num_short=num_short
+                )
+                quiz_results = questions
+            except Exception as e:
+                error_message = f'Error generating questions: {str(e)}'
+    return render(request, 'slides_analyzer/custom_quiz.html', {
+        'user_authenticated': request.user.is_authenticated,
+        'quiz_results': quiz_results,
+        'error_message': error_message
+    })
 
 def home(request):
     return render(request, 'slides_analyzer/home.html', {'user_authenticated': request.user.is_authenticated})
 
 @login_required
 def exam_analyzer(request):
-    return render(request, 'slides_analyzer/exam_analyzer.html', {'user_authenticated': request.user.is_authenticated})
+    analyzer_results = None
+    error_message = None
+    if request.method == 'POST':
+        subject = request.POST.get('subject', '').strip()
+        extracted_text = request.POST.get('extractedText', '').strip()
+        if not extracted_text:
+            error_message = 'No extracted text provided.'
+        else:
+            try:
+                # You can adjust the number of questions or analysis logic as needed
+                num_mcq = int(request.POST.get('num_mcq', 5))
+                num_short = int(request.POST.get('num_short', 3))
+                questions = question_generator.generate_questions(
+                    text=extracted_text,
+                    num_mcq=num_mcq,
+                    num_short=num_short
+                )
+                analyzer_results = questions
+            except Exception as e:
+                error_message = f'Error analyzing text: {str(e)}'
+    return render(request, 'slides_analyzer/exam_analyzer.html', {
+        'user_authenticated': request.user.is_authenticated,
+        'analyzer_results': analyzer_results,
+        'error_message': error_message
+    })
 
 @login_required
 def quiz(request):
@@ -257,8 +303,33 @@ def quiz(request):
 
 @login_required
 def flashcards(request):
-    # View for the flashcards page
-    return render(request, 'slides_analyzer/flashcards.html', {'user_authenticated': request.user.is_authenticated})
+    flashcard_results = None
+    error_message = None
+    if request.method == 'POST':
+        extracted_text = request.POST.get('extractedText', '').strip()
+        try:
+            num_flashcards = int(request.POST.get('num_flashcards', 10))
+        except Exception:
+            num_flashcards = 10
+        if not extracted_text:
+            error_message = 'No extracted text provided.'
+        else:
+            try:
+                # If you have a flashcard generator, use it here. Otherwise, use question_generator for demo.
+                # flashcards = flashcard_generator.generate_flashcards(text=extracted_text, num=num_flashcards)
+                flashcards = question_generator.generate_questions(
+                    text=extracted_text,
+                    num_mcq=0,
+                    num_short=num_flashcards
+                )
+                flashcard_results = flashcards.get('short_questions', [])
+            except Exception as e:
+                error_message = f'Error generating flashcards: {str(e)}'
+    return render(request, 'slides_analyzer/flashcards.html', {
+        'user_authenticated': request.user.is_authenticated,
+        'flashcard_results': flashcard_results,
+        'error_message': error_message
+    })
 
 @login_required
 def display_questions(request):
@@ -277,3 +348,18 @@ def error(request, message="An error occurred"):
 
 def about(request):
     return render(request, 'slides_analyzer/about.html')
+
+@csrf_exempt
+@login_required
+def ajax_extract_text(request):
+    if request.method == 'POST' and request.FILES.get('slide_file'):
+        uploaded_file = request.FILES['slide_file']
+        try:
+            validate_file_upload(uploaded_file)
+            extracted_text = extract_text_from_file(uploaded_file)
+            return JsonResponse({'text': extracted_text})
+        except ValidationError as e:
+            return JsonResponse({'error': str(e)}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': f'File upload failed: {str(e)}'}, status=400)
+    return JsonResponse({'error': 'No file uploaded'}, status=400)

@@ -17,7 +17,7 @@ class Command(BaseCommand):
             try:
                 import google.generativeai as genai
                 genai.configure(api_key=settings.GEMINI_API_KEY)
-                model = genai.GenerativeModel('gemini-pro')
+                model = genai.GenerativeModel('gemini-1.5-pro')
                 response = model.generate_content("Hello")
                 self.stdout.write(self.style.SUCCESS('✓ Gemini API is working'))
             except Exception as e:
@@ -46,11 +46,35 @@ class Command(BaseCommand):
         if hasattr(settings, 'HUGGING_FACE_API_TOKEN') and settings.HUGGING_FACE_API_TOKEN:
             self.stdout.write('✓ Hugging Face API token is configured')
             try:
+                # Test with the new model
                 API_URL = "https://api-inference.huggingface.co/models/gpt2"
                 headers = {"Authorization": f"Bearer {settings.HUGGING_FACE_API_TOKEN}"}
-                response = requests.post(API_URL, headers=headers, json={"inputs": "Hello"})
+                response = requests.post(
+                    API_URL, 
+                    headers=headers, 
+                    json={"inputs": "Hello"}, 
+                    timeout=30
+                )
                 response.raise_for_status()
                 self.stdout.write(self.style.SUCCESS('✓ Hugging Face API is working'))
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 404:
+                    self.stdout.write(self.style.WARNING('⚠ Hugging Face model not found, trying alternative'))
+                    try:
+                        # Try alternative model
+                        API_URL = "https://api-inference.huggingface.co/models/distilgpt2"
+                        response = requests.post(
+                            API_URL, 
+                            headers=headers, 
+                            json={"inputs": "Hello"}, 
+                            timeout=30
+                        )
+                        response.raise_for_status()
+                        self.stdout.write(self.style.SUCCESS('✓ Hugging Face alternative model is working'))
+                    except Exception as e2:
+                        self.stdout.write(self.style.ERROR(f'✗ Hugging Face alternative model error: {e2}'))
+                else:
+                    self.stdout.write(self.style.ERROR(f'✗ Hugging Face API error: {e}'))
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f'✗ Hugging Face API error: {e}'))
         else:

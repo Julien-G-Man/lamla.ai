@@ -15,7 +15,7 @@ API_URL = "https://api-inference.huggingface.co/models/gpt2"
 headers = {"Authorization": f"Bearer {token}"}
 
 def query(payload):
-    response = requests.post(API_URL, headers=headers, json=payload)
+    response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
     print(f"Status code: {response.status_code}")
     print(f"Raw response: {response.text}")
     try:
@@ -29,11 +29,28 @@ try:
         "inputs": "Hello, I am",
         "parameters": {
             "max_new_tokens": 10,
-            "temperature": 0.7
+            "temperature": 0.7,
+            "return_full_text": False
         }
     })
     print("\nTest generation successful!")
     print(f"Response: {output}")
     
 except Exception as e:
-    print(f"\nError occurred: {str(e)}") 
+    print(f"\nError occurred: {str(e)}")
+    # Try alternative model
+    print("\nTrying alternative model (distilgpt2)...")
+    try:
+        API_URL = "https://api-inference.huggingface.co/models/distilgpt2"
+        output = query({
+            "inputs": "Hello, I am",
+            "parameters": {
+                "max_new_tokens": 10,
+                "temperature": 0.7,
+                "return_full_text": False
+            }
+        })
+        print("Alternative model test successful!")
+        print(f"Response: {output}")
+    except Exception as e2:
+        print(f"Alternative model also failed: {str(e2)}") 

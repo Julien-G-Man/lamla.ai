@@ -11,10 +11,11 @@ from django.views.decorators.http import require_http_methods
 from .models import Question, Quiz
 from .question_generator import QuestionGenerator
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
+from django.contrib.auth import logout as auth_logout
 from django.core.exceptions import ValidationError
 import mimetypes
 from django.views.decorators.csrf import csrf_exempt
+from allauth.account.views import LoginView as AllauthLoginView
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -363,3 +364,12 @@ def ajax_extract_text(request):
         except Exception as e:
             return JsonResponse({'error': f'File upload failed: {str(e)}'}, status=400)
     return JsonResponse({'error': 'No file uploaded'}, status=400)
+
+class CustomLoginView(AllauthLoginView):
+    def dispatch(self, request, *args, **kwargs):
+        # Always show the login form, even if authenticated
+        return super(AllauthLoginView, self).dispatch(request, *args, **kwargs)
+
+def custom_logout(request):
+    auth_logout(request)
+    return redirect('account_login')

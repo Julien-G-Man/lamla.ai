@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -11,4 +11,6 @@ urlpatterns = [
     path('test-token/', views.test_token, name='test_token'),
     path('about/', views.about, name='about'),
     path('ajax/extract-text/', views.ajax_extract_text, name='ajax_extract_text'),
+    path('accounts/login/', views.CustomLoginView.as_view(), name='account_login'),
+    path('accounts/logout/', views.custom_logout, name='account_logout'),
 ] 

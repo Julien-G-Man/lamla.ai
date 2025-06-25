@@ -7,44 +7,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
-            background: #111;
-            color: #fff;
+            background: #f8f9fa;
+            color: #222;
             font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
             line-height: 1.5;
         }
         .navbar {
-            background: #000;
-            color: #fff;
+            background: #fff;
+            color: #222;
             display: flex;
             align-items: center;
-            padding: 0 30px;
-            height: 60px;
+            justify-content: space-between;
+            padding: 0 80px 0 30px;
+            height: 64px;
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 1000;
-            box-shadow: 0 1px 8px rgba(0,0,0,0.4);
+            box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+            box-sizing: border-box;
         }
         .navbar .logo {
-            font-size: 1.8rem;
+            font-size: 2rem;
             font-weight: bold;
             color: #FFD600;
             letter-spacing: 0.5px;
-            margin-right: auto;
+            flex-shrink: 0;
+            margin-right: 80px;
+            height: 40px;
         }
         .nav-links {
             display: flex;
             gap: 20px;
             align-items: center;
             z-index: 3000;
+            margin-left: auto;
+            flex-shrink: 0;
         }
         .nav-links a {
-            color: #fff;
+            color: #222;
             text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 400;
+            font-size: 1rem;
+            font-weight: 500;
             transition: color 0.2s;
             padding: 6px 0;
             white-space: nowrap;
@@ -63,6 +69,7 @@
             border: none;
             cursor: pointer;
             z-index: 3000;
+            margin-left: auto;
         }
         .hamburger span {
             display: block;
@@ -93,12 +100,13 @@
         }
         .container {
             max-width: 600px;
-            margin: 0 auto 40px auto;
-            background: #181818;
+            margin: 100px auto 40px auto;
+            background: #fff;
             border-radius: 16px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.5);
-            padding: calc(60px + 30px) 25px 30px 25px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+            padding: 40px 32px 32px 32px;
             position: relative;
+            text-align: left;
         }
         .coming-soon {
             position: absolute;
@@ -106,7 +114,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(34,34,34,0.92);
+            background: rgba(255,255,255,0.4);
             color: #FFD600;
             font-size: 2rem;
             font-weight: bold;
@@ -118,6 +126,8 @@
             flex-direction: column;
             text-align: center;
             padding: 20px;
+            backdrop-filter: blur(1.5px);
+            pointer-events: all;
         }
         .coming-soon span {
             font-size: 1.8rem;
@@ -129,7 +139,7 @@
             margin-bottom: 12px;
         }
         .analyzer-desc {
-            color: #ccc;
+            color: #555;
             font-size: 1rem;
             margin-bottom: 20px;
             line-height: 1.5;
@@ -139,56 +149,75 @@
             margin-bottom: 8px;
             font-weight: 500;
             font-size: 0.95rem;
-            color: #ccc;
+            color: #222;
         }
         .analyzer-form input[type="file"],
         .analyzer-form input[type="text"] {
-            background: #222;
-            color: #fff;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
+            background: #f8f9fa;
+            color: #222;
+            border: 1.5px solid #ddd;
+            padding: 12px;
+            border-radius: 8px;
             width: 100%;
             margin-bottom: 15px;
             font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+        .analyzer-form input[type="text"]:focus,
+        .analyzer-form input[type="file"]:focus {
+            outline: none;
+            border-color: #FFD600;
+            background: #fff;
         }
         .analyzer-form input[type="text"] {
             margin-bottom: 20px;
         }
         .analyzer-form button {
             background: #FFD600;
-            color: #111;
+            color: #222;
             border: none;
             border-radius: 10px;
-            padding: 14px 0;
+            padding: 16px 0;
             font-size: 1.1rem;
             font-weight: bold;
             width: 100%;
             cursor: not-allowed;
             opacity: 0.7;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.2s;
+            box-shadow: 0 4px 16px rgba(255, 214, 0, 0.3);
         }
         .analyzer-form button:hover:not(:disabled) {
-            background: #fff;
+            background: #222;
+            color: #FFD600;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
         }
         @media (max-width: 900px) {
+            .navbar {
+                padding: 0 50px 0 20px !important;
+            }
+            .navbar .logo {
+                margin-right: 0;
+            }
             .hamburger {
                 display: flex;
+                margin-left: auto;
             }
             .nav-links {
                 display: none;
                 flex-direction: column;
                 position: absolute;
-                top: 60px;
+                top: 64px;
                 right: 0;
                 width: 220px;
-                background: #181818;
-                box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+                background: #fff;
+                box-shadow: 0 4px 16px rgba(0,0,0,0.1);
                 z-index: 2000;
                 padding: 10px 0;
                 border-radius: 0 0 8px 8px;
                 overflow-y: auto;
-                max-height: calc(100vh - 60px);
+                max-height: calc(100vh - 64px);
+                margin-left: 0;
             }
             .nav-links.open {
                 display: flex;
@@ -196,7 +225,7 @@
             .nav-links a {
                 padding: 14px 24px;
                 text-align: left;
-                border-bottom: 1px solid #222;
+                border-bottom: 1px solid #eee;
                 box-sizing: border-box;
             }
             .nav-links a:last-child {
@@ -204,23 +233,57 @@
             }
         }
         @media (max-width: 600px) {
-            .navbar {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 10px 8px;
+            .container {
+                margin: 80px 20px 40px 20px;
+                padding: 30px 20px;
             }
-            .logo, .student-img {
-                height: 32px !important;
+            .analyzer-title {
+                font-size: 1.6rem;
             }
+            .coming-soon {
+                font-size: 1.5rem;
+            }
+            .coming-soon span {
+                font-size: 1.4rem;
+            }
+        }
+        .extracted-preview {
+            background: #f8f9fa;
+            border: 1.5px solid #FFD600;
+            border-radius: 10px;
+            padding: 18px;
+            margin: 18px 0 10px 0;
+            min-height: 120px;
+            font-size: 1rem;
+            color: #222;
+            width: 100%;
+            resize: vertical;
+        }
+        .extract-spinner {
+            display: none;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: #FFD600;
+            color: #222;
+            padding: 14px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #FFD60033;
+            font-weight: bold;
+            z-index: 9999;
+            display: none;
         }
     </style>
 </head>
 <body>
     <div class="navbar">
         <a href="/" style="display:flex;align-items:center;text-decoration:none;">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo" style="height:40px;">
+            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo">
         </a>
-        <!-- Student image for demonstration -->
         <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
             <span></span>
             <span></span>
@@ -228,11 +291,12 @@
         </button>
         <nav class="nav-links" id="navLinks" aria-label="Main navigation">
             <a href="/">Home</a>
-            <a href="/custom-quiz/">Quiz</a>
+            <a href="/quiz/">Quiz</a>
             <a href="#">Concepts</a>
             <a href="/flashcards/">Flashcards</a>
             <a href="#">History</a>
             <a href="/exam-analyzer/">Exam Analyzer</a>
+            <a href="/about/">About</a>
             {% if user_authenticated %}
                 <a href="/accounts/logout/">Logout</a>
             {% else %}
@@ -241,21 +305,60 @@
         </nav>
     </div>
     <div class="container">
-        <div class="coming-soon">
-            <span>🚧<br>Coming Soon</span>
-        </div>
         <div class="analyzer-title">Exam Analyzer</div>
         <div class="analyzer-desc">
             Upload multiple past question files for a course or subject.<br>
             We'll analyze the topics and generate new questions following the pattern of past exams.
         </div>
         <form class="analyzer-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
             <label for="subject">Course/Subject</label>
-            <input type="text" id="subject" name="subject" placeholder="e.g. Biology 101" disabled>
+            <input type="text" id="subject" name="subject" placeholder="e.g. Biology 101">
             <label for="past_files">Upload Past Question Files</label>
-            <input type="file" id="past_files" name="past_files" multiple disabled>
-            <button type="submit" disabled>Analyze & Generate (Coming Soon)</button>
+            <input type="file" id="past_files" name="past_files" multiple>
+            <textarea id="extractedText" name="extractedText" style="display:none;"></textarea>
+            <button type="button" id="uploadExtractBtn">Upload File & Extract Text</button>
+            <button type="submit" id="analyzeBtn">Analyze & Generate</button>
         </form>
+        <div class="extract-spinner" id="extractSpinner">Extracting text... <span class="spinner-border"></span></div>
+        <textarea class="extracted-preview" id="extractedPreview" placeholder="Extracted text will appear here (you can edit it before analysis)"></textarea>
+        <div class="toast" id="toast"></div>
+        <div id="analyzerResults"></div>
+        {% if error_message %}
+            <div style="color: #ff4d4f; font-weight: bold; margin-top: 18px;">{{ error_message }}</div>
+        {% endif %}
+        {% if analyzer_results %}
+            <div style="margin-top: 28px; background: #fffbe6; border: 1.5px solid #FFD600; border-radius: 10px; padding: 24px;">
+                <h3 style="color:#FFD600;">Generated Questions</h3>
+                {% if analyzer_results.mcq_questions %}
+                    <h4>Multiple Choice Questions</h4>
+                    <ol>
+                    {% for q in analyzer_results.mcq_questions %}
+                        <li style="margin-bottom: 12px;">
+                            <div><b>{{ q.question }}</b></div>
+                            <ul style="margin: 6px 0 0 18px;">
+                                {% for opt in q.options %}
+                                    <li>{{ opt }}</li>
+                                {% endfor %}
+                            </ul>
+                            <div style="color:#888; font-size:0.95em;">Answer: <b>{{ q.answer }}</b></div>
+                        </li>
+                    {% endfor %}
+                    </ol>
+                {% endif %}
+                {% if analyzer_results.short_questions %}
+                    <h4>Short Answer Questions</h4>
+                    <ol>
+                    {% for q in analyzer_results.short_questions %}
+                        <li style="margin-bottom: 12px;">
+                            <div><b>{{ q.question }}</b></div>
+                            <div style="color:#888; font-size:0.95em;">Answer: <b>{{ q.answer }}</b></div>
+                        </li>
+                    {% endfor %}
+                    </ol>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
     <script>
         document.getElementById('hamburger').onclick = function() {
@@ -270,6 +373,66 @@
                 document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
             }
         });
+        // AJAX file upload for extracting text (Exam Analyzer)
+        const uploadExtractBtn = document.getElementById('uploadExtractBtn');
+        const pastFilesInput = document.getElementById('past_files');
+        const extractedTextArea = document.getElementById('extractedText');
+        const extractSpinner = document.getElementById('extractSpinner');
+        const extractedPreview = document.getElementById('extractedPreview');
+        const toast = document.getElementById('toast');
+
+        function showToast(msg, isError=false) {
+            toast.textContent = msg;
+            toast.style.background = isError ? '#ff4d4f' : '#FFD600';
+            toast.style.color = isError ? '#fff' : '#222';
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        if (uploadExtractBtn && pastFilesInput && extractedTextArea && extractSpinner && extractedPreview) {
+            uploadExtractBtn.onclick = function(e) {
+                e.preventDefault();
+                pastFilesInput.removeAttribute('disabled');
+                pastFilesInput.click();
+            };
+            pastFilesInput.onchange = function() {
+                if (!pastFilesInput.files.length) return;
+                uploadExtractBtn.textContent = 'Extracting...';
+                uploadExtractBtn.disabled = true;
+                extractSpinner.style.display = 'block';
+                const formData = new FormData();
+                formData.append('slide_file', pastFilesInput.files[0]);
+                fetch('/ajax/extract-text/', {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '' },
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.text !== undefined) {
+                        extractedTextArea.value = data.text;
+                        extractedPreview.value = data.text;
+                        showToast('Text extracted successfully!');
+                    } else {
+                        showToast(data.error || 'Failed to extract text.', true);
+                    }
+                })
+                .catch(() => showToast('Failed to extract text.', true))
+                .finally(() => {
+                    uploadExtractBtn.textContent = 'Upload File & Extract Text';
+                    uploadExtractBtn.disabled = false;
+                    extractSpinner.style.display = 'none';
+                    pastFilesInput.setAttribute('disabled', '');
+                });
+            };
+            // Keep textarea and preview in sync
+            extractedPreview.oninput = function() {
+                extractedTextArea.value = extractedPreview.value;
+            };
+            extractedTextArea.oninput = function() {
+                extractedPreview.value = extractedTextArea.value;
+            };
+        }
     </script>
 </body>
 </html> 

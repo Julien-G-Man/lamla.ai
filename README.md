@@ -47,24 +47,51 @@ pip install -r requirements.txt
 ```
 
 ### 4. Set Up Environment Variables
-Create a `.env` file in the project root with your API keys:
+**Option A: Use the setup script (Recommended)**
+```sh
+python setup_env.py
 ```
+
+**Option B: Manual setup**
+Create a `.env` file in the project root with your API keys:
+```env
+# Django Settings
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+
+# API Keys (Get your keys from the links below)
 GEMINI_API_KEY=your_gemini_key
 OPENAI_API_KEY=your_openai_key
 HUGGING_FACE_API_TOKEN=your_huggingface_token
+
+# Optional: Gemini Model
+GEMINI_MODEL=models/gemini-1.5-pro-latest
 ```
 
-### 5. Run Migrations
+**Get your API keys:**
+- **Gemini**: https://makersuite.google.com/app/apikey
+- **OpenAI**: https://platform.openai.com/api-keys  
+- **Hugging Face**: https://huggingface.co/settings/tokens
+
+> **Note**: At least one API key is required for question generation. The app will try APIs in order: Gemini → OpenAI → Hugging Face → Local GPT-2 fallback.
+
+### 5. Test API Configuration
+```sh
+python manage.py check_apis
+```
+
+### 6. Run Migrations
 ```sh
 python manage.py migrate
 ```
 
-### 6. Create a Superuser (Optional)
+### 7. Create a Superuser (Optional)
 ```sh
 python manage.py createsuperuser
 ```
 
-### 7. Run the Development Server
+### 8. Run the Development Server
 ```sh
 python manage.py runserver
 ```
@@ -95,3 +122,24 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 
 ## 📄 License
 [MIT](LICENSE) 
+
+## 🔧 Troubleshooting
+
+### API Issues
+If you encounter API errors:
+
+1. **Check your API keys**: Run `python manage.py check_apis`
+2. **Verify quotas**: Ensure your API accounts have sufficient credits
+3. **Test individual APIs**: Use `python test_hf.py` for Hugging Face testing
+4. **Fallback mode**: The app will use local GPT-2 if all APIs fail
+
+### Common Errors
+- **"No API keys configured"**: Add at least one API key to your `.env` file
+- **"Quota exceeded"**: Check your API account billing/quotas
+- **"Model not found"**: The app automatically tries alternative models
+- **"Device set to use cpu"**: Normal for systems without GPU
+
+### Performance Tips
+- Use Gemini API for best performance (free tier available)
+- Local GPT-2 works offline but requires more memory
+- Cache questions are stored to reduce API calls 

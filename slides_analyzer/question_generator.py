@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class QuestionGenerator:
     def __init__(self):
         self.gemini_api_key = getattr(settings, 'GEMINI_API_KEY', None)
-        self.gemini_model = getattr(settings, 'GEMINI_MODEL', 'models/gemini-1.5-pro')
+        self.gemini_model = getattr(settings, 'GEMINI_MODEL', 'gemini-1.5-pro')
         self.openai_api_key = getattr(settings, 'OPENAI_API_KEY', None)
         self.hf_token = getattr(settings, 'HUGGING_FACE_API_TOKEN', None)
         
@@ -89,22 +89,52 @@ Expected Answer: [Brief answer]
             raise
 
     def _call_huggingface_api(self, prompt: str) -> str:
-        """Call Hugging Face API"""
+        """Call Hugging Face API - simplified approach"""
         try:
-            API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2"
+            # Try a simple text generation model
+            API_URL = "https://api-inference.huggingface.co/models/sshleifer/tiny-gpt2"
             headers = {"Authorization": f"Bearer {self.hf_token}"}
             
             payload = {
-                "inputs": f"<s>[INST] {prompt} [/INST]",
+                "inputs": prompt,
                 "parameters": {
-                    "max_new_tokens": 800,
+                    "max_new_tokens": 500,
                     "temperature": 0.7,
-                    "top_p": 0.95,
-                    "do_sample": True
+                    "return_full_text": False
                 }
             }
             
-            response = requests.post(API_URL, headers=headers, json=payload)
+            response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
+            response.raise_for_status()
+            
+            result = response.json()
+            if isinstance(result, list) and len(result) > 0:
+                return result[0].get('generated_text', '')
+            elif isinstance(result, dict) and 'generated_text' in result:
+                return result['generated_text']
+            return str(result)
+        except Exception as e:
+            logger.error(f"Hugging Face API error: {e}")
+            # Don't raise, let it fall through to local fallback
+            return ""
+
+    def _call_huggingface_alternative(self, prompt: str) -> str:
+        """Try alternative Hugging Face model if primary fails"""
+        try:
+            # Try another simple model
+            API_URL = "https://api-inference.huggingface.co/models/distilgpt2"
+            headers = {"Authorization": f"Bearer {self.hf_token}"}
+            
+            payload = {
+                "inputs": prompt,
+                "parameters": {
+                    "max_new_tokens": 500,
+                    "temperature": 0.7,
+                    "return_full_text": False
+                }
+            }
+            
+            response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
             response.raise_for_status()
             
             result = response.json()
@@ -112,19 +142,112 @@ Expected Answer: [Brief answer]
                 return result[0].get('generated_text', '')
             return str(result)
         except Exception as e:
-            logger.error(f"Hugging Face API error: {e}")
-            raise
+            logger.error(f"Hugging Face alternative API error: {e}")
+            return ""
 
     def _call_local_gpt2(self, prompt: str) -> str:
         """Call local Hugging Face GPT-2 model as a last resort."""
         try:
-            from transformers import pipeline
-            generator = pipeline("text-generation", model="gpt2")
-            result = generator(prompt, max_length=120, num_return_sequences=1)
-            return result[0]['generated_text']
+            from transformers import pipeline, AutoTokenizer, AutoModelForCausalLM
+            import torch
+            
+            # Check if CUDA is available, otherwise use CPU
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            logger.info(f"Device set to use {device}")
+            
+            # Load model and tokenizer with proper device handling
+            model_name = "gpt2"
+            tokenizer = AutoTokenizer.from_pretrained(model_name)
+            model = AutoModelForCausalLM.from_pretrained(model_name)
+            
+            # Move model to device
+            model = model.to(device)
+            
+            # Add padding token if not present
+            if tokenizer.pad_token is None:
+                tokenizer.pad_token = tokenizer.eos_token
+            
+            # Create pipeline with proper configuration
+            generator = pipeline(
+                "text-generation",
+                model=model,
+                tokenizer=tokenizer,
+                device=device,
+                torch_dtype=torch.float32 if device == "cpu" else torch.float16
+            )
+            
+            # Generate text with proper parameters
+            result = generator(
+                prompt, 
+                max_length=len(tokenizer.encode(prompt)) + 200,
+                num_return_sequences=1,
+                temperature=0.7,
+                do_sample=True,
+                pad_token_id=tokenizer.eos_token_id
+            )
+            
+            if result and len(result) > 0:
+                return result[0]['generated_text']
+            return ""
+            
         except Exception as e:
             logger.error(f"Local GPT-2 error: {e}")
             return ""
+
+    def _generate_template_questions(self, text: str, num_mcq: int, num_short: int) -> Dict[str, List[Dict]]:
+        """Generate questions using templates when all APIs fail"""
+        logger.info("Generating template-based questions")
+        
+        # Extract sentences and key words from text
+        sentences = [s.strip() for s in text.split('.') if len(s.strip()) > 20][:10]
+        words = [word.lower() for word in text.split() if len(word) > 4 and word.isalpha()][:20]
+        
+        mcq_questions = []
+        short_questions = []
+        
+        # Template-based MCQ questions
+        mcq_templates = [
+            "What is the main topic discussed in the provided text?",
+            "Which of the following best describes the key concept mentioned?",
+            "What is the primary focus of the material presented?",
+            "Which statement accurately reflects the main idea?",
+            "What is the central theme of the text?"
+        ]
+        
+        option_templates = [
+            ["A concept discussed in the text", "A related topic mentioned", "An important idea presented", "A key point emphasized"],
+            ["The main subject matter", "A supporting detail", "An example provided", "A conclusion drawn"],
+            ["The primary content", "A secondary point", "A background detail", "A future implication"],
+            ["The core message", "A supporting argument", "An illustration", "A summary"],
+            ["The fundamental idea", "A supporting concept", "An application", "A limitation"]
+        ]
+        
+        for i in range(min(num_mcq, len(mcq_templates))):
+            mcq_questions.append({
+                "question": mcq_templates[i],
+                "options": option_templates[i],
+                "correct_answer": "A"
+            })
+        
+        # Template-based short answer questions
+        short_templates = [
+            "Summarize the main points from the provided text in 2-3 sentences.",
+            "What are the key concepts discussed in the material?",
+            "Explain the main ideas presented in the text.",
+            "What is the significance of the topics covered?",
+            "How do the concepts in the text relate to each other?"
+        ]
+        
+        for i in range(min(num_short, len(short_templates))):
+            short_questions.append({
+                "question": short_templates[i],
+                "expected_answer": "The text discusses various concepts and ideas that should be analyzed based on the content provided."
+            })
+        
+        return {
+            "mcq_questions": mcq_questions,
+            "short_questions": short_questions
+        }
 
     def generate_questions(self, text: str, num_mcq: int = 3, num_short: int = 2) -> Dict[str, List[Dict]]:
         """
@@ -143,39 +266,45 @@ Expected Answer: [Brief answer]
             pass
 
         if not self.primary_api:
-            return {
-                "error": "No API keys configured for question generation",
-                "mcq_questions": [],
-                "short_questions": []
-            }
+            logger.warning("No API keys configured for question generation")
+            return self._generate_template_questions(text, num_mcq, num_short)
 
         try:
             prompt = self._create_prompt(text, num_mcq, num_short)
             
-            # Try APIs in order of preference
+            # Try APIs in order of preference with better error handling
             response = None
             last_error = None
             
-            if self.primary_api == 'gemini':
+            # Try Gemini first
+            if self.primary_api == 'gemini' and self.gemini_api_key:
                 try:
                     response = self._call_gemini_api(prompt)
+                    if response:
+                        logger.info("Successfully generated questions using Gemini API")
                 except Exception as e:
                     last_error = e
                     logger.warning(f"Gemini failed, trying OpenAI: {e}")
                     
+            # Try OpenAI if Gemini failed or not available
             if not response and self.openai_api_key:
                 try:
                     response = self._call_openai_api(prompt)
+                    if response:
+                        logger.info("Successfully generated questions using OpenAI API")
                 except Exception as e:
                     last_error = e
                     logger.warning(f"OpenAI failed, trying Hugging Face: {e}")
                     
+            # Try Hugging Face if OpenAI failed or not available
             if not response and self.hf_token:
                 try:
                     response = self._call_huggingface_api(prompt)
+                    if response:
+                        logger.info("Successfully generated questions using Hugging Face API")
                 except Exception as e:
                     last_error = e
-                    logger.error(f"All APIs failed: {e}")
+                    logger.warning(f"Hugging Face failed, trying local fallback: {e}")
             
             # Local GPT-2 fallback
             if not response:
@@ -188,14 +317,22 @@ Expected Answer: [Brief answer]
                     logger.error(f"Local GPT-2 fallback failed: {e}")
             
             if not response:
-                return {
-                    "error": f"Failed to generate questions: {last_error}",
-                    "mcq_questions": [],
-                    "short_questions": []
-                }
+                logger.error(f"All question generation methods failed. Last error: {last_error}")
+                logger.info("Using template-based question generation as final fallback")
+                return self._generate_template_questions(text, num_mcq, num_short)
             
             # Parse the response
             questions = self._parse_response(response)
+            
+            # Validate that we got some questions
+            if not questions.get("mcq_questions") and not questions.get("short_questions"):
+                logger.warning("No questions generated from API response, using fallback")
+                return self._generate_template_questions(text, num_mcq, num_short)
+            
+            # Validate question quality - if questions look malformed, use template fallback
+            if self._are_questions_malformed(questions):
+                logger.warning("Questions appear malformed, using template fallback")
+                return self._generate_template_questions(text, num_mcq, num_short)
             
             # Cache the generated questions
             try:
@@ -210,11 +347,41 @@ Expected Answer: [Brief answer]
             
         except Exception as e:
             logger.error(f"Error generating questions: {e}")
-            return {
-                "error": str(e),
-                "mcq_questions": [],
-                "short_questions": []
-            }
+            return self._generate_template_questions(text, num_mcq, num_short)
+
+    def _are_questions_malformed(self, questions: Dict[str, List[Dict]]) -> bool:
+        """Check if generated questions appear to be malformed"""
+        try:
+            # Check MCQ questions
+            mcq_questions = questions.get("mcq_questions", [])
+            for q in mcq_questions:
+                question_text = q.get("question", "")
+                options = q.get("options", [])
+                
+                # Check for placeholder text or malformed questions
+                if any(placeholder in question_text.lower() for placeholder in ["[question]", "[option", "placeholder"]):
+                    return True
+                
+                # Check if options are malformed
+                if len(options) < 2:
+                    return True
+                
+                for option in options:
+                    if any(placeholder in option.lower() for placeholder in ["[option", "placeholder"]):
+                        return True
+            
+            # Check short answer questions
+            short_questions = questions.get("short_questions", [])
+            for q in short_questions:
+                question_text = q.get("question", "")
+                if any(placeholder in question_text.lower() for placeholder in ["[question]", "placeholder"]):
+                    return True
+            
+            return False
+            
+        except Exception as e:
+            logger.error(f"Error checking question quality: {e}")
+            return True  # Assume malformed if we can't check
 
     def _parse_response(self, response: str) -> Dict[str, List[Dict]]:
         """

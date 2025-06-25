@@ -140,6 +140,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Gemini API Settings
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+GEMINI_MODEL = os.getenv('GEMINI_MODEL', 'models/gemini-1.5-pro-latest')
 
 # OpenAI API Settings
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')

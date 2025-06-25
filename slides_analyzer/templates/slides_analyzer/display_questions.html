@@ -151,7 +151,7 @@
             <a href="#">History</a>
             <a href="/exam-analyzer/">Exam Analyzer</a>
             {% if user_authenticated %}
-                <a href="/accounts/logout/">Logout</a>
+                <a href="{% url 'custom_logout' %}">Logout</a>
             {% else %}
                 <a href="/accounts/login/">Login</a>
             {% endif %}

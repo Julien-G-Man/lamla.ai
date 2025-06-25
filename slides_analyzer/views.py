@@ -235,8 +235,6 @@ def generate_questions(request):
 
 @login_required
 def custom_quiz(request):
-    quiz_results = None
-    error_message = None
     if request.method == 'POST':
         extracted_text = request.POST.get('extractedText', '').strip()
         try:
@@ -247,6 +245,11 @@ def custom_quiz(request):
             num_short = 3
         if not extracted_text:
             error_message = 'No extracted text provided.'
+            return render(request, 'slides_analyzer/custom_quiz.html', {
+                'user_authenticated': request.user.is_authenticated,
+                'quiz_results': None,
+                'error_message': error_message
+            })
         else:
             try:
                 questions = question_generator.generate_questions(
@@ -254,13 +257,29 @@ def custom_quiz(request):
                     num_mcq=num_mcq,
                     num_short=num_short
                 )
-                quiz_results = questions
+                if 'error' in questions and questions['error']:
+                    error_message = (
+                        'Sorry, we could not generate questions at this time. Reason: ' + str(questions['error']) +
+                        '<br>Possible causes: API quota exceeded, invalid API key, or service unavailable.'
+                    )
+                    return render(request, 'slides_analyzer/custom_quiz.html', {
+                        'user_authenticated': request.user.is_authenticated,
+                        'quiz_results': None,
+                        'error_message': error_message
+                    })
+                request.session['questions'] = questions
+                return redirect('quiz')
             except Exception as e:
                 error_message = f'Error generating questions: {str(e)}'
+                return render(request, 'slides_analyzer/custom_quiz.html', {
+                    'user_authenticated': request.user.is_authenticated,
+                    'quiz_results': None,
+                    'error_message': error_message
+                })
     return render(request, 'slides_analyzer/custom_quiz.html', {
         'user_authenticated': request.user.is_authenticated,
-        'quiz_results': quiz_results,
-        'error_message': error_message
+        'quiz_results': None,
+        'error_message': None
     })
 
 def home(request):
@@ -268,16 +287,18 @@ def home(request):
 
 @login_required
 def exam_analyzer(request):
-    analyzer_results = None
-    error_message = None
     if request.method == 'POST':
         subject = request.POST.get('subject', '').strip()
         extracted_text = request.POST.get('extractedText', '').strip()
         if not extracted_text:
             error_message = 'No extracted text provided.'
+            return render(request, 'slides_analyzer/exam_analyzer.html', {
+                'user_authenticated': request.user.is_authenticated,
+                'analyzer_results': None,
+                'error_message': error_message
+            })
         else:
             try:
-                # You can adjust the number of questions or analysis logic as needed
                 num_mcq = int(request.POST.get('num_mcq', 5))
                 num_short = int(request.POST.get('num_short', 3))
                 questions = question_generator.generate_questions(
@@ -285,13 +306,29 @@ def exam_analyzer(request):
                     num_mcq=num_mcq,
                     num_short=num_short
                 )
-                analyzer_results = questions
+                if 'error' in questions and questions['error']:
+                    error_message = (
+                        'Sorry, we could not generate questions at this time. Reason: ' + str(questions['error']) +
+                        '<br>Possible causes: API quota exceeded, invalid API key, or service unavailable.'
+                    )
+                    return render(request, 'slides_analyzer/exam_analyzer.html', {
+                        'user_authenticated': request.user.is_authenticated,
+                        'analyzer_results': None,
+                        'error_message': error_message
+                    })
+                request.session['questions'] = questions
+                return redirect('quiz')
             except Exception as e:
                 error_message = f'Error analyzing text: {str(e)}'
+                return render(request, 'slides_analyzer/exam_analyzer.html', {
+                    'user_authenticated': request.user.is_authenticated,
+                    'analyzer_results': None,
+                    'error_message': error_message
+                })
     return render(request, 'slides_analyzer/exam_analyzer.html', {
         'user_authenticated': request.user.is_authenticated,
-        'analyzer_results': analyzer_results,
-        'error_message': error_message
+        'analyzer_results': None,
+        'error_message': None
     })
 
 @login_required

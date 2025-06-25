@@ -318,26 +318,44 @@
             <a href="#">History</a>
             <a href="/exam-analyzer/">Exam Analyzer</a>
             {% if user_authenticated %}
-                <a href="/accounts/logout/">Logout</a>
+                <a href="{% url 'custom_logout' %}">Logout</a>
             {% else %}
                 <a href="/accounts/login/">Login</a>
             {% endif %}
         </div>
     </div>
+    <div class="timer-bar" style="background:#ff2222;color:#fff;font-weight:bold;font-size:1.3rem;text-align:center;padding:12px 0 8px 0;margin-top:64px;letter-spacing:1px;">
+        Time left <span id="timer">10:00</span>
+    </div>
     <div class="quiz-container">
-        <div class="quiz-title">Generated Quiz</div>
-        <div class="progress">Question <span id="current-question">1</span> of <span id="total-questions">{{ questions.mcq_questions|length|add:questions.short_questions|length }}</span></div>
-        
-        <div id="question-container">
-            <!-- Questions will be dynamically inserted here -->
+        <div class="progress" style="font-size:1.1rem;color:#fff;background:#FFD600;padding:8px 0 6px 0;border-radius:8px;text-align:center;margin-bottom:18px;">
+            <b>Question <span id="current-question">1</span> of <span id="total-questions">{{ questions.mcq_questions|length|add:questions.short_questions|length }}</span></b>
         </div>
-        
+        <div id="question-container"></div>
         <div class="nav-btns">
             <button class="nav-btn" id="prev-btn" disabled>Previous</button>
             <button class="nav-btn" id="next-btn">Next</button>
         </div>
     </div>
     <script>
+        // Timer logic
+        let totalSeconds = 10 * 60; // 10 minutes
+        const timerDisplay = document.getElementById('timer');
+        function updateTimer() {
+            const min = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+            const sec = String(totalSeconds % 60).padStart(2, '0');
+            timerDisplay.textContent = `${min}:${sec}`;
+            if (totalSeconds > 0) {
+                totalSeconds--;
+            } else {
+                clearInterval(timerInterval);
+                alert('Time is up!');
+                // Optionally auto-submit here
+            }
+        }
+        updateTimer();
+        const timerInterval = setInterval(updateTimer, 1000);
+
         // Hamburger menu toggle
         document.getElementById('hamburger').onclick = function() {
             document.getElementById('navLinks').classList.toggle('open');
@@ -346,28 +364,26 @@
             mcq: JSON.parse("{{ questions.mcq_questions|default:'[]'|escapejs }}"),
             short: JSON.parse("{{ questions.short_questions|default:'[]'|escapejs }}")
         };
-        
         let currentQuestionIndex = 0;
         let userAnswers = {};
-        
         function displayQuestion() {
             const container = document.getElementById('question-container');
             const isMCQ = currentQuestionIndex < quizData.mcq.length;
             const question = isMCQ ? quizData.mcq[currentQuestionIndex] : quizData.short[currentQuestionIndex - quizData.mcq.length];
-            
             let html = `
                 <div class="question-type">${isMCQ ? 'Multiple Choice' : 'Short Answer'}</div>
                 <div class="question">${question.question}</div>
             `;
-            
             if (isMCQ) {
                 html += '<div class="options">';
                 question.options.forEach((option, index) => {
                     const letter = String.fromCharCode(65 + index);
+                    const checked = userAnswers[currentQuestionIndex] === letter ? 'checked' : '';
                     html += `
-                        <button class="option" data-option="${letter}">
-                            ${letter}) ${option}
-                        </button>
+                        <label style="display:block;margin-bottom:10px;cursor:pointer;">
+                            <input type="radio" name="mcq${currentQuestionIndex}" value="${letter}" style="margin-right:8px;" ${checked}>
+                            <b>${letter})</b> ${option}
+                        </label>
                     `;
                 });
                 html += '</div>';
@@ -376,35 +392,12 @@
                     <textarea class="short-answer-input" placeholder="Type your answer here...">${userAnswers[currentQuestionIndex] || ''}</textarea>
                 `;
             }
-            
-            // Add feedback if answer was previously submitted
-            if (userAnswers[currentQuestionIndex]) {
-                const feedback = document.createElement('div');
-                feedback.className = `feedback ${isMCQ ? 
-                    (userAnswers[currentQuestionIndex] === question.correct_answer ? 'correct' : 'incorrect') : 
-                    'correct'}`;
-                
-                if (isMCQ) {
-                    feedback.textContent = userAnswers[currentQuestionIndex] === question.correct_answer ? 
-                        'Correct!' : `Incorrect. The correct answer is ${question.correct_answer}.`;
-                } else {
-                    feedback.innerHTML = `
-                        <div>Your answer has been recorded.</div>
-                        <div class="expected-answer">Expected answer: ${question.expected_answer}</div>
-                    `;
-                }
-                html += feedback.outerHTML;
-            }
-            
             container.innerHTML = html;
-            
             // Add event listeners
             if (isMCQ) {
-                document.querySelectorAll('.option').forEach(option => {
-                    option.addEventListener('click', () => {
-                        document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
-                        option.classList.add('selected');
-                        userAnswers[currentQuestionIndex] = option.dataset.option;
+                document.querySelectorAll(`input[type=radio][name=mcq${currentQuestionIndex}]`).forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        userAnswers[currentQuestionIndex] = e.target.value;
                     });
                 });
             } else {
@@ -413,38 +406,29 @@
                     userAnswers[currentQuestionIndex] = e.target.value;
                 });
             }
-            
-            // Update navigation buttons
+            // Update navigation
             document.getElementById('prev-btn').disabled = currentQuestionIndex === 0;
-            document.getElementById('next-btn').textContent = 
+            document.getElementById('next-btn').textContent =
                 currentQuestionIndex === quizData.mcq.length + quizData.short.length - 1 ? 'Finish' : 'Next';
+            document.getElementById('current-question').textContent = currentQuestionIndex + 1;
         }
-        
         document.getElementById('prev-btn').addEventListener('click', () => {
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
                 displayQuestion();
             }
         });
-        
         document.getElementById('next-btn').addEventListener('click', () => {
             if (currentQuestionIndex < quizData.mcq.length + quizData.short.length - 1) {
                 currentQuestionIndex++;
                 displayQuestion();
             } else {
-                // Handle quiz completion
+                clearInterval(timerInterval);
                 alert('Quiz completed! Your answers have been recorded.');
-                // You can add code here to submit the answers to the server
+                // Optionally submit answers to server here
             }
         });
-        
-        // Initialize the quiz
         displayQuestion();
-        
-        // Mobile menu toggle
-        document.querySelector('.hamburger').addEventListener('click', () => {
-            document.querySelector('.nav-links').classList.toggle('open');
-        });
     </script>
 </body>
 </html> 

@@ -12,5 +12,5 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('ajax/extract-text/', views.ajax_extract_text, name='ajax_extract_text'),
     path('accounts/login/', views.CustomLoginView.as_view(), name='account_login'),
-    path('accounts/logout/', views.custom_logout, name='account_logout'),
+    path('custom-logout/', views.custom_logout, name='custom_logout'),
 ] 

@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 class QuestionGenerator:
     def __init__(self):
         self.gemini_api_key = getattr(settings, 'GEMINI_API_KEY', None)
+        self.gemini_model = getattr(settings, 'GEMINI_MODEL', 'models/gemini-1.5-pro')
         self.openai_api_key = getattr(settings, 'OPENAI_API_KEY', None)
         self.hf_token = getattr(settings, 'HUGGING_FACE_API_TOKEN', None)
         
@@ -64,7 +65,7 @@ Expected Answer: [Brief answer]
         try:
             import google.generativeai as genai
             genai.configure(api_key=self.gemini_api_key)
-            model = genai.GenerativeModel('gemini-pro')
+            model = genai.GenerativeModel(self.gemini_model)
             response = model.generate_content(prompt)
             return response.text
         except Exception as e:
@@ -113,6 +114,17 @@ Expected Answer: [Brief answer]
         except Exception as e:
             logger.error(f"Hugging Face API error: {e}")
             raise
+
+    def _call_local_gpt2(self, prompt: str) -> str:
+        """Call local Hugging Face GPT-2 model as a last resort."""
+        try:
+            from transformers import pipeline
+            generator = pipeline("text-generation", model="gpt2")
+            result = generator(prompt, max_length=120, num_return_sequences=1)
+            return result[0]['generated_text']
+        except Exception as e:
+            logger.error(f"Local GPT-2 error: {e}")
+            return ""
 
     def generate_questions(self, text: str, num_mcq: int = 3, num_short: int = 2) -> Dict[str, List[Dict]]:
         """
@@ -164,6 +176,16 @@ Expected Answer: [Brief answer]
                 except Exception as e:
                     last_error = e
                     logger.error(f"All APIs failed: {e}")
+            
+            # Local GPT-2 fallback
+            if not response:
+                try:
+                    response = self._call_local_gpt2(prompt)
+                    if response:
+                        logger.info("Used local GPT-2 fallback for question generation.")
+                except Exception as e:
+                    last_error = e
+                    logger.error(f"Local GPT-2 fallback failed: {e}")
             
             if not response:
                 return {

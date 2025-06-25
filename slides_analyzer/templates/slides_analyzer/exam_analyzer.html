@@ -181,8 +181,8 @@
             font-size: 1.1rem;
             font-weight: bold;
             width: 100%;
-            cursor: not-allowed;
-            opacity: 0.7;
+            cursor: pointer;
+            opacity: 1;
             transition: background 0.2s, transform 0.2s;
             box-shadow: 0 4px 16px rgba(255, 214, 0, 0.3);
         }
@@ -298,7 +298,7 @@
             <a href="/exam-analyzer/">Exam Analyzer</a>
             <a href="/about/">About</a>
             {% if user_authenticated %}
-                <a href="/accounts/logout/">Logout</a>
+                <a href="{% url 'custom_logout' %}">Logout</a>
             {% else %}
                 <a href="/accounts/login/">Login</a>
             {% endif %}

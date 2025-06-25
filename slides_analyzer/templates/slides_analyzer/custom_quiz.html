@@ -436,7 +436,7 @@
             <a href="/exam-analyzer/">Exam Analyzer</a>
             <a href="/about/">About</a>
             {% if user_authenticated %}
-                <a href="/accounts/logout/">Logout</a>
+                <a href="{% url 'custom_logout' %}">Logout</a>
             {% else %}
                 <a href="/accounts/login/">Login</a>
             {% endif %}
@@ -444,7 +444,7 @@
     </div>
     <div class="container">
         <h1> </h1>
-        <form id="quizForm" method="post" enctype="multipart/form-data" action="">
+        <form id="quizForm" method="post" enctype="multipart/form-data" action="{% url 'custom_quiz' %}">
             {% csrf_token %}
             <div style="margin-bottom: 18px;">
                 <b style="font-size:1.3rem;color:#FFD600;">&#129504; Generate Custom Quiz</b>
@@ -544,24 +544,6 @@
             fileContent.classList.add('slide-in');
             setTimeout(() => fileContent.classList.remove('slide-in'), 400);
         };
-        
-        // Difficulty selection
-        document.querySelectorAll('.option-group')[0].addEventListener('click', function(e) {
-            if (e.target.classList.contains('option-btn')) {
-                this.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-                e.target.classList.add('selected');
-                document.getElementById('difficultyInput').value = e.target.getAttribute('data-value');
-            }
-        });
-        
-        // Number of questions selection
-        document.querySelectorAll('.option-group')[1].addEventListener('click', function(e) {
-            if (e.target.classList.contains('option-btn')) {
-                this.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-                e.target.classList.add('selected');
-                document.getElementById('numQuestionsInput').value = e.target.getAttribute('data-value');
-            }
-        });
         
         // Clear button
         document.getElementById('clearBtn').onclick = function() {

@@ -340,7 +340,7 @@
             font-weight: 600;
         }
 
-        .number-input { /* Custom class for number inputs */
+        .number-input {
             width: 70px; /* Slightly wider */
             padding: 10px 15px;
             border-radius: 8px;
@@ -349,6 +349,8 @@
             color: var(--enactus-text-dark);
             font-size: 1rem;
             text-align: center;
+            appearance: textfield;
+            -webkit-appearance: textfield;
             -moz-appearance: textfield; /* Hide arrows in Firefox */
             transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
         }

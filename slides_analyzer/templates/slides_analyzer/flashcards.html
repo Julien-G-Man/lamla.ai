@@ -5,18 +5,25 @@
     <meta charset="UTF-8">
     <title>Flashcards - Lamla AI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* General Body and HTML Styles */
         html {
             scroll-behavior: smooth;
         }
         body {
-            background: #f8f9fa;
-            color: #222;
+            background: #f8f9fa; /* Light grey background */
+            color: #222; /* Dark text for contrast */
             font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
             line-height: 1.5;
+            min-height: 100vh; /* Ensure body takes full height */
+            display: flex;
+            flex-direction: column;
         }
+
+        /* Navbar Styles */
         .navbar {
             background: #fff;
             color: #222;
@@ -35,14 +42,11 @@
         .navbar .logo {
             font-size: 2rem;
             font-weight: bold;
-            color: #FFD600;
+            color: #FFD600; /* Accent color for logo */
             letter-spacing: 0.5px;
             flex-shrink: 0;
             margin-right: 80px;
-            height: 40px;
-        }
-        .navbar .logo .ai {
-            color: #FFD600;
+            height: 40px; /* Adjust logo image height */
         }
         .nav-links {
             display: flex;
@@ -62,8 +66,10 @@
             white-space: nowrap;
         }
         .nav-links a:hover {
-            color: #FFD600;
+            color: #FFD600; /* Hover accent color */
         }
+
+        /* Hamburger Menu (Mobile) */
         .hamburger {
             display: none;
             flex-direction: column;
@@ -82,10 +88,11 @@
             width: 28px;
             height: 4px;
             margin: 4px 0;
-            background: #FFD600;
+            background: #FFD600; /* Hamburger icon color */
             border-radius: 2px;
             transition: 0.3s;
         }
+        /* Mobile Navbar Button (if needed, currently not explicitly used in flashcards) */
         .navbar-mobile-btn {
             background: #FFD600;
             color: #111;
@@ -105,42 +112,53 @@
             background: #fff;
         }
 
+        /* Main Content Area */
         .main-content {
-            margin-top: 80px; /* To clear the fixed navbar */
-            padding: 20px;
+            margin-top: 64px; /* Space for fixed navbar */
+            padding: 40px 20px; /* Increased top padding for better visual spacing */
             text-align: center;
+            flex-grow: 1; /* Allows content to push footer down */
         }
 
+        /* Page Title */
         .page-title {
-            font-size: 2.5rem;
+            font-size: 2.8rem; /* Slightly larger title */
             font-weight: bold;
             color: #222;
-            margin-bottom: 30px;
+            margin-bottom: 40px; /* More space below title */
         }
-
         .page-title .highlight {
-            color: #FFD600;
+            color: #FFD600; /* Accent color for highlighted text */
         }
 
+        /* Main Container for Forms/Content */
         .container {
-            max-width: 600px;
-            margin: 0 auto 40px auto; /* Adjusted margin top to 0, keeping auto left/right and 40px bottom */
+            max-width: 650px; /* Slightly wider container */
+            margin: 0 auto 40px auto;
             background: #fff;
             border-radius: 16px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.07);
-            padding: 30px 25px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* More prominent shadow */
+            padding: 35px 30px; /* Slightly more padding */
             position: relative;
-            text-align: left; /* Align container content to left */
+            text-align: left;
         }
 
+        /* Section Title within Container */
         .section-title {
-            font-size: 1.8rem; /* Smaller font size */
+            font-size: 1.6rem; /* Consistent section title size */
             font-weight: bold;
             color: #FFD600;
-            margin-bottom: 15px; /* Adjusted margin */
+            margin-bottom: 25px; /* More space below section title */
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between icon and text */
+        }
+        .section-title .fas {
+            font-size: 1.4rem; /* Icon size relative to title */
         }
 
-         .back-btn {
+        /* Back Button (if used) */
+        .back-btn {
             background: #222;
             color: #FFD600;
             border: none;
@@ -149,78 +167,84 @@
             font-size: 0.9rem;
             cursor: pointer;
             transition: background 0.2s, color 0.2s;
-            float: right; /* Align to the right */
-            margin-bottom: 20px; /* Space below the button */
+            float: right;
+            margin-bottom: 20px;
         }
-
         .back-btn:hover {
             background: #FFD600;
             color: #222;
         }
 
+        /* Form Group Styles */
         .form-group {
-            margin-bottom: 20px; /* Increased spacing */
+            margin-bottom: 25px; /* Increased spacing between form groups */
         }
-
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px; /* More space below label */
             font-weight: 500;
-            font-size: 0.95rem;
-            color: #222;
+            font-size: 1rem; /* Slightly larger label font */
+            color: #333; /* Slightly softer label color */
         }
-
-        .form-group input[type="text"] {
+        .form-group input[type="text"],
+        .num-flashcards-group input[type="number"] {
             background: #f8f9fa;
             color: #222;
             border: 1.5px solid #ddd;
-            padding: 12px;
-            border-radius: 8px;
-            width: 100%;
-            font-size: 0.95rem;
-            transition: border-color 0.2s;
+            padding: 14px; /* Increased padding */
+            border-radius: 10px; /* Slightly more rounded corners */
+            width: 100%; /* For text inputs */
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box; /* Include padding in width */
         }
-        
-        .form-group input[type="text"]:focus {
+        .form-group input[type="text"]:focus,
+        .num-flashcards-group input[type="number"]:focus,
+        .tab-content textarea:focus {
             outline: none;
             border-color: #FFD600;
             background: #fff;
+            box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.2); /* Soft focus glow */
+        }
+        .num-flashcards-group input[type="number"] {
+            width: 100px; /* Specific width for number input */
         }
 
+        /* Tab Navigation Styles */
         .tab-group {
             display: flex;
             justify-content: center;
-            gap: 0;
             border-bottom: 1.5px solid #eee;
             background: #fff;
             margin-bottom: 20px;
-            border-radius: 0;
         }
         .tab {
-            color: #222;
+            color: #555; /* Default tab color */
             background: none;
             border: none;
             font-size: 1.1rem;
             font-weight: 500;
-            padding: 18px 32px 14px 32px;
+            padding: 16px 28px 12px 28px; /* Adjusted padding */
             cursor: pointer;
             outline: none;
             border-bottom: 3px solid transparent;
             transition: color 0.2s, border-bottom 0.2s;
         }
         .tab.active {
-            color: #FFD600;
+            color: #FFD600; /* Active tab accent color */
             border-bottom: 3px solid #FFD600;
             background: #fff;
         }
         .tab:not(.active):hover {
-            color: #FFD600;
+            color: #FFD600; /* Hover color for inactive tabs */
         }
+
+        /* Tab Content Area */
         .tab-content {
             background: #fff;
-            border-radius: 0 0 16px 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-            padding: 40px 32px 32px 32px;
+            border-radius: 0 0 16px 16px; /* Retain rounded bottom if container is rounded */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05); /* Lighter shadow for content */
+            padding: 30px; /* Consistent padding */
             margin-bottom: 20px;
             position: relative;
             overflow: hidden;
@@ -236,6 +260,7 @@
             to { opacity: 1; transform: translateX(0); }
         }
 
+        /* File Input within Tab Content */
         .tab-content input[type="file"] {
             background: #f8f9fa;
             color: #222;
@@ -246,9 +271,10 @@
             transition: border-color 0.2s;
         }
 
+        /* Textarea within Tab Content */
         .tab-content textarea {
             width: 100%;
-            min-height: 200px;
+            min-height: 250px; /* Increased height for textarea */
             background: #f8f9fa;
             color: #222;
             border: 1.5px solid #ddd;
@@ -257,152 +283,235 @@
             font-size: 1rem;
             resize: vertical;
             line-height: 1.6;
-            transition: border-color 0.2s;
-        }
-        
-        .tab-content textarea:focus {
-            outline: none;
-            border-color: #FFD600;
-            background: #fff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
         }
 
-         .num-flashcards-group {
-             margin-bottom: 20px; /* Added margin */
-         }
-
-          .num-flashcards-group label {
-             display: block;
-             margin-bottom: 8px;
-             font-weight: 500;
-             font-size: 0.95rem;
-             color: #222;
-          }
-
-         .num-flashcards-group input[type="number"] {
-             background: #f8f9fa;
-             color: #222;
-             border: 1.5px solid #ddd;
-             padding: 12px;
-             border-radius: 8px;
-             width: 80px; /* Adjusted width */
-             font-size: 0.95rem;
-             transition: border-color 0.2s;
-         }
-         
-         .num-flashcards-group input[type="number"]:focus {
-             outline: none;
-             border-color: #FFD600;
-             background: #fff;
-         }
-
-
+        /* Actions Row (Buttons) */
         .actions-row {
             display: flex;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 20px; /* Increased gap between buttons */
+            margin-top: 30px; /* More space above buttons */
             flex-wrap: wrap;
+            justify-content: center; /* Center buttons */
         }
-
         .main-btn {
             flex: 1;
-            background: #FFD600;
+            background: #FFD600; /* Accent button color */
             color: #222;
             border: none;
             border-radius: 10px;
-            padding: 16px 0;
-            font-size: 1.1rem;
+            padding: 18px 0; /* Larger padding for main button */
+            font-size: 1.15rem; /* Slightly larger font */
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
-            min-width: 180px;
-            box-shadow: 0 4px 16px rgba(255, 214, 0, 0.3);
+            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+            min-width: 200px; /* Minimum width for buttons */
+            box-shadow: 0 4px 18px rgba(255, 214, 0, 0.4); /* Stronger glow */
         }
-
         .main-btn:hover {
-            background: #222;
+            background: #222; /* Darker hover for main button */
             color: #FFD600;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
+            transform: translateY(-3px); /* More pronounced lift */
+            box-shadow: 0 8px 24px rgba(255, 214, 0, 0.5);
         }
-
         .secondary-btn {
             flex: 1;
-            background: #f8f9fa;
+            background: #f0f0f0; /* Lighter background for secondary */
             color: #222;
             border: 1.5px solid #ddd;
             border-radius: 10px;
-            padding: 16px 0;
-            font-size: 1.1rem;
+            padding: 18px 0;
+            font-size: 1.15rem;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
-            min-width: 120px;
+            transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+            min-width: 150px;
         }
-
         .secondary-btn:hover {
             background: #FFD600;
             color: #222;
             border-color: #FFD600;
+            transform: translateY(-2px);
         }
 
-        /* Styles for the custom upload zone */
+        /* Custom Upload Zone */
         .upload-zone {
-            border: 2px dashed #ddd;
+            border: 2px dashed #FFD600; /* Accent color dashed border */
             border-radius: 12px;
-            padding: 40px 20px;
+            padding: 45px 25px; /* Increased padding */
             text-align: center;
-            background: #f8f9fa;
+            background: #fffbe6; /* Light yellow background */
             color: #555;
             transition: border-color 0.2s, background 0.2s;
         }
-        
         .upload-zone:hover {
-            border-color: #FFD600;
-            background: #fffbe6;
+            border-color: #fbd600; /* Slightly darker accent on hover */
+            background: #fffaf0; /* Lighter background on hover */
         }
-
         .upload-icon {
-            font-size: 3rem;
+            font-size: 3.5rem; /* Larger icon */
             color: #FFD600;
-            margin-bottom: 15px;
+            margin-bottom: 20px; /* More space */
         }
-
         .upload-text {
-            font-size: 1.2rem;
+            font-size: 1.3rem; /* Larger text */
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #222;
         }
-
         .upload-description {
-            font-size: 1rem;
+            font-size: 1.05rem; /* Slightly larger description */
             color: #666;
-            margin-bottom: 25px;
+            margin-bottom: 30px; /* More space */
         }
-
         .hidden-file-input {
             display: none;
         }
-
         .select-file-button {
             background: #FFD600;
             color: #222;
             border: none;
             border-radius: 8px;
-            padding: 12px 24px;
-            font-size: 1rem;
+            padding: 14px 28px; /* Larger padding */
+            font-size: 1.05rem; /* Slightly larger font */
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.2s, color 0.2s, transform 0.2s;
             display: inline-block;
         }
-
         .select-file-button:hover {
             background: #222;
             color: #FFD600;
+            transform: translateY(-2px);
         }
 
-        /* Responsive adjustments */
+        /* Loading Spinner */
+        .extract-spinner {
+            display: none;
+            margin: 25px auto; /* Centered horizontally, more margin */
+            text-align: center;
+            color: #FFD600;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        .spinner-border {
+            display: inline-block;
+            width: 1.8rem; /* Larger spinner */
+            height: 1.8rem;
+            vertical-align: middle; /* Align with text */
+            border: 0.28em solid currentColor; /* Thicker border */
+            border-right-color: transparent;
+            border-radius: 50%;
+            -webkit-animation: .75s linear infinite spinner-border;
+            animation: .75s linear infinite spinner-border;
+            margin-left: 10px; /* Space from text */
+        }
+        @-webkit-keyframes spinner-border {
+            to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+        }
+        @keyframes spinner-border {
+            to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+        }
+
+        /* Toast Message */
+        .toast {
+            position: fixed;
+            top: 28px; /* Slightly lower */
+            right: 28px; /* Slightly inwards */
+            background: #FFD600;
+            color: #222;
+            padding: 16px 28px; /* Larger padding */
+            border-radius: 10px; /* More rounded */
+            box-shadow: 0 4px 12px rgba(255, 214, 0, 0.35); /* More prominent shadow */
+            font-weight: bold;
+            z-index: 9999;
+            display: none;
+            animation: fadeInOut 3s forwards; /* Animation for toast */
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-20px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+        .toast.error {
+            background: #ff4d4f; /* Red for errors */
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(255, 77, 79, 0.35);
+        }
+
+        /* Error Message Display */
+        .error-message {
+            color: #ff4d4f;
+            font-weight: bold;
+            margin-top: 25px; /* More space */
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Generated Flashcards Section */
+        .flashcard-results-section {
+            margin-top: 35px; /* More space above results */
+            background: #fff; /* White background to match container */
+            border: 1.5px solid #eee; /* Softer border */
+            border-radius: 16px; /* Consistent with main container */
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* Consistent shadow */
+            text-align: center; /* Center the heading */
+        }
+        .flashcard-results-section h3 {
+            color: #FFD600;
+            margin-bottom: 25px; /* More space below heading */
+            font-size: 2rem; /* Larger heading */
+            font-weight: bold;
+        }
+        .flashcard-results-section ol {
+            list-style: none; /* Remove default numbering */
+            padding: 0;
+            margin: 0;
+            display: grid; /* Use grid for layout */
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid columns */
+            gap: 20px; /* Gap between cards */
+        }
+        .flashcard-results-section li {
+            background: #fbfbfb; /* Very light background for cards */
+            border: 1px solid #ddd;
+            border-radius: 12px; /* Nicely rounded cards */
+            padding: 20px; /* Good padding inside cards */
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06); /* Soft shadow for cards */
+            text-align: left;
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Push question/answer apart if needed */
+        }
+        .flashcard-results-section li:hover {
+            border-color: #FFD600; /* Accent border on hover */
+            transform: translateY(-5px); /* Lift card on hover */
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1); /* Stronger shadow on hover */
+        }
+        .flashcard-results-section li div {
+            margin-bottom: 10px; /* Space between Q and A */
+        }
+        .flashcard-results-section li div:last-child {
+            margin-bottom: 0;
+        }
+        .flashcard-results-section li b {
+            color: #333; /* Darker bold text for emphasis */
+            font-weight: 600;
+        }
+        .flashcard-results-section li .question-text {
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+        .flashcard-results-section li .answer-text {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        /* Responsive Adjustments */
         @media (max-width: 900px) {
             .navbar {
                 padding: 0 50px 0 20px !important;
@@ -420,12 +529,12 @@
                 position: absolute;
                 top: 64px;
                 right: 0;
-                width: 220px;
+                width: 250px; /* Slightly wider mobile menu */
                 background: #fff;
-                box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+                box-shadow: 0 8px 24px rgba(0,0,0,0.15); /* More shadow */
                 z-index: 2000;
                 padding: 10px 0;
-                border-radius: 0 0 8px 8px;
+                border-radius: 0 0 12px 12px; /* More rounded bottom */
                 overflow-y: auto;
                 max-height: calc(100vh - 64px);
                 margin-left: 0;
@@ -434,95 +543,111 @@
                 display: flex;
             }
             .nav-links a {
-                padding: 14px 24px;
+                padding: 16px 28px; /* Larger tap area */
                 text-align: left;
-                border-bottom: 1px solid #eee;
+                border-bottom: 1px solid #f0f0f0; /* Softer divider */
                 box-sizing: border-box;
             }
             .nav-links a:last-child {
                 border-bottom: none;
             }
+            .main-content {
+                padding: 30px 15px; /* Adjust padding on mobile */
+            }
+            .page-title {
+                font-size: 2.2rem;
+                margin-bottom: 30px;
+            }
+            .container {
+                padding: 25px 20px;
+            }
+            .section-title {
+                font-size: 1.4rem;
+                margin-bottom: 20px;
+            }
+            .tab {
+                font-size: 1rem;
+                padding: 14px 20px 10px 20px;
+            }
+            .tab-content {
+                padding: 25px;
+            }
+            .actions-row {
+                flex-direction: column; /* Stack buttons vertically */
+                gap: 15px;
+            }
+            .main-btn, .secondary-btn {
+                min-width: unset; /* Remove min-width to allow full width */
+                width: 100%; /* Full width buttons */
+            }
+            .flashcard-results-section ol {
+                grid-template-columns: 1fr; /* Single column for flashcards on small screens */
+            }
         }
-         @media (max-width: 500px) {
-
-             .page-title {
-                 font-size: 1.8rem;
-             }
-
-              .container {
-                 padding: 15px 10px;
-             }
-
-              .section-title {
-                 font-size: 1.4rem;
-              }
-
-              .form-group label,
-              .num-flashcards-group label {
-                  font-size: 0.85rem;
-              }
-
-               .form-group input[type="text"],
-              .tab-content input[type="file"],
-              .tab-content textarea,
-              .num-flashcards-group input[type="number"] {
-                   font-size: 0.85rem;
-                   padding: 6px;
-               }
-
-                .tab,
-              .main-btn,
-              .secondary-btn {
-                  font-size: 0.9rem;
-                  padding: 10px 0;
-              }
-
-             .upload-zone {
-                 padding: 20px 15px; /* Adjust padding on smaller screens */
-             }
-              .upload-icon {
-                  font-size: 2.5rem; /* Smaller icon on smaller screens */
-              }
-               .upload-text {
-                   font-size: 1rem; /* Smaller text on smaller screens */
-               }
-               .upload-description {
-                   font-size: 0.85rem; /* Smaller description on smaller screens */
-               }
-               .select-file-button {
-                   font-size: 0.9rem; /* Smaller button text on smaller screens */
-                   padding: 8px 15px; /* Adjust button padding */
-               }
-         }
-        .extracted-preview {
-            background: #f8f9fa;
-            border: 1.5px solid #FFD600;
-            border-radius: 10px;
-            padding: 18px;
-            margin: 18px 0 10px 0;
-            min-height: 120px;
-            font-size: 1rem;
-            color: #222;
-            width: 100%;
-            resize: vertical;
-        }
-        .extract-spinner {
-            display: none;
-            margin: 10px 0;
-            text-align: center;
-        }
-        .toast {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            background: #FFD600;
-            color: #222;
-            padding: 14px 24px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px #FFD60033;
-            font-weight: bold;
-            z-index: 9999;
-            display: none;
+        @media (max-width: 500px) {
+            .navbar {
+                padding: 0 15px !important; /* Even less padding on very small screens */
+            }
+            .page-title {
+                font-size: 1.8rem;
+                margin-bottom: 25px;
+            }
+            .container {
+                padding: 20px 15px;
+            }
+            .section-title {
+                font-size: 1.2rem;
+            }
+            .form-group label,
+            .num-flashcards-group label {
+                font-size: 0.9rem;
+            }
+            .form-group input[type="text"],
+            .tab-content input[type="file"],
+            .tab-content textarea,
+            .num-flashcards-group input[type="number"] {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+            .tab {
+                font-size: 0.9rem;
+                padding: 12px 15px 8px 15px;
+            }
+            .tab-content {
+                padding: 20px;
+            }
+            .upload-zone {
+                padding: 30px 15px;
+            }
+            .upload-icon {
+                font-size: 3rem;
+            }
+            .upload-text {
+                font-size: 1.1rem;
+            }
+            .upload-description {
+                font-size: 0.95rem;
+            }
+            .select-file-button {
+                font-size: 0.95rem;
+                padding: 10px 20px;
+            }
+            .main-btn, .secondary-btn {
+                font-size: 1rem;
+                padding: 14px 0;
+            }
+            .flashcard-results-section h3 {
+                font-size: 1.6rem;
+            }
+            .flashcard-results-section li {
+                padding: 15px;
+            }
+            .flashcard-results-section li .question-text {
+                font-size: 1rem;
+            }
+            .flashcard-results-section li .answer-text {
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -560,13 +685,13 @@
         <div class="container">
             <form id="flashcardForm" method="post" enctype="multipart/form-data" action="">
                 {% csrf_token %}
-                <div class="section-title">&#128215; Create Flashcard Deck</div>
+                <div class="section-title"><i class="fas fa-book-open"></i> Create Flashcard Deck</div>
                 <div class="form-group">
                     <label for="deckTitle">Deck Title</label>
-                    <input type="text" id="deckTitle" name="deckTitle" value="Physics Flashcards" placeholder="Enter deck title">
+                    <input type="text" id="deckTitle" name="deckTitle" value="My Custom Flashcards" placeholder="e.g., Physics Flashcards, History Dates">
                 </div>
                 <div style="margin-bottom: 20px;">
-                    <div style="color:#ccc;font-size:0.95rem;margin-top:6px;">Upload your study materials or paste content to create custom flashcards</div>
+                    <div style="color:#888;font-size:0.95rem;margin-top:6px;">Upload your study materials or paste content to create custom flashcards.</div>
                 </div>
                 <div class="tab-group">
                     <button type="button" class="tab active" id="textTab">Enter Text</button>
@@ -577,36 +702,36 @@
                 </div>
                 <div class="tab-content" id="fileContent" style="display:none;">
                     <div class="upload-zone">
-                        <div class="upload-icon">&#128195;</div>
-                        <div class="upload-text">Upload your study materials</div>
-                        <div class="upload-description">Upload PDF, DOCX, PPT, PPTX, or text files to analyze</div>
-                        <input type="file" name="study_file" id="studyFile" accept=".pdf,.pptx,.txt" class="hidden-file-input">
+                        <div class="upload-icon"><i class="fas fa-file-upload"></i></div>
+                        <div class="upload-text">Drag & Drop or Upload Your File</div>
+                        <div class="upload-description">Supported formats: PDF, DOCX, PPTX, TXT</div>
+                        <input type="file" name="study_file" id="studyFile" accept=".pdf,.pptx,.txt,.docx" class="hidden-file-input">
                         <label for="studyFile" class="select-file-button" id="selectFileButton">Select file</label>
-                        <span id="fileNameDisplay" style="display:block;margin:10px 0 0 0;color:#222;font-weight:500;"></span>
+                        <span id="fileNameDisplay" style="display:block;margin:15px 0 0 0;color:#222;font-weight:500;"></span>
                     </div>
                 </div>
                 <div class="num-flashcards-group">
-                    <label for="numFlashcards">Number of Flashcards</label>
+                    <label for="numFlashcards">Number of Flashcards (Max 40)</label>
                     <input type="number" id="numFlashcards" name="num_flashcards" value="10" min="1" max="40">
                 </div>
                 <div class="actions-row">
                     <button type="submit" class="main-btn">Generate Flashcards</button>
-                    <button type="button" class="secondary-btn" id="clearBtn">Clear</button>
+                    <button type="button" class="secondary-btn" id="clearBtn">Clear All</button>
                 </div>
             </form>
             <div class="extract-spinner" id="extractSpinner">Extracting text... <span class="spinner-border"></span></div>
             <div class="toast" id="toast"></div>
             {% if error_message %}
-                <div style="color: #ff4d4f; font-weight: bold; margin-top: 18px;">{{ error_message }}</div>
+                <div class="error-message">{{ error_message }}</div>
             {% endif %}
             {% if flashcard_results %}
-                <div style="margin-top: 28px; background: #fffbe6; border: 1.5px solid #FFD600; border-radius: 10px; padding: 24px;">
-                    <h3 style="color:#FFD600;">Generated Flashcards</h3>
+                <div class="flashcard-results-section">
+                    <h3>Your Generated Flashcards</h3>
                     <ol>
                     {% for card in flashcard_results %}
-                        <li style="margin-bottom: 16px;">
-                            <div><b>Q:</b> {{ card.question }}</div>
-                            <div style="color:#888; font-size:0.95em;"><b>A:</b> {{ card.answer }}</div>
+                        <li>
+                            <div class="question-text"><b>Q{{ forloop.counter }}:</b> {{ card.question }}</div>
+                            <div class="answer-text"><b>A:</b> {{ card.answer }}</div>
                         </li>
                     {% endfor %}
                     </ol>
@@ -642,92 +767,171 @@
             textTab.onclick = function() {
                 textTab.classList.add('active');
                 fileTab.classList.remove('active');
-                textContent.style.display = '';
-                fileContent.style.display = 'none';
-                textContent.classList.add('slide-in');
+                
+                // Animate out current and then in new
+                if (fileContent.style.display !== 'none') {
+                    fileContent.classList.remove('slide-in');
+                    fileContent.style.opacity = '0';
+                    setTimeout(() => {
+                        fileContent.style.display = 'none';
+                        textContent.style.display = '';
+                        textContent.classList.add('slide-in');
+                        textContent.style.opacity = '1';
+                    }, 200); // Half of animation duration
+                } else {
+                    textContent.style.display = '';
+                    textContent.classList.add('slide-in');
+                    textContent.style.opacity = '1';
+                }
                 setTimeout(() => textContent.classList.remove('slide-in'), 400);
             };
 
             fileTab.onclick = function() {
                 fileTab.classList.add('active');
                 textTab.classList.remove('active');
-                fileContent.style.display = '';
-                textContent.style.display = 'none';
-                fileContent.classList.add('slide-in');
+
+                if (textContent.style.display !== 'none') {
+                    textContent.classList.remove('slide-in');
+                    textContent.style.opacity = '0';
+                    setTimeout(() => {
+                        textContent.style.display = 'none';
+                        fileContent.style.display = '';
+                        fileContent.classList.add('slide-in');
+                        fileContent.style.opacity = '1';
+                    }, 200);
+                } else {
+                    fileContent.style.display = '';
+                    fileContent.classList.add('slide-in');
+                    fileContent.style.opacity = '1';
+                }
                 setTimeout(() => fileContent.classList.remove('slide-in'), 400);
             };
         }
 
-        // Clear button
+        // Clear button functionality
         const clearBtn = document.getElementById('clearBtn');
         const studyMaterial = document.getElementById('studyMaterial');
         const studyFile = document.getElementById('studyFile');
         const deckTitle = document.getElementById('deckTitle');
         const numFlashcards = document.getElementById('numFlashcards');
+        const fileNameDisplay = document.getElementById('fileNameDisplay'); 
 
-        if(clearBtn && studyMaterial && studyFile && deckTitle && numFlashcards) {
+        if(clearBtn && studyMaterial && studyFile && deckTitle && numFlashcards && fileNameDisplay) {
             clearBtn.onclick = function() {
                 studyMaterial.value = '';
                 studyFile.value = '';
-                deckTitle.value = 'My Custom Flashcards';
-                numFlashcards.value = '10';
-                // Also reset tab to Text
-                if(textTab) textTab.click();
+                deckTitle.value = 'My Custom Flashcards'; // Reset to default placeholder or empty
+                numFlashcards.value = '10'; // Reset to default count
+                fileNameDisplay.textContent = ''; // Clear file name display
+                // Ensure the form is visible and set to text tab after clearing
+                if(textTab) textTab.click(); 
+                // Optionally hide results section if it exists
+                const resultsSection = document.querySelector('.flashcard-results-section');
+                if (resultsSection) {
+                    resultsSection.style.display = 'none';
+                }
+                const errorMessage = document.querySelector('.error-message');
+                if (errorMessage) {
+                    errorMessage.style.display = 'none';
+                }
             };
         }
 
         // AJAX file upload for extracting text
         const studyFileInput = document.getElementById('studyFile');
         const selectFileButton = document.getElementById('selectFileButton');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
         const studyMaterialArea = document.getElementById('studyMaterial');
         const extractSpinner = document.getElementById('extractSpinner');
         const toast = document.getElementById('toast');
 
-        function showToast(msg, isError=false) {
+        function showToast(msg, isError = false) {
             toast.textContent = msg;
-            toast.style.background = isError ? '#ff4d4f' : '#FFD600';
-            toast.style.color = isError ? '#fff' : '#222';
+            toast.className = 'toast'; // Reset classes
+            if (isError) {
+                toast.classList.add('error');
+            }
             toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            toast.style.animation = 'none'; // Reset animation
+            void toast.offsetWidth; // Trigger reflow
+            toast.style.animation = 'fadeInOut 3s forwards';
         }
 
         if (selectFileButton && studyFileInput && studyMaterialArea && extractSpinner) {
             selectFileButton.onclick = function(e) {
-                e.preventDefault();
+                e.preventDefault(); // Prevent form submission
                 studyFileInput.click();
             };
             studyFileInput.onchange = function() {
-                if (!studyFileInput.files.length) return;
-                fileNameDisplay.textContent = studyFileInput.files[0].name;
+                if (!studyFileInput.files.length) {
+                    fileNameDisplay.textContent = ''; // Clear if no file selected
+                    return;
+                }
+
+                const file = studyFileInput.files[0];
+                fileNameDisplay.textContent = `Selected: ${file.name}`;
+                
+                // Only trigger extraction for supported file types and if it's a new file
+                const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'text/plain', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                if (!allowedTypes.includes(file.type)) {
+                    showToast('Unsupported file type. Please upload PDF, PPTX, DOCX, or TXT.', true);
+                    studyFileInput.value = ''; // Clear the input
+                    fileNameDisplay.textContent = '';
+                    return;
+                }
+
                 selectFileButton.textContent = 'Extracting...';
                 selectFileButton.disabled = true;
-                extractSpinner.style.display = 'block';
+                extractSpinner.style.display = 'flex'; // Use flex to center spinner and text
+                extractSpinner.style.alignItems = 'center';
+                extractSpinner.style.justifyContent = 'center';
+
                 const formData = new FormData();
-                formData.append('slide_file', studyFileInput.files[0]);
+                formData.append('study_file', file);
+                
+                // Get CSRF token
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
                 fetch('/ajax/extract-text/', {
                     method: 'POST',
-                    headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+                    headers: { 'X-CSRFToken': csrftoken },
                     body: formData
                 })
                 .then(res => res.json())
                 .then(data => {
-                    if (data.text !== undefined) {
+                    if (data.text !== undefined && data.text !== null && data.text.trim() !== '') {
                         studyMaterialArea.value = data.text;
                         showToast('Text extracted successfully!');
-                        textTab.textContent = 'View Uploaded Text';
+                        textTab.textContent = 'View Uploaded Text'; // Change tab text
+                        // Switch to text tab automatically after extraction
+                        textTab.click(); 
+                    } else if (data.error) {
+                        showToast(data.error, true);
+                        studyMaterialArea.value = ''; // Clear textarea on error
                     } else {
-                        showToast(data.error || 'Failed to extract text.', true);
+                        showToast('Failed to extract text or file is empty.', true);
+                        studyMaterialArea.value = ''; // Clear textarea on error
                     }
                 })
-                .catch(() => showToast('Failed to extract text.', true))
+                .catch(error => {
+                    console.error('Error during text extraction:', error);
+                    showToast('An unexpected error occurred during extraction.', true);
+                    studyMaterialArea.value = ''; // Clear textarea on error
+                })
                 .finally(() => {
                     selectFileButton.textContent = 'Select file';
                     selectFileButton.disabled = false;
                     extractSpinner.style.display = 'none';
+                    studyFileInput.value = ''; // Clear file input so same file can be selected again
                 });
             };
         }
+
+        // Initialize default deck title if empty
+        document.addEventListener('DOMContentLoaded', function() {
+            if (deckTitle.value.trim() === '') {
+                deckTitle.value = 'My Custom Flashcards';
+            }
+        });
     </script>
 </body>
-</html> 
+</html>

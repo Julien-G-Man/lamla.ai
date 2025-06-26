@@ -5,347 +5,601 @@
     <meta charset="UTF-8">
     <title>About LAMLA AI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        html { scroll-behavior: smooth; }
+        /* Reusing global variables from the homepage */
+        :root {
+            --primary-color: #FFD600; /* Yellow */
+            --secondary-color: #222; /* Dark text */
+            --background-light: #f8f9fa; /* General light background */
+            --background-white: #fff;
+            --text-muted: #555;
+            --text-dark: #333;
+            --shadow-light: rgba(0,0,0,0.07);
+            --shadow-medium: rgba(0,0,0,0.15);
+            --border-color: #eee;
+
+            /* Specific colors from the provided images */
+            --enactus-yellow: #FDC72B; /* Closer to the button yellow in image */
+            --enactus-light-yellow-bg: #FFFBF0; /* For the input background and subtle background stripe */
+            --enactus-dark-text: #4a4a4a; /* For the body text */
+            --enactus-heading-color: #333; /* For section headings */
+            --enactus-blue: #3E8EFF; /* For the globe emoji color, if needed, though emoji color is often fixed */
+            --enactus-placeholder: #a0a0a0; /* For the input placeholder */
+
+            /* New variable for the main diagonal background color, if different from --background-light */
+            --diagonal-main-bg: #F5F5F5; /* A slightly off-white/light grey for the main diagonal part */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            background: #f8f9fa;
-            color: #222;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--background-light);
+            color: var(--enactus-dark-text); /* Use darker text for body */
+            font-family: 'Poppins', sans-serif; /* Consistent font with homepage */
             margin: 0;
             padding: 0;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navbar - Copied directly from homepage for consistency */
         .navbar {
-            background: #fff;
-            color: #222;
+            background: var(--background-white);
+            color: var(--secondary-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 80px 0 30px;
-            height: 64px;
+            padding: 0 40px;
+            height: 70px; /* Adjusted height to match homepage */
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 1000;
-            box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+            box-shadow: 0 2px 10px var(--shadow-light);
             box-sizing: border-box;
         }
+
         .navbar .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #FFD600;
+            font-size: 2.2rem; /* Adjusted font-size to match homepage */
+            font-weight: 700;
+            color: var(--primary-color);
             letter-spacing: 0.5px;
             flex-shrink: 0;
-            margin-right: 80px;
-            height: 40px;
+            margin-right: 60px; /* Adjusted margin-right to match homepage */
+            display: flex; /* Added flex for logo image */
+            align-items: center; /* Added align-items for logo image */
+            text-decoration: none; /* Ensure logo link has no underline */
         }
+
+        .navbar .logo img {
+            height: 45px; /* Adjusted height to match homepage */
+            margin-right: 8px;
+        }
+
         .nav-links {
             display: flex;
-            gap: 20px;
+            gap: 25px; /* Adjusted gap to match homepage */
             align-items: center;
             z-index: 3000;
             margin-left: auto;
             flex-shrink: 0;
         }
+
         .nav-links a {
-            color: #222;
+            color: var(--secondary-color);
             text-decoration: none;
-            font-size: 1rem;
+            font-size: 1.05rem; /* Adjusted font-size to match homepage */
             font-weight: 500;
-            transition: color 0.2s;
-            padding: 6px 0;
+            transition: color 0.3s ease, transform 0.2s ease; /* Added transform transition */
+            padding: 8px 0; /* Adjusted padding to match homepage */
             white-space: nowrap;
         }
+
         .nav-links a:hover {
-            color: #FFD600;
+            color: var(--primary-color);
+            transform: translateY(-2px); /* Added transform on hover */
         }
+
         .hamburger {
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            width: 40px;
-            height: 40px;
+            width: 45px; /* Adjusted width to match homepage */
+            height: 45px; /* Adjusted height to match homepage */
             background: none;
             border: none;
             cursor: pointer;
             z-index: 3000;
             margin-left: auto;
+            padding: 0;
         }
+
         .hamburger span {
             display: block;
-            width: 28px;
-            height: 4px;
-            margin: 4px 0;
-            background: #FFD600;
+            width: 30px; /* Adjusted width to match homepage */
+            height: 3px; /* Adjusted height to match homepage */
+            margin: 5px 0; /* Adjusted margin to match homepage */
+            background: var(--primary-color);
             border-radius: 2px;
-            transition: 0.3s;
+            transition: 0.3s ease;
         }
+
+        /* About Hero Section */
         .about-hero {
-            background: #35373f;
-            color: #fff;
-            padding: 120px 0 40px 0;
+            background: var(--secondary-color); /* Dark background for hero */
+            color: var(--background-white);
+            padding: 120px 20px 60px 20px; /* Adjusted padding */
             text-align: center;
+            position: relative; /* For potential background elements later */
+            overflow: hidden; /* For any clipped background elements */
         }
+
         .about-hero .about-logo {
-            height: 56px;
-            margin-bottom: 18px;
+            display: none; /* Hide if not needed, or replace with actual logo image */
         }
+        
         .about-hero-title {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: #FFD600;
-            margin-bottom: 12px;
+            font-size: 3.2rem; /* Larger font size for impact */
+            font-weight: 700;
+            color: var(--primary-color); /* Highlight color */
+            margin-bottom: 20px;
+            line-height: 1.15;
+            letter-spacing: -1px;
         }
+        .about-hero-title .highlight {
+            color: var(--background-white); /* White for "About" part */
+        }
+
+
         .about-hero-desc {
-            font-size: 1.25rem;
-            max-width: 700px;
-            margin: 0 auto 18px auto;
-            color: #eee;
+            font-size: 1.35rem; /* Slightly larger, consistent with homepage */
+            max-width: 900px; /* Wider for more content */
+            margin: 0 auto 30px auto;
+            color: #ccc; /* Softer white */
+            line-height: 1.7;
         }
+        .about-hero-desc strong {
+            color: var(--primary-color); /* Highlight strong text */
+        }
+
+        /* About Tabs Section */
         .about-tabs-container {
-            background: #35373f;
-            padding-bottom: 0;
+            background: var(--background-white); /* White background for the container */
+            padding-bottom: 60px; /* Add more space below tabs */
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05); /* Subtle shadow for the whole tab area */
+            border-radius: 0 0 20px 20px;
+            margin-top: -30px; /* Overlap with hero slightly for visual flow */
+            position: relative;
+            z-index: 10; /* Ensure it's above other elements */
         }
+
         .about-tabs {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
             gap: 0;
-            border-bottom: 1.5px solid #eee;
-            background: #35373f;
+            border-bottom: 1.5px solid var(--border-color); /* Lighter border */
+            background: var(--background-white); /* Match container background */
+            position: sticky; /* Keep tabs visible when scrolling */
+            top: 70px; /* Stick below the navbar */
+            z-index: 999; /* Ensure tabs are on top when sticky */
+            padding: 0 20px; /* Add horizontal padding for tabs */
         }
+        /* Style for sticky effect (optional, subtle shadow when sticky) */
+        .about-tabs.sticky {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
         .about-tab {
-            color: #fff;
+            color: var(--text-dark); /* Darker text */
             background: none;
             border: none;
-            font-size: 1.1rem;
-            font-weight: 500;
-            padding: 18px 32px 14px 32px;
+            font-size: 1.05rem; /* Consistent font size */
+            font-weight: 600; /* Bolder font weight */
+            padding: 18px 30px 14px 30px; /* Adjusted padding */
             cursor: pointer;
             outline: none;
             border-bottom: 3px solid transparent;
-            transition: color 0.2s, border-bottom 0.2s;
+            transition: color 0.3s ease, border-bottom 0.3s ease; /* Smoother transition */
+            white-space: nowrap; /* Prevent text wrapping inside tab */
         }
+
         .about-tab.active {
-            color: #FFD600;
-            border-bottom: 3px solid #FFD600;
-            background: #35373f;
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            background: var(--background-white); /* Ensure background remains white */
         }
+
         .about-tab:not(.active):hover {
-            color: #FFD600;
+            color: var(--primary-color);
         }
+
         .about-tab-content {
-            max-width: 800px;
-            margin: 0 auto 40px auto;
-            background: #fff;
-            border-radius: 0 0 16px 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-            padding: 40px 32px 32px 32px;
-            min-height: 220px;
+            max-width: 900px; /* Wider content area */
+            margin: 40px auto 0 auto; /* Adjusted margin */
+            background: var(--background-white);
+            border-radius: 16px; /* Consistent border radius */
+            box-shadow: none; /* No individual shadow as container has it */
+            padding: 40px 32px; /* Adjusted padding */
+            min-height: 250px; /* Slightly taller minimum height */
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(.77,0,.18,1);
             opacity: 1;
-            z-index: 1;
+            transform: translateX(0); /* Reset transform for default state */
+            box-sizing: border-box; /* Include padding in dimensions */
         }
+        /* No animation needed here if handled by JS, or create specific classes */
         .about-tab-content.slide-in {
-            animation: slideIn 0.4s cubic-bezier(.77,0,.18,1);
+            animation: slideIn 0.5s cubic-bezier(.25, .8, .25, 1); /* Smoother animation */
         }
         @keyframes slideIn {
-            from { opacity: 0; transform: translateX(40px); }
-            to { opacity: 1; transform: translateX(0); }
+            from { opacity: 0; transform: translateY(20px); } /* Slide up from bottom */
+            to { opacity: 1; transform: translateY(0); }
         }
+
         .about-tab-content h2 {
-            color: #FFD600;
-            font-size: 1.3rem;
-            margin-bottom: 10px;
+            color: var(--enactus-heading-color); /* Darker heading color */
+            font-size: 1.8rem; /* Larger heading */
+            font-weight: 700;
+            margin-bottom: 15px;
             margin-top: 0;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px; /* Increased gap for emoji */
         }
+
         .about-tab-content ul {
-            padding-left: 1.2em;
-            margin: 0 0 10px 0;
+            padding-left: 1.5em; /* More padding for list */
+            margin: 0 0 15px 0;
+            list-style: none; /* Remove default bullet */
         }
-        .about-tab-content li {
-            margin-bottom: 8px;
+        .about-tab-content ul li {
+            position: relative;
+            margin-bottom: 12px;
+            padding-left: 25px; /* Space for custom bullet */
+            font-size: 1.1rem; /* Slightly larger list items */
+            color: var(--text-dark);
         }
+        .about-tab-content ul li::before {
+            content: '•'; /* Custom bullet point */
+            color: var(--primary-color); /* Yellow bullet */
+            font-size: 1.5em;
+            position: absolute;
+            left: 0;
+            top: 0;
+            line-height: 1;
+        }
+
         .about-tab-content strong {
-            color: #FFD600;
+            color: var(--secondary-color); /* Darker strong text for emphasis */
+            font-weight: 600;
         }
         .about-tab-content .emoji {
-            font-size: 1.2em;
-            margin-right: 6px;
+            font-size: 2rem; /* Larger emoji */
+            margin-right: 0; /* Handled by gap on h2 */
+            line-height: 1;
         }
         .about-tab-content p {
-            margin: 0 0 10px 0;
+            margin: 0 0 15px 0; /* Consistent paragraph spacing */
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--text-dark);
         }
+
+        /* Join Section */
         .about-join-section {
             max-width: 900px;
-            margin: 0 auto 40px auto;
-            background: #f6f7fa;
-            color: #222;
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-            padding: 40px 32px 32px 32px;
+            margin: 60px auto 60px auto; /* More vertical spacing */
+            background: var(--background-white); /* White background */
+            color: var(--enactus-dark-text);
+            border-radius: 20px; /* Consistent border radius */
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1); /* Stronger shadow */
+            padding: 50px 32px; /* More padding */
             text-align: center;
+            box-sizing: border-box;
         }
         .about-join-section h2 {
-            color: #222;
+            color: var(--enactus-heading-color);
+            font-size: 2.5rem; /* Larger heading */
+            font-weight: 700;
+            margin-bottom: 20px;
         }
+        .about-join-section p {
+            font-size: 1.2rem; /* Larger paragraph text */
+            margin-bottom: 20px;
+            line-height: 1.6;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .about-join-section p:last-of-type {
+            margin-bottom: 30px; /* More space before button */
+        }
+        .about-join-section strong {
+            color: var(--primary-color);
+        }
+
         .get-started-btn {
             display: inline-block;
             margin-top: 24px;
-            background: #222;
-            color: #FFD600;
-            font-weight: bold;
-            font-size: 1.1rem;
-            padding: 14px 36px;
-            border-radius: 10px;
+            background: var(--enactus-yellow); /* Use specific yellow from homepage button */
+            color: var(--secondary-color);
+            font-weight: 600; /* Consistent font weight */
+            font-size: 1.15rem; /* Consistent font size */
+            padding: 18px 40px; /* Consistent padding */
+            border-radius: 12px; /* Consistent border radius */
             text-decoration: none;
-            box-shadow: 0 4px 16px rgba(34, 34, 34, 0.2);
-            transition: background 0.2s, color 0.2s;
+            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.35); /* Consistent shadow */
+            transition: all 0.3s ease; /* Consistent transition */
         }
         .get-started-btn:hover {
-            background: #FFD600;
-            color: #222;
+            background: var(--secondary-color); /* Invert colors on hover */
+            color: var(--primary-color);
+            transform: translateY(-3px); /* Consistent transform */
+            box-shadow: 0 8px 25px rgba(255, 214, 0, 0.5); /* Stronger shadow on hover */
         }
+
+        /* Founder Card */
         .about-founder-card {
-            max-width: 370px;
-            margin: 0 auto 48px auto;
-            background: #fff;
-            border-radius: 24px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+            max-width: 400px; /* Slightly wider */
+            margin: 60px auto 80px auto; /* More vertical spacing */
+            background: var(--background-white);
+            border-radius: 25px; /* Consistent border radius */
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15); /* Stronger, more refined shadow */
             overflow: hidden;
             text-align: center;
             position: relative;
+            border: 2px solid var(--border-color); /* Subtle border */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+        .about-founder-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+        }
+
         .about-founder-card-top {
-            background: linear-gradient(90deg, #FFD600 60%, #fffbe6 100%);
-            padding: 32px 0 0 0;
+            background: linear-gradient(90deg, var(--primary-color) 40%, #FFEA80 100%); /* Adjusted gradient */
+            padding: 40px 0 0 0; /* More padding at top */
+            position: relative;
+            margin-bottom: 60px; /* Space for photo overlap */
         }
         .about-founder-photo {
-            width: 96px;
-            height: 96px;
+            width: 110px; /* Larger photo */
+            height: 110px; /* Larger photo */
             border-radius: 50%;
             object-fit: cover;
-            border: 5px solid #fff;
-            box-shadow: 0 2px 8px #FFD60033;
-            margin: 0 auto 12px auto;
-            background: #eee;
+            border: 6px solid var(--background-white); /* Thicker white border */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15); /* Stronger photo shadow */
+            margin: 0 auto; /* Center image */
+            background: var(--background-light); /* Light background for placeholder */
+            position: absolute; /* Position photo relative to the top section */
+            bottom: -55px; /* Half of height to center vertically on the cut */
+            left: 50%;
+            transform: translateX(-50%);
         }
+
         .about-founder-title {
-            color: #FFD600;
-            font-size: 1.1rem;
-            font-weight: bold;
+            color: var(--primary-color); /* Highlight color */
+            font-size: 1.2rem;
+            font-weight: 700;
             margin-bottom: 10px;
-            margin-top: 18px;
+            margin-top: 0; /* Remove top margin as photo positioning handles space */
         }
         .about-founder-name {
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 4px;
+            font-weight: 700;
+            font-size: 1.6rem; /* Larger name */
+            margin-bottom: 8px;
+            color: var(--enactus-heading-color);
         }
         .about-founder-role {
-            color: #222;
-            font-size: 1rem;
-            margin-bottom: 12px;
+            color: var(--text-muted); /* Softer text color */
+            font-size: 1.1rem;
+            margin-bottom: 20px; /* More space below role */
         }
         .about-founder-desc {
-            font-size: 1rem;
-            color: #333;
-            padding: 0 18px 18px 18px;
+            font-size: 1.05rem;
+            color: var(--text-dark);
+            padding: 0 25px 25px 25px; /* More padding */
+            line-height: 1.6;
         }
         .about-founder-socials {
             display: flex;
             justify-content: center;
-            gap: 18px;
-            margin: 12px 0 18px 0;
+            gap: 20px; /* Larger gap */
+            margin: 20px 0 25px 0; /* More spacing */
         }
         .about-founder-socials a {
-            color: #FFD600;
-            font-size: 1.3rem;
+            color: var(--secondary-color); /* Darker icon color by default */
+            font-size: 1.6rem; /* Larger icons */
             text-decoration: none;
-            transition: color 0.2s;
+            transition: color 0.3s ease, transform 0.2s ease;
         }
         .about-founder-socials a:hover {
-            color: #222;
+            color: var(--primary-color); /* Yellow on hover */
+            transform: translateY(-2px);
         }
-        /* Bottom section and footer styles from home */
+
+
+        /* Bottom section and footer styles - Copied directly from homepage for consistency */
         .bottom-section {
-            background: #35373f;
-            color: #fff;
-            padding: 48px 0 24px 0;
+            background: var(--secondary-color);
+            color: #f0f0f0;
+            padding: 60px 20px 30px 20px;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 60px;
-            border-top: 2px solid #35373f;
+            gap: 80px;
+            border-top: 2px solid var(--secondary-color); /* Removed the default gray border */
         }
+
         .bottom-col {
-            min-width: 220px;
-            max-width: 320px;
+            min-width: 250px;
+            max-width: 350px;
+            text-align: left;
         }
+
         .bottom-title {
-            font-size: 1.15rem;
-            font-weight: bold;
-            color: #FFD600;
-            margin-bottom: 12px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 18px;
         }
+
         .bottom-list, .bottom-contact {
             list-style: none;
             padding: 0;
             margin: 0;
         }
+
         .bottom-list li, .bottom-contact li {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-size: 1.05rem;
         }
-        .bottom-list a {
-            color: #fff;
+
+        .bottom-list a, .bottom-contact span, .bottom-contact a {
+            color: #f0f0f0;
             text-decoration: none;
             transition: color 0.2s;
         }
+
         .bottom-list a:hover {
-            color: #FFD600;
+            color: var(--primary-color);
         }
+
         .bottom-socials {
             display: flex;
-            gap: 14px;
-            margin-top: 10px;
+            gap: 18px;
+            margin-top: 15px;
         }
+
         .bottom-social-icon {
-            width: 32px;
-            height: 32px;
-            background: #fff;
+            width: 40px;
+            height: 40px;
+            background: var(--background-white);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #FFD600;
-            font-size: 1.3rem;
-            box-shadow: 0 2px 8px #FFD60022;
-            border: 1.5px solid #eee;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            box-shadow: 0 2px 10px rgba(255, 214, 0, 0.2);
+            border: 2px solid var(--background-white);
             cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
         }
+
+        .bottom-social-icon:hover:not(.inactive) {
+            transform: translateY(-3px);
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
         .bottom-social-icon.inactive {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
+            background: #555;
+            color: #999;
+            border-color: #555;
         }
+
+        /* FOOTER */
         .footer {
-            background: #35373f;
-            color: #ccc;
+            background: var(--secondary-color);
+            color: #bbb;
             text-align: center;
-            padding: 18px 0 10px 0;
-            font-size: 1rem;
-            letter-spacing: 0.5px;
-            border-top: 1.5px solid #35373f;
+            padding: 25px 0 15px 0;
+            font-size: 0.95rem;
+            letter-spacing: 0.8px;
+            border-top: 1px solid #444;
         }
-        @media (max-width: 900px) {
+
+        /* Responsive Adjustments */
+        @media (max-width: 1200px) {
             .navbar {
-                padding: 0 50px 0 20px !important;
+                padding: 0 30px;
+            }
+            .about-hero-title {
+                font-size: 2.8rem;
+            }
+            .about-hero-desc {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .about-hero {
+                padding: 100px 20px 50px 20px;
+            }
+            .about-hero-title {
+                font-size: 2.5rem;
+            }
+            .about-hero-desc {
+                font-size: 1.15rem;
+            }
+            .about-tabs-container {
+                margin-top: -20px;
+            }
+            .about-tab {
+                font-size: 1rem;
+                padding: 16px 25px 12px 25px;
+            }
+            .about-tab-content {
+                padding: 30px 25px;
+            }
+            .about-tab-content h2 {
+                font-size: 1.6rem;
+            }
+            .about-tab-content p, .about-tab-content ul li {
+                font-size: 1rem;
+            }
+            .about-join-section {
+                padding: 40px 25px;
+                margin: 50px auto;
+            }
+            .about-join-section h2 {
+                font-size: 2.2rem;
+            }
+            .about-join-section p {
+                font-size: 1.1rem;
+            }
+            .get-started-btn {
+                padding: 16px 35px;
+                font-size: 1.1rem;
+            }
+            .about-founder-card {
+                margin: 50px auto 60px auto;
+            }
+            .about-founder-name {
+                font-size: 1.4rem;
+            }
+            .bottom-section {
+                gap: 60px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 20px;
+                height: 64px;
             }
             .navbar .logo {
+                font-size: 1.8rem;
                 margin-right: 0;
+            }
+            .navbar .logo img {
+                height: 35px;
             }
             .hamburger {
                 display: flex;
@@ -357,46 +611,157 @@
                 position: absolute;
                 top: 64px;
                 right: 0;
-                width: 220px;
-                background: #fff;
-                box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+                width: 250px;
+                background: var(--background-white);
+                box-shadow: 0 6px 20px var(--shadow-medium);
                 z-index: 2000;
-                padding: 10px 0;
-                border-radius: 0 0 8px 8px;
+                padding: 15px 0;
+                border-radius: 0 0 12px 12px;
                 overflow-y: auto;
                 max-height: calc(100vh - 64px);
                 margin-left: 0;
+                align-items: flex-start;
             }
             .nav-links.open {
                 display: flex;
             }
             .nav-links a {
-                padding: 14px 24px;
+                padding: 16px 28px;
                 text-align: left;
-                border-bottom: 1px solid #eee;
+                width: 100%;
+                border-bottom: 1px solid #f0f0f0;
                 box-sizing: border-box;
             }
             .nav-links a:last-child {
                 border-bottom: none;
             }
-            .about-founder-card {
-                margin: 32px auto 40px auto;
+
+            .about-hero {
+                padding: 80px 15px 40px 15px;
             }
-        }
-        @media (max-width: 700px) {
-            .about-tab-content {
-                padding: 18px 6px;
+            .about-hero-title {
+                font-size: 2rem;
+            }
+            .about-hero-desc {
+                font-size: 1rem;
+                margin-bottom: 20px;
             }
             .about-tabs {
-                flex-wrap: wrap;
+                flex-direction: column; /* Stack tabs vertically */
+                border-bottom: none; /* Remove bottom border if stacked */
+                top: 64px; /* Adjust sticky position */
+            }
+            .about-tab {
+                width: 100%; /* Full width for stacked tabs */
+                border-bottom: 1px solid var(--border-color); /* Add individual border */
+                padding: 14px 20px;
+                text-align: center;
+            }
+            .about-tab:last-child {
+                border-bottom: none;
+            }
+            .about-tab-content {
+                padding: 25px 20px;
+                margin-top: 20px; /* Space from tabs */
+                border-radius: 12px;
+            }
+            .about-tab-content h2 {
+                font-size: 1.4rem;
+                flex-direction: column; /* Stack emoji and title */
+                align-items: center;
+                text-align: center;
+                gap: 8px;
+            }
+            .about-tab-content .emoji {
+                font-size: 1.8rem;
+                margin-bottom: 5px;
+            }
+            .about-tab-content p, .about-tab-content ul li {
+                font-size: 0.95rem;
+            }
+            .about-tab-content ul li {
+                padding-left: 20px;
+                margin-bottom: 10px;
+            }
+            .about-tab-content ul li::before {
+                font-size: 1.2em;
+                top: 2px;
+            }
+
+            .about-join-section {
+                padding: 30px 20px;
+                margin: 40px auto;
+            }
+            .about-join-section h2 {
+                font-size: 2rem;
+            }
+            .about-join-section p {
+                font-size: 1rem;
+            }
+            .get-started-btn {
+                padding: 14px 30px;
+                font-size: 1.05rem;
+            }
+
+            .about-founder-card {
+                margin: 40px auto 50px auto;
+                max-width: 350px;
+            }
+            .about-founder-card-top {
+                padding: 30px 0 0 0;
+                margin-bottom: 50px;
+            }
+            .about-founder-photo {
+                width: 100px;
+                height: 100px;
+                bottom: -50px;
+                border-width: 5px;
+            }
+            .about-founder-name {
+                font-size: 1.3rem;
+            }
+            .about-founder-role {
+                font-size: 1rem;
+            }
+            .about-founder-desc {
+                font-size: 0.95rem;
+                padding: 0 20px 20px 20px;
+            }
+            .about-founder-socials {
+                gap: 15px;
+                margin: 15px 0 20px 0;
+            }
+            .about-founder-socials a {
+                font-size: 1.4rem;
+            }
+
+            .bottom-section {
+                flex-direction: column;
+                align-items: center;
+                gap: 40px;
+                padding: 40px 20px 20px 20px;
+            }
+            .bottom-col {
+                text-align: center;
+                min-width: unset;
+                width: 100%;
+                max-width: 300px;
+            }
+            .bottom-socials {
+                justify-content: center;
+            }
+            .footer {
+                padding: 20px 0 10px 0;
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="/" style="display:flex;align-items:center;text-decoration:none;">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo">
+    <header class="navbar">
+        <a href="/" class="logo">
+            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
+            <span>Lamla AI</span>
         </a>
         <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
             <span></span>
@@ -417,120 +782,137 @@
                 <a href="/accounts/login/">Login</a>
             {% endif %}
         </nav>
-    </div>
-    <div class="about-hero">
-        <div class="about-hero-title">About LAMLA</div>
-        <div class="about-hero-desc">
-            <strong>LAMLA</strong> stands for Last Minute Learners Association—but what we stand for goes far beyond last-minute prep.<br>
-            We're building a platform for every student who wants to understand how ready they are, whether it's weeks before an exam or hours before.<br>
-            <b>LAMLA is not a shortcut. It's a smart compass.</b> It helps you test yourself, track your progress, and identify what you need to improve—at any stage of your study journey.
-        </div>
-    </div>
-    <div class="about-tabs-container">
-        <div class="about-tabs">
-            <button class="about-tab active" data-tab="mission">Mission</button>
-            <button class="about-tab" data-tab="vision">Vision</button>
-            <button class="about-tab" data-tab="offers">What We Offer</button>
-            <button class="about-tab" data-tab="values">Values</button>
-        </div>
-        <div class="about-tab-content" id="mission-tab-content">
-            <h2>🎯 Mission</h2>
-            <p>To help students become strategic learners by giving them the tools to:</p>
-            <ul>
-                <li>🧠 Assess their understanding</li>
-                <li>🎯 Focus on what matters most</li>
-                <li>📈 Improve consistently</li>
-                <li>✅ Walk into exams with confidence</li>
-            </ul>
-        </div>
-        <div class="about-tab-content" id="vision-tab-content" style="display:none;">
-            <h2>🚀 Vision</h2>
-            <p>To redefine academic readiness—starting from Africa, for the world.</p>
-            <ul>
-                <li>Have easy access to meaningful, active study tools</li>
-                <li>Feel confident and in control of their academic journey</li>
-                <li>Build mastery over time—not just survival under pressure</li>
-            </ul>
-        </div>
-        <div class="about-tab-content" id="offers-tab-content" style="display:none;">
-            <h2>💡 What LAMLA Offers</h2>
-            <ul>
-                <li>✅ Self-testing tools to check your knowledge</li>
-                <li>✅ Quiz generators to help you revise actively</li>
-                <li>✅ Instant feedback to show your strengths and gaps</li>
-                <li>✅ Performance insights that guide your next steps</li>
-                <li>✅ (Coming soon) Smart upload features for files, notes & flashcards</li>
-            </ul>
-            <p>Whether you're reviewing after a lecture, preparing for a mid-sem, or powering through final week—LAMLA helps you stay on track.</p>
-        </div>
-        <div class="about-tab-content" id="values-tab-content" style="display:none;">
-            <h2>🧭 Our Values</h2>
-            <ul>
-                <li>Discipline beats panic – But tools can support both.</li>
-                <li>Preparation is a process – And everyone starts from somewhere.</li>
-                <li>Smart learners test themselves – Because awareness is power.</li>
-                <li>We don't glorify cramming – We build confidence through practice.</li>
-            </ul>
-        </div>
-    </div>
-    <div class="about-join-section">
-        <h2>🤝 Join the Journey</h2>
-        <p>If you've ever felt unsure before an exam, unsure of what you really know, or where to focus—LAMLA was built for you.</p>
-        <p>This is more than a platform. It's a toolset. A mindset. A movement.</p>
-        <p><strong>Let's prepare better. Not later—just smarter.</strong></p>
-        <a href="/accounts/signup/" class="get-started-btn">Get Started</a>
-    </div>
-    <div class="about-founder-card">
-        <div class="about-founder-card-top">
-            <img src="https://cdn.creazilla.com/icons/3209624/incognito-circle-icon-md.png" alt="Founder Photo" class="about-founder-photo">
-        </div>
-        <div class="about-founder-title">Meet the Founder</div>
-        <div class="about-founder-name">Incognito</div>
-        <div class="about-founder-role">Founder</div>
-        <div class="about-founder-desc">
-            Just some random guy trying to help
-        </div>
-        <div class="about-founder-socials">
-            <a href="#" title="LinkedIn" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-            <a href="#" title="Twitter" target="_blank"><i class="fab fa-twitter"></i></a>
-            <a href="#" title="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
-            <a href="#" title="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
-            <a href="mailto:founder@email.com" title="Email"><i class="fas fa-envelope"></i></a>
-        </div>
-    </div>
-    <div class="bottom-section">
+    </header>
+
+    <main>
+        <section class="about-hero">
+            <h1 class="about-hero-title">
+                About <span class="highlight">LAMLA AI</span>
+            </h1>
+            <p class="about-hero-desc">
+                <strong>LAMLA</strong> stands for Last Minute Learners Association—but what we stand for goes far beyond last-minute prep.<br>
+                We're building a platform for every student who wants to understand how ready they are, whether it's weeks before an exam or hours before.<br>
+                <b>LAMLA is not a shortcut. It's a smart compass.</b> It helps you test yourself, track your progress, and identify what you need to improve—at any stage of your study journey.
+            </p>
+        </section>
+
+        <section class="about-tabs-container">
+            <div class="about-tabs" id="aboutTabs">
+                <button class="about-tab active" data-tab="mission">Mission</button>
+                <button class="about-tab" data-tab="vision">Vision</button>
+                <button class="about-tab" data-tab="offers">What We Offer</button>
+                <button class="about-tab" data-tab="values">Values</button>
+            </div>
+            <div class="about-tab-content" id="mission-tab-content">
+                <h2><span class="emoji">🎯</span> Our Mission</h2>
+                <p>To help students become strategic learners by giving them the tools to:</p>
+                <ul>
+                    <li>🧠 Assess their understanding</li>
+                    <li>🎯 Focus on what matters most</li>
+                    <li>📈 Improve consistently</li>
+                    <li>✅ Walk into exams with confidence</li>
+                </ul>
+            </div>
+            <div class="about-tab-content" id="vision-tab-content" style="display:none;">
+                <h2><span class="emoji">🚀</span> Our Vision</h2>
+                <p>To redefine academic readiness—starting from Africa, for the world, ensuring students:</p>
+                <ul>
+                    <li>Have easy access to meaningful, active study tools</li>
+                    <li>Feel confident and in control of their academic journey</li>
+                    <li>Build mastery over time—not just survival under pressure</li>
+                </ul>
+            </div>
+            <div class="about-tab-content" id="offers-tab-content" style="display:none;">
+                <h2><span class="emoji">💡</span> What LAMLA Offers</h2>
+                <ul>
+                    <li>✅ Self-testing tools to check your knowledge</li>
+                    <li>✅ Quiz generators to help you revise actively</li>
+                    <li>✅ Instant feedback to show your strengths and gaps</li>
+                    <li>✅ Performance insights that guide your next steps</li>
+                    <li>✅ (Coming soon) Smart upload features for files, notes & flashcards</li>
+                </ul>
+                <p>Whether you're reviewing after a lecture, preparing for a mid-sem, or powering through final week—LAMLA helps you stay on track.</p>
+            </div>
+            <div class="about-tab-content" id="values-tab-content" style="display:none;">
+                <h2><span class="emoji">🧭</span> Our Values</h2>
+                <ul>
+                    <li>Discipline beats panic – But tools can support both.</li>
+                    <li>Preparation is a process – And everyone starts from somewhere.</li>
+                    <li>Smart learners test themselves – Because awareness is power.</li>
+                    <li>We don't glorify cramming – We build confidence through practice.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="about-join-section">
+            <h2>🤝 Join the Journey</h2>
+            <p>If you've ever felt unsure before an exam, unsure of what you really know, or where to focus—LAMLA was built for you.</p>
+            <p>This is more than a platform. It's a toolset. A mindset. A movement.</p>
+            <p><strong>Let's prepare better. Not later—just smarter.</strong></p>
+            {% if not user_authenticated %}
+                <a href="/accounts/signup/" class="get-started-btn">Get Started</a>
+            {% endif %}
+        </section>
+
+        <section class="about-founder-card">
+            <div class="about-founder-card-top">
+                <img src="https://cdn.creazilla.com/icons/3209624/incognito-circle-icon-md.png" alt="Founder Photo" class="about-founder-photo">
+            </div>
+            <div style="padding-top: 70px;"> <h3 class="about-founder-title">Meet the Founder</h3>
+                <p class="about-founder-name">Incognito</p>
+                <p class="about-founder-role">Founder</p>
+                <p class="about-founder-desc">
+                    Just some random guy trying to help. Driven by the belief that every student deserves effective tools to conquer their academic challenges.
+                </p>
+                <div class="about-founder-socials">
+                    <a href="#" title="LinkedIn" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" title="Twitter" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a href="#" title="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" title="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a href="mailto:founder@email.com" title="Email"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bottom-section">
         <div class="bottom-col">
-            <div class="bottom-title">Contact Us</div>
+            <h3 class="bottom-title">Contact Us</h3>
             <ul class="bottom-contact">
-                <li>Email: <a href="mailto:suppport@lamla.ai">suppport@lamla.ai</a></li>
-                <li>Phone: <span>233509341251</span></li>
+                <li>Email: <a href="mailto:suppport@lamla.ai">support@lamla.ai</a></li>
+                <li>Phone: <span>+233 50 934 1251</span></li>
             </ul>
         </div>
         <div class="bottom-col">
-            <div class="bottom-title">Quick Links</div>
+            <h3 class="bottom-title">Quick Links</h3>
             <ul class="bottom-list">
                 <li><a href="/">Home</a></li>
                 <li><a href="/custom-quiz/">Quiz</a></li>
+                <li><a href="#">Concepts</a></li>
                 <li><a href="/flashcards/">Flashcards</a></li>
+                <li><a href="#">History</a></li>
+                <li><a href="/exam-analyzer/">Exam Analyzer</a></li>
                 <li><a href="/about/">About</a></li>
                 <li><a href="/accounts/login/">Login</a></li>
                 <li><a href="/accounts/signup/">Sign Up</a></li>
             </ul>
         </div>
         <div class="bottom-col">
-            <div class="bottom-title">Social Media</div>
+            <h3 class="bottom-title">Social Media</h3>
             <div class="bottom-socials">
                 <div class="bottom-social-icon inactive" title="Coming soon"><span>F</span></div>
                 <div class="bottom-social-icon inactive" title="Coming soon"><span>T</span></div>
                 <div class="bottom-social-icon inactive" title="Coming soon"><span>I</span></div>
                 <div class="bottom-social-icon inactive" title="Coming soon"><span>L</span></div>
             </div>
-            <div style="font-size:0.95rem; color:#888; margin-top:8px;">Follow us for updates</div>
+            <p style="font-size:0.9rem; color:#aaa; margin-top:10px;">Follow us for updates</p>
         </div>
-    </div>
+    </footer>
+
     <div class="footer">
         Copyright &copy; 2025 All rights reserved | Lamla AI.
     </div>
+
     <script>
         // Hamburger menu toggle
         document.getElementById('hamburger').onclick = function() {
@@ -539,6 +921,7 @@
             nav.classList.toggle('open');
             this.setAttribute('aria-expanded', !expanded);
         };
+        
         // Close menu when clicking on links
         document.querySelectorAll('#navLinks a').forEach(function(link) {
             link.onclick = function() {
@@ -546,6 +929,7 @@
                 document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
             }
         });
+
         // About page tab logic
         const tabs = document.querySelectorAll('.about-tab');
         const tabContents = {
@@ -554,16 +938,62 @@
             'offers': document.getElementById('offers-tab-content'),
             'values': document.getElementById('values-tab-content'),
         };
+
         tabs.forEach(tab => {
             tab.onclick = function() {
+                // Remove active from all tabs
                 tabs.forEach(t => t.classList.remove('active'));
+                // Add active to clicked tab
                 tab.classList.add('active');
-                Object.values(tabContents).forEach(c => { c.style.display = 'none'; c.classList.remove('slide-in'); });
+
+                // Hide all contents and remove slide-in class
+                Object.values(tabContents).forEach(c => { 
+                    c.style.display = 'none'; 
+                    c.classList.remove('slide-in'); 
+                });
+
+                // Show the active content and add slide-in class
                 const content = tabContents[tab.getAttribute('data-tab')];
                 content.style.display = 'block';
+                // Trigger reflow to restart animation
+                void content.offsetWidth; 
                 content.classList.add('slide-in');
             };
         });
+
+        // Sticky tabs logic
+        const aboutTabsContainer = document.getElementById('aboutTabs');
+        const navbarHeight = document.querySelector('.navbar').offsetHeight;
+
+        function checkStickyTabs() {
+            if (aboutTabsContainer) {
+                const rect = aboutTabsContainer.getBoundingClientRect();
+                if (rect.top <= navbarHeight) {
+                    aboutTabsContainer.classList.add('sticky');
+                } else {
+                    aboutTabsContainer.classList.remove('sticky');
+                }
+            }
+        }
+
+        window.addEventListener('scroll', checkStickyTabs);
+        window.addEventListener('resize', checkStickyTabs); // Recalculate on resize
+        document.addEventListener('DOMContentLoaded', checkStickyTabs); // Check on initial load
+
+        // Smooth scroll for anchor links - copied from homepage
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                    window.scrollTo({
+                        top: target.offsetTop - navbarHeight - 20,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
     </script>
 </body>
-</html> 
+</html>

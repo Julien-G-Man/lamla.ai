@@ -5,442 +5,679 @@
     <meta charset="UTF-8">
     <title>Lamla AI - Home</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #FFD600; /* Yellow */
+            --secondary-color: #222; /* Dark text */
+            --background-light: #f8f9fa;
+            --background-white: #fff;
+            --text-muted: #555;
+            --text-dark: #333;
+            --shadow-light: rgba(0,0,0,0.07);
+            --shadow-medium: rgba(0,0,0,0.15);
+            --border-color: #eee;
+
+            /* Specific colors from the provided images */
+            --enactus-yellow: #FDC72B; /* Closer to the button yellow in image */
+            --enactus-light-yellow-bg: #FFFBF0; /* For the input background */
+            --enactus-dark-text: #4a4a4a; /* For the body text */
+            --enactus-heading-color: #333; /* For section headings */
+            --enactus-blue: #3E8EFF; /* For the globe emoji color, if needed, though emoji color is often fixed */
+            --enactus-placeholder: #a0a0a0; /* For the input placeholder */
+        }
+
         html {
             scroll-behavior: smooth;
         }
+
         body {
-            background: #f8f9fa;
-            color: #222;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--background-light);
+            color: var(--enactus-dark-text); /* Use darker text for body */
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            line-height: 1.5;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navbar */
         .navbar {
-            background: #fff;
-            color: #222;
+            background: var(--background-white);
+            color: var(--secondary-color);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 80px 0 30px;
-            height: 64px;
+            padding: 0 40px;
+            height: 70px;
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 1000;
-            box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+            box-shadow: 0 2px 10px var(--shadow-light);
             box-sizing: border-box;
         }
+
         .navbar .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #FFD600;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-color); /* Kept original yellow for Lamla AI logo */
             letter-spacing: 0.5px;
             flex-shrink: 0;
-            margin-right: 80px;
+            margin-right: 60px;
+            display: flex;
+            align-items: center;
+            text-decoration: none; /* Ensure logo link has no underline */
         }
+
+        .navbar .logo img {
+            height: 45px;
+            margin-right: 8px;
+        }
+
         .nav-links {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             align-items: center;
             z-index: 3000;
             margin-left: auto;
             flex-shrink: 0;
         }
+
         .nav-links a {
-            color: #222;
+            color: var(--secondary-color);
             text-decoration: none;
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 500;
-            transition: color 0.2s;
-            padding: 6px 0;
+            transition: color 0.3s ease, transform 0.2s ease;
+            padding: 8px 0;
             white-space: nowrap;
         }
+
         .nav-links a:hover {
-            color: #FFD600;
+            color: var(--primary-color);
+            transform: translateY(-2px);
         }
+
         .hamburger {
             display: none;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             background: none;
             border: none;
             cursor: pointer;
             z-index: 3000;
             margin-left: auto;
+            padding: 0;
         }
+
         .hamburger span {
             display: block;
-            width: 28px;
-            height: 4px;
-            margin: 4px 0;
-            background: #FFD600;
+            width: 30px;
+            height: 3px;
+            margin: 5px 0;
+            background: var(--primary-color);
             border-radius: 2px;
-            transition: 0.3s;
+            transition: 0.3s ease;
         }
-        /* HERO SECTION */
+
+        /* Hero Section */
         .hero {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 80vh;
-            padding: 120px 60px 60px 60px;
-            background: #fff;
-            position: relative;
-            overflow: hidden;
-            max-width: 1400px;
-            margin: 0 auto;
+            min-height: 85vh;
+            padding: 140px 20px 80px 20px;
+            background: var(--background-white); /* Base background for hero */
+            position: relative; /* Needed for pseudo-elements */
+            overflow: hidden; /* Crucial to clip the skewed shapes */
             text-align: center;
         }
-        .hero-content {
-            max-width: 800px;
-            z-index: 2;
-            margin-bottom: 40px;
+
+        /* Background shapes for Hero Section */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--background-light); /* Light grey/faint yellow background */
+            transform-origin: top left;
+            transform: skewY(-8deg); /* Adjust angle as needed */
+            z-index: 1; /* Below content */
+            pointer-events: none; /* Allow interaction with elements behind it */
         }
+        
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--enactus-light-yellow-bg); /* The light yellow stripe */
+            transform-origin: top left;
+            transform: skewY(-8deg); /* Same angle as before */
+            z-index: 1;
+            /* Position this stripe within the light grey area */
+            /* These values will need fine-tuning based on visual output */
+            left: -30%; /* Adjust to move the stripe left/right */
+            top: 20%;   /* Adjust to move the stripe up/down */
+            width: 150%; /* Make it wide enough to cover the skewed area */
+            opacity: 0.8; /* Slight transparency if needed */
+        }
+        
+        /* Adjustments for the content to be above the pseudo-elements */
+        .hero-content, .hero-img {
+            position: relative; /* Ensure these are stacked above pseudo-elements */
+            z-index: 2; /* Higher z-index than pseudo-elements */
+        }
+
+
+        .hero-content {
+            max-width: 900px;
+            margin-bottom: 50px;
+        }
+
         .hero-img {
-            max-width: 600px;
+            max-width: 650px;
             width: 100%;
             height: auto;
-            border-radius: 20px;
-            box-shadow: 0 12px 40px rgba(255, 214, 0, 0.2);
+            border-radius: 25px;
+            box-shadow: 0 15px 50px rgba(255, 214, 0, 0.25);
             background: #f5f5f5;
             object-fit: cover;
+            transition: transform 0.3s ease;
         }
+
+        .hero-img:hover {
+            transform: translateY(-5px);
+        }
+
         .hero-title {
-            font-size: 3.2rem;
-            font-weight: bold;
-            margin-bottom: 1.5rem;
-            line-height: 1.1;
-            letter-spacing: -1px;
-            color: #222;
+            font-size: 3.8rem;
+            font-weight: 700;
+            margin-bottom: 1.8rem;
+            line-height: 1.15;
+            letter-spacing: -1.5px;
+            color: var(--enactus-heading-color); /* Adjusted for the screenshot look */
         }
+
         .hero-title .highlight {
-            color: #FFD600;
+            color: var(--primary-color); /* Kept Lamla AI yellow */
         }
+
         .hero-desc {
-            color: #555;
-            font-size: 1.3rem;
-            margin-bottom: 2.5rem;
-            line-height: 1.6;
+            color: var(--text-muted);
+            font-size: 1.45rem;
+            margin-bottom: 3rem;
+            line-height: 1.7;
             max-width: 100%;
         }
+
         .hero-btns {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             flex-wrap: wrap;
             justify-content: center;
         }
+
         .hero-btn {
-            background: #FFD600;
-            color: #222;
+            background: var(--primary-color);
+            color: var(--secondary-color);
             border: none;
-            border-radius: 10px;
-            padding: 16px 36px;
-            font-size: 1.1rem;
-            font-weight: bold;
+            border-radius: 12px;
+            padding: 18px 40px;
+            font-size: 1.15rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 16px rgba(255, 214, 0, 0.3);
+            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.35);
             text-decoration: none;
             display: inline-block;
         }
+
         .hero-btn:hover {
-            background: #222;
-            color: #FFD600;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 214, 0, 0.5);
         }
+
         .hero-btn.secondary {
-            background: #FFD600;
-            color: #222;
-            box-shadow: 0 4px 16px rgba(255, 214, 0, 0.3);
+            background: none;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            box-shadow: none;
         }
+
         .hero-btn.secondary:hover {
-            background: #222;
-            color: #FFD600;
-            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.35);
         }
-        /* Section Divider */
+
+        /* Section Divider - Kept simple for general purpose, could also be skewed */
         .section-divider {
             width: 100%;
-            height: 32px;
-            background: #f5f5f5;
+            height: 40px;
+            background: var(--background-light);
             border: none;
+            position: relative;
         }
-        /* FEATURES SECTION */
+
+        /* Features Section */
         #features {
-            padding: 60px 0 80px 0;
-            background: #f8f9fa;
+            padding: 80px 0 100px 0;
+            background: var(--background-light);
+            text-align: center;
         }
-        #features > div:first-child {
-            text-align:center; margin-bottom: 30px;
+
+        #features .section-header {
+            margin-bottom: 50px;
         }
-        #features > div:first-child span:first-child {
-            font-size:2.3rem;font-weight:bold; line-height: 1.1;
+
+        #features .section-header span:first-child {
+            font-size: 2.8rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--enactus-heading-color);
         }
-        #features > div:first-child span:first-child span {
-            color:#FFD600;
+
+        #features .section-header span:first-child span {
+            color: var(--primary-color);
         }
-        #features > div:first-child div {
-            color:#222; font-size:1.2rem; margin-top: 10px;
+
+        #features .section-header p {
+            color: var(--text-muted);
+            font-size: 1.3rem;
+            margin-top: 15px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
         .feature-card {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.07);
-            padding: 32px 24px;
-            width: 340px;
-            min-height: 180px;
+            background: var(--background-white);
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            padding: 35px 30px;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
-            margin-bottom: 0;
-            transition: box-shadow 0.2s, transform 0.2s;
-            border: 1.5px solid #FFD60022;
+            transition: box-shadow 0.3s ease, transform 0.3s ease, border 0.3s ease;
+            border: 2px solid transparent;
+            text-align: left;
         }
+
         .feature-card:hover {
-            box-shadow: 0 6px 30px #FFD60044;
-            transform: translateY(-4px) scale(1.03);
-            border: 1.5px solid #FFD600;
+            box-shadow: 0 10px 40px rgba(255, 214, 0, 0.3);
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--primary-color);
         }
+
         .feature-icon {
-            background: #f5f5f5;
-            color: #FFD600;
-            font-size: 2.2rem;
-            border-radius: 8px;
-            padding: 8px 12px;
-            margin-bottom: 16px;
+            background: #fdf2d0;
+            color: var(--primary-color);
+            font-size: 2.8rem;
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 48px;
-            height: 48px;
+            width: 60px;
+            height: 60px;
+            box-shadow: 0 2px 10px rgba(255, 214, 0, 0.1);
         }
+
         .feature-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-            margin-bottom: 7px;
-            color: #222;
-        }
-        .feature-desc {
-            color: #555;
-            font-size: 1.05rem;
-            line-height: 1.5;
-        }
-        /* NEWSLETTER SECTION */
-        .newsletter-section {
-            background: #fff;
-            padding: 48px 0 32px 0;
-            text-align: center;
-            border-top: 1.5px solid #eee;
-            border-bottom: 1.5px solid #eee;
-        }
-        .newsletter-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #222;
+            font-size: 1.4rem;
+            font-weight: 600;
             margin-bottom: 10px;
+            color: var(--secondary-color);
         }
-        .newsletter-desc {
-            color: #444;
+
+        .feature-desc {
+            color: var(--text-muted);
             font-size: 1.1rem;
-            margin-bottom: 18px;
+            line-height: 1.6;
         }
-        .newsletter-form {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-        .newsletter-input {
-            padding: 12px 16px;
-            border-radius: 6px;
-            border: 1.5px solid #FFD600;
-            font-size: 1rem;
-            min-width: 260px;
-        }
-        .newsletter-btn {
-            background: #FFD600;
-            color: #222;
-            border: none;
-            border-radius: 6px;
-            padding: 12px 28px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-        }
-        .newsletter-btn:hover {
-            background: #222;
-            color: #FFD600;
-        }
-        /* TESTIMONIALS SECTION */
-        .testimonials {
-            background: #fff;
-            padding: 48px 0 32px 0;
+
+        /* Newsletter Section */
+        .newsletter-section {
+            background: var(--background-white);
+            padding: 60px 20px;
             text-align: center;
+            border-top: 2px solid var(--border-color);
+            border-bottom: 2px solid var(--border-color);
         }
-        .testimonial-quote {
-            font-size: 1.3rem;
-            color: #FFD600;
-            font-style: italic;
-            margin-bottom: 18px;
+
+        .newsletter-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--enactus-heading-color); /* Adjusted for the screenshot look */
+            margin-bottom: 15px;
+        }
+
+        .newsletter-desc {
+            color: var(--text-dark);
+            font-size: 1.25rem;
+            margin-bottom: 30px;
             max-width: 700px;
             margin-left: auto;
             margin-right: auto;
         }
-        .testimonial-user {
-            color: #FFD600;
-            font-weight: bold;
-            font-size: 1.1rem;
+
+        /* Newsletter Form - Recreated based on screenshot */
+        .newsletter-form {
+            display: flex;
+            justify-content: center;
+            max-width: 500px; /* Adjust to match screenshot width */
+            margin: 15px auto 0 auto;
+            height: 55px; /* Fixed height for the combined unit */
+            border-radius: 50px; /* Full pill shape */
+            overflow: hidden; /* Crucial for internal elements to respect border-radius */
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Subtle shadow for the combined unit */
+            border: 1px solid var(--border-color); /* Subtle border around the combined unit */
         }
+
+        .newsletter-input {
+            flex-grow: 1; /* Allow input to take available space */
+            padding: 0 20px; /* Adjusted padding */
+            border: none; /* Remove individual border */
+            background-color: var(--enactus-light-yellow-bg); /* Light yellow background */
+            font-size: 1.05rem;
+            color: var(--text-dark);
+            outline: none; /* Remove default focus outline */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+
+        .newsletter-input::placeholder {
+            color: var(--enactus-placeholder); /* Placeholder color from screenshot */
+            opacity: 1; /* Ensure placeholder is not transparent */
+        }
+
+        .newsletter-input:focus {
+            box-shadow: none; /* Remove focus shadow for this design */
+            border: none; /* Ensure no border appears on focus */
+        }
+
+        .newsletter-btn {
+            flex-shrink: 0; /* Prevent button from shrinking */
+            background: var(--enactus-yellow); /* Bright yellow from screenshot */
+            color: var(--secondary-color);
+            border: none; /* Remove individual border */
+            border-radius: 0; /* No individual border radius as parent handles it */
+            padding: 0 30px; /* Adjusted padding */
+            font-size: 1.15rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: none; /* Remove individual button shadow, use parent's */
+        }
+
+        .newsletter-btn:hover {
+            background: var(--primary-color); /* Slightly different yellow on hover for contrast */
+            color: var(--secondary-color);
+            transform: none; /* Remove transform on hover for this button */
+            box-shadow: none;
+        }
+
+
+        /* Testimonials Section */
+        .testimonials {
+            background: var(--background-light);
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .testimonial-quote {
+            font-size: 1.6rem;
+            color: var(--enactus-heading-color); /* Darker for the quote */
+            font-style: italic;
+            margin-bottom: 25px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .testimonial-quote::before,
+        .testimonial-quote::after {
+            content: '“';
+            font-size: 4rem;
+            color: var(--primary-color);
+            position: absolute;
+            opacity: 0.3;
+        }
+
+        .testimonial-quote::before {
+            content: '“';
+            top: -10px;
+            left: -20px;
+        }
+
+        .testimonial-quote::after {
+            content: '”';
+            bottom: -10px;
+            right: -20px;
+        }
+
+        .testimonial-user {
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            display: block;
+        }
+
         .testimonial-logo-row {
             display: flex;
             justify-content: center;
-            gap: 32px;
-            margin-top: 24px;
+            gap: 40px;
+            margin-top: 40px;
             flex-wrap: wrap;
         }
+
         .testimonial-logo {
-            background: #f5f5f5;
-            color: #FFD600;
-            border-radius: 8px;
-            padding: 8px 18px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            box-shadow: 0 2px 8px #FFD60022;
-            opacity: 0.85;
+            background: var(--background-white);
+            color: var(--primary-color);
+            border-radius: 10px;
+            padding: 10px 22px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            box-shadow: 0 3px 12px rgba(255, 214, 0, 0.2);
+            opacity: 0.95;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        /* BOTTOM SECTION */
+
+        .testimonial-logo:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.35);
+        }
+
+        /* Bottom Section */
         .bottom-section {
-            background: #35373f;
-            color: #fff;
-            padding: 48px 0 24px 0;
+            background: var(--secondary-color);
+            color: #f0f0f0;
+            padding: 60px 20px 30px 20px;
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 60px;
-            border-top: 2px solid #35373f;
+            gap: 80px;
+            border-top: 2px solid var(--secondary-color);
         }
+
         .bottom-col {
-            min-width: 220px;
-            max-width: 320px;
+            min-width: 250px;
+            max-width: 350px;
+            text-align: left;
         }
+
         .bottom-title {
-            font-size: 1.15rem;
-            font-weight: bold;
-            color: #FFD600;
-            margin-bottom: 12px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 18px;
         }
+
         .bottom-list, .bottom-contact {
             list-style: none;
             padding: 0;
             margin: 0;
         }
+
         .bottom-list li, .bottom-contact li {
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            font-size: 1.05rem;
         }
-        .bottom-list a {
-            color: #fff;
+
+        .bottom-list a, .bottom-contact span, .bottom-contact a {
+            color: #f0f0f0;
             text-decoration: none;
             transition: color 0.2s;
         }
+
         .bottom-list a:hover {
-            color: #FFD600;
+            color: var(--primary-color);
         }
+
         .bottom-socials {
             display: flex;
-            gap: 14px;
-            margin-top: 10px;
+            gap: 18px;
+            margin-top: 15px;
         }
+
         .bottom-social-icon {
-            width: 32px;
-            height: 32px;
-            background: #fff;
+            width: 40px;
+            height: 40px;
+            background: var(--background-white);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #FFD600;
-            font-size: 1.3rem;
-            box-shadow: 0 2px 8px #FFD60022;
-            border: 1.5px solid #eee;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            box-shadow: 0 2px 10px rgba(255, 214, 0, 0.2);
+            border: 2px solid var(--background-white);
             cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
         }
+
+        .bottom-social-icon:hover:not(.inactive) {
+            transform: translateY(-3px);
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
         .bottom-social-icon.inactive {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
+            background: #555;
+            color: #999;
+            border-color: #555;
         }
+
         /* FOOTER */
         .footer {
-            background: #35373f;
-            color: #ccc;
+            background: var(--secondary-color);
+            color: #bbb;
             text-align: center;
-            padding: 18px 0 10px 0;
-            font-size: 1rem;
-            letter-spacing: 0.5px;
-            border-top: 1.5px solid #35373f;
+            padding: 25px 0 15px 0;
+            font-size: 0.95rem;
+            letter-spacing: 0.8px;
+            border-top: 1px solid #444;
         }
+
         /* Responsive adjustments */
         @media (max-width: 1200px) {
+            .hero-title {
+                font-size: 3.2rem;
+            }
+            .hero-desc {
+                font-size: 1.3rem;
+            }
+            #features .section-header span:first-child {
+                font-size: 2.5rem;
+            }
+            #features .section-header p {
+                font-size: 1.15rem;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .navbar {
+                padding: 0 30px;
+            }
             .hero {
-                padding: 100px 40px 40px 40px;
+                padding: 120px 20px 60px 20px;
             }
             .hero-title {
                 font-size: 2.8rem;
             }
             .hero-desc {
-                font-size: 1.2rem;
+                font-size: 1.15rem;
             }
             .hero-img {
-                max-width: 500px;
+                max-width: 550px;
+            }
+            .nav-links {
+                gap: 20px;
+            }
+            .feature-card {
+                padding: 30px 25px;
+            }
+            .features-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+            .testimonial-quote {
+                font-size: 1.4rem;
+            }
+
+            /* Adjust hero pseudo-elements for smaller screens if they look off */
+            .hero::before, .hero::after {
+                transform: skewY(-6deg); /* Slightly less aggressive skew */
+            }
+            .hero::after {
+                left: -50%;
+                top: 10%;
             }
         }
-        @media (max-width: 1100px) {
-            .hero {
-                padding: 90px 30px 40px 30px;
-                gap: 30px;
-            }
-            .hero-content {
-                max-width: 100%;
-            }
-            .hero-img {
-                max-width: 450px;
-            }
-            .bottom-section {
-                flex-direction: column;
-                align-items: center;
-                gap: 32px;
-            }
-        }
-        @media (max-width: 900px) {
-            .feature-card { 
-                width: 95vw; 
-                max-width: 350px; 
-            }
-            .hero-title {
-                font-size: 2.4rem;
-            }
-            .hero-desc {
-                font-size: 1.1rem;
-            }
-            .hero-img {
-                max-width: 400px;
-            }
-            .hero {
-                padding: 80px 30px 40px 30px;
-            }
+
+        @media (max-width: 768px) {
             .navbar {
-                padding: 0 50px 0 20px !important;
+                padding: 0 20px;
+                height: 64px;
             }
             .navbar .logo {
+                font-size: 1.8rem;
                 margin-right: 0;
+            }
+            .navbar .logo img {
+                height: 35px;
             }
             .hamburger {
                 display: flex;
@@ -452,63 +689,144 @@
                 position: absolute;
                 top: 64px;
                 right: 0;
-                width: 220px;
-                background: #fff;
-                box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+                width: 250px;
+                background: var(--background-white);
+                box-shadow: 0 6px 20px var(--shadow-medium);
                 z-index: 2000;
-                padding: 10px 0;
-                border-radius: 0 0 8px 8px;
+                padding: 15px 0;
+                border-radius: 0 0 12px 12px;
                 overflow-y: auto;
                 max-height: calc(100vh - 64px);
                 margin-left: 0;
+                align-items: flex-start;
             }
             .nav-links.open {
                 display: flex;
             }
             .nav-links a {
-                padding: 14px 24px;
+                padding: 16px 28px;
                 text-align: left;
-                border-bottom: 1px solid #eee;
+                width: 100%;
+                border-bottom: 1px solid #f0f0f0;
                 box-sizing: border-box;
             }
             .nav-links a:last-child {
                 border-bottom: none;
             }
-        }
-        @media (max-width: 700px) {
-            .feature-card { 
-                width: 95vw; 
-                max-width: 95vw; 
-            }
-            .hero-title { 
-                font-size: 2rem; 
-            }
-            .hero-desc { 
-                font-size: 1rem; 
-            }
+
             .hero {
-                padding: 70px 20px 30px 20px;
-                gap: 25px;
+                padding: 100px 20px 50px 20px;
+                min-height: 70vh;
+                gap: 20px;
+            }
+            .hero-title {
+                font-size: 2.2rem;
+                letter-spacing: -1px;
+            }
+            .hero-desc {
+                font-size: 1.05rem;
+                margin-bottom: 2rem;
             }
             .hero-img {
-                max-width: 320px;
+                max-width: 380px;
             }
             .hero-btns {
                 flex-direction: column;
                 align-items: center;
+                gap: 15px;
             }
             .hero-btn {
                 width: 100%;
-                max-width: 280px;
+                max-width: 300px;
                 text-align: center;
+                padding: 16px 30px;
+            }
+
+            /* Adjust hero pseudo-elements for mobile */
+            .hero::before, .hero::after {
+                transform: skewY(-4deg); /* Even less aggressive skew */
+                top: 0;
+                left: -100%; /* Ensure they still cover the screen */
+                width: 200%;
+            }
+            .hero::after {
+                top: 5%; /* Adjust specific stripe position */
+                left: -120%;
+            }
+
+
+            #features .section-header span:first-child {
+                font-size: 2rem;
+            }
+            #features .section-header p {
+                font-size: 1rem;
+            }
+            .feature-card {
+                width: 100%;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+
+            .newsletter-title {
+                font-size: 1.7rem;
+            }
+            .newsletter-desc {
+                font-size: 1.1rem;
+            }
+            .newsletter-form {
+                width: 100%;
+                max-width: 350px; /* Constrain on smaller screens */
+                height: 50px; /* Slightly smaller on mobile */
+            }
+            .newsletter-input {
+                padding: 0 15px;
+                font-size: 1rem;
+            }
+            .newsletter-btn {
+                padding: 0 20px;
+                font-size: 1.05rem;
+            }
+
+            .testimonial-quote {
+                font-size: 1.2rem;
+                padding: 0 15px;
+            }
+            .testimonial-quote::before {
+                left: 5px;
+            }
+            .testimonial-quote::after {
+                right: 5px;
+            }
+            .testimonial-logo-row {
+                gap: 20px;
+            }
+            .testimonial-logo {
+                padding: 8px 18px;
+                font-size: 1.1rem;
+            }
+
+            .bottom-section {
+                flex-direction: column;
+                align-items: center;
+                gap: 40px;
+                padding: 40px 20px 20px 20px;
+            }
+            .bottom-col {
+                text-align: center;
+                min-width: unset;
+                width: 100%;
+                max-width: 300px;
+            }
+            .bottom-socials {
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="/" style="display:flex;align-items:center;text-decoration:none;">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo" style="height:40px;">
+    <header class="navbar">
+        <a href="/" class="logo">
+            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
         </a>
         <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
             <span></span>
@@ -529,120 +847,129 @@
                 <a href="/accounts/login/">Login</a>
             {% endif %}
         </nav>
-    </div>
-    <div class="hero">
-        <div class="hero-content">
-            <div class="hero-title">
-                Master Exams with <span class="highlight">Lamla AI</span>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    Master Exams with <span class="highlight">Lamla AI</span>
+                </h1>
+                <p class="hero-desc">
+                    Your intelligent study assistant for quizzes, flashcards, and more.
+                    Upload your study materials, generate custom questions, and ace your exams with AI-powered insights.
+                </p>
+                <div class="hero-btns">
+                    {% if not user_authenticated %}
+                        <a href="/accounts/signup/" class="hero-btn">Get Started</a>
+                    {% endif %}
+                    <a href="#features" class="hero-btn secondary">Explore Features</a>
+                </div>
             </div>
-            <div class="hero-desc">
-                Your intelligent study assistant for quizzes, flashcards, and more.<br>
-                Upload your study materials, generate custom questions, and ace your exams with AI-powered insights.
+            <img src="{% static 'slide_analyzer/images/student.jpeg' %}" alt="Study Illustration" class="hero-img">
+        </section>
+
+        <div class="section-divider"></div>
+
+        <section id="features">
+            <div class="section-header">
+                <span>Smart Features for <span class="highlight">Smart Students</span></span>
+                <p>Lamla AI helps you prepare efficiently with these powerful learning tools.</p>
             </div>
-            <div class="hero-btns">
-                {% if not user_authenticated %}
-                    <a href="/accounts/signup/" class="hero-btn">Get Started</a>
-                {% endif %}
-                <a href="#features" class="hero-btn secondary">Explore Features</a>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3 class="feature-title">Exam Pattern Analysis</h3>
+                    <p class="feature-desc">Identify key trends from past exams and predict likely topics based on frequency.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🧠</div>
+                    <h3 class="feature-title">Concept Breakdown</h3>
+                    <p class="feature-desc">Get precise, structured explanations for difficult subjects with step-by-step formats.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚗️</div>
+                    <h3 class="feature-title">Quiz Generation</h3>
+                    <p class="feature-desc">Practice with interactive questions of varying difficulty levels with answers and solutions.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💡</div>
+                    <h3 class="feature-title">Rapid Learning Mode</h3>
+                    <p class="feature-desc">Digest complex theories in simple formats for quick comprehension before exams.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⏱️</div>
+                    <h3 class="feature-title">Study Optimization</h3>
+                    <p class="feature-desc">Access time-efficient strategies and flashcards for high-retention last-minute study.</p>
+                </div>
             </div>
-        </div>
-        <img src="{% static 'slide_analyzer/images/student.jpeg' %}" alt="Study Illustration" class="hero-img">
-    </div>
-    <div class="section-divider"></div>
-    <!-- Features Section -->
-    <div id="features">
-        <div style="text-align:center; margin-bottom: 10px;">
-            <span style="font-size:2.3rem;font-weight:bold;">Smart Features for <span style="color:#FFD600;">Smart Students</span></span>
-            <div style="color:#009688; font-size:1.2rem; margin-top: 10px;">Lamla AI helps you prepare efficiently with these powerful learning tools.</div>
-        </div>
-        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:32px; max-width:1500px; margin:32px auto 0 auto;">
-            <div class="feature-card">
-                <div class="feature-icon">📈</div>
-                <div class="feature-title">Exam Pattern Analysis</div>
-                <div class="feature-desc">Identify key trends from past exams and predict likely topics based on frequency.</div>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <section class="newsletter-section">
+            <h2 class="newsletter-title">Stay Ahead with Lamla AI</h2>
+            <p class="newsletter-desc">Subscribe to our newsletter for study tips, feature updates, and exclusive offers.</p>
+            <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+                <input type="email" class="newsletter-input" placeholder="Your Email" required aria-label="Email for newsletter">
+                <button type="submit" class="newsletter-btn">Subscribe</button>
+            </form>
+        </section>
+
+        <div class="section-divider"></div>
+
+        <section class="testimonials">
+            <blockquote class="testimonial-quote">
+                "Lamla AI helped me turn my lecture slides into practice quizzes and flashcards in seconds. I aced my finals!"
+            </blockquote>
+            <p class="testimonial-user">— Agyemang N., Computer Science Student</p>
+            <div class="testimonial-logo-row">
+                <div class="testimonial-logo">UG</div>
+                <div class="testimonial-logo">KNUST</div>
+                <div class="testimonial-logo">UCC</div>
+                <div class="testimonial-logo">UDS</div>
+                <div class="testimonial-logo">UEW</div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🧠</div>
-                <div class="feature-title">Concept Breakdown</div>
-                <div class="feature-desc">Get precise, structured explanations for difficult subjects with step-by-step formats.</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⚗️</div>
-                <div class="feature-title">Quiz Generation</div>
-                <div class="feature-desc">Practice with interactive questions of varying difficulty levels with answers and solutions.</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">💡</div>
-                <div class="feature-title">Rapid Learning Mode</div>
-                <div class="feature-desc">Digest complex theories in simple formats for quick comprehension before exams.</div>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">⏱️</div>
-                <div class="feature-title">Study Optimization</div>
-                <div class="feature-desc">Access time-efficient strategies and flashcards for high-retention last-minute study.</div>
-            </div>
-        </div>
-    </div>
-    <div class="section-divider"></div>
-    <!-- Newsletter Section -->
-    <div class="newsletter-section">
-        <div class="newsletter-title">Stay Ahead with Lamla AI</div>
-        <div class="newsletter-desc">Subscribe to our newsletter for study tips, feature updates, and exclusive offers.</div>
-        <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
-            <input type="email" class="newsletter-input" placeholder="Enter your email" required>
-            <button type="submit" class="newsletter-btn">Subscribe</button>
-        </form>
-    </div>
-    <div class="section-divider"></div>
-    <!-- Testimonials Section -->
-    <div class="testimonials">
-        <div class="testimonial-quote">
-            "Lamla AI helped me turn my lecture slides into practice quizzes and flashcards in seconds. I aced my finals!"
-        </div>
-        <div class="testimonial-user">— Agyemang N., Computer Science Student</div>
-        <div class="testimonial-logo-row">
-            <div class="testimonial-logo">UG</div>
-            <div class="testimonial-logo">KNUST</div>
-            <div class="testimonial-logo">UCC</div>
-            <div class="testimonial-logo">UDS</div>
-            <div class="testimonial-logo">UEW</div>
-        </div>
-    </div>
-    <div class="section-divider"></div>
-    <!-- Bottom Section -->
-    <div class="bottom-section">
+        </section>
+
+        <div class="section-divider"></div>
+    </main>
+
+    <footer class="bottom-section">
         <div class="bottom-col">
-            <div class="bottom-title">Contact Us</div>
+            <h3 class="bottom-title">Contact Us</h3>
             <ul class="bottom-contact">
-                <li>Email: <a href="mailto:suppport@lamla.ai">suppport@lamla.ai</a></li>
-                <li>Phone: <span>233509341251</span></li>
+                <li>Email: <a href="mailto:support@lamla.ai">support@lamla.ai</a></li>
+                <li>Phone: <span>+233 50 934 1251</span></li>
             </ul>
         </div>
         <div class="bottom-col">
-            <div class="bottom-title">Quick Links</div>
+            <h3 class="bottom-title">Quick Links</h3>
             <ul class="bottom-list">
                 <li><a href="/">Home</a></li>
                 <li><a href="/custom-quiz/">Quiz</a></li>
                 <li><a href="/flashcards/">Flashcards</a></li>
-                <li><a href="/about/">About</a></li>
+                <li><a href="#">Concepts</a></li> <li><a href="#">History</a></li> <li><a href="/exam-analyzer/">Exam Analyzer</a></li> <li><a href="/about/">About</a></li>
                 <li><a href="/accounts/login/">Login</a></li>
                 <li><a href="/accounts/signup/">Sign Up</a></li>
             </ul>
         </div>
         <div class="bottom-col">
-            <div class="bottom-title">Social Media</div>
+            <h3 class="bottom-title">Social Media</h3>
             <div class="bottom-socials">
                 <div class="bottom-social-icon inactive" title="Coming soon"><span>F</span></div>
                 <div class="bottom-social-icon inactive" title="Coming soon"><span>T</span></div>
                 <div class="bottom-social-icon inactive" title="Coming soon"><span>I</span></div>
                 <div class="bottom-social-icon inactive" title="Coming soon"><span>L</span></div>
             </div>
-            <div style="font-size:0.95rem; color:#888; margin-top:8px;">Follow us for updates</div>
+            <p style="font-size:0.9rem; color:#aaa; margin-top:10px;">Follow us for updates</p>
         </div>
-    </div>
+    </footer>
+
     <div class="footer">
         Copyright &copy; 2025 All rights reserved | Lamla AI.
     </div>
+
     <script>
         // Hamburger menu toggle
         document.getElementById('hamburger').onclick = function() {
@@ -666,8 +993,9 @@
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
                     e.preventDefault();
+                    const navbarHeight = document.querySelector('.navbar').offsetHeight;
                     window.scrollTo({
-                        top: target.offsetTop - 60,
+                        top: target.offsetTop - navbarHeight - 20,
                         behavior: 'smooth'
                     });
                 }
@@ -675,4 +1003,4 @@
         });
     </script>
 </body>
-</html> 
+</html>

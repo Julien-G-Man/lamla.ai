@@ -1,527 +1,700 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>LAMLA AI - Create Custom Quiz</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+{% block content %}
+    {# New wrapper div to center the main content below the base.html navbar #}
+    <div class="page-wrapper">
+        <div class="container">
+            <h1 class="main-page-title">&#129504; Generate Custom Quiz</h1>
+            <p class="main-page-description">Upload your study materials or paste content to create custom quiz questions.</p>
+
+            <form id="quizForm" method="post" enctype="multipart/form-data" action="{% url 'custom_quiz' %}">
+                {% csrf_token %}
+
+                <div class="tab-group">
+                    <button type="button" class="tab active" id="textTab">Enter Text</button>
+                    <button type="button" class="tab" id="fileTab">Upload File</button>
+                </div>
+
+                <div class="tab-content" id="textContent">
+                    <textarea name="extractedText" id="studyText" placeholder="Paste your study materials here..."></textarea>
+                </div>
+
+                <div class="tab-content" id="fileContent" style="display:none;">
+                    <div class="upload-zone">
+                        <div class="upload-icon">&#128214;</div>
+                        <div class="upload-text">Upload your study materials</div>
+                        <div class="upload-description">Upload PDF, DOCX, PPT, PPTX, or text files to analyze</div>
+                        <input type="file" name="slide_file" id="slideFile" accept=".pdf,.pptx,.txt" class="hidden-file-input">
+                        <label for="slideFile" class="select-file-button" id="selectFileButton">Select file</label>
+                        <span id="fileNameDisplay" class="file-name-display"></span>
+                    </div>
+                </div>
+
+                <div class="options-row">
+                    <div class="option-group">
+                        <span>MCQ Questions</span>
+                        <input type="number" name="num_mcq" id="numMcqInput" value="5" min="0" max="20" class="number-input">
+                    </div>
+                    <div class="option-group">
+                        <span>Short Answer</span>
+                        <input type="number" name="num_short" id="numShortInput" value="3" min="0" max="20" class="number-input">
+                    </div>
+                </div>
+
+                <div class="actions-row">
+                    <button type="submit" class="main-btn">Generate Questions</button>
+                    <button type="button" class="clear-btn" id="clearBtn">Clear</button>
+                </div>
+            </form>
+
+            <div class="extract-spinner" id="extractSpinner">
+                <div class="spinner"></div>
+                Extracting text...
+            </div>
+
+            {% if error_message %}
+                <div class="form-error api-error-message">{{ error_message }}</div>
+            {% endif %}
+
+            {% if quiz_results %}
+                <div class="quiz-results-container">
+                    <h3 class="results-title">Generated Questions</h3>
+                    {% if quiz_results.mcq_questions %}
+                        <h4 class="question-type-title">Multiple Choice Questions</h4>
+                        <ol class="question-list">
+                            {% for q in quiz_results.mcq_questions %}
+                                <li class="question-item">
+                                    <div class="question-text"><b>{{ q.question }}</b></div>
+                                    <ul class="options-list">
+                                        {% for opt in q.options %}
+                                            <li>{{ opt }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                    <div class="question-answer">Answer: <b>{{ q.answer }}</b></div>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    {% endif %}
+                    {% if quiz_results.short_questions %}
+                        <h4 class="question-type-title">Short Answer Questions</h4>
+                        <ol class="question-list">
+                            {% for q in quiz_results.short_questions %}
+                                <li class="question-item">
+                                    <div class="question-text"><b>{{ q.question }}</b></div>
+                                    <div class="question-answer">Answer: <b>{{ q.answer }}</b></div>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div> {# END page-wrapper #}
+
+    {# Toast message for notifications #}
+    <div class="toast" id="toast"></div>
+
+    {# START OF EMBEDDED CSS #}
     <style>
-        html {
-            scroll-behavior: smooth;
+        /* Import Poppins font */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        /* Root variables for consistent colors, inspired by Enactus design */
+        :root {
+            --enactus-yellow: #FDC72B; /* Key brand yellow, from image */
+            --enactus-dark-blue: #2C3E50; /* A dark, deep blue/grey for text/background contrast */
+            --enactus-text-dark: #34495E; /* Slightly lighter dark for general text */
+            --enactus-light-grey: #ECF0F1; /* Very light grey for backgrounds */
+            --enactus-white: #FFFFFF; /* Pure white for containers */
+            --enactus-border-light: #BDC3C7; /* Light border color */
+            --enactus-shadow-light: rgba(0, 0, 0, 0.08); /* Subtle shadow */
+            --enactus-shadow-medium: rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
+            --enactus-error-red: #E74C3C; /* Red for errors */
+            --enactus-success-green: #2ECC71; /* Green for success */
+            --enactus-info-blue: #3498DB; /* Blue for info */
+            --enactus-placeholder: #a0a0a0; /* Placeholder color */
         }
+
+        /* Base styles from previous pages */
         body {
-            background: #f8f9fa;
-            color: #222;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--enactus-light-grey);
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            color: var(--enactus-text-dark); /* Default text color */
+        }
+
+        .page-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top, not center vertically */
+            min-height: calc(100vh - 80px); /* Adjust for navbar/footer */
+            padding: 40px 20px; /* More padding top/bottom */
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        .container {
+            max-width: 700px; /* Slightly wider container for more content */
+            width: 100%;
+            background: var(--enactus-white);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px var(--enactus-shadow-light);
+            padding: 40px;
+            text-align: left; /* Align content to the left */
+            box-sizing: border-box;
+            margin-top: 20px; /* Small margin from top of wrapper */
+            margin-bottom: 20px; /* Small margin from bottom of wrapper */
+            transform: translateY(0);
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px var(--enactus-shadow-medium);
+        }
+
+        .main-page-title {
+            color: var(--enactus-dark-blue);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .main-page-description {
+            color: var(--enactus-text-dark);
+            font-size: 1.05rem;
+            margin-bottom: 30px;
+            text-align: center;
             line-height: 1.5;
         }
-        .navbar {
-            background: #fff;
-            color: #222;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 80px 0 30px;
-            height: 64px;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            box-shadow: 0 1px 8px rgba(0,0,0,0.07);
-            box-sizing: border-box;
-        }
-        .navbar .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #FFD600;
-            letter-spacing: 0.5px;
-            flex-shrink: 0;
-            margin-right: 80px;
-            height: 40px;
-        }
-        .navbar .logo .ai {
-            color: #FFD600;
-        }
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            z-index: 3000;
-            margin-left: auto;
-            flex-shrink: 0;
-        }
-        .nav-links a {
-            color: #222;
-            text-decoration: none;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: color 0.2s;
-            padding: 6px 0;
-            white-space: nowrap;
-        }
-        .nav-links a:hover {
-            color: #FFD600;
-        }
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 40px;
-            height: 40px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 3000;
-            margin-left: auto;
-        }
-        .hamburger span {
-            display: block;
-            width: 28px;
-            height: 4px;
-            margin: 4px 0;
-            background: #FFD600;
-            border-radius: 2px;
-            transition: 0.3s;
-        }
-        .navbar-mobile-btn {
-            background: #FFD600;
-            color: #111;
-            border: none;
-            border-radius: 6px;
-            padding: 8px 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-left: 15px;
-            transition: background 0.2s;
-            width: 100%;
-            text-align: center;
-            margin: 10px 0;
-        }
-        .navbar-mobile-btn:hover {
-            background: #fff;
-        }
-        .container {
-            max-width: 600px;
-            margin: 100px auto 40px auto;
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.07);
-            padding: 30px 25px;
-            position: relative;
-            text-align: left;
-        }
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #FFD600;
-            margin-bottom: 15px;
-        }
+
         .tab-group {
             display: flex;
             justify-content: center;
             gap: 0;
-            border-bottom: 1.5px solid #eee;
-            background: #fff;
-            margin-bottom: 20px;
-            border-radius: 0;
+            border-bottom: 2px solid var(--enactus-border-light);
+            margin-bottom: 30px;
         }
+
         .tab {
-            color: #222;
+            flex-grow: 1; /* Make tabs take equal width */
+            text-align: center;
+            color: var(--enactus-text-dark);
             background: none;
             border: none;
             font-size: 1.1rem;
-            font-weight: 500;
-            padding: 18px 32px 14px 32px;
+            font-weight: 600;
+            padding: 18px 0 14px 0; /* Adjust padding for full width tabs */
             cursor: pointer;
             outline: none;
             border-bottom: 3px solid transparent;
-            transition: color 0.2s, border-bottom 0.2s;
+            transition: color 0.3s, border-bottom 0.3s, background 0.3s;
         }
+
         .tab.active {
-            color: #FFD600;
-            border-bottom: 3px solid #FFD600;
-            background: #fff;
+            color: var(--enactus-yellow);
+            border-bottom: 3px solid var(--enactus-yellow);
+            background: var(--enactus-light-grey); /* Slightly different background for active tab */
         }
+
         .tab:not(.active):hover {
-            color: #FFD600;
+            color: var(--enactus-dark-blue); /* Darker hover for inactive tabs */
+            background: rgba(253, 199, 43, 0.05); /* Very subtle yellow background on hover */
         }
+
         .tab-content {
-            background: #fff;
-            border-radius: 0 0 16px 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-            padding: 40px 32px 32px 32px;
-            margin-bottom: 20px;
+            background: var(--enactus-white);
+            border-radius: 15px; /* Use consistent border-radius */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* Subtler shadow */
+            padding: 30px; /* Consistent padding */
+            margin-bottom: 30px;
             position: relative;
             overflow: hidden;
             transition: all 0.4s cubic-bezier(.77,0,.18,1);
             opacity: 1;
-            z-index: 1;
         }
+
         .tab-content.slide-in {
             animation: slideIn 0.4s cubic-bezier(.77,0,.18,1);
         }
+
         @keyframes slideIn {
-            from { opacity: 0; transform: translateX(40px); }
-            to { opacity: 1; transform: translateX(0); }
+            from { opacity: 0; transform: translateY(20px); } /* Slide from top/bottom */
+            to { opacity: 1; transform: translateY(0); }
         }
+
         .upload-zone {
-            border: 2px dashed #ddd;
+            border: 2px dashed var(--enactus-border-light);
             border-radius: 12px;
-            padding: 40px 20px;
+            padding: 50px 20px; /* More vertical padding */
             text-align: center;
-            background: #f8f9fa;
-            color: #555;
-            transition: border-color 0.2s, background 0.2s;
+            background: var(--enactus-light-grey);
+            color: var(--enactus-text-dark);
+            transition: border-color 0.3s, background 0.3s;
+            cursor: pointer; /* Indicate clickable */
         }
+
         .upload-zone:hover {
-            border-color: #FFD600;
-            background: #fffbe6;
+            border-color: var(--enactus-yellow);
+            background: rgba(253, 199, 43, 0.08); /* More noticeable hover */
         }
+
         .upload-icon {
-            font-size: 3rem;
-            color: #FFD600;
+            font-size: 3.5rem; /* Larger icon */
+            color: var(--enactus-yellow);
             margin-bottom: 15px;
         }
+
         .upload-text {
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 1.3rem; /* Larger text */
+            font-weight: 600;
             margin-bottom: 8px;
-            color: #222;
+            color: var(--enactus-dark-blue); /* Darker text */
         }
+
         .upload-description {
-            font-size: 1rem;
-            color: #666;
+            font-size: 0.95rem;
+            color: var(--enactus-text-dark);
             margin-bottom: 25px;
         }
+
         .hidden-file-input {
             display: none;
         }
+
         .select-file-button {
-            background: #FFD600;
-            color: #222;
+            background: var(--enactus-yellow);
+            color: var(--enactus-dark-blue);
             border: none;
             border-radius: 8px;
-            padding: 12px 24px;
+            padding: 12px 28px; /* More padding */
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            transition: background 0.3s, color 0.3s, transform 0.2s;
             display: inline-block;
+            box-shadow: 0 4px 10px rgba(253, 199, 43, 0.2);
         }
+
         .select-file-button:hover {
-            background: #222;
-            color: #FFD600;
+            background: var(--enactus-dark-blue);
+            color: var(--enactus-yellow);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         }
-        .tab-content input[type="file"] {
-            display: none;
+
+        .file-name-display { /* Renamed for clarity */
+            display: block;
+            margin: 15px 0 0 0;
+            color: var(--enactus-text-dark);
+            font-weight: 500;
+            font-size: 0.95rem;
         }
+
         .tab-content textarea {
-            width: 89%;
-            min-height: 200px;
-            background: #f8f9fa;
-            color: #222;
-            border: 1.5px solid #ddd;
-            border-radius: 12px;
+            width: 100%; /* Fill parent width */
+            min-height: 250px; /* Taller textarea */
+            background: var(--enactus-light-grey);
+            color: var(--enactus-text-dark);
+            border: 1px solid var(--enactus-border-light);
+            border-radius: 10px;
             padding: 20px;
             font-size: 1rem;
             resize: vertical;
-            line-height: 1.6;
-            transition: border-color 0.2s;
+            line-height: 1.7; /* Better readability */
+            transition: border-color 0.3s, background 0.3s;
+            box-sizing: border-box; /* Include padding in width */
         }
+
         .tab-content textarea:focus {
             outline: none;
-            border-color: #FFD600;
-            background: #fff;
+            border-color: var(--enactus-yellow);
+            background: var(--enactus-white);
+            box-shadow: 0 0 0 3px rgba(253, 199, 43, 0.15);
         }
+
         .options-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+            align-items: center; /* Align items vertically */
+            margin-bottom: 30px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 20px; /* Space between groups */
         }
+
         .option-group {
             display: flex;
-            gap: 10px;
             align-items: center;
-            flex-wrap: wrap;
+            gap: 12px; /* Space between text and input */
+            flex-grow: 1; /* Allow groups to grow */
+            min-width: 180px; /* Minimum width before wrapping */
         }
+
         .option-group span {
-            font-size: 1rem;
-            color: #222;
-            font-weight: 500;
+            font-size: 1.05rem;
+            color: var(--enactus-dark-blue);
+            font-weight: 600;
         }
-        .option-btn {
-            background: #f8f9fa;
-            color: #222;
-            border: 1.5px solid #ddd;
+
+        .number-input { /* Custom class for number inputs */
+            width: 70px; /* Slightly wider */
+            padding: 10px 15px;
             border-radius: 8px;
-            padding: 10px 20px;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            border: 1px solid var(--enactus-border-light);
+            background: var(--enactus-light-grey);
+            color: var(--enactus-text-dark);
+            font-size: 1rem;
+            text-align: center;
+            -moz-appearance: textfield; /* Hide arrows in Firefox */
+            transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
         }
-        .option-btn.selected, .option-btn:active {
-            background: #FFD600;
-            color: #222;
-            border-color: #FFD600;
+
+        .number-input::-webkit-outer-spin-button,
+        .number-input::-webkit-inner-spin-button {
+            -webkit-appearance: none; /* Hide arrows in Chrome/Safari */
+            margin: 0;
         }
-        .option-btn:hover:not(.selected) {
-            border-color: #FFD600;
-            background: #fffbe6;
+
+        .number-input:focus {
+            outline: none;
+            border-color: var(--enactus-yellow);
+            background: var(--enactus-white);
+            box-shadow: 0 0 0 3px rgba(253, 199, 43, 0.15);
         }
+
         .actions-row {
             display: flex;
             gap: 20px;
-            margin-top: 20px;
-            flex-wrap: wrap;
+            margin-top: 30px;
+            flex-wrap: wrap; /* Allow wrapping */
         }
+
         .main-btn {
-            background: #FFD600;
-            color: #222;
+            background: var(--enactus-yellow);
+            color: var(--enactus-dark-blue);
             border: none;
             border-radius: 10px;
-            padding: 16px 0;
-            width: 100%;
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-top: 10px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
-            box-shadow: 0 4px 16px rgba(255, 214, 0, 0.3);
-        }
-        .main-btn:hover {
-            background: #222;
-            color: #FFD600;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
-        }
-        .clear-btn {
-            flex: 1;
-            background: #f8f9fa;
-            color: #222;
-            border: 1.5px solid #ddd;
-            border-radius: 10px;
-            padding: 16px 0;
+            padding: 18px 0; /* More padding */
+            flex: 2; /* Take more space */
+            min-width: 180px; /* Minimum width */
             font-size: 1.2rem;
-            font-weight: bold;
+            font-weight: 700;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s, border-color 0.2s;
-            min-width: 120px;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(253, 199, 43, 0.3);
         }
-        .clear-btn:hover {
-            background: #FFD600;
-            color: #222;
-            border-color: #FFD600;
+
+        .main-btn:hover {
+            background: var(--enactus-dark-blue);
+            color: var(--enactus-yellow);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--enactus-shadow-medium);
         }
-        @media (max-width: 900px) {
-            .navbar {
-                padding: 0 50px 0 20px !important;
-            }
-            .navbar .logo {
-                margin-right: 0;
-            }
-            .hamburger {
-                display: flex;
-                margin-left: auto;
-            }
-            .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 64px;
-                right: 0;
-                width: 220px;
-                background: #fff;
-                box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-                z-index: 2000;
-                padding: 10px 0;
-                border-radius: 0 0 8px 8px;
-                overflow-y: auto;
-                max-height: calc(100vh - 64px);
-                margin-left: 0;
-            }
-            .nav-links.open {
-                display: flex;
-            }
-            .nav-links a {
-                padding: 14px 24px;
-                text-align: left;
-                border-bottom: 1px solid #eee;
-                box-sizing: border-box;
-            }
-            .nav-links a:last-child {
-                border-bottom: none;
-            }
-        }
-        @media (max-width: 500px) {
-            .container {
-                padding: 20px 15px;
-            }
-            .tab,
-            .main-btn,
-            .clear-btn {
-                font-size: 1.1rem;
-                padding: 14px 0;
-            }
-            .tab-content {
-                padding: 15px 10px;
-            }
-            .tab-content input[type="file"],
-            .tab-content textarea {
-                font-size: 0.9rem;
-                padding: 10px;
-            }
-            .option-btn {
-                font-size: 0.9rem;
-                padding: 8px 15px;
-            }
-            .option-group span {
-                font-size: 0.9rem;
-            }
-        }
-        .extracted-preview {
-            background: #f8f9fa;
-            border: 1.5px solid #FFD600;
+
+        .clear-btn {
+            flex: 1; /* Take remaining space */
+            min-width: 100px; /* Minimum width */
+            background: var(--enactus-light-grey);
+            color: var(--enactus-text-dark);
+            border: 1px solid var(--enactus-border-light);
             border-radius: 10px;
-            padding: 18px;
-            margin: 18px 0 10px 0;
-            min-height: 120px;
-            font-size: 1rem;
-            color: #222;
-            width: 100%;
-            resize: vertical;
+            padding: 18px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s, border-color 0.3s, transform 0.3s;
         }
+
+        .clear-btn:hover {
+            background: var(--enactus-yellow);
+            color: var(--enactus-dark-blue);
+            border-color: var(--enactus-yellow);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(253, 199, 43, 0.15);
+        }
+
+        /* Spinner for loading states */
         .extract-spinner {
             display: none;
-            margin: 10px 0;
+            margin: 25px auto; /* Centered */
             text-align: center;
+            font-size: 1.1rem;
+            color: var(--enactus-dark-blue);
+            font-weight: 500;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
         }
+        .spinner {
+            border: 4px solid var(--enactus-border-light);
+            border-top: 4px solid var(--enactus-yellow);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast notifications */
         .toast {
             position: fixed;
             top: 24px;
             right: 24px;
-            background: #FFD600;
-            color: #222;
+            background: var(--enactus-success-green); /* Default success color */
+            color: var(--enactus-white);
             padding: 14px 24px;
             border-radius: 8px;
-            box-shadow: 0 2px 8px #FFD60033;
-            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            font-weight: 600;
             z-index: 9999;
             display: none;
+            font-size: 1rem;
+        }
+
+        /* Error messages for API or form */
+        .api-error-message { /* Specific style for API errors */
+            color: var(--enactus-error-red);
+            background-color: rgba(231, 76, 60, 0.1);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-top: 25px;
+            font-size: 1rem;
+            text-align: center;
+            border: 1px solid var(--enactus-error-red);
+            font-weight: 500;
+        }
+
+        /* Quiz Results Styling */
+        .quiz-results-container {
+            margin-top: 35px;
+            background: rgba(253, 199, 43, 0.08); /* Light yellow background for results */
+            border: 1px solid var(--enactus-yellow);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(253, 199, 43, 0.1);
+        }
+
+        .results-title {
+            color: var(--enactus-dark-blue);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .question-type-title {
+            color: var(--enactus-dark-blue);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--enactus-border-light);
+            padding-bottom: 10px;
+        }
+
+        .question-list {
+            list-style: decimal;
+            padding-left: 25px; /* Indent for numbers */
+            margin-top: 15px;
+        }
+
+        .question-item {
+            margin-bottom: 25px; /* Space between questions */
+            padding-bottom: 15px;
+            border-bottom: 1px dashed var(--enactus-border-light);
+        }
+
+        .question-item:last-child {
+            border-bottom: none; /* No border for last question */
+        }
+
+        .question-text {
+            font-size: 1.15rem;
+            color: var(--enactus-text-dark);
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .question-text b {
+            color: var(--enactus-dark-blue);
+        }
+
+        .options-list {
+            list-style: lower-alpha; /* a, b, c, d */
+            padding-left: 25px; /* Indent for options */
+            margin: 10px 0;
+        }
+
+        .options-list li {
+            margin-bottom: 5px;
+            color: var(--enactus-text-dark);
+            font-size: 1rem;
+        }
+
+        .question-answer {
+            color: var(--enactus-info-blue); /* Distinct color for answers */
+            font-size: 0.95rem;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+
+        .question-answer b {
+            font-weight: 600;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+            .main-page-title {
+                font-size: 1.8rem;
+            }
+            .main-page-description {
+                font-size: 0.95rem;
+            }
+            .tab {
+                font-size: 1rem;
+                padding: 15px 0 12px 0;
+            }
+            .tab-content {
+                padding: 25px;
+            }
+            .upload-zone {
+                padding: 40px 15px;
+            }
+            .upload-icon {
+                font-size: 3rem;
+            }
+            .upload-text {
+                font-size: 1.2rem;
+            }
+            .tab-content textarea {
+                min-height: 200px;
+            }
+            .options-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .option-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .actions-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .main-btn, .clear-btn {
+                width: 100%;
+                flex: none; /* Remove flex-grow on small screens */
+                min-width: unset;
+                padding: 16px 0;
+            }
+            .results-title {
+                font-size: 1.8rem;
+            }
+            .question-type-title {
+                font-size: 1.3rem;
+            }
+            .question-text {
+                font-size: 1.05rem;
+            }
+            .options-list li, .question-answer {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .page-wrapper {
+                padding: 20px 10px;
+            }
+            .container {
+                padding: 20px;
+                border-radius: 10px;
+            }
+            .main-page-title {
+                font-size: 1.6rem;
+            }
+            .main-page-description {
+                font-size: 0.9rem;
+                margin-bottom: 20px;
+            }
+            .tab {
+                font-size: 0.9rem;
+                padding: 12px 0 10px 0;
+            }
+            .tab-content {
+                padding: 20px;
+            }
+            .upload-zone {
+                padding: 30px 10px;
+            }
+            .upload-icon {
+                font-size: 2.5rem;
+            }
+            .upload-text {
+                font-size: 1.1rem;
+            }
+            .upload-description {
+                font-size: 0.85rem;
+            }
+            .select-file-button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+            .file-name-display {
+                font-size: 0.85rem;
+            }
+            .tab-content textarea {
+                min-height: 150px;
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+            .option-group span {
+                font-size: 0.95rem;
+            }
+            .number-input {
+                padding: 8px 12px;
+                font-size: 0.9rem;
+            }
+            .main-btn, .clear-btn {
+                font-size: 1rem;
+                padding: 14px 0;
+            }
+            .quiz-results-container {
+                padding: 20px;
+            }
+            .results-title {
+                font-size: 1.6rem;
+            }
+            .question-type-title {
+                font-size: 1.2rem;
+            }
+            .question-text {
+                font-size: 1rem;
+            }
+            .options-list {
+                padding-left: 20px;
+            }
+            .options-list li, .question-answer {
+                font-size: 0.85rem;
+            }
         }
     </style>
-</head>
-<body>
-    <div class="navbar">
-        <a href="/" style="display:flex;align-items:center;text-decoration:none;">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo">
-        </a>
-        <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-            <a href="/">Home</a>
-            <a href="/custom-quiz/">Quiz</a>
-            <a href="#">Concepts</a>
-            <a href="/flashcards/">Flashcards</a>
-            <a href="#">History</a>
-            <a href="/exam-analyzer/">Exam Analyzer</a>
-            <a href="/about/">About</a>
-            {% if user_authenticated %}
-                <a href="{% url 'custom_logout' %}">Logout</a>
-            {% else %}
-                <a href="/accounts/login/">Login</a>
-            {% endif %}
-        </nav>
-    </div>
-    <div class="container">
-        <h1> </h1>
-        <form id="quizForm" method="post" enctype="multipart/form-data" action="{% url 'custom_quiz' %}">
-            {% csrf_token %}
-            <div style="margin-bottom: 18px;">
-                <b style="font-size:1.3rem;color:#FFD600;">&#129504; Generate Custom Quiz</b>
-                <div style="color:#ccc;font-size:1rem;margin-top:6px;">Upload your study materials or paste content to create custom quiz questions</div>
-            </div>
-            <div class="tab-group">
-                <button type="button" class="tab active" id="textTab">Enter Text</button>
-                <button type="button" class="tab" id="fileTab">Upload File</button>
-            </div>
-            <div class="tab-content" id="textContent">
-                <textarea name="extractedText" id="studyText" placeholder="Paste your study materials here..."></textarea>
-            </div>
-            <div class="tab-content" id="fileContent" style="display:none;">
-                <div class="upload-zone">
-                    <div class="upload-icon">&#128214;</div>
-                    <div class="upload-text">Upload your study materials</div>
-                    <div class="upload-description">Upload PDF, DOCX, PPT, PPTX, or text files to analyze</div>
-                    <input type="file" name="slide_file" id="slideFile" accept=".pdf,.pptx,.txt" class="hidden-file-input">
-                    <label for="slideFile" class="select-file-button" id="selectFileButton">Select file</label>
-                    <span id="fileNameDisplay" style="display:block;margin:10px 0 0 0;color:#222;font-weight:500;"></span>
-                </div>
-            </div>
-            <div class="options-row">
-                <div class="option-group">
-                    <span>MCQ Questions</span>
-                    <input type="number" name="num_mcq" id="numMcqInput" value="5" min="0" max="20" style="width:60px;">
-                </div>
-                <div class="option-group">
-                    <span>Short Answer</span>
-                    <input type="number" name="num_short" id="numShortInput" value="3" min="0" max="20" style="width:60px;">
-                </div>
-            </div>
-            <div class="actions-row">
-                <button type="submit" class="main-btn">Generate Questions</button>
-                <button type="button" class="clear-btn" id="clearBtn">Clear</button>
-            </div>
-        </form>
-        <div class="extract-spinner" id="extractSpinner">Extracting text... <span class="spinner-border"></span></div>
-        <div class="toast" id="toast"></div>
-        {% if error_message %}
-            <div style="color: #ff4d4f; font-weight: bold; margin-top: 18px;">{{ error_message }}</div>
-        {% endif %}
-        {% if quiz_results %}
-            <div style="margin-top: 28px; background: #fffbe6; border: 1.5px solid #FFD600; border-radius: 10px; padding: 24px;">
-                <h3 style="color:#FFD600;">Generated Questions</h3>
-                {% if quiz_results.mcq_questions %}
-                    <h4>Multiple Choice Questions</h4>
-                    <ol>
-                    {% for q in quiz_results.mcq_questions %}
-                        <li style="margin-bottom: 12px;">
-                            <div><b>{{ q.question }}</b></div>
-                            <ul style="margin: 6px 0 0 18px;">
-                                {% for opt in q.options %}
-                                    <li>{{ opt }}</li>
-                                {% endfor %}
-                            </ul>
-                            <div style="color:#888; font-size:0.95em;">Answer: <b>{{ q.answer }}</b></div>
-                        </li>
-                    {% endfor %}
-                    </ol>
-                {% endif %}
-                {% if quiz_results.short_questions %}
-                    <h4>Short Answer Questions</h4>
-                    <ol>
-                    {% for q in quiz_results.short_questions %}
-                        <li style="margin-bottom: 12px;">
-                            <div><b>{{ q.question }}</b></div>
-                            <div style="color:#888; font-size:0.95em;">Answer: <b>{{ q.answer }}</b></div>
-                        </li>
-                    {% endfor %}
-                    </ol>
-                {% endif %}
-            </div>
-        {% endif %}
-    </div>
+    {# END OF EMBEDDED CSS #}
+
     <script>
-        // Tab switching with animation
+        // Tab switching logic
         const textTab = document.getElementById('textTab');
         const fileTab = document.getElementById('fileTab');
         const textContent = document.getElementById('textContent');
@@ -530,7 +703,7 @@
         textTab.onclick = function() {
             textTab.classList.add('active');
             fileTab.classList.remove('active');
-            textContent.style.display = '';
+            textContent.style.display = 'block'; // Use 'block' for display property
             fileContent.style.display = 'none';
             textContent.classList.add('slide-in');
             setTimeout(() => textContent.classList.remove('slide-in'), 400);
@@ -539,33 +712,21 @@
         fileTab.onclick = function() {
             fileTab.classList.add('active');
             textTab.classList.remove('active');
-            fileContent.style.display = '';
+            fileContent.style.display = 'block'; // Use 'block' for display property
             textContent.style.display = 'none';
             fileContent.classList.add('slide-in');
             setTimeout(() => fileContent.classList.remove('slide-in'), 400);
         };
         
-        // Clear button
+        // Clear button functionality
         document.getElementById('clearBtn').onclick = function() {
             document.getElementById('studyText').value = '';
             document.getElementById('slideFile').value = '';
+            document.getElementById('fileNameDisplay').textContent = ''; // Clear file name display
+            // Reset to text tab as default clear action
+            textTab.click();
+            showToast('Form cleared!', false);
         };
-        
-        // Hamburger menu toggle
-        document.getElementById('hamburger').onclick = function() {
-            var nav = document.getElementById('navLinks');
-            var expanded = this.getAttribute('aria-expanded') === 'true';
-            nav.classList.toggle('open');
-            this.setAttribute('aria-expanded', !expanded);
-        };
-        
-        // Close menu when clicking on links
-        document.querySelectorAll('#navLinks a').forEach(function(link) {
-            link.onclick = function() {
-                document.getElementById('navLinks').classList.remove('open');
-                document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
-            }
-        });
         
         // AJAX file upload for extracting text
         const slideFileInput = document.getElementById('slideFile');
@@ -574,11 +735,12 @@
         const studyTextArea = document.getElementById('studyText');
         const extractSpinner = document.getElementById('extractSpinner');
         const toast = document.getElementById('toast');
-        
-        function showToast(msg, isError=false) {
+        const quizForm = document.getElementById('quizForm'); // Get the form itself
+
+        function showToast(msg, isError = false) {
             toast.textContent = msg;
-            toast.style.background = isError ? '#ff4d4f' : '#FFD600';
-            toast.style.color = isError ? '#fff' : '#222';
+            toast.style.background = isError ? 'var(--enactus-error-red)' : 'var(--enactus-success-green)';
+            toast.style.color = 'var(--enactus-white)';
             toast.style.display = 'block';
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
@@ -588,15 +750,26 @@
                 e.preventDefault();
                 slideFileInput.click();
             };
+            
             slideFileInput.onchange = function() {
-                if (!slideFileInput.files.length) return;
+                if (!slideFileInput.files.length) {
+                    fileNameDisplay.textContent = ''; // Clear display if no file selected
+                    return;
+                }
                 fileNameDisplay.textContent = slideFileInput.files[0].name;
+                
+                // Disable form elements during extraction
                 selectFileButton.textContent = 'Extracting...';
                 selectFileButton.disabled = true;
-                extractSpinner.style.display = 'block';
+                quizForm.querySelector('.main-btn').disabled = true; // Disable generate button
+                quizForm.querySelector('.clear-btn').disabled = true; // Disable clear button
+                studyTextArea.disabled = true; // Disable textarea
+                extractSpinner.style.display = 'flex'; // Use flex for centering spinner and text
+                
                 const formData = new FormData();
                 formData.append('slide_file', slideFileInput.files[0]);
-                fetch('/ajax/extract-text/', {
+                
+                fetch('/ajax/extract-text/', { // Ensure this URL is correct and handles POST requests
                     method: 'POST',
                     headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
                     body: formData
@@ -606,19 +779,27 @@
                     if (data.text !== undefined) {
                         studyTextArea.value = data.text;
                         showToast('Text extracted successfully!');
-                        textTab.textContent = 'View Uploaded Text';
+                        // After successful extraction, switch to text tab to show extracted content
+                        textTab.click();
+                        textTab.textContent = 'View Extracted Text'; // Change tab text
                     } else {
-                        showToast(data.error || 'Failed to extract text.', true);
+                        showToast(data.error || 'Failed to extract text. Please try again.', true);
                     }
                 })
-                .catch(() => showToast('Failed to extract text.', true))
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    showToast('Network error or server unreachable. Failed to extract text.', true);
+                })
                 .finally(() => {
+                    // Re-enable form elements
                     selectFileButton.textContent = 'Select file';
                     selectFileButton.disabled = false;
+                    quizForm.querySelector('.main-btn').disabled = false;
+                    quizForm.querySelector('.clear-btn').disabled = false;
+                    studyTextArea.disabled = false;
                     extractSpinner.style.display = 'none';
                 });
             };
         }
     </script>
-</body>
-</html> 
+{% endblock %}

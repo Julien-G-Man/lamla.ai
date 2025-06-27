@@ -16,6 +16,7 @@ from django.core.exceptions import ValidationError
 import mimetypes
 from django.views.decorators.csrf import csrf_exempt
 from allauth.account.views import LoginView as AllauthLoginView
+import json
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -240,9 +241,11 @@ def custom_quiz(request):
         try:
             num_mcq = int(request.POST.get('num_mcq', 5))
             num_short = int(request.POST.get('num_short', 3))
+            quiz_time = int(request.POST.get('quiz_time', 10))
         except Exception:
             num_mcq = 5
             num_short = 3
+            quiz_time = 10
         if not extracted_text:
             error_message = 'No extracted text provided.'
             return render(request, 'slides_analyzer/custom_quiz.html', {
@@ -257,6 +260,7 @@ def custom_quiz(request):
                     num_mcq=num_mcq,
                     num_short=num_short
                 )
+                print('DEBUG: Generated questions:', questions)
                 if 'error' in questions and questions['error']:
                     error_message = (
                         'Sorry, we could not generate questions at this time. Reason: ' + str(questions['error']) +
@@ -267,6 +271,7 @@ def custom_quiz(request):
                         'quiz_results': None,
                         'error_message': error_message
                     })
+                request.session['quiz_time'] = quiz_time
                 request.session['questions'] = questions
                 return redirect('quiz')
             except Exception as e:
@@ -335,9 +340,11 @@ def exam_analyzer(request):
 def quiz(request):
     # Get questions from session
     questions = request.session.get('questions', {})
+    print('DEBUG: Session questions:', questions)
+    quiz_time = request.session.get('quiz_time', 10)
     if not questions or (not questions.get('mcq_questions') and not questions.get('short_questions')):
         return redirect('custom_quiz')
-    return render(request, 'slides_analyzer/quiz.html', {'questions': questions, 'user_authenticated': request.user.is_authenticated})
+    return render(request, 'slides_analyzer/quiz.html', {'questions': questions, 'user_authenticated': request.user.is_authenticated, 'quiz_time': quiz_time})
 
 @login_required
 def flashcards(request):
@@ -410,3 +417,38 @@ class CustomLoginView(AllauthLoginView):
 def custom_logout(request):
     auth_logout(request)
     return redirect('account_login')
+
+@csrf_exempt
+def quiz_results(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            user_answers = data.get('user_answers', {})
+            request.session['user_answers'] = user_answers
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    questions = request.session.get('questions', {})
+    user_answers = request.session.get('user_answers', {})
+    if not questions or (not questions.get('mcq_questions') and not questions.get('short_questions')):
+        return redirect('custom_quiz')
+    # Calculate score (simple logic: +1 for each correct MCQ, short answers not auto-graded)
+    score = 0
+    total = 0
+    mcq_questions = questions.get('mcq_questions', [])
+    for idx, q in enumerate(mcq_questions):
+        total += 1
+        user_ans = user_answers.get(str(idx))
+        if user_ans and user_ans.lower() == q.get('answer', '').lower():
+            score += 1
+    # Short answer questions could be shown for review
+    short_questions = questions.get('short_questions', [])
+    context = {
+        'score': score,
+        'total': total,
+        'mcq_questions': mcq_questions,
+        'short_questions': short_questions,
+        'user_answers': user_answers,
+        'user_authenticated': request.user.is_authenticated,
+    }
+    return render(request, 'slides_analyzer/quiz_results.html', context)

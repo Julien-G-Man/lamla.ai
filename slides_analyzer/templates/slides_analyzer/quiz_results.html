@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+{% load static %}
+{% load get_item %}
+
+{% block content %}
+<div class="page-wrapper">
+    <div class="container">
+        <h1 class="main-page-title">&#127942; Quiz Results</h1>
+        <div class="results-summary-card">
+            <h2 class="results-title">Your Score: <span class="score-value">{{ score }}/{{ total }}</span></h2>
+            <p class="results-desc">Review your answers below. MCQs are auto-graded. Short answers are for your review.</p>
+        </div>
+        <div class="results-section">
+            <h3 class="question-type-title">Multiple Choice Questions</h3>
+            <ol class="question-list">
+                {% for q in mcq_questions %}
+                <li class="question-item">
+                    <div class="question-text"><b>{{ q.question }}</b></div>
+                    <ul class="options-list">
+                        {% for opt in q.options %}
+                        <li class="option{% if opt == q.answer %} correct{% endif %}{% if user_answers|get_item:forloop.counter0 == opt and opt != q.answer %} user-wrong{% endif %}">
+                            {{ opt }}
+                            {% if opt == q.answer %}<span class="correct-label"> (Correct)</span>{% endif %}
+                            {% if user_answers|get_item:forloop.counter0 == opt and opt != q.answer %}
+                                <span class="user-label"> (Your answer)</span>
+                            {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="question-answer">
+                        Your answer: <b>{{ user_answers|get_item:forloop.counter0|default:'No answer' }}</b>
+                        {% if user_answers|get_item:forloop.counter0 == q.answer %}
+                            <span class="icon-correct">&#10004;</span>
+                        {% else %}
+                            <span class="icon-wrong">&#10008;</span>
+                        {% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ol>
+        </div>
+        <div class="results-section">
+            <h3 class="question-type-title">Short Answer Questions</h3>
+            <ol class="question-list">
+                {% for q in short_questions %}
+                <li class="question-item">
+                    <div class="question-text"><b>{{ q.question }}</b></div>
+                    <div class="question-answer">Suggested answer: <b>{{ q.answer }}</b></div>
+                </li>
+                {% endfor %}
+            </ol>
+        </div>
+        <div class="actions-row">
+            <a href="{% url 'custom_quiz' %}" class="main-btn">Try Another Quiz</a>
+        </div>
+    </div>
+</div>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    :root {
+        --enactus-yellow: #FDC72B;
+        --enactus-dark-blue: #2C3E50;
+        --enactus-text-dark: #34495E;
+        --enactus-light-grey: #ECF0F1;
+        --enactus-white: #FFFFFF;
+        --enactus-border-light: #BDC3C7;
+        --enactus-shadow-light: rgba(0, 0, 0, 0.08);
+        --enactus-shadow-medium: rgba(0, 0, 0, 0.15);
+        --enactus-error-red: #E74C3C;
+        --enactus-success-green: #2ECC71;
+        --enactus-info-blue: #3498DB;
+    }
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--enactus-light-grey);
+        color: var(--enactus-text-dark);
+    }
+    .page-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: calc(100vh - 80px);
+        padding: 40px 20px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .container {
+        max-width: 700px;
+        width: 100%;
+        background: var(--enactus-white);
+        border-radius: 15px;
+        box-shadow: 0 10px 25px var(--enactus-shadow-light);
+        padding: 40px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+    }
+    .main-page-title {
+        color: var(--enactus-dark-blue);
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    .results-summary-card {
+        background: var(--enactus-light-grey);
+        border-radius: 12px;
+        box-shadow: 0 2px 8px var(--enactus-shadow-light);
+        padding: 24px 18px;
+        margin-bottom: 32px;
+        text-align: center;
+    }
+    .results-title {
+        color: var(--enactus-dark-blue);
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    .score-value {
+        color: var(--enactus-success-green);
+        font-weight: 700;
+        font-size: 1.3em;
+    }
+    .results-desc {
+        color: var(--enactus-info-blue);
+        font-size: 1.05rem;
+        margin-bottom: 0;
+    }
+    .results-section {
+        margin-bottom: 30px;
+    }
+    .question-type-title {
+        color: var(--enactus-yellow);
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+    .question-list {
+        padding-left: 20px;
+    }
+    .question-item {
+        margin-bottom: 18px;
+        background: var(--enactus-light-grey);
+        border-radius: 10px;
+        padding: 18px 16px;
+        box-shadow: 0 2px 8px var(--enactus-shadow-light);
+    }
+    .question-text {
+        margin-bottom: 8px;
+        color: var(--enactus-dark-blue);
+        font-weight: 600;
+    }
+    .options-list {
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 0;
+    }
+    .options-list li {
+        margin-bottom: 4px;
+        padding: 6px 10px;
+        border-radius: 6px;
+        display: inline-block;
+    }
+    .options-list li.correct {
+        font-weight: bold;
+        color: var(--enactus-success-green);
+        background: #eafaf1;
+    }
+    .options-list li.user-wrong {
+        color: var(--enactus-error-red);
+        font-weight: 600;
+        background: #fff0f0;
+    }
+    .correct-label {
+        font-size: 0.9em;
+        color: var(--enactus-success-green);
+        margin-left: 4px;
+    }
+    .user-label {
+        color: var(--enactus-error-red);
+        font-size: 0.9em;
+        margin-left: 4px;
+    }
+    .question-answer {
+        margin-top: 10px;
+        color: var(--enactus-info-blue);
+        font-size: 0.98rem;
+        font-weight: 500;
+    }
+    .icon-correct {
+        color: var(--enactus-success-green);
+        font-size: 1.1em;
+        margin-left: 6px;
+    }
+    .icon-wrong {
+        color: var(--enactus-error-red);
+        font-size: 1.1em;
+        margin-left: 6px;
+    }
+    .actions-row {
+        display: flex;
+        gap: 20px;
+        margin-top: 30px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .main-btn {
+        background: var(--enactus-yellow);
+        color: var(--enactus-dark-blue);
+        border: none;
+        border-radius: 10px;
+        padding: 18px 0;
+        font-size: 1.15rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+        min-width: 200px;
+        box-shadow: 0 4px 18px rgba(253, 199, 43, 0.4);
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+    }
+    .main-btn:hover {
+        background: var(--enactus-dark-blue);
+        color: var(--enactus-yellow);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(253, 199, 43, 0.5);
+    }
+    @media (max-width: 768px) {
+        .container {
+            padding: 30px;
+        }
+        .main-page-title {
+            font-size: 1.8rem;
+        }
+        .results-title {
+            font-size: 1.2rem;
+        }
+        .question-type-title {
+            font-size: 1.05rem;
+        }
+        .question-text {
+            font-size: 1.02rem;
+        }
+        .actions-row {
+            flex-direction: column;
+            gap: 15px;
+        }
+        .main-btn {
+            width: 100%;
+            min-width: unset;
+            padding: 16px 0;
+        }
+    }
+    @media (max-width: 500px) {
+        .page-wrapper {
+            padding: 20px 10px;
+        }
+        .container {
+            padding: 18px;
+            border-radius: 10px;
+        }
+        .main-page-title {
+            font-size: 1.3rem;
+        }
+        .results-title {
+            font-size: 1rem;
+        }
+        .question-type-title {
+            font-size: 0.95rem;
+        }
+        .question-text {
+            font-size: 0.95rem;
+        }
+        .main-btn {
+            font-size: 1rem;
+            padding: 14px 0;
+        }
+    }
+</style>
+{% endblock %} 

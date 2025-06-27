@@ -194,6 +194,18 @@ Expected Answer: [Brief answer]
             logger.error(f"Local GPT-2 error: {e}")
             return ""
 
+    def _call_ollama(self, prompt: str, model: str = 'llama3') -> str:
+        import requests
+        url = 'http://localhost:11434/api/generate'
+        data = {
+            'model': model,
+            'prompt': prompt,
+            'stream': False
+        }
+        response = requests.post(url, json=data, timeout=120)
+        response.raise_for_status()
+        return response.json()['response']
+
     def _generate_template_questions(self, text: str, num_mcq: int, num_short: int) -> Dict[str, List[Dict]]:
         """Generate questions using templates when all APIs fail"""
         logger.info("Generating template-based questions")
@@ -226,7 +238,7 @@ Expected Answer: [Brief answer]
             mcq_questions.append({
                 "question": mcq_templates[i],
                 "options": option_templates[i],
-                "correct_answer": "A"
+                "answer": "A"
             })
         
         # Template-based short answer questions
@@ -241,7 +253,7 @@ Expected Answer: [Brief answer]
         for i in range(min(num_short, len(short_templates))):
             short_questions.append({
                 "question": short_templates[i],
-                "expected_answer": "The text discusses various concepts and ideas that should be analyzed based on the content provided."
+                "answer": "The text discusses various concepts and ideas that should be analyzed based on the content provided."
             })
         
         return {
@@ -251,11 +263,10 @@ Expected Answer: [Brief answer]
 
     def generate_questions(self, text: str, num_mcq: int = 3, num_short: int = 2) -> Dict[str, List[Dict]]:
         """
-        Generate questions from the provided text, using cache if available.
+        Generate questions from the provided text, using Ollama if available.
         """
         # Generate content hash
         content_hash = Question.generate_content_hash(text)
-        
         # Check cache first
         try:
             cached = QuestionCache.objects.get(content_hash=content_hash)
@@ -264,76 +275,14 @@ Expected Answer: [Brief answer]
             return cached.questions
         except QuestionCache.DoesNotExist:
             pass
-
-        if not self.primary_api:
-            logger.warning("No API keys configured for question generation")
-            return self._generate_template_questions(text, num_mcq, num_short)
-
         try:
             prompt = self._create_prompt(text, num_mcq, num_short)
-            
-            # Try APIs in order of preference with better error handling
-            response = None
-            last_error = None
-            
-            # Try Gemini first
-            if self.primary_api == 'gemini' and self.gemini_api_key:
-                try:
-                    response = self._call_gemini_api(prompt)
-                    if response:
-                        logger.info("Successfully generated questions using Gemini API")
-                except Exception as e:
-                    last_error = e
-                    logger.warning(f"Gemini failed, trying OpenAI: {e}")
-                    
-            # Try OpenAI if Gemini failed or not available
-            if not response and self.openai_api_key:
-                try:
-                    response = self._call_openai_api(prompt)
-                    if response:
-                        logger.info("Successfully generated questions using OpenAI API")
-                except Exception as e:
-                    last_error = e
-                    logger.warning(f"OpenAI failed, trying Hugging Face: {e}")
-                    
-            # Try Hugging Face if OpenAI failed or not available
-            if not response and self.hf_token:
-                try:
-                    response = self._call_huggingface_api(prompt)
-                    if response:
-                        logger.info("Successfully generated questions using Hugging Face API")
-                except Exception as e:
-                    last_error = e
-                    logger.warning(f"Hugging Face failed, trying local fallback: {e}")
-            
-            # Local GPT-2 fallback
-            if not response:
-                try:
-                    response = self._call_local_gpt2(prompt)
-                    if response:
-                        logger.info("Used local GPT-2 fallback for question generation.")
-                except Exception as e:
-                    last_error = e
-                    logger.error(f"Local GPT-2 fallback failed: {e}")
-            
-            if not response:
-                logger.error(f"All question generation methods failed. Last error: {last_error}")
-                logger.info("Using template-based question generation as final fallback")
-                return self._generate_template_questions(text, num_mcq, num_short)
-            
-            # Parse the response
+            # Use Ollama as the primary method
+            response = self._call_ollama(prompt, model='llama3')
             questions = self._parse_response(response)
-            
             # Validate that we got some questions
             if not questions.get("mcq_questions") and not questions.get("short_questions"):
-                logger.warning("No questions generated from API response, using fallback")
                 return self._generate_template_questions(text, num_mcq, num_short)
-            
-            # Validate question quality - if questions look malformed, use template fallback
-            if self._are_questions_malformed(questions):
-                logger.warning("Questions appear malformed, using template fallback")
-                return self._generate_template_questions(text, num_mcq, num_short)
-            
             # Cache the generated questions
             try:
                 QuestionCache.objects.create(
@@ -342,11 +291,9 @@ Expected Answer: [Brief answer]
                 )
             except Exception as e:
                 logger.warning(f"Failed to cache questions: {e}")
-            
             return questions
-            
         except Exception as e:
-            logger.error(f"Error generating questions: {e}")
+            logger.error(f"Ollama error: {e}")
             return self._generate_template_questions(text, num_mcq, num_short)
 
     def _are_questions_malformed(self, questions: Dict[str, List[Dict]]) -> bool:
@@ -406,24 +353,24 @@ Expected Answer: [Brief answer]
                 current_mcq = {
                     "question": line.split(':', 1)[1].strip() if ':' in line else line,
                     "options": [],
-                    "correct_answer": None
+                    "answer": None
                 }
             elif line.startswith(('A)', 'B)', 'C)', 'D)')):
                 if current_mcq:
                     current_mcq["options"].append(line[3:].strip())
             elif line.startswith('Correct Answer:'):
                 if current_mcq:
-                    current_mcq["correct_answer"] = line.split(':', 1)[1].strip()
+                    current_mcq["answer"] = line.split(':', 1)[1].strip()
             elif line.startswith('Short Answer'):
                 if current_short:
                     questions["short_questions"].append(current_short)
                 current_short = {
                     "question": line.split(':', 1)[1].strip() if ':' in line else line,
-                    "expected_answer": None
+                    "answer": None
                 }
             elif line.startswith('Expected Answer:'):
                 if current_short:
-                    current_short["expected_answer"] = line.split(':', 1)[1].strip()
+                    current_short["answer"] = line.split(':', 1)[1].strip()
         
         # Add the last questions if they exist
         if current_mcq:

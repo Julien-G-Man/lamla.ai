@@ -301,183 +301,232 @@
             <div id="question-list-numbers" style="display:flex;flex-wrap:wrap;gap:10px;"></div>
         </div>
     </div>
+    <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
+    {{ questions.mcq_questions|default:'[]'|json_script:"mcq-questions-json" }}
+    {{ questions.short_questions|default:'[]'|json_script:"short-questions-json" }}
     <script>
-        // Hamburger menu toggle
-        document.getElementById('hamburger').onclick = function() {
-            var nav = document.getElementById('navLinks');
-            var expanded = this.getAttribute('aria-expanded') === 'true';
-            nav.classList.toggle('open');
-            this.setAttribute('aria-expanded', !expanded);
-        };
-        document.querySelectorAll('#navLinks a').forEach(function(link) {
-            link.onclick = function() {
-                document.getElementById('navLinks').classList.remove('open');
-                document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
+        document.addEventListener('DOMContentLoaded', function() {
+            let mcq = [];
+            let short = [];
+            let parseError = null;
+            try {
+                mcq = JSON.parse(document.getElementById('mcq-questions-json').textContent);
+            } catch (e) {
+                parseError = 'Error parsing mcq_questions: ' + e;
             }
-        });
-        // Timer logic
-        let totalSeconds = 10 * 60; // 10 minutes
-        const timerDisplay = document.getElementById('timer');
-        let timerInterval;
-        function updateTimer() {
-            const min = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
-            const sec = String(totalSeconds % 60).padStart(2, '0');
-            timerDisplay.textContent = `${min}:${sec}`;
-            if (totalSeconds > 0) {
-                totalSeconds--;
-            } else {
-                clearInterval(timerInterval);
-                alert('Time is up!');
+            try {
+                short = JSON.parse(document.getElementById('short-questions-json').textContent);
+            } catch (e) {
+                parseError = (parseError ? parseError + '\n' : '') + 'Error parsing short_questions: ' + e;
             }
-        }
-        updateTimer();
-        timerInterval = setInterval(updateTimer, 1000);
-        document.querySelector('.hide-timer-btn').addEventListener('click', () => {
-            const timerContainer = document.querySelector('.timer-container');
-            timerContainer.style.display = timerContainer.style.display === 'none' ? 'flex' : 'none';
-        });
-        // Dynamic quiz data from Django backend
-        const quizData = {
-            mcq: JSON.parse("{{ questions.mcq_questions|default:'[]'|escapejs }}"),
-            short: JSON.parse("{{ questions.short_questions|default:'[]'|escapejs }}")
-        };
-        const totalQuestions = quizData.mcq.length + quizData.short.length;
-        let currentQuestionIndex = 0;
-        let userAnswers = {};
-        let flaggedQuestions = {};
-        function renderMath() {
-            if (window.MathJax) {
-                MathJax.typesetPromise();
+            const quizData = { mcq, short };
+            if (mcq.length === 0 && short.length === 0) {
+                document.getElementById('question-math').innerHTML = '<span style="color:red">No questions available. Please check your input or contact support.</span>';
+                return;
             }
-        }
-        function getCurrentQuestion() {
-            if (currentQuestionIndex < quizData.mcq.length) {
-                return { ...quizData.mcq[currentQuestionIndex], type: 'mcq' };
-            } else {
-                return { ...quizData.short[currentQuestionIndex - quizData.mcq.length], type: 'short' };
-            }
-        }
-        function displayQuestion() {
-            const q = getCurrentQuestion();
-            document.getElementById('current-question').textContent = (currentQuestionIndex + 1).toString();
-            const status = userAnswers[currentQuestionIndex] ? 'Answered' : 'Not yet answered';
-            document.getElementById('question-status').textContent = status;
-            document.getElementById('question-math').innerHTML = q.question;
-            const optionsContainer = document.getElementById('options-container');
-            optionsContainer.innerHTML = '';
-            if (q.type === 'mcq') {
-                q.options.forEach((option, idx) => {
-                    const letter = String.fromCharCode(97 + idx);
-                    const isSelected = userAnswers[currentQuestionIndex] === letter;
-                    const selectedClass = isSelected ? 'selected' : '';
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <label class="${selectedClass}">
-                            <input type="radio" name="quizOption" value="${letter}" ${isSelected ? 'checked' : ''}>
-                            <span class="option-text">${String.fromCharCode(97 + idx)}. $${option}$</span>
-                        </label>
-                    `;
-                    optionsContainer.appendChild(li);
-                    li.querySelector('input[type="radio"]').addEventListener('change', (e) => {
-                        userAnswers[currentQuestionIndex] = letter;
-                        displayQuestion();
-                    });
-                });
-            } else {
-                const li = document.createElement('li');
-                li.innerHTML = `<input type="text" class="option-text" style="width:100%;padding:10px;border-radius:6px;border:1px solid #FFD600;background:#fff;color:#222;font-size:1rem;" placeholder="Type your answer here..." value="${userAnswers[currentQuestionIndex] || ''}">`;
-                optionsContainer.appendChild(li);
-                li.querySelector('input').addEventListener('input', (e) => {
-                    userAnswers[currentQuestionIndex] = e.target.value;
-                });
-            }
-            renderMath();
-            updateFlagUI();
-        }
-        document.getElementById('prev-btn').addEventListener('click', () => {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                displayQuestion();
-            }
-        });
-        document.getElementById('next-btn').addEventListener('click', () => {
-            if (currentQuestionIndex < totalQuestions - 1) {
-                currentQuestionIndex++;
-                displayQuestion();
-            } else {
-                clearInterval(timerInterval);
-                alert('Quiz completed! Your answers have been recorded.');
-            }
-        });
-        displayQuestion();
-        // Flag question logic
-        document.getElementById('flag-question-btn').addEventListener('click', function() {
-            flaggedQuestions[currentQuestionIndex] = !flaggedQuestions[currentQuestionIndex];
-            updateFlagUI();
-        });
-        function updateFlagUI() {
-            const flagged = flaggedQuestions[currentQuestionIndex];
-            const flagIcon = document.getElementById('flag-icon');
-            const flagText = document.getElementById('flag-text');
-            if (flagged) {
-                flagIcon.classList.add('flagged');
-                flagIcon.style.color = '#FFD600';
-                flagText.textContent = 'Flagged';
-                flagText.style.color = '#FFD600';
-            } else {
-                flagIcon.classList.remove('flagged');
-                flagIcon.style.color = '';
-                flagText.textContent = 'Flag question';
-                flagText.style.color = '';
-            }
-        }
-        // Question List modal logic
-        const questionListModal = document.getElementById('question-list-modal');
-        document.getElementById('question-list-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            renderQuestionList();
-            questionListModal.style.display = 'flex';
-        });
-        document.getElementById('close-question-list').addEventListener('click', function() {
-            questionListModal.style.display = 'none';
-        });
-        function renderQuestionList() {
-            const container = document.getElementById('question-list-numbers');
-            container.innerHTML = '';
-            for (let i = 0; i < totalQuestions; i++) {
-                const btn = document.createElement('button');
-                btn.textContent = (i + 1).toString();
-                btn.style.padding = '10px 16px';
-                btn.style.borderRadius = '8px';
-                btn.style.border = 'none';
-                btn.style.fontWeight = 'bold';
-                btn.style.fontSize = '1em';
-                btn.style.cursor = 'pointer';
-                btn.style.background = (i === currentQuestionIndex) ? '#FFD600' : '#f5f5f5';
-                btn.style.color = (i === currentQuestionIndex) ? '#222' : '#222';
-                btn.style.position = 'relative';
-                btn.style.outline = flaggedQuestions[i] ? '2px solid #FFD600' : 'none';
-                if (flaggedQuestions[i]) {
-                    const flag = document.createElement('span');
-                    flag.innerHTML = '<i class="fas fa-flag"></i>';
-                    flag.style.color = '#FFD600';
-                    flag.style.position = 'absolute';
-                    flag.style.top = '2px';
-                    flag.style.right = '2px';
-                    flag.style.fontSize = '0.9em';
-                    btn.appendChild(flag);
+            const totalQuestions = quizData.mcq.length + quizData.short.length;
+            let currentQuestionIndex = 0;
+            let userAnswers = {};
+            let flaggedQuestions = {};
+            function renderMath() {
+                if (window.MathJax) {
+                    MathJax.typesetPromise();
                 }
-                btn.onclick = function() {
-                    currentQuestionIndex = i;
-                    displayQuestion();
-                    questionListModal.style.display = 'none';
-                };
-                container.appendChild(btn);
             }
-        }
-        // Close modal on outside click
-        questionListModal.addEventListener('click', function(e) {
-            if (e.target === questionListModal) questionListModal.style.display = 'none';
+            function getCurrentQuestion() {
+                if (currentQuestionIndex < quizData.mcq.length) {
+                    return { ...quizData.mcq[currentQuestionIndex], type: 'mcq' };
+                } else {
+                    return { ...quizData.short[currentQuestionIndex - quizData.mcq.length], type: 'short' };
+                }
+            }
+            // Timer logic
+            let totalSeconds = parseInt('{{ quiz_time|default:10 }}', 10) * 60; // User-selected minutes
+            const timerDisplay = document.getElementById('timer');
+            let timerInterval;
+            function submitQuizAndRedirect() {
+                console.log('Submitting quiz...');
+                // Collect answers
+                let answers = {};
+                for (let i = 0; i < totalQuestions; i++) {
+                    if (userAnswers[i] !== undefined) {
+                        answers[i] = userAnswers[i];
+                    }
+                }
+                // Send answers to backend
+                const csrfToken = document.getElementById('csrf_token').value;
+                fetch("{% url 'quiz_results' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken,
+                    },
+                    body: JSON.stringify({user_answers: answers})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        setTimeout(function() {
+                            window.location.href = "{% url 'quiz_results' %}";
+                        }, 200);
+                    } else {
+                        alert('Error submitting quiz: ' + (data.message || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    alert('Network error submitting quiz: ' + error);
+                });
+            }
+            function updateTimer() {
+                const min = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+                const sec = String(totalSeconds % 60).padStart(2, '0');
+                timerDisplay.textContent = `${min}:${sec}`;
+                if (totalSeconds > 0) {
+                    totalSeconds--;
+                } else {
+                    clearInterval(timerInterval);
+                    alert('Time is up! Submitting your quiz...');
+                    submitQuizAndRedirect();
+                }
+            }
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+            document.querySelector('.hide-timer-btn').addEventListener('click', () => {
+                const timerContainer = document.querySelector('.timer-container');
+                timerContainer.style.display = timerContainer.style.display === 'none' ? 'flex' : 'none';
+            });
+            function displayQuestion() {
+                const q = getCurrentQuestion();
+                console.log('Current question:', q);
+                if (!q || !q.question) {
+                    alert('No question data found! Check the backend and JS.');
+                    document.getElementById('question-math').innerHTML = '<span style="color:red">No question data found!</span>';
+                    return;
+                }
+                document.getElementById('current-question').textContent = (currentQuestionIndex + 1).toString();
+                const status = userAnswers[currentQuestionIndex] ? 'Answered' : 'Not yet answered';
+                document.getElementById('question-status').textContent = status;
+                document.getElementById('question-math').innerHTML = q.question;
+                const optionsContainer = document.getElementById('options-container');
+                optionsContainer.innerHTML = '';
+                if (q.type === 'mcq') {
+                    q.options.forEach((option, idx) => {
+                        const letter = String.fromCharCode(97 + idx);
+                        const isSelected = userAnswers[currentQuestionIndex] === letter;
+                        const selectedClass = isSelected ? 'selected' : '';
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <label class="${selectedClass}">
+                                <input type="radio" name="quizOption" value="${letter}" ${isSelected ? 'checked' : ''}>
+                                <span class="option-text">${String.fromCharCode(97 + idx)}. ${option}</span>
+                            </label>
+                        `;
+                        optionsContainer.appendChild(li);
+                        li.querySelector('input[type="radio"]').addEventListener('change', (e) => {
+                            userAnswers[currentQuestionIndex] = letter;
+                            displayQuestion();
+                        });
+                    });
+                } else {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<input type="text" class="option-text" style="width:100%;padding:10px;border-radius:6px;border:1px solid #FFD600;background:#fff;color:#222;font-size:1rem;" placeholder="Type your answer here..." value="${userAnswers[currentQuestionIndex] || ''}">`;
+                    optionsContainer.appendChild(li);
+                    li.querySelector('input').addEventListener('input', (e) => {
+                        userAnswers[currentQuestionIndex] = e.target.value;
+                    });
+                }
+                renderMath();
+                updateFlagUI();
+            }
+            document.getElementById('prev-btn').addEventListener('click', () => {
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    displayQuestion();
+                }
+            });
+            document.getElementById('next-btn').addEventListener('click', () => {
+                if (currentQuestionIndex < totalQuestions - 1) {
+                    currentQuestionIndex++;
+                    displayQuestion();
+                } else {
+                    clearInterval(timerInterval);
+                    alert('Quiz completed! Your answers have been recorded.');
+                }
+            });
+            displayQuestion();
+            // Flag question logic
+            document.getElementById('flag-question-btn').addEventListener('click', function() {
+                flaggedQuestions[currentQuestionIndex] = !flaggedQuestions[currentQuestionIndex];
+                updateFlagUI();
+            });
+            function updateFlagUI() {
+                const flagged = flaggedQuestions[currentQuestionIndex];
+                const flagIcon = document.getElementById('flag-icon');
+                const flagText = document.getElementById('flag-text');
+                if (flagged) {
+                    flagIcon.classList.add('flagged');
+                    flagIcon.style.color = '#FFD600';
+                    flagText.textContent = 'Flagged';
+                    flagText.style.color = '#FFD600';
+                } else {
+                    flagIcon.classList.remove('flagged');
+                    flagIcon.style.color = '';
+                    flagText.textContent = 'Flag question';
+                    flagText.style.color = '';
+                }
+            }
+            // Question List modal logic
+            const questionListModal = document.getElementById('question-list-modal');
+            document.getElementById('question-list-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                renderQuestionList();
+                questionListModal.style.display = 'flex';
+            });
+            document.getElementById('close-question-list').addEventListener('click', function() {
+                questionListModal.style.display = 'none';
+            });
+            function renderQuestionList() {
+                const container = document.getElementById('question-list-numbers');
+                container.innerHTML = '';
+                for (let i = 0; i < totalQuestions; i++) {
+                    const btn = document.createElement('button');
+                    btn.textContent = (i + 1).toString();
+                    btn.style.padding = '10px 16px';
+                    btn.style.borderRadius = '8px';
+                    btn.style.border = 'none';
+                    btn.style.fontWeight = 'bold';
+                    btn.style.fontSize = '1em';
+                    btn.style.cursor = 'pointer';
+                    btn.style.background = (i === currentQuestionIndex) ? '#FFD600' : '#f5f5f5';
+                    btn.style.color = (i === currentQuestionIndex) ? '#222' : '#222';
+                    btn.style.position = 'relative';
+                    btn.style.outline = flaggedQuestions[i] ? '2px solid #FFD600' : 'none';
+                    if (flaggedQuestions[i]) {
+                        const flag = document.createElement('span');
+                        flag.innerHTML = '<i class="fas fa-flag"></i>';
+                        flag.style.color = '#FFD600';
+                        flag.style.position = 'absolute';
+                        flag.style.top = '2px';
+                        flag.style.right = '2px';
+                        flag.style.fontSize = '0.9em';
+                        btn.appendChild(flag);
+                    }
+                    btn.onclick = function() {
+                        currentQuestionIndex = i;
+                        displayQuestion();
+                        questionListModal.style.display = 'none';
+                    };
+                    container.appendChild(btn);
+                }
+            }
+            // Close modal on outside click
+            questionListModal.addEventListener('click', function(e) {
+                if (e.target === questionListModal) questionListModal.style.display = 'none';
+            });
+            document.getElementById('submit-btn').addEventListener('click', function() {
+                clearInterval(timerInterval);
+                submitQuizAndRedirect();
+            });
         });
     </script>
 </body>

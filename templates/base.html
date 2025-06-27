@@ -5,145 +5,286 @@
     <meta charset="UTF-8">
     <title>Lamla AI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-papm6Q+ua6Qw1Q0Qw1Q0Qw1Q0Qw1Q0Qw1Q0Qw1Q0Qw1Q0Qw1Q0Qw1Q0Qw1Q0Qw1Q0Qw1Q0Qw1Q0Qw1Q0Qw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #FFD600;
+            --secondary-color: #222;
+            --background-light: #f8f9fa;
+            --background-white: #fff;
+            --text-muted: #555;
+            --text-dark: #333;
+            --shadow-light: rgba(0,0,0,0.07);
+            --shadow-medium: rgba(0,0,0,0.15);
+            --border-color: #eee;
+            --enactus-yellow: #FDC72B;
+            --enactus-light-yellow-bg: #FFFBF0;
+            --enactus-dark-text: #4a4a4a;
+            --enactus-heading-color: #333;
+            --enactus-blue: #3E8EFF;
+            --enactus-placeholder: #a0a0a0;
+        }
+        html { scroll-behavior: smooth; }
         body {
-            background: #111;
-            color: #fff;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            background: var(--background-light);
+            color: var(--enactus-dark-text);
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         .navbar {
-            background: #fff;
-            color: #222;
+            background: var(--background-white);
+            color: var(--secondary-color);
             display: flex;
             align-items: center;
-            padding: 0 30px;
-            height: 64px;
+            justify-content: space-between;
+            padding: 0 40px;
+            height: 70px;
             position: fixed;
             top: 0;
             width: 100%;
             z-index: 1000;
-            box-shadow: 0 1px 8px rgba(0,0,0,0.07);
+            box-shadow: 0 2px 10px var(--shadow-light);
+            box-sizing: border-box;
         }
         .navbar .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #222;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-color);
             letter-spacing: 0.5px;
-            margin-right: auto;
+            flex-shrink: 0;
+            margin-right: 60px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
         }
-        .navbar .logo .ai {
-            color: #FFD600;
+        .navbar .logo img {
+            height: 45px;
+            margin-right: 8px;
         }
         .nav-links {
             display: flex;
-            gap: 24px;
+            gap: 25px;
             align-items: center;
             z-index: 3000;
+            margin-left: auto;
+            flex-shrink: 0;
         }
         .nav-links a {
-            color: #222;
+            color: var(--secondary-color);
             text-decoration: none;
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 500;
-            transition: color 0.2s;
-            padding: 6px 0;
+            transition: color 0.3s ease, transform 0.2s ease;
+            padding: 8px 0;
             white-space: nowrap;
         }
         .nav-links a:hover {
-            color: #FFD600;
+            color: var(--primary-color);
+            transform: translateY(-2px);
         }
         .hamburger {
             display: none;
             flex-direction: column;
             justify-content: center;
-            width: 28px;
-            height: 28px;
+            align-items: center;
+            width: 45px;
+            height: 45px;
+            background: none;
+            border: none;
             cursor: pointer;
-            position: absolute;
-            right: 30px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 3001;
+            z-index: 3000;
+            margin-left: auto;
+            padding: 0;
         }
         .hamburger span {
-            height: 2px;
-            width: 100%;
-            background: #222;
-            margin: 2px 0;
-            border-radius: 1px;
-            transition: all 0.3s;
+            display: block;
+            width: 30px;
+            height: 3px;
+            margin: 5px 0;
+            background: var(--primary-color);
+            border-radius: 2px;
+            transition: 0.3s ease;
         }
-        @media (max-width: 900px) {
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 20px;
+                height: 64px;
+            }
+            .navbar .logo {
+                font-size: 1.8rem;
+                margin-right: 0;
+            }
+            .navbar .logo img {
+                height: 35px;
+            }
+            .hamburger {
+                display: flex;
+                margin-left: auto;
+            }
             .nav-links {
                 display: none;
+                flex-direction: column;
                 position: absolute;
                 top: 64px;
                 right: 0;
-                width: 220px;
-                background: #fff;
-                flex-direction: column;
-                gap: 0;
-                box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+                width: 250px;
+                background: var(--background-white);
+                box-shadow: 0 6px 20px var(--shadow-medium);
                 z-index: 2000;
-                padding: 10px 0;
-                border-radius: 0 0 8px 8px;
+                padding: 15px 0;
+                border-radius: 0 0 12px 12px;
                 overflow-y: auto;
                 max-height: calc(100vh - 64px);
+                margin-left: 0;
+                align-items: flex-start;
             }
             .nav-links.open {
                 display: flex;
-                right: 15px;
             }
             .nav-links a {
-                padding: 12px 20px;
+                padding: 16px 28px;
                 text-align: left;
-                border-bottom: 1px solid #eee;
+                width: 100%;
+                border-bottom: 1px solid #f0f0f0;
                 box-sizing: border-box;
+            }
+            .nav-links a:last-child {
+                border-bottom: none;
+            }
+        }
+        @media (max-width: 900px) {
+            .nav-links {
+                display: block;
+                position: fixed;
+                top: 0;
+                right: -360px;
+                width: 300px;
+                height: 100vh;
+                background: var(--background-white);
+                box-shadow: -4px 0 24px rgba(0,0,0,0.10);
+                padding: 90px 30px 30px 30px;
+                transition: right 0.35s cubic-bezier(.77,0,.18,1);
+                border-radius: 0 0 0 24px;
+                flex-direction: column;
+                gap: 18px;
+                margin-left: 0;
+                z-index: 4000;
+            }
+            .nav-links.open {
+                right: 0;
+            }
+            .nav-links a {
+                display: block;
+                padding: 16px 0;
+                font-size: 1.15rem;
+                border-bottom: 1px solid var(--border-color);
+                color: var(--secondary-color);
+                transition: color 0.2s, background 0.2s;
             }
             .nav-links a:last-child {
                 border-bottom: none;
             }
             .hamburger {
                 display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                width: 48px;
+                height: 48px;
+                background: none;
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+                margin-left: 0;
+                z-index: 5000;
+                position: relative;
+                transition: none;
+                padding: 0;
+            }
+            .hamburger.open {
+                background: none;
+                box-shadow: none;
+            }
+            .hamburger span {
+                width: 28px;
+                height: 3.5px;
+                margin: 4px 0;
+                background: var(--primary-color);
+                border-radius: 2px;
+                transition: all 0.3s cubic-bezier(.77,0,.18,1);
+                position: relative;
+            }
+            .hamburger.open span {
+                background: var(--secondary-color);
+            }
+            .hamburger.open span:nth-child(1) {
+                transform: translateY(11.5px) rotate(45deg);
+            }
+            .hamburger.open span:nth-child(2) {
+                opacity: 0;
+                transform: scaleX(0);
+            }
+            .hamburger.open span:nth-child(3) {
+                transform: translateY(-11.5px) rotate(-45deg);
             }
         }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="/" style="display:flex;align-items:center;text-decoration:none;">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo" style="height:40px;">
+    <header class="navbar">
+        <a href="/" class="logo">
+            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
         </a>
-        <div class="hamburger" id="hamburger">
+        {% block navbar_links %}
+        <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
             <span></span>
             <span></span>
             <span></span>
-        </div>
-        <div class="nav-links" id="navLinks">
+        </button>
+        <nav class="nav-links" id="navLinks" aria-label="Main navigation">
             <a href="/">Home</a>
             <a href="/custom-quiz/">Quiz</a>
             <a href="#">Concepts</a>
             <a href="/flashcards/">Flashcards</a>
             <a href="#">History</a>
             <a href="/exam-analyzer/">Exam Analyzer</a>
+            <a href="/about/">About</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'custom_logout' %}">Logout</a>
             {% else %}
                 <a href="/accounts/login/">Login</a>
             {% endif %}
-        </div>
-    </div>
-    <div style="margin-top: 80px;">
+        </nav>
+        {% endblock %}
+    </header>
+    <div style="margin-top: 90px;"></div>
+    <div>
         {% block content %}{% endblock %}
     </div>
     <script>
-        // Hamburger menu toggle
-        document.getElementById('hamburger').onclick = function() {
-            document.getElementById('navLinks').classList.toggle('open');
-        };
+        // Hamburger menu toggle with slide-out effect
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        if (hamburger && navLinks) {
+            hamburger.onclick = function() {
+                const expanded = this.getAttribute('aria-expanded') === 'true';
+                navLinks.classList.toggle('open');
+                this.classList.toggle('open');
+                this.setAttribute('aria-expanded', !expanded);
+            };
+            // Close menu when clicking on links (mobile only)
+            navLinks.querySelectorAll('a').forEach(function(link) {
+                link.onclick = function() {
+                    navLinks.classList.remove('open');
+                    hamburger.classList.remove('open');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
     </script>
 </body>
 </html> 

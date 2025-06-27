@@ -432,17 +432,21 @@ def quiz_results(request):
     user_answers = request.session.get('user_answers', {})
     if not questions or (not questions.get('mcq_questions') and not questions.get('short_questions')):
         return redirect('custom_quiz')
-    # Calculate score (simple logic: +1 for each correct MCQ, short answers not auto-graded)
+    
+    # Calculate score for MCQ questions
     score = 0
     total = 0
     mcq_questions = questions.get('mcq_questions', [])
     for idx, q in enumerate(mcq_questions):
         total += 1
         user_ans = user_answers.get(str(idx))
-        if user_ans and user_ans.lower() == q.get('answer', '').lower():
+        correct_ans = q.get('answer', '').upper()
+        if user_ans and user_ans.upper() == correct_ans:
             score += 1
-    # Short answer questions could be shown for review
+    
+    # Short answer questions are for review only (not auto-graded)
     short_questions = questions.get('short_questions', [])
+    
     context = {
         'score': score,
         'total': total,

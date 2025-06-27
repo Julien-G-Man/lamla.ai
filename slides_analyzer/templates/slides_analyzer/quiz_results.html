@@ -18,22 +18,40 @@
                     <div class="question-text"><b>{{ q.question }}</b></div>
                     <ul class="options-list">
                         {% for opt in q.options %}
-                        <li class="option{% if opt == q.answer %} correct{% endif %}{% if user_answers|get_item:forloop.counter0 == opt and opt != q.answer %} user-wrong{% endif %}">
-                            {{ opt }}
-                            {% if opt == q.answer %}<span class="correct-label"> (Correct)</span>{% endif %}
-                            {% if user_answers|get_item:forloop.counter0 == opt and opt != q.answer %}
-                                <span class="user-label"> (Your answer)</span>
+                        {% with option_letter=forloop.counter0|add:97|stringformat:"c" %}
+                        {% with user_ans=user_answers|get_item:forloop.parentloop.counter0 %}
+                        <li class="option
+                            {% if option_letter == q.answer %}correct{% endif %}
+                            {% if user_ans == option_letter and option_letter != q.answer %}user-wrong{% endif %}
+                            {% if user_ans == option_letter and option_letter == q.answer %}user-correct{% endif %}">
+                            {{ forloop.counter0|add:97|stringformat:"c" }}. {{ opt }}
+                            {% if option_letter == q.answer %}<span class="correct-label"> (Correct Answer)</span>{% endif %}
+                            {% if user_ans == option_letter and option_letter != q.answer %}
+                                <span class="user-label"> (Your Answer - Wrong)</span>
+                            {% endif %}
+                            {% if user_ans == option_letter and option_letter == q.answer %}
+                                <span class="user-correct-label"> (Your Answer - Correct!)</span>
                             {% endif %}
                         </li>
+                        {% endwith %}
+                        {% endwith %}
                         {% endfor %}
                     </ul>
                     <div class="question-answer">
-                        Your answer: <b>{{ user_answers|get_item:forloop.counter0|default:'No answer' }}</b>
-                        {% if user_answers|get_item:forloop.counter0 == q.answer %}
-                            <span class="icon-correct">&#10004;</span>
+                        {% with user_ans=user_answers|get_item:forloop.counter0 %}
+                        {% if user_ans %}
+                            Your answer: <b>{{ user_ans|upper }}. {{ user_ans|letter_to_option:q.options }}</b>
+                            {% if user_ans == q.answer %}
+                                <span class="icon-correct">&#10004; Correct!</span>
+                            {% else %}
+                                <span class="icon-wrong">&#10008; Incorrect</span>
+                                <br><small style="color: var(--enactus-info-blue);">Correct answer: <b>{{ q.answer|upper }}. {{ q.answer|letter_to_option:q.options }}</b></small>
+                            {% endif %}
                         {% else %}
-                            <span class="icon-wrong">&#10008;</span>
+                            <span style="color: var(--enactus-error-red);">No answer provided</span>
+                            <br><small style="color: var(--enactus-info-blue);">Correct answer: <b>{{ q.answer|upper }}. {{ q.answer|letter_to_option:q.options }}</b></small>
                         {% endif %}
+                        {% endwith %}
                     </div>
                 </li>
                 {% endfor %}
@@ -45,7 +63,12 @@
                 {% for q in short_questions %}
                 <li class="question-item">
                     <div class="question-text"><b>{{ q.question }}</b></div>
-                    <div class="question-answer">Suggested answer: <b>{{ q.answer }}</b></div>
+                    <div class="question-answer">
+                        Your answer: <b>{{ user_answers|get_item:forloop.counter0|default:'No answer' }}</b>
+                    </div>
+                    <div class="question-answer">
+                        Suggested answer: <b>{{ q.answer }}</b>
+                    </div>
                 </li>
                 {% endfor %}
             </ol>
@@ -57,6 +80,15 @@
 </div>
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    
+    /* Ensure hamburger menu is hidden on quiz results page */
+    .hamburger {
+        display: none !important;
+    }
+    .nav-links {
+        display: none !important;
+    }
+    
     :root {
         --enactus-yellow: #FDC72B;
         --enactus-dark-blue: #2C3E50;
@@ -165,21 +197,37 @@
         font-weight: bold;
         color: var(--enactus-success-green);
         background: #eafaf1;
+        border: 2px solid var(--enactus-success-green);
     }
     .options-list li.user-wrong {
         color: var(--enactus-error-red);
         font-weight: 600;
         background: #fff0f0;
+        border: 2px solid var(--enactus-error-red);
+    }
+    .options-list li.user-correct {
+        color: var(--enactus-success-green);
+        font-weight: bold;
+        background: #eafaf1;
+        border: 2px solid var(--enactus-success-green);
     }
     .correct-label {
         font-size: 0.9em;
         color: var(--enactus-success-green);
         margin-left: 4px;
+        font-weight: bold;
     }
     .user-label {
         color: var(--enactus-error-red);
         font-size: 0.9em;
         margin-left: 4px;
+        font-weight: bold;
+    }
+    .user-correct-label {
+        color: var(--enactus-success-green);
+        font-size: 0.9em;
+        margin-left: 4px;
+        font-weight: bold;
     }
     .question-answer {
         margin-top: 10px;
@@ -278,4 +326,8 @@
         }
     }
 </style>
+{% endblock %}
+
+{% block navbar_links %}
+<!-- Only logo, no links or hamburger for quiz results page -->
 {% endblock %} 

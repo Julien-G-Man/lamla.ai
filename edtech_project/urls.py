@@ -16,14 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.shortcuts import redirect
 from slides_analyzer import views
 from django.conf import settings
 from django.conf.urls.static import static
+
+def redirect_base_to_home(request):
+    return redirect('home')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', views.home, name='home'),  # Home page
+    path('base/', redirect_base_to_home),  # Redirect /base to home
     path('', include('slides_analyzer.urls')),
 ]
 

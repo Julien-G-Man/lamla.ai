@@ -1,15 +1,16 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Quiz - Lamla AI</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+{% block content %}
     <style>
         html { scroll-behavior: smooth; }
+        /* Ensure hamburger menu is hidden on quiz page */
+        .hamburger {
+            display: none !important;
+        }
+        .nav-links {
+            display: none !important;
+        }
         body {
             background: #f8f9fa;
             color: #222;
@@ -21,108 +22,6 @@
             flex-direction: column;
             min-height: 100vh;
             font-size: 16px;
-        }
-        .navbar {
-            background: #fff;
-            color: #222;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 80px 0 30px;
-            height: 64px;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            box-shadow: 0 1px 8px rgba(0,0,0,0.07);
-            box-sizing: border-box;
-        }
-        .navbar .logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #FFD600;
-            letter-spacing: 0.5px;
-            flex-shrink: 0;
-            margin-right: 80px;
-        }
-        .nav-links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            z-index: 3000;
-            margin-left: auto;
-            flex-shrink: 0;
-        }
-        .nav-links a {
-            color: #222;
-            text-decoration: none;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: color 0.2s;
-            padding: 6px 0;
-            white-space: nowrap;
-        }
-        .nav-links a:hover {
-            color: #FFD600;
-        }
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 40px;
-            height: 40px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 3000;
-            margin-left: auto;
-        }
-        .hamburger span {
-            display: block;
-            width: 28px;
-            height: 4px;
-            margin: 4px 0;
-            background: #FFD600;
-            border-radius: 2px;
-            transition: 0.3s;
-        }
-        @media (max-width: 900px) {
-            .navbar {
-                padding: 0 20px 0 10px !important;
-            }
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 64px;
-                right: 0;
-                width: 220px;
-                background: #fff;
-                flex-direction: column;
-                gap: 0;
-                box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-                z-index: 2000;
-                padding: 10px 0;
-                border-radius: 0 0 8px 8px;
-                overflow-y: auto;
-                max-height: calc(100vh - 64px);
-            }
-            .nav-links.open {
-                display: flex;
-                right: 15px;
-            }
-            .nav-links a {
-                padding: 12px 20px;
-                text-align: left;
-                border-bottom: 1px solid #eee;
-                box-sizing: border-box;
-            }
-            .nav-links a:last-child {
-                border-bottom: none;
-            }
-            .hamburger {
-                display: flex;
-            }
         }
         .main-content {
             flex-grow: 1;
@@ -154,6 +53,7 @@
         .timer-container .timer { font-size: 1.3em; font-weight: bold; letter-spacing: 1px; }
         .timer-container .hide-timer-btn { background-color: rgba(255, 255, 255, 0.2); border: none; color: #fff; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.9em; transition: background-color 0.2s; }
         .timer-container .hide-timer-btn:hover { background-color: rgba(255, 255, 255, 0.3); }
+        .timer-container .timer.hidden { display: none; }
         .quiz-question-card { background: #fff; border-radius: 12px; box-shadow: 0 3px 15px rgba(0,0,0,0.07); padding: 20px; width: 100%; max-width: 500px; box-sizing: border-box; }
         .quiz-question-card .question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .quiz-question-card .question-number { font-size: 1.1em; font-weight: bold; color: #222; }
@@ -224,32 +124,9 @@
             .navigation-footer .nav-btn { padding: 10px 15px; font-size: 0.9em; }
         }
     </style>
-</head>
-<body>
-    <div class="navbar">
-        <a href="/" style="display:flex;align-items:center;text-decoration:none;">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo" style="height:40px;">
-        </a>
-        <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-            <a href="/">Home</a>
-            <a href="/custom-quiz/">Quiz</a>
-            <a href="#">Concepts</a>
-            <a href="/flashcards/">Flashcards</a>
-            <a href="#">History</a>
-            <a href="/exam-analyzer/">Exam Analyzer</a>
-            <a href="/about/">About</a>
-            {% if user_authenticated %}
-                <a href="{% url 'custom_logout' %}">Logout</a>
-            {% else %}
-                <a href="/accounts/login/">Login</a>
-            {% endif %}
-        </nav>
-    </div>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <div class="main-content" style="padding-top: 94px;">
         <div class="timer-container">
             <div class="time-left">Time left</div>
@@ -328,6 +205,7 @@
             let currentQuestionIndex = 0;
             let userAnswers = {};
             let flaggedQuestions = {};
+            let isCompletionScreen = false;
             function renderMath() {
                 if (window.MathJax) {
                     MathJax.typesetPromise();
@@ -392,21 +270,62 @@
             updateTimer();
             timerInterval = setInterval(updateTimer, 1000);
             document.querySelector('.hide-timer-btn').addEventListener('click', () => {
-                const timerContainer = document.querySelector('.timer-container');
-                timerContainer.style.display = timerContainer.style.display === 'none' ? 'flex' : 'none';
+                const timerDisplay = document.querySelector('.timer');
+                const hideBtn = document.querySelector('.hide-timer-btn');
+                if (timerDisplay.classList.contains('hidden')) {
+                    timerDisplay.classList.remove('hidden');
+                    hideBtn.textContent = 'Hide';
+                } else {
+                    timerDisplay.classList.add('hidden');
+                    hideBtn.textContent = 'Show';
+                }
             });
             function displayQuestion() {
+                // If we're in completion screen mode, don't display a question
+                if (isCompletionScreen) {
+                    return;
+                }
+                
                 const q = getCurrentQuestion();
                 console.log('Current question:', q);
                 if (!q || !q.question) {
-                    alert('No question data found! Check the backend and JS.');
-                    document.getElementById('question-math').innerHTML = '<span style="color:red">No question data found!</span>';
+                    // Show completion screen instead of error
+                    showCompletionScreen();
                     return;
                 }
                 document.getElementById('current-question').textContent = (currentQuestionIndex + 1).toString();
                 const status = userAnswers[currentQuestionIndex] ? 'Answered' : 'Not yet answered';
                 document.getElementById('question-status').textContent = status;
+                
+                // Add final question indicator
+                if (currentQuestionIndex === totalQuestions - 1) {
+                    document.getElementById('question-status').textContent = status + ' (Final Question)';
+                    document.getElementById('question-status').style.color = '#28a745';
+                    document.getElementById('question-status').style.fontWeight = 'bold';
+                } else {
+                    document.getElementById('question-status').style.color = '';
+                    document.getElementById('question-status').style.fontWeight = '';
+                }
+                
                 document.getElementById('question-math').innerHTML = q.question;
+                
+                // Update button text based on question position
+                const nextBtn = document.getElementById('next-btn');
+                const submitBtn = document.getElementById('submit-btn');
+                if (currentQuestionIndex === totalQuestions - 1) {
+                    // Final question
+                    nextBtn.innerHTML = '<span>Finish Quiz</span><i class="fas fa-check"></i>';
+                    nextBtn.style.background = '#28a745';
+                    nextBtn.style.color = '#fff';
+                    submitBtn.style.display = 'none'; // Hide submit button since next button will handle submission
+                } else {
+                    // Not final question
+                    nextBtn.innerHTML = '<span>Next page</span><i class="fas fa-chevron-right"></i>';
+                    nextBtn.style.background = '#FFD600';
+                    nextBtn.style.color = '#222';
+                    submitBtn.style.display = 'inline-flex';
+                }
+                
                 const optionsContainer = document.getElementById('options-container');
                 optionsContainer.innerHTML = '';
                 if (q.type === 'mcq') {
@@ -438,19 +357,103 @@
                 renderMath();
                 updateFlagUI();
             }
+            
+            function showCompletionScreen() {
+                isCompletionScreen = true;
+                // Hide timer
+                document.querySelector('.timer-container').style.display = 'none';
+                
+                // Update question display
+                document.getElementById('current-question').textContent = 'Quiz Complete';
+                document.getElementById('question-status').textContent = 'Ready to Submit';
+                document.getElementById('question-status').style.color = '#28a745';
+                document.getElementById('question-status').style.fontWeight = 'bold';
+                
+                // Calculate actual answered questions
+                const answeredCount = Object.keys(userAnswers).length;
+                const unansweredCount = totalQuestions - answeredCount;
+                
+                // Show completion message
+                document.getElementById('question-math').innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <div style="font-size: 3rem; color: #28a745; margin-bottom: 20px;">🎉</div>
+                        <h2 style="color: #2C3E50; margin-bottom: 15px;">Quiz Completed!</h2>
+                        <p style="color: #34495E; font-size: 1.1rem; margin-bottom: 30px;">
+                            You have answered ${answeredCount} out of ${totalQuestions} questions. 
+                            <br>Click "Submit Quiz" to see your results.
+                        </p>
+                        <div style="background: #f8f9fa; border-radius: 10px; padding: 20px; margin: 20px 0;">
+                            <h4 style="color: #2C3E50; margin-bottom: 10px;">Summary:</h4>
+                            <p style="color: #34495E; margin: 5px 0;">
+                                • Total Questions: ${totalQuestions}<br>
+                                • Answered: ${answeredCount}<br>
+                                • Unanswered: ${unansweredCount}
+                            </p>
+                        </div>
+                    </div>
+                `;
+                
+                // Clear options
+                document.getElementById('options-container').innerHTML = '';
+                
+                // Update buttons
+                const nextBtn = document.getElementById('next-btn');
+                const submitBtn = document.getElementById('submit-btn');
+                
+                nextBtn.innerHTML = '<span>Review Quiz</span><i class="fas fa-arrow-left"></i>';
+                nextBtn.style.background = '#6c757d';
+                nextBtn.style.color = '#fff';
+                nextBtn.onclick = function() {
+                    // Go back to last question
+                    isCompletionScreen = false;
+                    currentQuestionIndex = totalQuestions - 1;
+                    displayQuestion();
+                    // Restore timer display
+                    document.querySelector('.timer-container').style.display = 'flex';
+                    // Restore flag button
+                    document.getElementById('flag-question-btn').style.display = 'block';
+                };
+                
+                submitBtn.style.display = 'inline-flex';
+                submitBtn.innerHTML = '<span>Submit Quiz</span><i class="fas fa-paper-plane"></i>';
+                submitBtn.style.background = '#28a745';
+                submitBtn.style.color = '#fff';
+                
+                // Hide flag button
+                document.getElementById('flag-question-btn').style.display = 'none';
+            }
             document.getElementById('prev-btn').addEventListener('click', () => {
-                if (currentQuestionIndex > 0) {
+                if (isCompletionScreen) {
+                    // If in completion screen, go back to last question
+                    isCompletionScreen = false;
+                    currentQuestionIndex = totalQuestions - 1;
+                    displayQuestion();
+                    // Restore timer display
+                    document.querySelector('.timer-container').style.display = 'flex';
+                    // Restore flag button
+                    document.getElementById('flag-question-btn').style.display = 'block';
+                } else if (currentQuestionIndex > 0) {
                     currentQuestionIndex--;
                     displayQuestion();
                 }
             });
             document.getElementById('next-btn').addEventListener('click', () => {
-                if (currentQuestionIndex < totalQuestions - 1) {
+                if (isCompletionScreen) {
+                    // If in completion screen, go back to last question
+                    isCompletionScreen = false;
+                    currentQuestionIndex = totalQuestions - 1;
+                    displayQuestion();
+                    // Restore timer display
+                    document.querySelector('.timer-container').style.display = 'flex';
+                    // Restore flag button
+                    document.getElementById('flag-question-btn').style.display = 'block';
+                } else if (currentQuestionIndex < totalQuestions - 1) {
                     currentQuestionIndex++;
                     displayQuestion();
-                } else {
-                    clearInterval(timerInterval);
-                    alert('Quiz completed! Your answers have been recorded.');
+                } else if (currentQuestionIndex === totalQuestions - 1) {
+                    // User is on the final question and clicked "Finish Quiz"
+                    // Show completion screen instead of directly submitting
+                    showCompletionScreen();
                 }
             });
             displayQuestion();
@@ -512,6 +515,13 @@
                         btn.appendChild(flag);
                     }
                     btn.onclick = function() {
+                        if (isCompletionScreen) {
+                            isCompletionScreen = false;
+                            // Restore timer display
+                            document.querySelector('.timer-container').style.display = 'flex';
+                            // Restore flag button
+                            document.getElementById('flag-question-btn').style.display = 'block';
+                        }
                         currentQuestionIndex = i;
                         displayQuestion();
                         questionListModal.style.display = 'none';
@@ -529,5 +539,8 @@
             });
         });
     </script>
-</body>
-</html> 
+{% endblock %}
+
+{% block navbar_links %}
+<!-- Only logo, no links or hamburger for quiz page -->
+{% endblock %} 

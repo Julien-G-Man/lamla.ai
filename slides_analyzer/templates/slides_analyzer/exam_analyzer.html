@@ -5,15 +5,25 @@
     <meta charset="UTF-8">
     <title>Exam Analyzer - Lamla AI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
+        /* General Body and HTML Styles (Copied from flashcards.html) */
+        html {
+            scroll-behavior: smooth;
+        }
         body {
-            background: #f8f9fa;
-            color: #222;
+            background: #f8f9fa; /* Light grey background */
+            color: #222; /* Dark text for contrast */
             font-family: 'Segoe UI', Arial, sans-serif;
             margin: 0;
             padding: 0;
             line-height: 1.5;
+            min-height: 100vh; /* Ensure body takes full height */
+            display: flex;
+            flex-direction: column;
         }
+
+        /* Navbar Styles (Copied from flashcards.html) */
         .navbar {
             background: #fff;
             color: #222;
@@ -32,11 +42,11 @@
         .navbar .logo {
             font-size: 2rem;
             font-weight: bold;
-            color: #FFD600;
+            color: #FFD600; /* Accent color for logo */
             letter-spacing: 0.5px;
             flex-shrink: 0;
             margin-right: 80px;
-            height: 40px;
+            height: 40px; /* Adjust logo image height */
         }
         .nav-links {
             display: flex;
@@ -56,8 +66,10 @@
             white-space: nowrap;
         }
         .nav-links a:hover {
-            color: #FFD600;
+            color: #FFD600; /* Hover accent color */
         }
+
+        /* Hamburger Menu (Mobile) (Copied from flashcards.html) */
         .hamburger {
             display: none;
             flex-direction: column;
@@ -76,11 +88,11 @@
             width: 28px;
             height: 4px;
             margin: 4px 0;
-            background: #FFD600;
+            background: #FFD600; /* Hamburger icon color */
             border-radius: 2px;
             transition: 0.3s;
         }
-        .navbar-mobile-btn {
+        .navbar-mobile-btn { /* This rule is likely not used but kept for consistency */
             background: #FFD600;
             color: #111;
             border: none;
@@ -98,23 +110,35 @@
         .navbar-mobile-btn:hover {
             background: #fff;
         }
+
+        /* Main Content Area */
+        .main-content { /* Added for consistent top margin, similar to flashcards.html */
+            margin-top: 64px; /* Space for fixed navbar */
+            padding: 40px 20px;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        /* Main Container for Forms/Content (Adjusted for Analyzer) */
         .container {
-            max-width: 600px;
-            margin: 100px auto 40px auto;
+            max-width: 650px; /* Consistent with flashcards.html */
+            margin: 100px auto 40px auto; /* Adjust top margin for navbar */
             background: #fff;
             border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-            padding: 40px 32px 32px 32px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* Consistent with flashcards.html */
+            padding: 35px 30px; /* Consistent with flashcards.html */
             position: relative;
             text-align: left;
         }
+
+        /* Coming Soon Overlay */
         .coming-soon {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.4); /* Reduced opacity from 0.7 to 0.4 */
             color: #FFD600;
             font-size: 2rem;
             font-weight: bold;
@@ -126,72 +150,419 @@
             flex-direction: column;
             text-align: center;
             padding: 20px;
-            backdrop-filter: blur(1.5px);
+            backdrop-filter: blur(1.5px); /* Reduced blur significantly from 5px to 1.5px */
             pointer-events: all;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.01); opacity: 0.95; }
+            100% { transform: scale(1); opacity: 1; }
         }
         .coming-soon span {
             font-size: 1.8rem;
+            color: #222; /* Darker text for readability over blur */
+            margin-top: 10px; /* Space from title */
         }
-        .analyzer-title {
-            font-size: 2rem;
+
+        /* Page Title & Description (Modified existing analyzer-title/desc) */
+        .page-title { /* Renamed for consistency with flashcards.html */
+            font-size: 2.8rem; /* Slightly larger title */
+            font-weight: bold;
+            color: #222;
+            margin-bottom: 40px; /* More space below title */
+            text-align: center; /* Center the title on the page */
+        }
+        .page-title .highlight {
+            color: #FFD600; /* Accent color for highlighted text */
+        }
+
+        /* Section Title within Container (Combined with analyzer-title) */
+        .section-title {
+            font-size: 1.6rem; /* Consistent section title size */
             font-weight: bold;
             color: #FFD600;
-            margin-bottom: 12px;
+            margin-bottom: 25px; /* More space below section title */
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between icon and text */
         }
-        .analyzer-desc {
-            color: #555;
-            font-size: 1rem;
-            margin-bottom: 20px;
-            line-height: 1.5;
+        .section-title .fas {
+            font-size: 1.4rem; /* Icon size relative to title */
         }
-        .analyzer-form label {
+
+        /* Form Group Styles (Refined) */
+        .form-group {
+            margin-bottom: 25px; /* Increased spacing between form groups */
+        }
+        .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px; /* More space below label */
             font-weight: 500;
-            font-size: 0.95rem;
-            color: #222;
+            font-size: 1rem; /* Slightly larger label font */
+            color: #333; /* Slightly softer label color */
         }
-        .analyzer-form input[type="file"],
-        .analyzer-form input[type="text"] {
+        .form-group input[type="text"],
+        .form-group textarea, /* Apply to textarea as well */
+        .num-input-group input[type="number"] { /* Renamed from num-flashcards-group to be generic */
             background: #f8f9fa;
             color: #222;
             border: 1.5px solid #ddd;
-            padding: 12px;
-            border-radius: 8px;
+            padding: 14px; /* Increased padding */
+            border-radius: 10px; /* Slightly more rounded corners */
             width: 100%;
-            margin-bottom: 15px;
-            font-size: 0.95rem;
-            transition: border-color 0.2s;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box; /* Include padding in width */
         }
-        .analyzer-form input[type="text"]:focus,
-        .analyzer-form input[type="file"]:focus {
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus,
+        .num-input-group input[type="number"]:focus {
             outline: none;
             border-color: #FFD600;
             background: #fff;
+            box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.2); /* Soft focus glow */
         }
+        /* Specific override for subject input due to margin-bottom in original */
         .analyzer-form input[type="text"] {
+             margin-bottom: 0; /* Handled by .form-group */
+        }
+
+        /* Tab Navigation Styles (Copied from flashcards.html) */
+        .tab-group {
+            display: flex;
+            justify-content: center;
+            border-bottom: 1.5px solid #eee;
+            background: #fff;
             margin-bottom: 20px;
         }
-        .analyzer-form button {
+        .tab {
+            color: #555; /* Default tab color */
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 16px 28px 12px 28px; /* Adjusted padding */
+            cursor: pointer;
+            outline: none;
+            border-bottom: 3px solid transparent;
+            transition: color 0.2s, border-bottom 0.2s;
+        }
+        .tab.active {
+            color: #FFD600; /* Active tab accent color */
+            border-bottom: 3px solid #FFD600;
+            background: #fff;
+        }
+        .tab:not(.active):hover {
+            color: #FFD600; /* Hover color for inactive tabs */
+        }
+
+        /* Tab Content Area (Copied from flashcards.html) */
+        .tab-content {
+            background: #fff;
+            border-radius: 0 0 16px 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            padding: 30px;
+            margin-bottom: 20px; /* Space below tab content */
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(.77,0,.18,1);
+            opacity: 1;
+            z-index: 1;
+        }
+        .tab-content.slide-in {
+            animation: slideIn 0.4s cubic-bezier(.77,0,.18,1);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Textarea within Tab Content (Refined from extracted-preview) */
+        .tab-content textarea {
+            width: 100%;
+            min-height: 200px; /* Adjusted height for text input */
+            background: #f8f9fa;
+            color: #222;
+            border: 1.5px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            font-size: 1rem;
+            resize: vertical;
+            line-height: 1.6;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+
+        /* Custom Upload Zone (Copied from flashcards.html) */
+        .upload-zone {
+            border: 2px dashed #FFD600; /* Accent color dashed border */
+            border-radius: 12px;
+            padding: 45px 25px; /* Increased padding */
+            text-align: center;
+            background: #fffbe6; /* Light yellow background */
+            color: #555;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .upload-zone:hover {
+            border-color: #fbd600; /* Slightly darker accent on hover */
+            background: #fffaf0; /* Lighter background on hover */
+        }
+        .upload-icon {
+            font-size: 3.5rem; /* Larger icon */
+            color: #FFD600;
+            margin-bottom: 20px; /* More space */
+        }
+        .upload-text {
+            font-size: 1.3rem; /* Larger text */
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        .upload-description {
+            font-size: 1.05rem; /* Slightly larger description */
+            color: #666;
+            margin-bottom: 30px; /* More space */
+        }
+        .hidden-file-input {
+            display: none;
+        }
+        .select-file-button {
             background: #FFD600;
             color: #222;
             border: none;
-            border-radius: 10px;
-            padding: 16px 0;
-            font-size: 1.1rem;
-            font-weight: bold;
-            width: 100%;
+            border-radius: 8px;
+            padding: 14px 28px; /* Larger padding */
+            font-size: 1.05rem; /* Slightly larger font */
+            font-weight: 600;
             cursor: pointer;
-            opacity: 1;
-            transition: background 0.2s, transform 0.2s;
-            box-shadow: 0 4px 16px rgba(255, 214, 0, 0.3);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            display: inline-block;
         }
-        .analyzer-form button:hover:not(:disabled) {
+        .select-file-button:hover {
             background: #222;
             color: #FFD600;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
         }
+
+        /* Options Row (for num inputs) */
+        .options-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px; /* More space between option groups */
+            margin-top: 25px; /* Space above options */
+            flex-wrap: wrap;
+        }
+        .option-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            color: #333;
+            font-size: 1rem;
+        }
+        .option-group input[type="number"] {
+            width: 80px; /* Adjusted width for number input */
+            padding: 10px; /* Smaller padding for numbers */
+            text-align: center;
+            -moz-appearance: textfield; /* Firefox spinner removal */
+        }
+        .option-group input[type="number"]::-webkit-outer-spin-button,
+        .option-group input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none; /* Chrome/Safari spinner removal */
+            margin: 0;
+        }
+
+        /* Actions Row (Buttons) (Copied from flashcards.html) */
+        .actions-row {
+            display: flex;
+            gap: 20px; /* Increased gap between buttons */
+            margin-top: 30px; /* More space above buttons */
+            flex-wrap: wrap;
+            justify-content: center; /* Center buttons */
+        }
+        .main-btn {
+            flex: 1;
+            background: #FFD600; /* Accent button color */
+            color: #222;
+            border: none;
+            border-radius: 10px;
+            padding: 18px 0; /* Larger padding for main button */
+            font-size: 1.15rem; /* Slightly larger font */
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+            min-width: 200px; /* Minimum width for buttons */
+            box-shadow: 0 4px 18px rgba(255, 214, 0, 0.4); /* Stronger glow */
+        }
+        .main-btn:hover:not(:disabled) { /* Added not(:disabled) */
+            background: #222; /* Darker hover for main button */
+            color: #FFD600;
+            transform: translateY(-3px); /* More pronounced lift */
+            box-shadow: 0 8px 24px rgba(255, 214, 0, 0.5);
+        }
+        .secondary-btn, .clear-btn { /* Combined clear-btn with secondary-btn styles */
+            flex: 1;
+            background: #f0f0f0; /* Lighter background for secondary */
+            color: #222;
+            border: 1.5px solid #ddd;
+            border-radius: 10px;
+            padding: 18px 0;
+            font-size: 1.15rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+            min-width: 150px;
+        }
+        .secondary-btn:hover:not(:disabled), .clear-btn:hover:not(:disabled) { /* Added not(:disabled) */
+            background: #FFD600;
+            color: #222;
+            border-color: #FFD600;
+            transform: translateY(-2px);
+        }
+        .main-btn:disabled, .secondary-btn:disabled, .clear-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Loading Spinner (Copied from flashcards.html) */
+        .extract-spinner {
+            display: none;
+            margin: 25px auto; /* Centered horizontally, more margin */
+            text-align: center;
+            color: #FFD600;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        .spinner-border {
+            display: inline-block;
+            width: 1.8rem; /* Larger spinner */
+            height: 1.8rem;
+            vertical-align: middle; /* Align with text */
+            border: 0.28em solid currentColor; /* Thicker border */
+            border-right-color: transparent;
+            border-radius: 50%;
+            -webkit-animation: .75s linear infinite spinner-border;
+            animation: .75s linear infinite spinner-border;
+            margin-left: 10px; /* Space from text */
+        }
+        @-webkit-keyframes spinner-border {
+            to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+        }
+        @keyframes spinner-border {
+            to { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+        }
+
+        /* Toast Message (Copied from flashcards.html) */
+        .toast {
+            position: fixed;
+            top: 28px; /* Slightly lower */
+            right: 28px; /* Slightly inwards */
+            background: #FFD600;
+            color: #222;
+            padding: 16px 28px; /* Larger padding */
+            border-radius: 10px; /* More rounded */
+            box-shadow: 0 4px 12px rgba(255, 214, 0, 0.35); /* More prominent shadow */
+            font-weight: bold;
+            z-index: 9999;
+            display: none;
+            animation: fadeInOut 3s forwards; /* Animation for toast */
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-20px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-20px); }
+        }
+        .toast.error {
+            background: #ff4d4f; /* Red for errors */
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(255, 77, 79, 0.35);
+        }
+
+        /* Error Message Display */
+        .error-message { /* Added dedicated class for error message, similar to flashcards.html */
+            color: #ff4d4f;
+            font-weight: bold;
+            margin-top: 25px; /* More space */
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Generated Questions Section (Styled similarly to flashcard-results-section) */
+        .generated-questions-section {
+            margin-top: 35px; /* More space above results */
+            background: #fff; /* White background to match container */
+            border: 1.5px solid #eee; /* Softer border */
+            border-radius: 16px; /* Consistent with main container */
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08); /* Consistent shadow */
+            text-align: left; /* Align content left */
+        }
+        .generated-questions-section h3 {
+            color: #FFD600;
+            margin-bottom: 25px; /* More space below heading */
+            font-size: 2rem; /* Larger heading */
+            font-weight: bold;
+            text-align: center; /* Center the section heading */
+        }
+        .generated-questions-section h4 {
+            color: #333;
+            margin-top: 30px; /* Space above sub-headings */
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        .generated-questions-section h4:first-of-type {
+            margin-top: 0; /* No top margin for the first h4 */
+        }
+        .generated-questions-section ol {
+            list-style: decimal; /* Use default numbering for ordered lists */
+            padding-left: 25px; /* Indent for list numbers */
+            margin: 0;
+        }
+        .generated-questions-section ul {
+            list-style: lower-alpha; /* Use letters for options */
+            padding-left: 25px;
+            margin: 8px 0 10px 0;
+        }
+        .generated-questions-section li {
+            background: #fbfbfb; /* Very light background for items */
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+            margin-bottom: 20px; /* Space between list items */
+            transition: all 0.2s ease-in-out;
+        }
+        .generated-questions-section li:hover {
+            border-color: #FFD600;
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        .generated-questions-section li b {
+            color: #222; /* Darker bold text */
+            font-weight: 600;
+        }
+        .generated-questions-section li div {
+            margin-bottom: 8px; /* Smaller space below question text */
+        }
+        .generated-questions-section li div:last-child {
+            margin-bottom: 0;
+        }
+        .generated-questions-section li .answer-text {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.4;
+            margin-top: 10px; /* Space between options and answer */
+            display: block; /* Ensure it takes full width */
+        }
+
+        /* Responsive Adjustments (Updated for consistent application) */
         @media (max-width: 900px) {
             .navbar {
                 padding: 0 50px 0 20px !important;
@@ -201,81 +572,181 @@
             }
             .hamburger {
                 display: flex;
-                margin-left: auto;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                width: 48px;
+                height: 48px;
+                background: none;
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+                margin-left: 0;
+                z-index: 5000;
+                position: relative;
+                transition: none;
+                padding: 0;
+            }
+            .hamburger.open {
+                background: none;
+                box-shadow: none;
+            }
+            .hamburger span {
+                width: 28px;
+                height: 3.5px;
+                margin: 4px 0;
+                background: var(--primary-color);
+                border-radius: 2px;
+                transition: all 0.3s cubic-bezier(.77,0,.18,1);
+                position: relative;
+            }
+            .hamburger.open span {
+                background: var(--secondary-color);
+            }
+            .hamburger.open span:nth-child(1) {
+                transform: translateY(11.5px) rotate(45deg);
+            }
+            .hamburger.open span:nth-child(2) {
+                opacity: 0;
+                transform: scaleX(0);
+            }
+            .hamburger.open span:nth-child(3) {
+                transform: translateY(-11.5px) rotate(-45deg);
             }
             .nav-links {
-                display: none;
+                display: block;
+                position: fixed;
+                top: 0;
+                right: -360px;
+                width: 300px;
+                height: 100vh;
+                background: var(--background-white);
+                box-shadow: -4px 0 24px rgba(0,0,0,0.10);
+                padding: 90px 30px 30px 30px;
+                transition: right 0.35s cubic-bezier(.77,0,.18,1);
+                border-radius: 0 0 0 24px;
                 flex-direction: column;
-                position: absolute;
-                top: 64px;
-                right: 0;
-                width: 220px;
-                background: #fff;
-                box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-                z-index: 2000;
-                padding: 10px 0;
-                border-radius: 0 0 8px 8px;
-                overflow-y: auto;
-                max-height: calc(100vh - 64px);
+                gap: 18px;
                 margin-left: 0;
+                z-index: 4000;
             }
             .nav-links.open {
-                display: flex;
+                right: 0;
             }
             .nav-links a {
-                padding: 14px 24px;
-                text-align: left;
-                border-bottom: 1px solid #eee;
-                box-sizing: border-box;
+                display: block;
+                padding: 16px 0;
+                font-size: 1.15rem;
+                border-bottom: 1px solid var(--border-color);
+                color: var(--secondary-color);
+                transition: color 0.2s, background 0.2s;
             }
             .nav-links a:last-child {
                 border-bottom: none;
             }
-        }
-        @media (max-width: 600px) {
-            .container {
-                margin: 80px 20px 40px 20px;
-                padding: 30px 20px;
+            .main-content {
+                padding: 30px 15px; /* Adjust padding on mobile */
             }
-            .analyzer-title {
+            .page-title {
+                font-size: 2.2rem;
+                margin-bottom: 30px;
+            }
+            .container {
+                padding: 25px 20px;
+                margin: 80px auto 40px auto; /* Adjust top margin for mobile */
+            }
+            .section-title {
+                font-size: 1.4rem;
+                margin-bottom: 20px;
+            }
+            .tab {
+                font-size: 1rem;
+                padding: 14px 20px 10px 20px;
+            }
+            .tab-content {
+                padding: 25px;
+            }
+            .actions-row {
+                flex-direction: column; /* Stack buttons vertically */
+                gap: 15px;
+            }
+            .main-btn, .secondary-btn, .clear-btn {
+                min-width: unset; /* Remove min-width to allow full width */
+                width: 100%; /* Full width buttons */
+            }
+            .generated-questions-section {
+                padding: 25px;
+            }
+            .generated-questions-section h3 {
+                font-size: 1.8rem;
+            }
+            .generated-questions-section h4 {
+                font-size: 1.2rem;
+            }
+            .generated-questions-section li {
+                padding: 15px;
+            }
+        }
+        @media (max-width: 500px) {
+            .navbar {
+                padding: 0 15px !important; /* Even less padding on very small screens */
+            }
+            .page-title {
+                font-size: 1.8rem;
+                margin-bottom: 25px;
+            }
+            .container {
+                padding: 20px 15px;
+            }
+            .section-title {
+                font-size: 1.2rem;
+            }
+            .form-group label {
+                font-size: 0.9rem;
+            }
+            .form-group input[type="text"],
+            .tab-content input[type="file"],
+            .tab-content textarea,
+            .option-group input[type="number"] {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+            .tab {
+                font-size: 0.9rem;
+                padding: 12px 15px 8px 15px;
+            }
+            .tab-content {
+                padding: 20px;
+            }
+            .upload-zone {
+                padding: 30px 15px;
+            }
+            .upload-icon {
+                font-size: 3rem;
+            }
+            .upload-text {
+                font-size: 1.1rem;
+            }
+            .upload-description {
+                font-size: 0.95rem;
+            }
+            .select-file-button {
+                font-size: 0.95rem;
+                padding: 10px 20px;
+            }
+            .main-btn, .secondary-btn, .clear-btn {
+                font-size: 1rem;
+                padding: 14px 0;
+            }
+            .generated-questions-section h3 {
                 font-size: 1.6rem;
             }
-            .coming-soon {
-                font-size: 1.5rem;
+            .generated-questions-section h4 {
+                font-size: 1.1rem;
             }
-            .coming-soon span {
-                font-size: 1.4rem;
+            .generated-questions-section li {
+                padding: 15px;
             }
-        }
-        .extracted-preview {
-            background: #f8f9fa;
-            border: 1.5px solid #FFD600;
-            border-radius: 10px;
-            padding: 18px;
-            margin: 18px 0 10px 0;
-            min-height: 120px;
-            font-size: 1rem;
-            color: #222;
-            width: 100%;
-            resize: vertical;
-        }
-        .extract-spinner {
-            display: none;
-            margin: 10px 0;
-            text-align: center;
-        }
-        .toast {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            background: #FFD600;
-            color: #222;
-            padding: 14px 24px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px #FFD60033;
-            font-weight: bold;
-            z-index: 9999;
-            display: none;
         }
     </style>
 </head>
@@ -304,87 +775,104 @@
             {% endif %}
         </nav>
     </div>
-    <div class="container">
-        <h1> </h1>
-        <form id="examAnalyzerForm" method="post" enctype="multipart/form-data" action="">
-            {% csrf_token %}
-            <div style="margin-bottom: 18px;">
-                <b style="font-size:1.3rem;color:#FFD600;">&#128202; Exam Analyzer</b>
-                <div style="color:#ccc;font-size:1rem;margin-top:6px;">Upload past exam questions or paste content to analyze and generate new exam-style questions for your course or subject.</div>
-            </div>
-            <div style="margin-bottom: 18px;">
-                <label for="subject" style="font-weight:500;">Course/Subject</label>
-                <input type="text" id="subject" name="subject" placeholder="e.g. Biology 101" style="margin-top:6px;">
-            </div>
-            <div class="tab-group">
-                <button type="button" class="tab active" id="textTab">Enter Text</button>
-                <button type="button" class="tab" id="fileTab">Upload File</button>
-            </div>
-            <div class="tab-content" id="textContent">
-                <textarea name="extractedText" id="studyText" placeholder="Paste past exam questions or study materials here..."></textarea>
-            </div>
-            <div class="tab-content" id="fileContent" style="display:none;">
-                <div class="upload-zone">
-                    <div class="upload-icon">&#128214;</div>
-                    <div class="upload-text">Upload your exam materials</div>
-                    <div class="upload-description">Upload PDF, DOCX, PPT, PPTX, or text files to analyze</div>
-                    <input type="file" name="slide_file" id="slideFile" accept=".pdf,.pptx,.txt" class="hidden-file-input">
-                    <label for="slideFile" class="select-file-button" id="selectFileButton">Select file</label>
-                    <span id="fileNameDisplay" style="display:block;margin:10px 0 0 0;color:#222;font-weight:500;"></span>
+    <div class="main-content"> {# Added main-content wrapper #}
+        <div class="container">
+            {# Coming Soon Overlay - Removed as per user's last request in flashcards, assuming analyzer is also live #}
+            {# <div class="coming-soon">
+                &#128736;
+                <span>This feature is coming soon!</span>
+            </div> #}
+            <form id="examAnalyzerForm" method="post" enctype="multipart/form-data" action="">
+                {% csrf_token %}
+                <div class="section-title">
+                    <i class="fas fa-chart-line"></i> Exam Analyzer
                 </div>
-            </div>
-            <div class="options-row">
-                <div class="option-group">
-                    <span>MCQ Questions</span>
-                    <input type="number" name="num_mcq" id="numMcqInput" value="5" min="0" max="20" style="width:60px;">
+                <div class="analyzer-desc">
+                    Upload past exam questions or paste content to analyze and generate new exam-style questions for your course or subject.
                 </div>
-                <div class="option-group">
-                    <span>Short Answer</span>
-                    <input type="number" name="num_short" id="numShortInput" value="3" min="0" max="20" style="width:60px;">
+
+                <div class="form-group">
+                    <label for="subject">Course/Subject</label>
+                    <input type="text" id="subject" name="subject" placeholder="e.g. Biology 101">
                 </div>
-            </div>
-            <div class="actions-row">
-                <button type="submit" class="main-btn">Analyze & Generate</button>
-                <button type="button" class="clear-btn" id="clearBtn">Clear</button>
-            </div>
-        </form>
-        <div class="extract-spinner" id="extractSpinner">Extracting text... <span class="spinner-border"></span></div>
-        <div class="toast" id="toast"></div>
-        {% if error_message %}
-            <div style="color: #ff4d4f; font-weight: bold; margin-top: 18px;">{{ error_message }}</div>
-        {% endif %}
-        {% if analyzer_results %}
-            <div style="margin-top: 28px; background: #fffbe6; border: 1.5px solid #FFD600; border-radius: 10px; padding: 24px;">
-                <h3 style="color:#FFD600;">Generated Questions</h3>
-                {% if analyzer_results.mcq_questions %}
-                    <h4>Multiple Choice Questions</h4>
-                    <ol>
-                    {% for q in analyzer_results.mcq_questions %}
-                        <li style="margin-bottom: 12px;">
-                            <div><b>{{ q.question }}</b></div>
-                            <ul style="margin: 6px 0 0 18px;">
-                                {% for opt in q.options %}
-                                    <li>{{ opt }}</li>
-                                {% endfor %}
-                            </ul>
-                            <div style="color:#888; font-size:0.95em;">Answer: <b>{{ q.correct_answer }}</b></div>
-                        </li>
-                    {% endfor %}
-                    </ol>
-                {% endif %}
-                {% if analyzer_results.short_questions %}
-                    <h4>Short Answer Questions</h4>
-                    <ol>
-                    {% for q in analyzer_results.short_questions %}
-                        <li style="margin-bottom: 12px;">
-                            <div><b>{{ q.question }}</b></div>
-                            <div style="color:#888; font-size:0.95em;">Answer: <b>{{ q.expected_answer }}</b></div>
-                        </li>
-                    {% endfor %}
-                    </ol>
-                {% endif %}
-            </div>
-        {% endif %}
+
+                <div class="tab-group">
+                    <button type="button" class="tab active" id="textTab">Enter Text</button>
+                    <button type="button" class="tab" id="fileTab">Upload File</button>
+                </div>
+
+                <div class="tab-content" id="textContent">
+                    <textarea name="extractedText" id="studyText" placeholder="Paste past exam questions or study materials here..."></textarea>
+                </div>
+
+                <div class="tab-content" id="fileContent" style="display:none;">
+                    <div class="upload-zone">
+                        <div class="upload-icon">&#128214;</div>
+                        <div class="upload-text">Upload your exam materials</div>
+                        <div class="upload-description">Upload PDF, DOCX, PPT, PPTX, or text files to analyze</div>
+                        <input type="file" name="slide_file" id="slideFile" accept=".pdf,.pptx,.txt" class="hidden-file-input">
+                        <label for="slideFile" class="select-file-button" id="selectFileButton">Select file</label>
+                        <span id="fileNameDisplay" style="display:block;margin:10px 0 0 0;color:#222;font-weight:500;"></span>
+                    </div>
+                </div>
+
+                <div class="options-row">
+                    <div class="option-group">
+                        <span>MCQ Questions</span>
+                        <input type="number" name="num_mcq" id="numMcqInput" value="5" min="0" max="20">
+                    </div>
+                    <div class="option-group">
+                        <span>Short Answer</span>
+                        <input type="number" name="num_short" id="numShortInput" value="3" min="0" max="20">
+                    </div>
+                </div>
+
+                <div class="actions-row">
+                    <button type="submit" class="main-btn">Analyze & Generate</button>
+                    <button type="button" class="secondary-btn clear-btn" id="clearBtn">Clear</button> {# Changed to secondary-btn #}
+                </div>
+            </form>
+
+            <div class="extract-spinner" id="extractSpinner">Extracting text... <span class="spinner-border"></span></div>
+            <div class="toast" id="toast"></div>
+
+            {% if error_message %}
+                <div class="error-message">{{ error_message }}</div> {# Applied error-message class #}
+            {% endif %}
+
+            {% if analyzer_results %}
+                <div class="generated-questions-section">
+                    <h3>Generated Questions</h3>
+                    {% if analyzer_results.mcq_questions %}
+                        <h4>Multiple Choice Questions</h4>
+                        <ol>
+                        {% for q in analyzer_results.mcq_questions %}
+                            <li>
+                                <div><b>{{ q.question }}</b></div>
+                                <ul>
+                                    {% for opt in q.options %}
+                                        <li>{{ opt }}</li>
+                                    {% endfor %}
+                                </ul>
+                                <div class="answer-text">Answer: <b>{{ q.correct_answer }}</b></div>
+                            </li>
+                        {% endfor %}
+                        </ol>
+                    {% endif %}
+                    {% if analyzer_results.short_questions %}
+                        <h4>Short Answer Questions</h4>
+                        <ol>
+                        {% for q in analyzer_results.short_questions %}
+                            <li>
+                                <div><b>{{ q.question }}</b></div>
+                                <div class="answer-text">Answer: <b>{{ q.expected_answer }}</b></div>
+                            </li>
+                        {% endfor %}
+                        </ol>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
     </div>
     <script>
         // Tab switching with animation
@@ -396,7 +884,7 @@
         textTab.onclick = function() {
             textTab.classList.add('active');
             fileTab.classList.remove('active');
-            textContent.style.display = '';
+            textContent.style.display = 'block'; // Ensure it's block for transition
             fileContent.style.display = 'none';
             textContent.classList.add('slide-in');
             setTimeout(() => textContent.classList.remove('slide-in'), 400);
@@ -405,30 +893,41 @@
         fileTab.onclick = function() {
             fileTab.classList.add('active');
             textTab.classList.remove('active');
-            fileContent.style.display = '';
+            fileContent.style.display = 'block'; // Ensure it's block for transition
             textContent.style.display = 'none';
             fileContent.classList.add('slide-in');
             setTimeout(() => fileContent.classList.remove('slide-in'), 400);
         };
+
         // Clear button
         document.getElementById('clearBtn').onclick = function() {
             document.getElementById('studyText').value = '';
             document.getElementById('slideFile').value = '';
+            document.getElementById('fileNameDisplay').textContent = ''; // Clear file name display
+            document.getElementById('numMcqInput').value = '5'; // Reset number inputs
+            document.getElementById('numShortInput').value = '3';
         };
-        // Hamburger menu toggle
-        document.getElementById('hamburger').onclick = function() {
-            var nav = document.getElementById('navLinks');
-            var expanded = this.getAttribute('aria-expanded') === 'true';
-            nav.classList.toggle('open');
-            this.setAttribute('aria-expanded', !expanded);
-        };
-        // Close menu when clicking on links
-        document.querySelectorAll('#navLinks a').forEach(function(link) {
-            link.onclick = function() {
-                document.getElementById('navLinks').classList.remove('open');
-                document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
-            }
-        });
+
+        // Hamburger menu toggle with slide-out effect
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        if (hamburger && navLinks) {
+            hamburger.onclick = function() {
+                const expanded = this.getAttribute('aria-expanded') === 'true';
+                navLinks.classList.toggle('open');
+                this.classList.toggle('open');
+                this.setAttribute('aria-expanded', !expanded);
+            };
+            // Close menu when clicking on links (mobile only)
+            navLinks.querySelectorAll('a').forEach(function(link) {
+                link.onclick = function() {
+                    navLinks.classList.remove('open');
+                    hamburger.classList.remove('open');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+
         // AJAX file upload for extracting text
         const slideFileInput = document.getElementById('slideFile');
         const selectFileButton = document.getElementById('selectFileButton');
@@ -436,26 +935,39 @@
         const studyTextArea = document.getElementById('studyText');
         const extractSpinner = document.getElementById('extractSpinner');
         const toast = document.getElementById('toast');
-        function showToast(msg, isError=false) {
+
+        function showToast(msg, isError = false) {
             toast.textContent = msg;
-            toast.style.background = isError ? '#ff4d4f' : '#FFD600';
-            toast.style.color = isError ? '#fff' : '#222';
+            toast.classList.remove('error'); // Clear previous state
+            if (isError) {
+                toast.classList.add('error');
+            }
             toast.style.display = 'block';
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
         }
+
         if (selectFileButton && slideFileInput && studyTextArea && extractSpinner) {
             selectFileButton.onclick = function(e) {
                 e.preventDefault();
                 slideFileInput.click();
             };
             slideFileInput.onchange = function() {
-                if (!slideFileInput.files.length) return;
+                if (!slideFileInput.files.length) {
+                    fileNameDisplay.textContent = '';
+                    return;
+                }
                 fileNameDisplay.textContent = slideFileInput.files[0].name;
                 selectFileButton.textContent = 'Extracting...';
                 selectFileButton.disabled = true;
-                extractSpinner.style.display = 'block';
+                extractSpinner.style.display = 'flex'; // Use flex to center spinner content
+                
+                // Disable form submission during extraction
+                document.querySelector('.main-btn').disabled = true;
+                document.querySelector('.clear-btn').disabled = true;
+
                 const formData = new FormData();
                 formData.append('slide_file', slideFileInput.files[0]);
+
                 fetch('/ajax/extract-text/', {
                     method: 'POST',
                     headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
@@ -466,19 +978,24 @@
                     if (data.text !== undefined) {
                         studyTextArea.value = data.text;
                         showToast('Text extracted successfully!');
-                        textTab.textContent = 'View Uploaded Text';
+                        textTab.textContent = 'View Uploaded Text'; // Change tab text
+                        // Automatically switch to text tab to show extracted content
+                        textTab.click(); 
                     } else {
                         showToast(data.error || 'Failed to extract text.', true);
                     }
                 })
-                .catch(() => showToast('Failed to extract text.', true))
+                .catch(() => showToast('Failed to extract text. Please try again.', true))
                 .finally(() => {
                     selectFileButton.textContent = 'Select file';
                     selectFileButton.disabled = false;
                     extractSpinner.style.display = 'none';
+                    // Re-enable form submission after extraction
+                    document.querySelector('.main-btn').disabled = false;
+                    document.querySelector('.clear-btn').disabled = false;
                 });
             };
         }
     </script>
 </body>
-</html> 
+</html>

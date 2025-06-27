@@ -39,6 +39,14 @@
         /* Import Poppins font */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
+        /* Ensure hamburger menu is hidden on signup page */
+        .hamburger {
+            display: none !important;
+        }
+        .nav-links {
+            display: none !important;
+        }
+
         /* Root variables for consistent colors, inspired by Enactus design */
         :root {
             --enactus-yellow: #FDC72B; /* Key brand yellow, from image */
@@ -249,4 +257,8 @@
     </style>
     {# END OF EMBEDDED CSS #}
 
+{% endblock %}
+
+{% block navbar_links %}
+<!-- Only logo, no links or hamburger for signup page -->
 {% endblock %}

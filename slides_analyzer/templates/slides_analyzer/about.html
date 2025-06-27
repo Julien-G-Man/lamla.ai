@@ -351,86 +351,234 @@
             box-shadow: 0 8px 25px rgba(255, 214, 0, 0.5); /* Stronger shadow on hover */
         }
 
-        /* Founder Card */
-        .about-founder-card {
-            max-width: 400px; /* Slightly wider */
-            margin: 60px auto 80px auto; /* More vertical spacing */
+        /* Contact Form Section */
+        .about-contact-section {
+            max-width: 900px;
+            margin: 60px auto 0 auto; /* Remove bottom margin */
             background: var(--background-white);
-            border-radius: 25px; /* Consistent border radius */
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15); /* Stronger, more refined shadow */
-            overflow: hidden;
+            color: var(--enactus-dark-text);
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            padding: 50px 32px 0 32px; /* Remove bottom padding */
             text-align: center;
-            position: relative;
-            border: 2px solid var(--border-color); /* Subtle border */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-sizing: border-box;
         }
-        .about-founder-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 50px rgba(0,0,0,0.2);
+        .about-contact-section h2 {
+            color: var(--enactus-heading-color);
+            font-size: 2.5rem; /* Larger heading */
+            font-weight: 700;
+            margin-bottom: 20px;
         }
-
-        .about-founder-card-top {
-            background: linear-gradient(90deg, var(--primary-color) 40%, #FFEA80 100%); /* Adjusted gradient */
-            padding: 40px 0 0 0; /* More padding at top */
-            position: relative;
-            margin-bottom: 60px; /* Space for photo overlap */
+        .about-contact-section p {
+            font-size: 1.2rem; /* Larger paragraph text */
+            margin-bottom: 30px;
+            line-height: 1.6;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .about-founder-photo {
-            width: 110px; /* Larger photo */
-            height: 110px; /* Larger photo */
-            border-radius: 50%;
-            object-fit: cover;
-            border: 6px solid var(--background-white); /* Thicker white border */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15); /* Stronger photo shadow */
-            margin: 0 auto; /* Center image */
-            background: var(--background-light); /* Light background for placeholder */
-            position: absolute; /* Position photo relative to the top section */
-            bottom: -55px; /* Half of height to center vertically on the cut */
-            left: 50%;
-            transform: translateX(-50%);
+        .about-contact-section form {
+            margin-bottom: 0;
         }
 
-        .about-founder-title {
-            color: var(--primary-color); /* Highlight color */
+        /* Contact Form - Matching subscription form style */
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
+        }
+
+        .contact-form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .contact-form-group {
+            flex: 1;
+            margin-bottom: 20px;
+        }
+
+        .contact-form-group:last-child {
+            margin-bottom: 30px;
+        }
+
+        .contact-input, .contact-textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background-color: var(--enactus-light-yellow-bg);
+            color: var(--text-dark);
+            font-size: 1.05rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .contact-input::placeholder, .contact-textarea::placeholder {
+            color: var(--enactus-placeholder);
+            opacity: 1;
+        }
+
+        .contact-input:focus, .contact-textarea:focus {
+            border-color: var(--enactus-yellow);
+            background-color: var(--background-white);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(253, 199, 43, 0.2);
+        }
+
+        .contact-textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .contact-btn {
+            background: var(--enactus-yellow);
+            color: var(--secondary-color);
+            border: none;
+            border-radius: 10px;
+            padding: 16px 0;
+            width: 100%;
             font-size: 1.2rem;
             font-weight: 700;
-            margin-bottom: 10px;
-            margin-top: 0; /* Remove top margin as photo positioning handles space */
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(253, 199, 43, 0.3);
+            margin-bottom: 32px; /* Add space above the footer */
+        }
+
+        .contact-btn:hover {
+            background: var(--secondary-color);
+            color: var(--enactus-yellow);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        /* Founder Section */
+        .about-founder-section {
+            text-align: center;
+            margin: 60px auto 40px auto;
+            max-width: 400px;
+        }
+
+        .about-founder-heading {
+            color: var(--enactus-heading-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        /* Founder Card */
+        .about-founder-card {
+            background: var(--background-white);
+            border-radius: 28px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+            overflow: visible;
+            text-align: center;
+            position: relative;
+            border: none;
+            max-width: 400px;
+            margin: 0 auto 60px auto;
+        }
+        .about-founder-card-top {
+            background: linear-gradient(90deg, var(--primary-color) 40%, #FFEA80 100%);
+            border-radius: 28px 28px 0 0;
+            padding: 0;
+            height: 120px;
+            position: relative;
+        }
+        .view-profile-btn {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: var(--enactus-yellow);
+            color: var(--enactus-dark-text);
+            border: none;
+            border-radius: 20px;
+            padding: 10px 22px;
+            font-weight: 600;
+            font-size: 1rem;
+            box-shadow: 0 2px 8px rgba(253, 199, 43, 0.10);
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .view-profile-btn:hover {
+            background: var(--enactus-dark-text);
+            color: var(--enactus-yellow);
+        }
+        .about-founder-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 7px solid var(--background-white);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+            background: var(--background-light);
+            position: absolute;
+            left: 50%;
+            top: 50px;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+        .about-founder-content {
+            padding-top: 100px;
+            padding-bottom: 32px;
         }
         .about-founder-name {
-            font-weight: 700;
-            font-size: 1.6rem; /* Larger name */
+            font-weight: 500;
+            font-size: 1.35rem;
             margin-bottom: 8px;
             color: var(--enactus-heading-color);
         }
         .about-founder-role {
-            color: var(--text-muted); /* Softer text color */
-            font-size: 1.1rem;
-            margin-bottom: 20px; /* More space below role */
+            color: var(--enactus-dark-text);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 24px;
         }
         .about-founder-desc {
             font-size: 1.05rem;
             color: var(--text-dark);
-            padding: 0 25px 25px 25px; /* More padding */
+            padding: 0 25px 25px 25px;
             line-height: 1.6;
         }
         .about-founder-socials {
             display: flex;
             justify-content: center;
-            gap: 20px; /* Larger gap */
-            margin: 20px 0 25px 0; /* More spacing */
+            gap: 28px;
+            margin: 18px 0 0 0;
         }
         .about-founder-socials a {
-            color: var(--secondary-color); /* Darker icon color by default */
-            font-size: 1.6rem; /* Larger icons */
+            color: var(--enactus-yellow);
+            font-size: 2rem;
             text-decoration: none;
-            transition: color 0.3s ease, transform 0.2s ease;
+            transition: color 0.2s, transform 0.2s;
         }
         .about-founder-socials a:hover {
-            color: var(--primary-color); /* Yellow on hover */
+            color: var(--enactus-dark-text);
             transform: translateY(-2px);
         }
 
+        @media (max-width: 500px) {
+            .about-founder-section {
+                max-width: 98vw;
+            }
+            .about-founder-card {
+                max-width: 98vw;
+            }
+            .about-founder-card-top {
+                height: 90px;
+            }
+            .about-founder-photo {
+                width: 110px;
+                height: 110px;
+                top: 40px;
+            }
+            .about-founder-content {
+                padding-top: 70px;
+            }
+        }
 
         /* Bottom section and footer styles - Copied directly from homepage for consistency */
         .bottom-section {
@@ -703,6 +851,29 @@
                 font-size: 1.05rem;
             }
 
+            .about-contact-section {
+                padding: 30px 20px;
+                margin: 40px auto;
+            }
+            .about-contact-section h2 {
+                font-size: 2rem;
+            }
+            .about-contact-section p {
+                font-size: 1rem;
+            }
+            .contact-form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            .contact-input, .contact-textarea {
+                padding: 12px 15px;
+                font-size: 1rem;
+            }
+            .contact-btn {
+                padding: 14px 0;
+                font-size: 1.1rem;
+            }
+
             .about-founder-card {
                 margin: 40px auto 50px auto;
                 max-width: 350px;
@@ -753,6 +924,11 @@
             .footer {
                 padding: 20px 0 10px 0;
                 font-size: 0.9rem;
+            }
+
+            .about-founder-heading {
+                font-size: 2rem;
+                margin-bottom: 25px;
             }
         }
     </style>
@@ -853,24 +1029,50 @@
             {% endif %}
         </section>
 
-        <section class="about-founder-card">
-            <div class="about-founder-card-top">
-                <img src="https://cdn.creazilla.com/icons/3209624/incognito-circle-icon-md.png" alt="Founder Photo" class="about-founder-photo">
-            </div>
-            <div style="padding-top: 70px;"> <h3 class="about-founder-title">Meet the Founder</h3>
-                <p class="about-founder-name">Incognito</p>
-                <p class="about-founder-role">Founder</p>
-                <p class="about-founder-desc">
-                    Just some random guy trying to help. Driven by the belief that every student deserves effective tools to conquer their academic challenges.
-                </p>
-                <div class="about-founder-socials">
-                    <a href="#" title="LinkedIn" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-                    <a href="#" title="Twitter" target="_blank"><i class="fab fa-twitter"></i></a>
-                    <a href="#" title="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" title="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="mailto:founder@email.com" title="Email"><i class="fas fa-envelope"></i></a>
+        <section class="about-founder-section">
+            <h2 class="about-founder-heading">Meet the Founder</h2>
+            <div class="about-founder-card">
+                <div class="about-founder-card-top">
+                    <button class="view-profile-btn" onclick="window.open('https://www.instagram.com/julien_g_manana', '_blank')">View profile</button>
+                    <img src="https://cdn.creazilla.com/icons/3209624/incognito-circle-icon-md.png" alt="Founder Photo" class="about-founder-photo">
+                </div>
+                <div class="about-founder-content">
+                    <p class="about-founder-name">Incognito</p>
+                    <p class="about-founder-role">Founder</p>
+                    <p class="about-founder-desc">
+                        Just some random guy trying to help. Driven by the belief that every student deserves effective tools to conquer their academic challenges.
+                    </p>
+                    <div class="about-founder-socials">
+                        <a href="#" title="LinkedIn" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" title="Twitter" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="#" title="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/julien_g_manana" title="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="mailto:juliengmanana@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+                    </div>
                 </div>
             </div>
+        </section>
+
+        <section class="about-contact-section">
+            <h2>📧 Get in Touch</h2>
+            <p>Have questions, suggestions, or want to share your experience? We'd love to hear from you!</p>
+            <form class="contact-form" onsubmit="event.preventDefault(); handleContactSubmit();">
+                <div class="contact-form-row">
+                    <div class="contact-form-group">
+                        <input type="text" class="contact-input" placeholder="Your Name" required aria-label="Your Name">
+                    </div>
+                    <div class="contact-form-group">
+                        <input type="email" class="contact-input" placeholder="Your Email" required aria-label="Your Email">
+                    </div>
+                </div>
+                <div class="contact-form-group">
+                    <input type="text" class="contact-input" placeholder="Subject" required aria-label="Subject">
+                </div>
+                <div class="contact-form-group">
+                    <textarea class="contact-textarea" placeholder="Your Message" required aria-label="Your Message" rows="5"></textarea>
+                </div>
+                <button type="submit" class="contact-btn">Send Message</button>
+            </form>
         </section>
     </main>
 
@@ -993,6 +1195,37 @@
                 }
             });
         });
+
+        // Contact form submission handler
+        function handleContactSubmit() {
+            const form = document.querySelector('.contact-form');
+            const formData = new FormData(form);
+            
+            // Get form values
+            const name = form.querySelector('input[type="text"]').value;
+            const email = form.querySelector('input[type="email"]').value;
+            const subject = form.querySelectorAll('input[type="text"]')[1].value;
+            const message = form.querySelector('textarea').value;
+            
+            // Simple validation
+            if (!name || !email || !subject || !message) {
+                alert('Please fill in all fields.');
+                return;
+            }
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            
+            // Show success message (for now, just an alert)
+            alert('Thank you for your message! We\'ll get back to you soon.');
+            
+            // Reset form
+            form.reset();
+        }
     </script>
 </body>
 </html>

@@ -89,6 +89,7 @@
             z-index: 3000;
             margin-left: auto;
             flex-shrink: 0;
+            transition: none;
         }
 
         .nav-links a {
@@ -684,34 +685,78 @@
                 margin-left: auto;
             }
             .nav-links {
-                display: none;
-                flex-direction: column;
-                position: absolute;
-                top: 64px;
-                right: 0;
-                width: 250px;
+                display: block;
+                position: fixed;
+                top: 0;
+                right: -360px;
+                width: 300px;
+                height: 100vh;
                 background: var(--background-white);
-                box-shadow: 0 6px 20px var(--shadow-medium);
-                z-index: 2000;
-                padding: 15px 0;
-                border-radius: 0 0 12px 12px;
-                overflow-y: auto;
-                max-height: calc(100vh - 64px);
+                box-shadow: -4px 0 24px rgba(0,0,0,0.10);
+                padding: 90px 30px 30px 30px;
+                transition: right 0.35s cubic-bezier(.77,0,.18,1);
+                border-radius: 0 0 0 24px;
+                flex-direction: column;
+                gap: 18px;
                 margin-left: 0;
-                align-items: flex-start;
+                z-index: 4000;
             }
             .nav-links.open {
-                display: flex;
+                right: 0;
             }
             .nav-links a {
-                padding: 16px 28px;
-                text-align: left;
-                width: 100%;
-                border-bottom: 1px solid #f0f0f0;
-                box-sizing: border-box;
+                display: block;
+                padding: 16px 0;
+                font-size: 1.15rem;
+                border-bottom: 1px solid var(--border-color);
+                color: var(--secondary-color);
+                transition: color 0.2s, background 0.2s;
             }
             .nav-links a:last-child {
                 border-bottom: none;
+            }
+            .hamburger {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                width: 48px;
+                height: 48px;
+                background: none;
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+                margin-left: 0;
+                z-index: 5000;
+                position: relative;
+                transition: none;
+                padding: 0;
+            }
+            .hamburger.open {
+                background: none;
+                box-shadow: none;
+            }
+            .hamburger span {
+                width: 28px;
+                height: 3.5px;
+                margin: 4px 0;
+                background: var(--primary-color);
+                border-radius: 2px;
+                transition: all 0.3s cubic-bezier(.77,0,.18,1);
+                position: relative;
+            }
+            .hamburger.open span {
+                background: var(--secondary-color);
+            }
+            .hamburger.open span:nth-child(1) {
+                transform: translateY(11.5px) rotate(45deg);
+            }
+            .hamburger.open span:nth-child(2) {
+                opacity: 0;
+                transform: scaleX(0);
+            }
+            .hamburger.open span:nth-child(3) {
+                transform: translateY(-11.5px) rotate(-45deg);
             }
 
             .hero {
@@ -971,19 +1016,21 @@
     </div>
 
     <script>
-        // Hamburger menu toggle
-        document.getElementById('hamburger').onclick = function() {
-            var nav = document.getElementById('navLinks');
-            var expanded = this.getAttribute('aria-expanded') === 'true';
-            nav.classList.toggle('open');
+        // Hamburger menu toggle with slide-out effect
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        hamburger.onclick = function() {
+            const expanded = this.getAttribute('aria-expanded') === 'true';
+            navLinks.classList.toggle('open');
+            this.classList.toggle('open');
             this.setAttribute('aria-expanded', !expanded);
         };
-        
-        // Close menu when clicking on links
+        // Close menu when clicking on links (mobile only)
         document.querySelectorAll('#navLinks a').forEach(function(link) {
             link.onclick = function() {
-                document.getElementById('navLinks').classList.remove('open');
-                document.getElementById('hamburger').setAttribute('aria-expanded', 'false');
+                navLinks.classList.remove('open');
+                hamburger.classList.remove('open');
+                hamburger.setAttribute('aria-expanded', 'false');
             }
         });
         

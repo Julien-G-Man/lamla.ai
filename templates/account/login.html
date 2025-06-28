@@ -41,6 +41,11 @@
             </div>
         {% endif %}
     </div> {# END login-page-wrapper #}
+    
+    <!-- Contact Support Link -->
+    <div class="contact-support">
+        <a href="mailto:support@lamla.ai">Contact Support</a>
+    </div>
 
     {# START OF EMBEDDED CSS #}
     <style>
@@ -53,6 +58,31 @@
         }
         .nav-links {
             display: none !important;
+        }
+        
+        /* Hide footer on login page */
+        .footer-section {
+            display: none !important;
+        }
+        .footer {
+            display: none !important;
+        }
+        
+        /* Custom contact support link */
+        .contact-support {
+            text-align: center;
+            padding: 20px;
+            color: var(--enactus-text-dark);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        .contact-support a {
+            color: var(--enactus-yellow);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .contact-support a:hover {
+            text-decoration: underline;
         }
 
         /* Root variables for consistent colors, inspired by Enactus design */
@@ -88,12 +118,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* This height calculation is important:
-             * 100vh - (height of navbar + height of footer, if any)
-             * Or, if navbar/footer don't push content, just calc(100vh - navbar-height)
-             * For simplicity and robustness, let's assume content fills available space.
-             */
-            min-height: calc(100vh - 80px); /* Adjust 80px based on your navbar/footer height */
+            /* Since we're hiding the footer, we can use more of the viewport height */
+            min-height: calc(100vh - 70px); /* Just account for navbar height */
             padding: 20px; /* Padding inside the wrapper */
             box-sizing: border-box;
             width: 100%;

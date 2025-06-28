@@ -635,31 +635,25 @@
         .bottom-social-icon {
             width: 40px;
             height: 40px;
-            background: var(--background-white);
+            background: #555;
+            color: #999;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary-color);
-            font-size: 1.4rem;
-            box-shadow: 0 2px 10px rgba(255, 214, 0, 0.2);
-            border: 2px solid var(--background-white);
-            cursor: pointer;
-            transition: transform 0.2s ease, background-color 0.2s ease;
-        }
-
-        .bottom-social-icon:hover:not(.inactive) {
-            transform: translateY(-3px);
-            background-color: var(--primary-color);
-            color: var(--secondary-color);
-        }
-
-        .bottom-social-icon.inactive {
-            opacity: 0.6;
+            font-size: 1.2rem;
+            font-weight: bold;
             cursor: not-allowed;
-            background: #555;
-            color: #999;
-            border-color: #555;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            opacity: 0.6;
+        }
+        .bottom-social-icon:hover {
+            opacity: 0.8;
+            transform: none;
+        }
+        .bottom-social-icon i {
+            font-size: 1.1rem;
         }
 
         /* FOOTER */
@@ -1088,31 +1082,29 @@
             <h3 class="bottom-title">Quick Links</h3>
             <ul class="bottom-list">
                 <li><a href="/">Home</a></li>
+                <li><a href="/about/">About</a></li>
                 <li><a href="/custom-quiz/">Quiz</a></li>
                 <li><a href="#">Concepts</a></li>
                 <li><a href="/flashcards/">Flashcards</a></li>
                 <li><a href="#">History</a></li>
                 <li><a href="/exam-analyzer/">Exam Analyzer</a></li>
-                <li><a href="/about/">About</a></li>
-                <li><a href="/accounts/login/">Login</a></li>
-                <li><a href="/accounts/signup/">Sign Up</a></li>
             </ul>
         </div>
         <div class="bottom-col">
             <h3 class="bottom-title">Social Media</h3>
             <div class="bottom-socials">
-                <div class="bottom-social-icon inactive" title="Coming soon">
+                <a href="#" class="bottom-social-icon" title="Facebook - Coming soon">
                     <i class="fab fa-facebook-f"></i>
-                </div>
-                <div class="bottom-social-icon inactive" title="Coming soon">
+                </a>
+                <a href="#" class="bottom-social-icon" title="Twitter - Coming soon">
                     <i class="fab fa-twitter"></i>
-                </div>
-                <div class="bottom-social-icon inactive" title="Coming soon">
+                </a>
+                <a href="#" class="bottom-social-icon" title="Instagram - Coming soon">
                     <i class="fab fa-instagram"></i>
-                </div>
-                <div class="bottom-social-icon inactive" title="Coming soon">
+                </a>
+                <a href="#" class="bottom-social-icon" title="LinkedIn - Coming soon">
                     <i class="fab fa-linkedin-in"></i>
-                </div>
+                </a>
             </div>
             <p style="font-size:0.9rem; color:#aaa; margin-top:10px;">Follow us for updates</p>
         </div>

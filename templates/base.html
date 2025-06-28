@@ -87,26 +87,6 @@
             color: var(--primary-color);
             transform: translateY(-2px);
         }
-        .share-btn {
-            background: var(--primary-color);
-            color: var(--secondary-color);
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
-        }
-        .share-btn:hover {
-            background: var(--secondary-color);
-            color: var(--primary-color);
-            transform: translateY(-2px);
-        }
         .hamburger {
             display: none;
             flex-direction: column;
@@ -269,9 +249,6 @@
             .nav-links a:last-child {
                 border-bottom: none;
             }
-            .share-btn {
-                display: none;
-            }
             .footer-content {
                 padding: 0 20px;
                 grid-template-columns: 1fr;
@@ -375,9 +352,6 @@
             <a href="/flashcards/">Flashcards</a>
             <a href="#">History</a>
             <a href="/exam-analyzer/">Exam Analyzer</a>
-            <a href="#" class="share-btn" onclick="shareApp()">
-                <i class="fas fa-share-alt"></i> Share
-            </a>
             {% if user.is_authenticated %}
                 <a href="{% url 'custom_logout' %}">Logout</a>
             {% else %}
@@ -405,32 +379,28 @@
                 <h3>Quick Links</h3>
                 <ul>
                     <li><a href="/">Home</a></li>
-                    <li><a href="/custom-quiz/">Quiz</a></li>
-                    <li><a href="/flashcards/">Flashcards</a></li>
-                    <li><a href="/exam-analyzer/">Exam Analyzer</a></li>
                     <li><a href="/about/">About</a></li>
+                    <li><a href="/custom-quiz/">Quiz</a></li>
+                    <li><a href="#">Concepts</a></li>
+                    <li><a href="/flashcards/">Flashcards</a></li>
+                    <li><a href="#">History</a></li>
+                    <li><a href="/exam-analyzer/">Exam Analyzer</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h3>Social Media</h3>
-                <ul>
-                    <li><a href="#" title="Facebook - Coming soon"><i class="fab fa-facebook-f"></i> Facebook</a></li>
-                    <li><a href="#" title="Twitter - Coming soon"><i class="fab fa-twitter"></i> Twitter</a></li>
-                    <li><a href="#" title="Instagram - Coming soon"><i class="fab fa-instagram"></i> Instagram</a></li>
-                    <li><a href="#" title="LinkedIn - Coming soon"><i class="fab fa-linkedin-in"></i> LinkedIn</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Share Lamla AI</h3>
                 <div class="social-icons">
-                    <a href="#" onclick="shareApp()" class="social-icon" title="Share with Friends">
-                        <i class="fas fa-share-alt"></i>
+                    <a href="#" class="social-icon" title="Facebook - Coming soon">
+                        <i class="fab fa-facebook-f"></i>
                     </a>
-                    <a href="#" onclick="shareOnWhatsApp()" class="social-icon" title="Share on WhatsApp">
-                        <i class="fab fa-whatsapp"></i>
-                    </a>
-                    <a href="#" onclick="shareOnTwitter()" class="social-icon" title="Share on Twitter">
+                    <a href="#" class="social-icon" title="Twitter - Coming soon">
                         <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="social-icon" title="Instagram - Coming soon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="social-icon" title="LinkedIn - Coming soon">
+                        <i class="fab fa-linkedin-in"></i>
                     </a>
                 </div>
             </div>

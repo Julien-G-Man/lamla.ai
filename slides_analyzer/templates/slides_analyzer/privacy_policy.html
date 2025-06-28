@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .legal-page {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        line-height: 1.6;
+    }
+    .legal-page h1 {
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    .legal-page h2 {
+        color: var(--secondary-color);
+        font-size: 1.5rem;
+        margin-top: 40px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 10px;
+    }
+    .legal-page h3 {
+        color: var(--secondary-color);
+        font-size: 1.2rem;
+        margin-top: 25px;
+        margin-bottom: 15px;
+    }
+    .legal-page p {
+        margin-bottom: 15px;
+        color: #333;
+    }
+    .legal-page ul {
+        margin-bottom: 15px;
+        padding-left: 20px;
+    }
+    .legal-page li {
+        margin-bottom: 8px;
+        color: #333;
+    }
+    .legal-page .last-updated {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border-left: 4px solid var(--primary-color);
+    }
+    .legal-page .contact-info {
+        background: #e8f4fd;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 30px;
+        border: 1px solid #bee5eb;
+    }
+</style>
+
+<div class="legal-page">
+    <h1>Privacy Policy</h1>
+    
+    <div class="last-updated">
+        <strong>Last Updated:</strong> January 15, 2025
+    </div>
+
+    <p>Welcome to Lamla AI. We are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our AI-powered learning platform.</p>
+
+    <h2>1. Information We Collect</h2>
+    
+    <h3>1.1 Personal Information</h3>
+    <p>We may collect the following personal information:</p>
+    <ul>
+        <li>Name and email address when you create an account</li>
+        <li>Profile information you choose to provide</li>
+        <li>Study materials and content you upload</li>
+        <li>Quiz results and learning progress</li>
+        <li>Communication preferences</li>
+    </ul>
+
+    <h3>1.2 Usage Information</h3>
+    <p>We automatically collect certain information about your use of our platform:</p>
+    <ul>
+        <li>IP address and device information</li>
+        <li>Browser type and operating system</li>
+        <li>Pages visited and time spent on our platform</li>
+        <li>Features used and interactions with content</li>
+        <li>Error logs and performance data</li>
+    </ul>
+
+    <h2>2. How We Use Your Information</h2>
+    <p>We use the collected information for the following purposes:</p>
+    <ul>
+        <li>Provide and maintain our learning platform</li>
+        <li>Generate personalized quizzes and flashcards</li>
+        <li>Track your learning progress and performance</li>
+        <li>Improve our AI algorithms and services</li>
+        <li>Send important updates and notifications</li>
+        <li>Respond to your inquiries and support requests</li>
+        <li>Ensure platform security and prevent fraud</li>
+        <li>Comply with legal obligations and regulatory requirements</li>
+    </ul>
+
+    <h2>3. Information Sharing and Disclosure</h2>
+    <p>We do not sell, trade, or rent your personal information to third parties. We may share your information in the following circumstances:</p>
+    <ul>
+        <li><strong>Service Providers:</strong> With trusted third-party service providers who assist in operating our platform</li>
+        <li><strong>Legal Requirements:</strong> When required to comply with legal obligations, enforce our Terms, or protect the rights, property, or safety of Lamla AI, our users, or others</li>
+        <li><strong>Business Transfers:</strong> In connection with a merger, acquisition, or sale of assets</li>
+        <li><strong>Consent:</strong> With your explicit consent for specific purposes</li>
+    </ul>
+
+    <h2>4. Data Security</h2>
+    <p>We implement appropriate technical and organizational measures to protect your personal information:</p>
+    <ul>
+        <li>Encryption of data in transit and at rest</li>
+        <li>Regular security assessments and updates</li>
+        <li>Access controls and authentication measures</li>
+        <li>Secure data storage and backup procedures</li>
+        <li>Employee training on data protection</li>
+    </ul>
+
+    <h2>5. Your Rights and Choices</h2>
+    <p>You have the following rights regarding your personal information:</p>
+    <ul>
+        <li><strong>Access:</strong> Request access to your personal information</li>
+        <li><strong>Correction:</strong> Request correction of inaccurate information</li>
+        <li><strong>Deletion:</strong> Request deletion of your personal information</li>
+        <li><strong>Portability:</strong> Request a copy of your data in a portable format</li>
+        <li><strong>Opt-out:</strong> Unsubscribe from marketing communications</li>
+    </ul>
+
+    <h2>6. Cookies and Tracking Technologies</h2>
+    <p>We use cookies and similar technologies to enhance your experience:</p>
+    <ul>
+        <li><strong>Essential Cookies:</strong> Required for platform functionality</li>
+        <li><strong>Analytics Cookies:</strong> Help us understand platform usage</li>
+        <li><strong>Preference Cookies:</strong> Remember your settings and preferences</li>
+    </ul>
+    <p>You can control cookie settings through your browser preferences.</p>
+
+    <h2>7. Children's Privacy</h2>
+    <p>Our platform is not intended for children under 13 years of age (or the minimum age required in your jurisdiction). We do not knowingly collect personal information from children under 13. If you believe we have collected such information, please contact us immediately.</p>
+
+    <h2>8. International Data Transfers</h2>
+    <p>Your information may be transferred to and processed in countries other than your own. We ensure appropriate safeguards are in place to protect your information in accordance with this Privacy Policy. We comply with applicable international data protection laws, including the General Data Protection Regulation (GDPR), where applicable.</p>
+
+    <h2>9. Changes to This Privacy Policy</h2>
+    <p>We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.</p>
+
+    <h2>10. Contact Us</h2>
+    <div class="contact-info">
+        <p>If you have any questions about this Privacy Policy or our data practices, please contact us:</p>
+        <ul>
+            <li><strong>Email:</strong> <a href="mailto:privacy@lamla.ai">privacy@lamla.ai</a></li>
+            <li><strong>Phone:</strong> +233 50 934 1251</li>
+            <li><strong>Address:</strong> KNUST Campus, Kumasi, Ghana</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

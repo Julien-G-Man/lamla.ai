@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .legal-page {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        line-height: 1.6;
+    }
+    .legal-page h1 {
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    .legal-page h2 {
+        color: var(--secondary-color);
+        font-size: 1.5rem;
+        margin-top: 40px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 10px;
+    }
+    .legal-page h3 {
+        color: var(--secondary-color);
+        font-size: 1.2rem;
+        margin-top: 25px;
+        margin-bottom: 15px;
+    }
+    .legal-page p {
+        margin-bottom: 15px;
+        color: #333;
+    }
+    .legal-page ul {
+        margin-bottom: 15px;
+        padding-left: 20px;
+    }
+    .legal-page li {
+        margin-bottom: 8px;
+        color: #333;
+    }
+    .legal-page .last-updated {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border-left: 4px solid var(--primary-color);
+    }
+    .legal-page .contact-info {
+        background: #e8f4fd;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 30px;
+        border: 1px solid #bee5eb;
+    }
+    .legal-page .important {
+        background: #fff3cd;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border-left: 4px solid #ffc107;
+    }
+</style>
+
+<div class="legal-page">
+    <h1>Terms of Service</h1>
+    
+    <div class="last-updated">
+        <strong>Last Updated:</strong> January 15, 2025
+    </div>
+
+    <p>Welcome to Lamla AI! These Terms of Service ("Terms") outline the terms and conditions governing your use of Lamla AI, an AI-powered learning platform. By accessing or using our platform, you agree to be bound by these Terms.</p>
+
+    <div class="important">
+        <strong>Important:</strong> Please read these Terms carefully before using our platform. If you do not agree to these Terms, please do not use our services.
+    </div>
+
+    <h2>1. Acceptance of Terms</h2>
+    <p>By accessing or using Lamla AI, you agree to be bound by these Terms and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this platform.</p>
+
+    <h3>1.1 Eligibility</h3>
+    <p>You must be at least 13 years old (or the minimum legal age in your jurisdiction) to use Lamla AI. By using the platform, you affirm that you meet this requirement.</p>
+
+    <h2>2. Description of Service</h2>
+    <p>Lamla AI is an AI-powered learning platform that provides:</p>
+    <ul>
+        <li>Automated quiz generation from study materials</li>
+        <li>Flashcard creation and management</li>
+        <li>Concept analysis and explanation</li>
+        <li>Exam preparation tools</li>
+        <li>Learning progress tracking</li>
+        <li>AI-powered content analysis</li>
+    </ul>
+    <p>Lamla AI may include or interact with third-party services or APIs. We are not responsible for the practices or content of these third parties.</p>
+
+    <h2>3. User Accounts and Registration</h2>
+    <h3>3.1 Account Creation</h3>
+    <p>To access certain features of our platform, you may need to create an account. You agree to:</p>
+    <ul>
+        <li>Provide accurate, current, and complete information</li>
+        <li>Maintain and update your account information</li>
+        <li>Keep your account credentials secure</li>
+        <li>Accept responsibility for all activities under your account</li>
+    </ul>
+
+    <h3>3.2 Account Security</h3>
+    <p>You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You must notify us immediately of any unauthorized use of your account.</p>
+
+    <h2>4. Acceptable Use Policy</h2>
+    <p>You agree to use our platform only for lawful purposes and in accordance with these Terms. You agree not to:</p>
+    <ul>
+        <li>Upload or share content that is illegal, harmful, or offensive</li>
+        <li>Violate any intellectual property rights</li>
+        <li>Attempt to gain unauthorized access to our systems</li>
+        <li>Interfere with or disrupt the platform's operation</li>
+        <li>Use automated tools to access our services</li>
+        <li>Share your account credentials with others</li>
+        <li>Use our services for commercial purposes without permission</li>
+    </ul>
+
+    <h2>5. Content and Intellectual Property</h2>
+    <h3>5.1 Your Content</h3>
+    <p>You retain ownership of content you upload to our platform. By uploading content, you grant us a license to use, process, and analyze your content to provide our services.</p>
+
+    <h3>5.2 Our Content</h3>
+    <p>All content, features, and functionality on our platform are owned by Lamla AI or its licensors and are protected by copyright, trademark, and other intellectual property laws.</p>
+
+    <h3>5.3 AI-Generated Content</h3>
+    <p>Content generated by our AI systems is provided for educational purposes only. We do not guarantee the accuracy, completeness, or reliability of AI-generated content.</p>
+
+    <h3>5.4 Feedback</h3>
+    <p>By submitting feedback, suggestions, or ideas, you grant Lamla AI the right to use them without obligation or compensation. You agree that we may use your input to improve our services.</p>
+
+    <h2>6. Privacy and Data Protection</h2>
+    <p>Your privacy is important to us. Our collection and use of personal information is governed by our <a href='/privacy-policy/'>Privacy Policy</a>, which is incorporated into these Terms by reference.</p>
+
+    <h2>7. Service Availability and Modifications</h2>
+    <p>We strive to maintain high service availability but do not guarantee uninterrupted access to our platform. We may:</p>
+    <ul>
+        <li>Modify or discontinue features at any time</li>
+        <li>Perform maintenance that may temporarily affect service</li>
+        <li>Update our platform to improve functionality</li>
+    </ul>
+
+    <h2>8. Limitation of Liability</h2>
+    <p>To the maximum extent permitted by law, Lamla AI shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to:</p>
+    <ul>
+        <li>Loss of profits, data, or use</li>
+        <li>Business interruption</li>
+        <li>Damages resulting from use of AI-generated content</li>
+        <li>Service interruptions or technical issues</li>
+    </ul>
+
+    <h2>9. Disclaimers</h2>
+    <p>Our platform is provided "as is" and "as available" without warranties of any kind. We disclaim all warranties, express or implied, including but not limited to:</p>
+    <ul>
+        <li>Warranties of merchantability and fitness for a particular purpose</li>
+        <li>Warranties regarding accuracy of AI-generated content</li>
+        <li>Warranties of non-infringement</li>
+        <li>Warranties regarding service availability</li>
+    </ul>
+
+    <h2>10. Indemnification</h2>
+    <p>You agree to indemnify and hold harmless Lamla AI from any claims, damages, or expenses arising from your use of our platform or violation of these Terms.</p>
+
+    <h2>11. Termination</h2>
+    <p>We may terminate or suspend your account and access to our platform at any time, with or without cause, with or without notice. You may terminate your account at any time by contacting us.</p>
+
+    <h2>12. Governing Law and Dispute Resolution</h2>
+    <p>These Terms shall be governed by and construed in accordance with the laws of the Republic of Ghana. Any disputes arising from these Terms shall be resolved through binding arbitration.</p>
+
+    <h2>13. Changes to Terms</h2>
+    <p>We reserve the right to modify these Terms at any time. We will notify users of material changes by posting the updated Terms on our platform. We may require your explicit consent for material changes. Your continued use of our platform after changes constitutes acceptance of the new Terms.</p>
+
+    <h2>14. Severability</h2>
+    <p>If any provision of these Terms is found to be unenforceable or invalid, the remaining provisions will continue to be valid and enforceable.</p>
+
+    <h2>15. Contact Information</h2>
+    <div class="contact-info">
+        <p>If you have any questions about these Terms of Service, please contact us:</p>
+        <ul>
+            <li><strong>Email:</strong> <a href="mailto:legal@lamla.ai">legal@lamla.ai</a></li>
+            <li><strong>Phone:</strong> +233 50 934 1251</li>
+            <li><strong>Address:</strong> KNUST Campus, Kumasi, Ghana</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

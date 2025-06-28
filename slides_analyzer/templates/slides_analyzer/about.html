@@ -405,12 +405,12 @@
 
         .contact-input, .contact-textarea {
             width: 100%;
-            padding: 14px 18px;
-            border-radius: 8px;
+            padding: 12px 15px;
+            border-radius: 25px;
             border: 1px solid var(--border-color);
             background-color: var(--enactus-light-yellow-bg);
             color: var(--text-dark);
-            font-size: 1.05rem;
+            font-size: 1rem;
             box-sizing: border-box;
             transition: all 0.3s ease;
         }
@@ -657,14 +657,99 @@
         }
 
         /* FOOTER */
-        .footer {
+        .footer-section {
             background: var(--secondary-color);
-            color: #bbb;
+            color: white;
+            padding: 40px 0 20px 0;
+            margin-top: 60px;
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+        .footer-col h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+        .footer-col ul li a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer-col ul li a:hover {
+            color: var(--primary-color);
+        }
+        .footer-bottom {
             text-align: center;
-            padding: 25px 0 15px 0;
-            font-size: 0.95rem;
-            letter-spacing: 0.8px;
-            border-top: 1px solid #444;
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            color: #666;
+        }
+        .legal-links {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .legal-links a {
+            color: #999;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        .legal-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        /* Social Media Icons Styling */
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background: #555;
+            color: #999;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: not-allowed;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            opacity: 0.6;
+        }
+        .social-icon:hover {
+            opacity: 0.8;
+            transform: none;
+        }
+        .social-icon i {
+            font-size: 1.2em;
+        }
+        
+        @media (max-width: 768px) {
+            .footer-content {
+                padding: 0 20px;
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
         }
 
         /* Responsive Adjustments */
@@ -862,6 +947,7 @@
             .contact-input, .contact-textarea {
                 padding: 12px 15px;
                 font-size: 1rem;
+                border-radius: 25px;
             }
             .contact-btn {
                 padding: 14px 0;
@@ -1065,54 +1151,60 @@
                 <div class="contact-form-group">
                     <textarea class="contact-textarea" placeholder="Your Message" required aria-label="Your Message" rows="5"></textarea>
                 </div>
-                <button type="submit" class="contact-btn">Send Message</button>
+                <button type="submit" class="contact-btn">Submit Form</button>
             </form>
         </section>
     </main>
 
-    <footer class="bottom-section">
-        <div class="bottom-col">
-            <h3 class="bottom-title">Contact Us</h3>
-            <ul class="bottom-contact">
-                <li>Email: <a href="mailto:suppport@lamla.ai">support@lamla.ai</a></li>
-                <li>Phone: <span>+233 50 934 1251</span></li>
-            </ul>
-        </div>
-        <div class="bottom-col">
-            <h3 class="bottom-title">Quick Links</h3>
-            <ul class="bottom-list">
-                <li><a href="/">Home</a></li>
-                <li><a href="/about/">About</a></li>
-                <li><a href="/custom-quiz/">Quiz</a></li>
-                <li><a href="/flashcards/">Flashcards</a></li>
-                <li><a href="#">Concepts</a></li>
-                <li><a href="/exam-analyzer/">Exam Analyzer</a></li>
-                <li><a href="#">History</a></li>
-            </ul>
-        </div>
-        <div class="bottom-col">
-            <h3 class="bottom-title">Social Media</h3>
-            <div class="bottom-socials">
-                <a href="#" class="bottom-social-icon" title="Facebook - Coming soon">
-                    <i class="fab fa-facebook-f"></i>
-                </a>
-                <a href="#" class="bottom-social-icon" title="Twitter - Coming soon">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="#" class="bottom-social-icon" title="Instagram - Coming soon">
-                    <i class="fab fa-instagram"></i>
-                </a>
-                <a href="#" class="bottom-social-icon" title="LinkedIn - Coming soon">
-                    <i class="fab fa-linkedin-in"></i>
-                </a>
+    <!-- Footer -->
+    <footer class="footer-section">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:support@lamla.ai">support@lamla.ai</a></li>
+                    <li><i class="fas fa-phone"></i> +233 50 934 1251</li>
+                </ul>
             </div>
-            <p style="font-size:0.9rem; color:#aaa; margin-top:10px;">Follow us for updates</p>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/custom-quiz/">Quiz</a></li>
+                    <li><a href="/flashcards/">Flashcards</a></li>
+                    <li><a href="#">Concepts</a></li>
+                    <li><a href="/exam-analyzer/">Exam Analyzer</a></li>
+                    <li><a href="#">History</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Social Media</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon" title="Facebook - Coming soon">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="social-icon" title="Twitter - Coming soon">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="social-icon" title="Instagram - Coming soon">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="social-icon" title="LinkedIn - Coming soon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Copyright &copy; 2025 All rights reserved | Lamla AI.</p>
+            <div class="legal-links">
+                <a href="/privacy-policy/">Privacy Policy</a>
+                <a href="/terms-of-service/">Terms of Service</a>
+                <a href="/cookie-policy/">Cookie Policy</a>
+            </div>
         </div>
     </footer>
-
-    <div class="footer">
-        Copyright &copy; 2025 All rights reserved | Lamla AI.
-    </div>
 
     <script>
         // Hamburger menu toggle

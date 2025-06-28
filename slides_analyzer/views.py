@@ -468,32 +468,30 @@ def quiz_results(request):
 
 @csrf_exempt
 def submit_feedback(request):
-    """Handle feedback submissions via AJAX"""
     if request.method == 'POST':
         try:
-            data = json.loads(request.body.decode('utf-8'))
-            
-            feedback = Feedback(
-                user=request.user if request.user.is_authenticated else None,
-                rating=data.get('rating'),
-                feedback_text=data.get('feedback_text', ''),
-                feedback_type=data.get('feedback_type', 'general'),
-                page_url=data.get('page_url', '')
+            data = json.loads(request.body)
+            feedback = Feedback.objects.create(
+                rating=data.get('rating', 0),
+                feedback_text=data.get('feedback', ''),
+                quiz_score=data.get('quiz_score', 0),
+                user_email=data.get('email', '')
             )
-            feedback.save()
-            
-            return JsonResponse({
-                'status': 'success',
-                'message': 'Thank you for your feedback!'
-            })
+            return JsonResponse({'status': 'success', 'message': 'Feedback submitted successfully'})
         except Exception as e:
             logger.error(f"Error submitting feedback: {e}")
-            return JsonResponse({
-                'status': 'error',
-                'message': 'Failed to submit feedback. Please try again.'
-            }, status=500)
-    
-    return JsonResponse({
-        'status': 'error',
-        'message': 'Invalid request method'
-    }, status=405)
+            return JsonResponse({'status': 'error', 'message': 'Failed to submit feedback'}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+# Legal page views
+def privacy_policy(request):
+    """Render the Privacy Policy page"""
+    return render(request, 'slides_analyzer/privacy_policy.html')
+
+def terms_of_service(request):
+    """Render the Terms of Service page"""
+    return render(request, 'slides_analyzer/terms_of_service.html')
+
+def cookie_policy(request):
+    """Render the Cookie Policy page"""
+    return render(request, 'slides_analyzer/cookie_policy.html')

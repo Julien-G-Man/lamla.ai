@@ -945,12 +945,12 @@
         </button>
         <nav class="nav-links" id="navLinks" aria-label="Main navigation">
             <a href="/">Home</a>
+            <a href="/about/">About</a>
             <a href="/custom-quiz/">Quiz</a>
             <a href="#">Concepts</a>
             <a href="/flashcards/">Flashcards</a>
             <a href="#">History</a>
             <a href="/exam-analyzer/">Exam Analyzer</a>
-            <a href="/about/">About</a>
             {% if user_authenticated %}
                 <a href="{% url 'custom_logout' %}">Logout</a>
             {% else %}
@@ -1101,10 +1101,18 @@
         <div class="bottom-col">
             <h3 class="bottom-title">Social Media</h3>
             <div class="bottom-socials">
-                <div class="bottom-social-icon inactive" title="Coming soon"><span>F</span></div>
-                <div class="bottom-social-icon inactive" title="Coming soon"><span>T</span></div>
-                <div class="bottom-social-icon inactive" title="Coming soon"><span>I</span></div>
-                <div class="bottom-social-icon inactive" title="Coming soon"><span>L</span></div>
+                <div class="bottom-social-icon inactive" title="Coming soon">
+                    <i class="fab fa-facebook-f"></i>
+                </div>
+                <div class="bottom-social-icon inactive" title="Coming soon">
+                    <i class="fab fa-twitter"></i>
+                </div>
+                <div class="bottom-social-icon inactive" title="Coming soon">
+                    <i class="fab fa-instagram"></i>
+                </div>
+                <div class="bottom-social-icon inactive" title="Coming soon">
+                    <i class="fab fa-linkedin-in"></i>
+                </div>
             </div>
             <p style="font-size:0.9rem; color:#aaa; margin-top:10px;">Follow us for updates</p>
         </div>

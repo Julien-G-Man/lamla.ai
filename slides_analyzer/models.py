@@ -1,49 +1,70 @@
 from django.db import models
 import hashlib
+from django.contrib.auth.models import User
 
 # Create your models here.
 
 class Quiz(models.Model):
     title = models.CharField(max_length=255)
     # Add other fields as needed, e.g., description, duration
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.title
 
 class Question(models.Model):
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name='questions')
-    text = models.TextField()
-    # A simple way to store options, you might need a separate model for more complex options
-    # Example: options = models.JSONField(default=list) # Requires Django 3.1+
-    # For simplicity, let's use text fields for options and correct answer
-    option_a = models.CharField(max_length=255, blank=True, null=True)
-    option_b = models.CharField(max_length=255, blank=True, null=True)
-    option_c = models.CharField(max_length=255, blank=True, null=True)
-    option_d = models.CharField(max_length=255, blank=True, null=True)
-    correct_answer = models.CharField(max_length=255) # Stores the text of the correct option
-    question_type = models.CharField(max_length=20, choices=[('MCQ', 'Multiple Choice'), ('SHORT', 'Short Answer')])
-    difficulty = models.CharField(max_length=10, choices=[('EASY', 'Easy'), ('MEDIUM', 'Medium'), ('HARD', 'Hard')])
-    content_hash = models.CharField(max_length=64, unique=True)  # SHA-256 hash of the content
+    question_text = models.TextField()
+    answer = models.TextField(default='N/A')
+    question_type = models.CharField(max_length=20, choices=[
+        ('mcq', 'Multiple Choice'),
+        ('short', 'Short Answer'),
+    ], default='mcq')
+    options = models.JSONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    times_used = models.IntegerField(default=0)
-
-    # Add other fields as needed, e.g., difficulty, explanation
 
     def __str__(self):
-        return self.text
-
-    @classmethod
-    def generate_content_hash(cls, text):
-        """Generate a hash of the content for caching"""
-        return hashlib.sha256(text.encode()).hexdigest()
+        return self.question_text
+    
+    @staticmethod
+    def generate_content_hash(text: str) -> str:
+        """Generate a hash for the content to use for caching"""
+        return hashlib.sha256(text.encode('utf-8')).hexdigest()
 
 class QuestionCache(models.Model):
     """Cache for storing generated questions based on content hash"""
-    content_hash = models.CharField(max_length=64, unique=True)
-    questions = models.JSONField()  # Store the generated questions
+    question_content_hash = models.CharField(max_length=64, unique=True)
+    question_text = models.TextField(null=True, blank=True)
+    answer = models.TextField(null=True, blank=True)
+    question_type = models.CharField(max_length=20, null=True, blank=True)
+    options = models.JSONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     last_used = models.DateTimeField(auto_now=True)
     times_used = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"Cache for {self.content_hash[:8]}..."
+        return f"Cache for {self.question_content_hash[:8]}..."
+
+class Feedback(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    rating = models.IntegerField(choices=[
+        (1, '1 Star'),
+        (2, '2 Stars'),
+        (3, '3 Stars'),
+        (4, '4 Stars'),
+        (5, '5 Stars'),
+    ], null=True, blank=True)
+    feedback_text = models.TextField(blank=True)
+    feedback_type = models.CharField(max_length=20, choices=[
+        ('general', 'General Feedback'),
+        ('quiz', 'Quiz Feedback'),
+        ('bug', 'Bug Report'),
+        ('feature', 'Feature Request'),
+    ], default='general')
+    page_url = models.CharField(max_length=200, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Feedback from {self.user.username if self.user else 'Anonymous'} - {self.created_at.strftime('%Y-%m-%d')}"

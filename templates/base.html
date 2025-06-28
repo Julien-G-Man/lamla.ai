@@ -6,6 +6,7 @@
     <title>Lamla AI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #FFD600;
@@ -86,6 +87,26 @@
             color: var(--primary-color);
             transform: translateY(-2px);
         }
+        .share-btn {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+        .share-btn:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
         .hamburger {
             display: none;
             flex-direction: column;
@@ -109,6 +130,99 @@
             border-radius: 2px;
             transition: 0.3s ease;
         }
+        
+        /* Footer Styles */
+        .footer-section {
+            background: var(--secondary-color);
+            color: white;
+            padding: 40px 0 20px 0;
+            margin-top: 60px;
+        }
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+        .footer-col h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        .footer-col ul {
+            list-style: none;
+            padding: 0;
+        }
+        .footer-col ul li {
+            margin-bottom: 10px;
+        }
+        .footer-col ul li a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer-col ul li a:hover {
+            color: var(--primary-color);
+        }
+        .footer-bottom {
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            color: #666;
+        }
+        .feedback-btn {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .feedback-btn:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        /* Social Media Icons Styling */
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background: #555;
+            color: #999;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: not-allowed;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            opacity: 0.6;
+        }
+        .social-icon:hover {
+            opacity: 0.8;
+            transform: none;
+        }
+        .social-icon i {
+            font-size: 1.2em;
+        }
+        
         @media (max-width: 768px) {
             .navbar {
                 padding: 0 20px;
@@ -154,6 +268,14 @@
             }
             .nav-links a:last-child {
                 border-bottom: none;
+            }
+            .share-btn {
+                display: none;
+            }
+            .footer-content {
+                padding: 0 20px;
+                grid-template-columns: 1fr;
+                gap: 30px;
             }
         }
         @media (max-width: 900px) {
@@ -247,12 +369,15 @@
         </button>
         <nav class="nav-links" id="navLinks" aria-label="Main navigation">
             <a href="/">Home</a>
+            <a href="/about/">About</a>
             <a href="/custom-quiz/">Quiz</a>
             <a href="#">Concepts</a>
             <a href="/flashcards/">Flashcards</a>
             <a href="#">History</a>
             <a href="/exam-analyzer/">Exam Analyzer</a>
-            <a href="/about/">About</a>
+            <a href="#" class="share-btn" onclick="shareApp()">
+                <i class="fas fa-share-alt"></i> Share
+            </a>
             {% if user.is_authenticated %}
                 <a href="{% url 'custom_logout' %}">Logout</a>
             {% else %}
@@ -265,6 +390,56 @@
     <div>
         {% block content %}{% endblock %}
     </div>
+    
+    <!-- Footer -->
+    <footer class="footer-section">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:support@lamla.ai">support@lamla.ai</a></li>
+                    <li><i class="fas fa-phone"></i> +233 50 934 1251</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/custom-quiz/">Quiz</a></li>
+                    <li><a href="/flashcards/">Flashcards</a></li>
+                    <li><a href="/exam-analyzer/">Exam Analyzer</a></li>
+                    <li><a href="/about/">About</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Social Media</h3>
+                <ul>
+                    <li><a href="#" title="Facebook - Coming soon"><i class="fab fa-facebook-f"></i> Facebook</a></li>
+                    <li><a href="#" title="Twitter - Coming soon"><i class="fab fa-twitter"></i> Twitter</a></li>
+                    <li><a href="#" title="Instagram - Coming soon"><i class="fab fa-instagram"></i> Instagram</a></li>
+                    <li><a href="#" title="LinkedIn - Coming soon"><i class="fab fa-linkedin-in"></i> LinkedIn</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Share Lamla AI</h3>
+                <div class="social-icons">
+                    <a href="#" onclick="shareApp()" class="social-icon" title="Share with Friends">
+                        <i class="fas fa-share-alt"></i>
+                    </a>
+                    <a href="#" onclick="shareOnWhatsApp()" class="social-icon" title="Share on WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="#" onclick="shareOnTwitter()" class="social-icon" title="Share on Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Copyright &copy; 2025 All rights reserved | Lamla AI.</p>
+        </div>
+    </footer>
+
     <script>
         // Hamburger menu toggle with slide-out effect
         const hamburger = document.getElementById('hamburger');
@@ -284,6 +459,51 @@
                     hamburger.setAttribute('aria-expanded', 'false');
                 }
             });
+        }
+
+        // Share functionality
+        function shareApp() {
+            const url = window.location.origin;
+            const title = 'Lamla AI - AI-Powered Learning Assistant';
+            const text = 'Check out Lamla AI - an amazing AI-powered learning assistant that generates quizzes and flashcards from your study materials!';
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: text,
+                    url: url
+                }).catch(console.error);
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                copyToClipboard(url);
+                alert('Link copied to clipboard! Share it with your friends.');
+            }
+        }
+
+        function shareOnWhatsApp() {
+            const url = encodeURIComponent(window.location.origin);
+            const text = encodeURIComponent('Check out Lamla AI - an amazing AI-powered learning assistant!');
+            window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
+        }
+
+        function shareOnTwitter() {
+            const url = encodeURIComponent(window.location.origin);
+            const text = encodeURIComponent('Check out Lamla AI - an amazing AI-powered learning assistant! 🚀');
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text);
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
         }
     </script>
 </body>

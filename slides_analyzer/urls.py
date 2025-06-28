@@ -13,6 +13,7 @@ urlpatterns = [
     path('test-token/', views.test_token, name='test_token'),
     path('about/', views.about, name='about'),
     path('ajax/extract-text/', views.ajax_extract_text, name='ajax_extract_text'),
+    path('ajax/submit-feedback/', views.submit_feedback, name='submit_feedback'),
     path('accounts/login/', views.CustomLoginView.as_view(), name='account_login'),
     path('custom-logout/', views.custom_logout, name='custom_logout'),
 ] 

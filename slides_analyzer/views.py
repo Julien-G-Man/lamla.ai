@@ -8,7 +8,7 @@ from django.conf import settings
 import logging
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from .models import Question, Quiz
+from .models import Question, Quiz, Feedback
 from .question_generator import QuestionGenerator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
@@ -431,7 +431,16 @@ def quiz_results(request):
     questions = request.session.get('questions', {})
     user_answers = request.session.get('user_answers', {})
     if not questions or (not questions.get('mcq_questions') and not questions.get('short_questions')):
-        return redirect('custom_quiz')
+        # Instead of redirecting to custom_quiz (which requires login), show a message
+        return render(request, 'slides_analyzer/quiz_results.html', {
+            'score': 0,
+            'total': 0,
+            'mcq_questions': [],
+            'short_questions': [],
+            'user_answers': {},
+            'user_authenticated': request.user.is_authenticated,
+            'no_quiz_message': 'No quiz data found. Please take a quiz first.'
+        })
     
     # Calculate score for MCQ questions
     score = 0
@@ -456,3 +465,35 @@ def quiz_results(request):
         'user_authenticated': request.user.is_authenticated,
     }
     return render(request, 'slides_analyzer/quiz_results.html', context)
+
+@csrf_exempt
+def submit_feedback(request):
+    """Handle feedback submissions via AJAX"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            
+            feedback = Feedback(
+                user=request.user if request.user.is_authenticated else None,
+                rating=data.get('rating'),
+                feedback_text=data.get('feedback_text', ''),
+                feedback_type=data.get('feedback_type', 'general'),
+                page_url=data.get('page_url', '')
+            )
+            feedback.save()
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Thank you for your feedback!'
+            })
+        except Exception as e:
+            logger.error(f"Error submitting feedback: {e}")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Failed to submit feedback. Please try again.'
+            }, status=500)
+    
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Invalid request method'
+    }, status=405)

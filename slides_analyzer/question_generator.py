@@ -263,38 +263,48 @@ Expected Answer: [Brief answer]
 
     def generate_questions(self, text: str, num_mcq: int = 3, num_short: int = 2) -> Dict[str, List[Dict]]:
         """
-        Generate questions from the provided text, using Ollama if available.
+        Generate questions from the provided text, with multiple fallback options.
         """
-        # Generate content hash
-        content_hash = Question.generate_content_hash(text)
-        # Check cache first
+        prompt = self._create_prompt(text, num_mcq, num_short)
+        
+        # Try different APIs in order of preference
+        apis_to_try = []
+        
+        # Add Ollama if available
         try:
-            cached = QuestionCache.objects.get(content_hash=content_hash)
-            cached.times_used += 1
-            cached.save()
-            return cached.questions
-        except QuestionCache.DoesNotExist:
+            import requests
+            response = requests.get('http://localhost:11434/api/tags', timeout=5)
+            if response.status_code == 200:
+                apis_to_try.append(('ollama', self._call_ollama))
+        except:
             pass
-        try:
-            prompt = self._create_prompt(text, num_mcq, num_short)
-            # Use Ollama as the primary method
-            response = self._call_ollama(prompt, model='llama3')
-            questions = self._parse_response(response)
-            # Validate that we got some questions
-            if not questions.get("mcq_questions") and not questions.get("short_questions"):
-                return self._generate_template_questions(text, num_mcq, num_short)
-            # Cache the generated questions
+        
+        # Add other APIs based on available keys
+        if self.gemini_api_key:
+            apis_to_try.append(('gemini', self._call_gemini_api))
+        if self.openai_api_key:
+            apis_to_try.append(('openai', self._call_openai_api))
+        if self.hf_token:
+            apis_to_try.append(('huggingface', self._call_huggingface_api))
+        
+        # Try each API
+        for api_name, api_func in apis_to_try:
             try:
-                QuestionCache.objects.create(
-                    content_hash=content_hash,
-                    questions=questions
-                )
+                logger.info(f"Trying {api_name} API")
+                response = api_func(prompt)
+                if response and response.strip():
+                    questions = self._parse_response(response)
+                    # Validate that we got some questions
+                    if questions.get("mcq_questions") or questions.get("short_questions"):
+                        logger.info(f"Successfully generated questions using {api_name}")
+                        return questions
             except Exception as e:
-                logger.warning(f"Failed to cache questions: {e}")
-            return questions
-        except Exception as e:
-            logger.error(f"Ollama error: {e}")
-            return self._generate_template_questions(text, num_mcq, num_short)
+                logger.warning(f"{api_name} API failed: {e}")
+                continue
+        
+        # If all APIs fail, use template questions
+        logger.info("All APIs failed, using template questions")
+        return self._generate_template_questions(text, num_mcq, num_short)
 
     def _are_questions_malformed(self, questions: Dict[str, List[Dict]]) -> bool:
         """Check if generated questions appear to be malformed"""

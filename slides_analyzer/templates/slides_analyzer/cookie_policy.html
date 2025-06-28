@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .legal-page {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        line-height: 1.6;
+    }
+    .legal-page h1 {
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    .legal-page h2 {
+        color: var(--secondary-color);
+        font-size: 1.5rem;
+        margin-top: 40px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 10px;
+    }
+    .legal-page h3 {
+        color: var(--secondary-color);
+        font-size: 1.2rem;
+        margin-top: 25px;
+        margin-bottom: 15px;
+    }
+    .legal-page p {
+        margin-bottom: 15px;
+        color: #333;
+    }
+    .legal-page ul {
+        margin-bottom: 15px;
+        padding-left: 20px;
+    }
+    .legal-page li {
+        margin-bottom: 8px;
+        color: #333;
+    }
+    .legal-page .last-updated {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border-left: 4px solid var(--primary-color);
+    }
+    .legal-page .contact-info {
+        background: #e8f4fd;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 30px;
+        border: 1px solid #bee5eb;
+    }
+    .legal-page .cookie-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .legal-page .cookie-table th {
+        background: var(--primary-color);
+        color: white;
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+    }
+    .legal-page .cookie-table td {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+    }
+    .legal-page .cookie-table tr:hover {
+        background: #f8f9fa;
+    }
+    .legal-page .cookie-type {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+</style>
+
+<div class="legal-page">
+    <h1>Cookie Policy</h1>
+    
+    <div class="last-updated">
+        <strong>Last Updated:</strong> January 15, 2025
+    </div>
+
+    <p>This Cookie Policy explains how Lamla AI uses cookies and similar technologies when you visit our website and use our AI-powered learning platform. This policy should be read alongside our Privacy Policy.</p>
+
+    <h2>1. What Are Cookies?</h2>
+    <p>Cookies are small text files that are stored on your device (computer, tablet, or mobile) when you visit a website. They help websites remember information about your visit, such as your preferred language and other settings, which can make your next visit easier and more useful.</p>
+
+    <h2>2. How We Use Cookies</h2>
+    <p>We use cookies and similar technologies for several purposes:</p>
+    <ul>
+        <li><strong>Essential Cookies:</strong> Required for the website to function properly</li>
+        <li><strong>Performance Cookies:</strong> Help us understand how visitors interact with our website</li>
+        <li><strong>Functionality Cookies:</strong> Remember your preferences and settings</li>
+        <li><strong>Analytics Cookies:</strong> Provide insights into website usage and performance</li>
+    </ul>
+    <p>Our use of cookies is based on your consent, except for essential cookies required for platform functionality.</p>
+
+    <h2>3. Types of Cookies We Use</h2>
+    
+    <table class="cookie-table">
+        <thead>
+            <tr>
+                <th>Cookie Type</th>
+                <th>Purpose</th>
+                <th>Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="cookie-type">Session Cookies</td>
+                <td>Maintain your login session and remember your preferences during your visit</td>
+                <td>Session duration (until browser is closed)</td>
+            </tr>
+            <tr>
+                <td class="cookie-type">Authentication Cookies</td>
+                <td>Keep you logged in and secure your account</td>
+                <td>30 days</td>
+            </tr>
+            <tr>
+                <td class="cookie-type">Preference Cookies</td>
+                <td>Remember your language, theme, and other display preferences</td>
+                <td>1 year</td>
+            </tr>
+            <tr>
+                <td class="cookie-type">Analytics Cookies</td>
+                <td>Help us understand how users interact with our platform to improve functionality</td>
+                <td>2 years</td>
+            </tr>
+            <tr>
+                <td class="cookie-type">Security Cookies</td>
+                <td>Protect against fraud and ensure platform security</td>
+                <td>Session</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>4. Third-Party Cookies</h2>
+    <p>We may use third-party services that place cookies on your device:</p>
+    
+    <h3>4.1 Analytics Services</h3>
+    <p>We use analytics services to understand how our platform is used:</p>
+    <ul>
+        <li><strong>Google Analytics:</strong> Provides insights into website traffic and user behavior</li>
+        <li><strong>Performance Monitoring:</strong> Helps us identify and fix technical issues</li>
+    </ul>
+
+    <h3>4.2 AI Service Providers</h3>
+    <p>Our AI features may use cookies from our service providers:</p>
+    <ul>
+        <li><strong>OpenAI:</strong> For AI content generation services</li>
+        <li><strong>Google Gemini:</strong> For AI-powered learning features</li>
+        <li><strong>Hugging Face:</strong> For machine learning model access</li>
+    </ul>
+    <p>These third-party providers may use their own cookies, subject to their respective privacy and cookie policies.</p>
+
+    <h2>5. Managing Your Cookie Preferences</h2>
+    <p>You have several options for managing cookies:</p>
+
+    <h3>5.1 Browser Settings</h3>
+    <p>Most web browsers allow you to control cookies through their settings. You can:</p>
+    <ul>
+        <li>Block all cookies</li>
+        <li>Block third-party cookies only</li>
+        <li>Delete existing cookies</li>
+        <li>Set preferences for specific websites</li>
+    </ul>
+
+    <h3>5.2 Cookie Consent</h3>
+    <p>When you first visit our website, you'll see a cookie consent banner. You can:</p>
+    <ul>
+        <li>Accept all cookies</li>
+        <li>Reject non-essential cookies</li>
+        <li>Customize your preferences</li>
+    </ul>
+    <p>You may revisit and update your cookie preferences at any time by accessing the Cookie Settings link in the website footer.</p>
+
+    <h3>5.3 Opt-Out Options</h3>
+    <p>For analytics cookies, you can opt out through:</p>
+    <ul>
+        <li>Google Analytics opt-out browser add-on</li>
+        <li>Your browser's "Do Not Track" setting</li>
+        <li>Our cookie preference center</li>
+    </ul>
+
+    <h2>6. Impact of Disabling Cookies</h2>
+    <p>If you choose to disable cookies, please note that:</p>
+    <ul>
+        <li>Some features may not work properly</li>
+        <li>You may need to log in more frequently</li>
+        <li>Your preferences may not be saved</li>
+        <li>Some AI features may be limited</li>
+    </ul>
+
+    <h2>7. Similar Technologies</h2>
+    <p>In addition to cookies, we may use similar technologies:</p>
+    <ul>
+        <li><strong>Local Storage:</strong> Store larger amounts of data on your device</li>
+        <li><strong>Session Storage:</strong> Store temporary data during your visit</li>
+        <li><strong>Web Beacons:</strong> Track page views and email opens</li>
+        <li><strong>Pixels:</strong> Monitor user interactions</li>
+    </ul>
+    <p>These tools serve similar purposes to cookies and may be used in accordance with applicable data protection regulations.</p>
+
+    <h2>8. Updates to This Policy</h2>
+    <p>We may update this Cookie Policy from time to time to reflect changes in our practices or for legal reasons. We will notify you of any material changes by posting the updated policy on our website.</p>
+
+    <h2>9. Contact Us</h2>
+    <div class="contact-info">
+        <p>If you have any questions about our use of cookies or this Cookie Policy, please contact us:</p>
+        <ul>
+            <li><strong>Email:</strong> <a href="mailto:privacy@lamla.ai">privacy@lamla.ai</a></li>
+            <li><strong>Phone:</strong> +233 50 934 1251</li>
+            <li><strong>Address:</strong> KNUST Campus, Kumasi, Ghana</li>
+        </ul>
+    </div>
+</div>
+{% endblock %} 

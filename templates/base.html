@@ -152,6 +152,22 @@
             border-top: 1px solid #eee;
             color: #666;
         }
+        .legal-links {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .legal-links a {
+            color: #999;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        .legal-links a:hover {
+            color: var(--primary-color);
+        }
         .feedback-btn {
             background: var(--primary-color);
             color: var(--secondary-color);
@@ -407,6 +423,11 @@
         </div>
         <div class="footer-bottom">
             <p>Copyright &copy; 2025 All rights reserved | Lamla AI.</p>
+            <div class="legal-links">
+                <a href="/privacy-policy/">Privacy Policy</a>
+                <a href="/terms-of-service/">Terms of Service</a>
+                <a href="/cookie-policy/">Cookie Policy</a>
+            </div>
         </div>
     </footer>
 

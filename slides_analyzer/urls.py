@@ -16,6 +16,10 @@ urlpatterns = [
     path('ajax/submit-feedback/', views.submit_feedback, name='submit_feedback'),
     path('accounts/login/', views.CustomLoginView.as_view(), name='account_login'),
     path('custom-logout/', views.custom_logout, name='custom_logout'),
+    # Legal pages
+    path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
+    path('terms-of-service/', views.terms_of_service, name='terms_of_service'),
+    path('cookie-policy/', views.cookie_policy, name='cookie_policy'),
 ] 
 
 def call_ollama(prompt, model='llama3'):

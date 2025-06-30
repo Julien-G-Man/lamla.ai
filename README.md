@@ -1,17 +1,21 @@
-# LAMLA-AI
+# Learn and Master Like an Ace (Lamla-AI)
 
-**LAMLA-AI** is an AI-powered study assistant for students and educators. Upload your study materials (PDF, PPTX), generate quizzes and flashcards, and practice with AI-generated questions—all in a modern, user-friendly web app.
+**Lamla** stands for **Learn And Master Like an Ace** — your smart exam preparation assistant. Lamla helps you study with intention, not panic. It's not a cramming tool or a generic GPT wrapper, but a purpose-built platform to help you **Study Smarter. Perform Better.**
+
+Lamla-AI empowers students to upload their study materials, generate AI-powered quizzes, receive instant feedback, and track their performance with actionable insights. Built for high school and university students (starting in Africa, but for the world), Lamla is your intelligent study companion for mastering any subject.
 
 ---
 
-## 🚀 Features
+## 🚀 Core Features
+- **Upload Study Materials** (PDF, text)
+- **AI-Powered Quiz Generation** (personalized, with explanations)
+- **Instant Feedback** (actionable, growth-focused)
+- **Performance Tracking** (color-coded bar charts, robust analytics)
+- **Subject & Topic Selection** (focus your study)
 - **User Authentication** (Sign up, Login, Logout)
-- **Upload Study Materials** (PDF, PPTX)
-- **AI-Powered Quiz & Flashcard Generation**
-- **Custom Quiz Creation**
-- **Exam Analyzer** (Coming Soon)
-- **Responsive, Modern UI**
-- **Dark/Light Theme with Yellow/Black/Grey Branding**
+- **Modern, Responsive UI** (mobile-friendly, branded)
+
+> **Lamla-AI is not a shortcut or cheat tool — it's a smart compass for students who want to prepare better, not later.**
 
 ---
 
@@ -112,6 +116,13 @@ LAMLA-AI/
 ├── README.md               # This file
 └── ...
 ```
+
+---
+
+## 🌍 Who is Lamla-AI for?
+- **High school and university students** (especially in Africa, but globally relevant)
+- Learners who want to master subjects, not just cram
+- Anyone seeking guided, purposeful, and data-driven study
 
 ---
 

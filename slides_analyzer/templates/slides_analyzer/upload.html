@@ -174,15 +174,24 @@
             document.getElementById('navLinks').classList.toggle('open');
         };
     </script>
-    <h1>Upload Slides (PPTX or PDF)</h1>
-    <form method="post" enctype="multipart/form-data" id="uploadForm">
-        {% csrf_token %}
-        <label for="slideFileInput" class="upload-btn" id="fileLabel">Select file</label>
-        <input type="file" name="slide_file" id="slideFileInput" style="display:none;" required>
-        <span id="fileNameDisplay" style="display:block;margin:10px 0 0 0;color:#222;font-weight:500;"></span>
-        <button type="submit" class="upload-btn" id="uploadBtn">Upload</button>
-        <button type="button" class="upload-btn" id="viewTextBtn" style="display:none;margin-top:10px;">Enter Text</button>
-    </form>
+    <div class="upload-container">
+        <div style="text-align:center;">
+            <div style="font-size:2.5rem;color:#FFD600;margin-bottom:10px;">📄</div>
+            <div class="upload-title">Upload Study Materials</div>
+            <div style="font-size:1.1rem;color:#222;margin-bottom:18px;">
+                Upload your PDF or PPTX files, or enter text to generate AI-powered quizzes.<br>
+                <span style="color:#FFD600;font-weight:600;">Study Smarter. Perform Better.</span>
+            </div>
+        </div>
+        <form method="post" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+            <label for="slideFileInput" class="upload-btn" id="fileLabel">Select File (PDF or PPTX)</label>
+            <input type="file" name="slide_file" id="slideFileInput" style="display:none;" required>
+            <span id="fileNameDisplay" style="display:block;margin:10px 0 0 0;color:#222;font-weight:500;"></span>
+            <button type="submit" class="upload-btn" id="uploadBtn">Upload</button>
+            <button type="button" class="upload-btn" id="viewTextBtn" style="margin-top:10px;background:#fff;color:#FFD600;border:2px solid #FFD600;">Or Enter Text Instead</button>
+        </form>
+    </div>
     <script>
         // Hamburger menu toggle
         document.getElementById('hamburger').onclick = function() {

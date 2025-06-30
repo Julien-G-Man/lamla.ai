@@ -435,6 +435,7 @@ def quiz_results(request):
         return render(request, 'slides_analyzer/quiz_results.html', {
             'score': 0,
             'total': 0,
+            'wrong': 0,
             'mcq_questions': [],
             'short_questions': [],
             'user_answers': {},
@@ -455,10 +456,24 @@ def quiz_results(request):
     
     # Short answer questions are for review only (not auto-graded)
     short_questions = questions.get('short_questions', [])
-    
+
+    # Calculate number of incorrect answers
+    wrong = total - score if total is not None and score is not None else 0
+
+    # Calculate percentages for bar chart, avoid division by zero
+    if total:
+        score_percent = (score / total) * 100
+        wrong_percent = (wrong / total) * 100
+    else:
+        score_percent = 0
+        wrong_percent = 0
+
     context = {
         'score': score,
         'total': total,
+        'wrong': wrong,
+        'score_percent': score_percent,
+        'wrong_percent': wrong_percent,
         'mcq_questions': mcq_questions,
         'short_questions': short_questions,
         'user_answers': user_answers,

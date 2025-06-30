@@ -26,39 +26,9 @@ class QuestionGenerator:
             self.primary_api = None
             logger.warning("No API keys configured for question generation")
 
-    def _create_prompt(self, text: str, num_mcq: int = 3, num_short: int = 2) -> str:
-        return f"""Task: Create {num_mcq} multiple-choice questions and {num_short} short-answer questions based on the following text.
-
-Text:
----
-{text}
----
-
-Instructions:
-1. For multiple-choice questions:
-   - Create clear, focused questions
-   - Provide 4 options (A, B, C, D)
-   - Mark the correct answer
-   - Make questions test understanding
-
-2. For short-answer questions:
-   - Create questions that need brief but thoughtful answers
-   - Include the expected answer
-
-Format your response exactly like this:
-MCQ1: [Question]
-A) [Option A]
-B) [Option B]
-C) [Option C]
-D) [Option D]
-Correct Answer: [Letter]
-
-[Repeat for other MCQs]
-
-Short Answer 1: [Question]
-Expected Answer: [Brief answer]
-
-[Repeat for other short answers]"""
+    def _create_prompt(self, text: str, num_mcq: int = 3, num_short: int = 2, subject: str = None) -> str:
+        subject_line = f"Subject/Topic: {subject}\n" if subject else ""
+        return f"""Task: Create {num_mcq} multiple-choice questions and {num_short} short-answer questions based on the following text.\n{subject_line}\nText:\n---\n{text}\n---\n\nInstructions:\n1. For multiple-choice questions:\n   - Create clear, focused questions\n   - Provide 4 options (A, B, C, D)\n   - Mark the correct answer\n   - Make questions test understanding\n   - For each question, provide a short explanation (1-2 sentences) of why the correct answer is right.\n\n2. For short-answer questions:\n   - Create questions that need brief but thoughtful answers\n   - Include the expected answer\n   - For each question, provide a short explanation (1-2 sentences) of what makes a good answer.\n\nFormat your response exactly like this:\nMCQ1: [Question]\nA) [Option A]\nB) [Option B]\nC) [Option C]\nD) [Option D]\nCorrect Answer: [Letter]\nExplanation: [Short explanation]\n\n[Repeat for other MCQs]\n\nShort Answer 1: [Question]\nExpected Answer: [Brief answer]\nExplanation: [Short explanation]\n\n[Repeat for other short answers]"""
 
     def _call_gemini_api(self, prompt: str) -> str:
         """Call Google Gemini API"""
@@ -342,28 +312,26 @@ Expected Answer: [Brief answer]
 
     def _parse_response(self, response: str) -> Dict[str, List[Dict]]:
         """
-        Parse the raw response into a structured format.
+        Parse the raw response into a structured format, including explanations if present.
         """
         questions = {
             "mcq_questions": [],
             "short_questions": []
         }
-        
         current_mcq = None
         current_short = None
-        
         for line in response.split('\n'):
             line = line.strip()
             if not line:
                 continue
-                
             if line.startswith('MCQ'):
                 if current_mcq:
                     questions["mcq_questions"].append(current_mcq)
                 current_mcq = {
                     "question": line.split(':', 1)[1].strip() if ':' in line else line,
                     "options": [],
-                    "answer": None
+                    "answer": None,
+                    "explanation": None
                 }
             elif line.startswith(('A)', 'B)', 'C)', 'D)')):
                 if current_mcq:
@@ -371,21 +339,25 @@ Expected Answer: [Brief answer]
             elif line.startswith('Correct Answer:'):
                 if current_mcq:
                     current_mcq["answer"] = line.split(':', 1)[1].strip()
+            elif line.startswith('Explanation:'):
+                if current_mcq:
+                    current_mcq["explanation"] = line.split(':', 1)[1].strip()
+                elif current_short:
+                    current_short["explanation"] = line.split(':', 1)[1].strip()
             elif line.startswith('Short Answer'):
                 if current_short:
                     questions["short_questions"].append(current_short)
                 current_short = {
                     "question": line.split(':', 1)[1].strip() if ':' in line else line,
-                    "answer": None
+                    "answer": None,
+                    "explanation": None
                 }
             elif line.startswith('Expected Answer:'):
                 if current_short:
                     current_short["answer"] = line.split(':', 1)[1].strip()
-        
         # Add the last questions if they exist
         if current_mcq:
             questions["mcq_questions"].append(current_mcq)
         if current_short:
             questions["short_questions"].append(current_short)
-            
         return questions 

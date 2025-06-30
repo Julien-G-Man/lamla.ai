@@ -534,6 +534,26 @@
             <p class="main-page-description">Upload your study materials or paste content to create custom quiz questions.</p>
             <form id="quizForm" method="post" enctype="multipart/form-data" action="{% url 'custom_quiz' %}">
                 {% csrf_token %}
+                <div style="margin-bottom:22px;">
+                    <label for="subjectSelect" style="font-weight:600;color:var(--enactus-yellow);font-size:1.1rem;display:flex;align-items:center;gap:8px;">
+                        <span style="font-size:1.3rem;">📚</span> Subject/Topic
+                    </label>
+                    <select name="subject" id="subjectSelect" style="width:100%;padding:12px 15px;border-radius:8px;border:1.5px solid var(--enactus-border-light);background:var(--enactus-light-grey);color:var(--enactus-dark-blue);font-size:1rem;margin-top:6px;">
+                        <option value="" disabled selected>Select a subject or topic</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Biology">Biology</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Physics">Physics</option>
+                        <option value="English">English</option>
+                        <option value="History">History</option>
+                        <option value="Geography">Geography</option>
+                        <option value="Economics">Economics</option>
+                        <option value="Other">Other (type in your materials)</option>
+                    </select>
+                    <div style="color:var(--enactus-info-blue);font-size:0.98rem;margin-top:4px;">Select your subject or topic to focus your study.</div>
+                </div>
                 <div class="tab-group">
                     <button type="button" class="tab active" id="textTab">Enter Text</button>
                     <button type="button" class="tab" id="fileTab">Upload File</button>

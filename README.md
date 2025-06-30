@@ -1,4 +1,4 @@
-# Learn and Master Like an Ace (Lamla-AI)
+# Lamla-AI
 
 **Lamla** stands for **Learn And Master Like an Ace** — your smart exam preparation assistant. Lamla helps you study with intention, not panic. It's not a cramming tool or a generic GPT wrapper, but a purpose-built platform to help you **Study Smarter. Perform Better.**
 

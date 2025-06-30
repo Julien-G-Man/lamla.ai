@@ -154,17 +154,17 @@
             <span></span>
         </div>
         <div class="nav-links" id="navLinks">
-            <a href="/">Home</a>
-            <a href="/about/">About</a>
-            <a href="/custom-quiz/">Quiz</a>
-            <a href="/flashcards/">Flashcards</a>
-            <a href="#">Concepts</a>
-            <a href="/exam-analyzer/">Exam Analyzer</a>
-            <a href="#">History</a>
+            <a href="/"> <i class="fas fa-home"></i> Home</a>
+            <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
+            <a href="/custom-quiz/"> <i class="fas fa-question-circle"></i> Quiz</a>
+            <a href="/flashcards/"> <i class="fas fa-clone"></i> Flashcards</a>
+            <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
+            <a href="/exam-analyzer/"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
+            <a href="#"> <i class="fas fa-history"></i> History</a>
             {% if user_authenticated %}
-                <a href="{% url 'custom_logout' %}">Logout</a>
+                <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
             {% else %}
-                <a href="/accounts/login/">Login</a>
+                <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
             {% endif %}
         </div>
     </div>

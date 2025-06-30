@@ -21,9 +21,8 @@
                     <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
                         <div style="flex:1;background:#eee;border-radius:8px;height:22px;overflow:hidden;box-shadow:0 2px 8px #fdf2d0;">
                             {% if total > 0 %}
-                            <!-- The following inline styles use Django template variables for dynamic bar widths -->
-                            <div style="height:100%; background:var(--enactus-success-green); width:{{ score_percent|floatformat:0 }}%; transition:width 0.5s; border-radius:8px 0 0 8px;"></div>
-                            <div style="height:100%; background:var(--enactus-error-red); width:{{ wrong_percent|floatformat:0 }}%; transition:width 0.5s; border-radius:0 8px 8px 0; float:right;"></div>
+                            <div id="bar-success" class="bar-success" data-width="{{ score_percent|floatformat:0 }}"></div>
+                            <div id="bar-error" class="bar-error" data-width="{{ wrong_percent|floatformat:0 }}"></div>
                             {% else %}
                             <div style="height:100%; background:#eee; width:100%; border-radius:8px;"></div>
                             {% endif %}
@@ -513,6 +512,20 @@
             font-size: 1.8rem;
         }
     }
+    .bar-success {
+        height: 100%;
+        background: var(--enactus-success-green);
+        border-radius: 8px 0 0 8px;
+        transition: width 0.5s;
+        float: left;
+    }
+    .bar-error {
+        height: 100%;
+        background: var(--enactus-error-red);
+        border-radius: 0 8px 8px 0;
+        transition: width 0.5s;
+        float: right;
+    }
 </style>
 
 <script>
@@ -608,5 +621,13 @@
             document.body.removeChild(textArea);
         }
     }
+    
+    // Set dynamic bar widths after page load using data attributes
+    document.addEventListener('DOMContentLoaded', function() {
+        var barSuccess = document.getElementById('bar-success');
+        var barError = document.getElementById('bar-error');
+        if (barSuccess) barSuccess.style.width = barSuccess.getAttribute('data-width') + '%';
+        if (barError) barError.style.width = barError.getAttribute('data-width') + '%';
+    });
 </script>
 {% endblock %} 

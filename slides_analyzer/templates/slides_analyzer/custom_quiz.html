@@ -527,6 +527,132 @@
                 font-size: 0.85rem;
             }
         }
+        /* Sidebar styles for large screens */
+        @media (min-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 230px;
+                height: 100vh;
+                background: var(--background-white);
+                box-shadow: 2px 0 16px var(--shadow-light);
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 30px 0 0 0;
+                z-index: 1100;
+                transform: translateX(0);
+                transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+            }
+            .sidebar.closed {
+                transform: translateX(-100%);
+            }
+            .sidebar .sidebar-logo {
+                display: flex;
+                align-items: center;
+                padding: 0 32px 30px 32px;
+                margin-bottom: 10px;
+                text-decoration: none;
+            }
+            .sidebar .sidebar-logo img {
+                height: 40px;
+                margin-right: 10px;
+            }
+            .sidebar .sidebar-links {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                gap: 6px;
+                padding: 0 32px;
+            }
+            .sidebar .sidebar-links a {
+                color: var(--secondary-color);
+                text-decoration: none;
+                font-size: 1.08rem;
+                font-weight: 500;
+                padding: 12px 0 12px 0;
+                border-radius: 8px;
+                transition: background 0.2s, color 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .sidebar .sidebar-links a:hover {
+                background: var(--background-light);
+                color: var(--primary-color);
+            }
+            .sidebar .sidebar-links .active {
+                color: var(--primary-color);
+                font-weight: 700;
+            }
+            .main-content {
+                margin-left: 230px;
+                transition: margin-left 0.35s cubic-bezier(.77,0,.18,1);
+            }
+            .sidebar.closed ~ .main-content {
+                margin-left: 0;
+            }
+            .navbar {
+                z-index: 1200;
+            }
+            .navbar .nav-links {
+                display: none !important;
+            }
+        }
+        @media (max-width: 1023px) {
+            .sidebar {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        /* Hamburger Menu (Always visible) */
+        .hamburger {
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 45px;
+            height: 45px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 3000;
+            margin-left: auto;
+            padding: 0;
+        }
+        .hamburger span {
+            width: 28px;
+            height: 3.5px;
+            margin: 4px 0;
+            background: var(--enactus-yellow);
+            border-radius: 2px;
+            transition: all 0.3s cubic-bezier(.77,0,.18,1);
+            position: relative;
+        }
+        .hamburger.open span {
+            background: var(--enactus-dark-blue);
+        }
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(11.5px) rotate(45deg);
+        }
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-11.5px) rotate(-45deg);
+        }
+        @media (max-width: 900px) {
+            .hamburger {
+                position: fixed !important;
+                top: 18px !important;
+                right: 24px !important;
+                z-index: 5001 !important;
+            }
+        }
     </style>
     <div class="page-wrapper">
         <div class="container">

@@ -28,6 +28,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     path('', views.home, name='home'),  # Home page
+    path('home/', views.home, name='home'),  # Allow /home as well
     path('base/', redirect_base_to_home),  # Redirect /base to home
     path('', include('slides_analyzer.urls')),
 ]

@@ -607,6 +607,112 @@
                 padding: 15px;
             }
         }
+
+        /* Sidebar styles for large screens */
+        @media (min-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 230px;
+                height: 100vh;
+                background: var(--background-white);
+                box-shadow: 2px 0 16px var(--shadow-light);
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 30px 0 0 0;
+                z-index: 1100;
+                transform: translateX(0);
+                transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+            }
+            .sidebar.closed {
+                transform: translateX(-100%);
+            }
+            .sidebar .sidebar-logo {
+                display: flex;
+                align-items: center;
+                padding: 0 32px 30px 32px;
+                margin-bottom: 10px;
+                text-decoration: none;
+            }
+            .sidebar .sidebar-logo img {
+                height: 40px;
+                margin-right: 10px;
+            }
+            .sidebar .sidebar-links {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                gap: 6px;
+                padding: 0 32px;
+            }
+            .sidebar .sidebar-links a {
+                color: var(--secondary-color);
+                text-decoration: none;
+                font-size: 1.08rem;
+                font-weight: 500;
+                padding: 12px 0 12px 0;
+                border-radius: 8px;
+                transition: background 0.2s, color 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .sidebar .sidebar-links a:hover {
+                background: var(--background-light);
+                color: var(--primary-color);
+            }
+            .sidebar .sidebar-links .active {
+                color: var(--primary-color);
+                font-weight: 700;
+            }
+            .main-content {
+                margin-left: 230px;
+                transition: margin-left 0.35s cubic-bezier(.77,0,.18,1);
+            }
+            .sidebar.closed ~ .main-content {
+                margin-left: 0;
+            }
+            .navbar {
+                z-index: 1200;
+            }
+            .navbar .nav-links {
+                display: none !important;
+            }
+        }
+        @media (max-width: 1023px) {
+            .sidebar {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        /* Hamburger Menu (Always visible) */
+        .hamburger {
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 45px;
+            height: 45px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            z-index: 3000;
+            margin-left: auto;
+            padding: 0;
+        }
+
+        @media (max-width: 900px) {
+            .hamburger {
+                position: fixed !important;
+                top: 18px !important;
+                right: 24px !important;
+                z-index: 5001 !important;
+            }
+        }
     </style>
 
     <div class="page-wrapper">
@@ -710,106 +816,4 @@
             {% endif %}
         </div>
     </div>
-
-    <script>
-        // Tab switching with animation
-        const textTab = document.getElementById('textTab');
-        const fileTab = document.getElementById('fileTab');
-        const textContent = document.getElementById('textContent');
-        const fileContent = document.getElementById('fileContent');
-        
-        textTab.onclick = function() {
-            textTab.classList.add('active');
-            fileTab.classList.remove('active');
-            textContent.style.display = 'block';
-            fileContent.style.display = 'none';
-            textContent.classList.add('slide-in');
-            setTimeout(() => textContent.classList.remove('slide-in'), 400);
-        };
-        
-        fileTab.onclick = function() {
-            fileTab.classList.add('active');
-            textTab.classList.remove('active');
-            fileContent.style.display = 'block';
-            textContent.style.display = 'none';
-            fileContent.classList.add('slide-in');
-            setTimeout(() => fileContent.classList.remove('slide-in'), 400);
-        };
-
-        // Clear button
-        document.getElementById('clearBtn').onclick = function() {
-            document.getElementById('studyText').value = '';
-            document.getElementById('slideFile').value = '';
-            document.getElementById('fileNameDisplay').textContent = '';
-            document.getElementById('numMcqInput').value = '5';
-            document.getElementById('numShortInput').value = '3';
-        };
-
-        // AJAX file upload for extracting text
-        const slideFileInput = document.getElementById('slideFile');
-        const selectFileButton = document.getElementById('selectFileButton');
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const studyTextArea = document.getElementById('studyText');
-        const extractSpinner = document.getElementById('extractSpinner');
-        const toast = document.getElementById('toast');
-
-        function showToast(msg, isError = false) {
-            toast.textContent = msg;
-            toast.classList.remove('error');
-            if (isError) {
-                toast.classList.add('error');
-            }
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
-        }
-
-        if (selectFileButton && slideFileInput && studyTextArea && extractSpinner) {
-            selectFileButton.onclick = function(e) {
-                e.preventDefault();
-                slideFileInput.click();
-            };
-            
-            slideFileInput.onchange = function() {
-                if (!slideFileInput.files.length) {
-                    fileNameDisplay.textContent = '';
-                    return;
-                }
-                fileNameDisplay.textContent = slideFileInput.files[0].name;
-                selectFileButton.textContent = 'Extracting...';
-                selectFileButton.disabled = true;
-                extractSpinner.style.display = 'flex';
-                
-                document.querySelector('.main-btn').disabled = true;
-                document.querySelector('.clear-btn').disabled = true;
-
-                const formData = new FormData();
-                formData.append('slide_file', slideFileInput.files[0]);
-
-                fetch('/ajax/extract-text/', {
-                    method: 'POST',
-                    headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
-                    body: formData
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.text !== undefined) {
-                        studyTextArea.value = data.text;
-                        showToast('Text extracted successfully!');
-                        textTab.textContent = 'View Uploaded Text';
-                        textTab.click(); 
-                    } else {
-                        showToast(data.error || 'Failed to extract text.', true);
-                    }
-                })
-                .catch(() => showToast('Failed to extract text. Please try again.', true))
-                .finally(() => {
-                    selectFileButton.textContent = 'Select file';
-                    selectFileButton.disabled = false;
-                    extractSpinner.style.display = 'none';
-                    document.querySelector('.main-btn').disabled = false;
-                    document.querySelector('.clear-btn').disabled = false;
-                });
-            };
-        }
-    </script>
 {% endblock %}

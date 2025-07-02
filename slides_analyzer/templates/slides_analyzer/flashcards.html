@@ -50,11 +50,20 @@
         .navbar .logo {
             font-size: 2rem;
             font-weight: bold;
-            color: #FFD600; /* Accent color for logo */
+            color: #FFD600;
             letter-spacing: 0.5px;
             flex-shrink: 0;
             margin-right: 80px;
-            height: 40px; /* Adjust logo image height */
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .navbar .logo img {
+            height: 40px;
+            width: auto;
+            max-width: 100px;
+            margin-right: 8px;
+            display: inline-block;
         }
         .nav-links {
             display: flex;
@@ -79,26 +88,40 @@
 
         /* Hamburger Menu (Mobile) */
         .hamburger {
-            display: none;
+            display: flex !important;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             background: none;
             border: none;
             cursor: pointer;
             z-index: 3000;
             margin-left: auto;
+            padding: 0;
         }
         .hamburger span {
-            display: block;
             width: 28px;
-            height: 4px;
+            height: 3.5px;
             margin: 4px 0;
-            background: #FFD600; /* Hamburger icon color */
+            background: var(--primary-color);
             border-radius: 2px;
-            transition: 0.3s;
+            transition: all 0.3s cubic-bezier(.77,0,.18,1);
+            position: relative;
+        }
+        .hamburger.open span {
+            background: var(--secondary-color);
+        }
+        .hamburger.open span:nth-child(1) {
+            transform: translateY(11.5px) rotate(45deg);
+        }
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+        .hamburger.open span:nth-child(3) {
+            transform: translateY(-11.5px) rotate(-45deg);
         }
         /* Mobile Navbar Button (if needed, currently not explicitly used in flashcards) */
         .navbar-mobile-btn {
@@ -799,12 +822,95 @@
                 gap: 30px;
             }
         }
+
+        /* Sidebar styles for large screens */
+        @media (min-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 230px;
+                height: 100vh;
+                background: var(--background-white);
+                box-shadow: 2px 0 16px var(--shadow-light);
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 30px 0 0 0;
+                z-index: 1100;
+                transform: translateX(0);
+                transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+            }
+            .sidebar.closed {
+                transform: translateX(-100%);
+            }
+            .sidebar .sidebar-logo {
+                display: flex;
+                align-items: center;
+                padding: 0 32px 30px 32px;
+                margin-bottom: 10px;
+                text-decoration: none;
+            }
+            .sidebar .sidebar-logo img {
+                height: 40px;
+                margin-right: 10px;
+            }
+            .sidebar .sidebar-links {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                gap: 6px;
+                padding: 0 32px;
+            }
+            .sidebar .sidebar-links a {
+                color: var(--secondary-color);
+                text-decoration: none;
+                font-size: 1.08rem;
+                font-weight: 500;
+                padding: 12px 0 12px 0;
+                border-radius: 8px;
+                transition: background 0.2s, color 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .sidebar .sidebar-links a:hover {
+                background: var(--background-light);
+                color: var(--primary-color);
+            }
+            .sidebar .sidebar-links .active {
+                color: var(--primary-color);
+                font-weight: 700;
+            }
+            .main-content {
+                margin-left: 230px;
+                transition: margin-left 0.35s cubic-bezier(.77,0,.18,1);
+            }
+            .sidebar.closed ~ .main-content {
+                margin-left: 0;
+            }
+            .navbar {
+                z-index: 1200;
+            }
+            .navbar .nav-links {
+                display: none !important;
+            }
+        }
+        @media (max-width: 1023px) {
+            .sidebar {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <a href="/" style="display:flex;align-items:center;text-decoration:none;">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" class="logo">
+    <header class="navbar">
+        <a href="/" class="logo">
+            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
+            <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
         </a>
         <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
             <span></span>
@@ -825,9 +931,28 @@
                 <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
             {% endif %}
         </nav>
+    </header>
+    <div class="sidebar" id="sidebar">
+        <a href="/" class="sidebar-logo">
+            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
+            <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
+        </a>
+        <div class="sidebar-links">
+            <a href="/"> <i class="fas fa-home"></i> Home</a>
+            <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
+            <a href="/custom-quiz/"> <i class="fas fa-question-circle"></i> Quiz</a>
+            <a href="/flashcards/"> <i class="fas fa-clone"></i> Flashcards</a>
+            <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
+            <a href="/exam-analyzer/"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
+            <a href="#"> <i class="fas fa-history"></i> History</a>
+            {% if user_authenticated %}
+                <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
+            {% else %}
+                <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
+            {% endif %}
+        </div>
     </div>
-
-    <div class="main-content">
+    <div class="main-content" id="mainContent">
         <div class="page-title">
             <span class="highlight">Flashcards</span> for Quick Study
         </div>
@@ -944,22 +1069,49 @@
         // Hamburger menu toggle with slide-out effect
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('navLinks');
-        if (hamburger && navLinks) {
-            hamburger.onclick = function() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        function isLargeScreen() {
+            return window.innerWidth >= 1024;
+        }
+        hamburger.onclick = function() {
+            if (isLargeScreen()) {
+                // Toggle sidebar on large screens
+                sidebar.classList.toggle('closed');
+                // Adjust main content margin
+                if (sidebar.classList.contains('closed')) {
+                    mainContent.style.marginLeft = '0';
+                } else {
+                    mainContent.style.marginLeft = '230px';
+                }
+            } else {
+                // Mobile nav as before
                 const expanded = this.getAttribute('aria-expanded') === 'true';
                 navLinks.classList.toggle('open');
                 this.classList.toggle('open');
                 this.setAttribute('aria-expanded', !expanded);
-            };
-            // Close menu when clicking on links (mobile only)
-            navLinks.querySelectorAll('a').forEach(function(link) {
-                link.onclick = function() {
-                    navLinks.classList.remove('open');
-                    hamburger.classList.remove('open');
-                    hamburger.setAttribute('aria-expanded', 'false');
-                }
-            });
-        }
+            }
+        };
+        // Close menu when clicking on links (mobile only)
+        document.querySelectorAll('#navLinks a').forEach(function(link) {
+            link.onclick = function() {
+                navLinks.classList.remove('open');
+                hamburger.classList.remove('open');
+                hamburger.setAttribute('aria-expanded', 'false');
+            }
+        });
+        window.addEventListener('resize', function() {
+            if (isLargeScreen()) {
+                navLinks.classList.remove('open');
+                hamburger.classList.remove('open');
+                hamburger.setAttribute('aria-expanded', 'false');
+                sidebar.classList.remove('closed');
+                mainContent.style.marginLeft = '230px';
+            } else {
+                sidebar.classList.remove('closed');
+                mainContent.style.marginLeft = '0';
+            }
+        });
         
         // Tab switching with animation
         const textTab = document.getElementById('textTab');

@@ -88,7 +88,7 @@
             transform: translateY(-2px);
         }
         .hamburger {
-            display: none;
+            display: flex !important;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -308,21 +308,10 @@
                 border-bottom: none;
             }
             .hamburger {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                width: 48px;
-                height: 48px;
-                background: none;
-                border: none;
-                border-radius: 0;
-                box-shadow: none;
-                margin-left: 0;
-                z-index: 5000;
-                position: relative;
-                transition: none;
-                padding: 0;
+                position: fixed;
+                top: 18px;
+                right: 24px;
+                z-index: 5001;
             }
             .hamburger.open {
                 background: none;
@@ -357,8 +346,8 @@
     <header class="navbar">
         <a href="/" class="logo">
             <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
+            <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
         </a>
-        {% block navbar_links %}
         <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
             <span></span>
             <span></span>
@@ -378,10 +367,28 @@
                 <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
             {% endif %}
         </nav>
-        {% endblock %}
     </header>
-    <div style="margin-top: 90px;"></div>
-    <div>
+    <div class="sidebar" id="sidebar">
+        <a href="/" class="sidebar-logo">
+            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
+            <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
+        </a>
+        <div class="sidebar-links">
+            <a href="/"> <i class="fas fa-home"></i> Home</a>
+            <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
+            <a href="/custom-quiz/"> <i class="fas fa-question-circle"></i> Quiz</a>
+            <a href="/flashcards/"> <i class="fas fa-clone"></i> Flashcards</a>
+            <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
+            <a href="/exam-analyzer/"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
+            <a href="#"> <i class="fas fa-history"></i> History</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
+            {% else %}
+                <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="main-content" id="mainContent">
         {% block content %}{% endblock %}
     </div>
     
@@ -436,25 +443,52 @@
     </footer>
 
     <script>
-        // Hamburger menu toggle with slide-out effect
+        // Hamburger menu toggle with slide-out effect (from home.html)
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('navLinks');
-        if (hamburger && navLinks) {
-            hamburger.onclick = function() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        function isLargeScreen() {
+            return window.innerWidth >= 1024;
+        }
+        hamburger.onclick = function() {
+            if (isLargeScreen()) {
+                // Toggle sidebar on large screens
+                sidebar.classList.toggle('closed');
+                // Adjust main content margin
+                if (sidebar.classList.contains('closed')) {
+                    mainContent.style.marginLeft = '0';
+                } else {
+                    mainContent.style.marginLeft = '230px';
+                }
+            } else {
+                // Mobile nav as before
                 const expanded = this.getAttribute('aria-expanded') === 'true';
                 navLinks.classList.toggle('open');
                 this.classList.toggle('open');
                 this.setAttribute('aria-expanded', !expanded);
-            };
-            // Close menu when clicking on links (mobile only)
-            navLinks.querySelectorAll('a').forEach(function(link) {
-                link.onclick = function() {
-                    navLinks.classList.remove('open');
-                    hamburger.classList.remove('open');
-                    hamburger.setAttribute('aria-expanded', 'false');
-                }
-            });
-        }
+            }
+        };
+        // Close menu when clicking on links (mobile only)
+        document.querySelectorAll('#navLinks a').forEach(function(link) {
+            link.onclick = function() {
+                navLinks.classList.remove('open');
+                hamburger.classList.remove('open');
+                hamburger.setAttribute('aria-expanded', 'false');
+            }
+        });
+        window.addEventListener('resize', function() {
+            if (isLargeScreen()) {
+                navLinks.classList.remove('open');
+                hamburger.classList.remove('open');
+                hamburger.setAttribute('aria-expanded', 'false');
+                sidebar.classList.remove('closed');
+                mainContent.style.marginLeft = '230px';
+            } else {
+                sidebar.classList.remove('closed');
+                mainContent.style.marginLeft = '0';
+            }
+        });
 
         // Share functionality
         function shareApp() {

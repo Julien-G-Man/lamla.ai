@@ -55,6 +55,7 @@ pip install -r requirements.txt
 ```sh
 python setup_env.py
 ```
+> **Note:** The setup script only creates a template `.env` file. You must manually add your real API keys and secrets after running it.
 
 **Option B: Manual setup**
 Create a `.env` file in the project root with your API keys:
@@ -78,6 +79,11 @@ GEMINI_MODEL=models/gemini-1.5-pro-latest
 - **Gemini**: https://makersuite.google.com/app/apikey
 - **Azure OpenAI**: https://portal.azure.com/#view/Microsoft_Azure_ProjectOxford/CognitiveServicesHub/~/OpenAI
 - **Hugging Face**: https://huggingface.co/settings/tokens
+
+> **Security Note:**
+> - Your `.env` file contains sensitive secrets and **must never be committed to version control**. It is already included in `.gitignore`.
+> - For production, set environment variables securely in your deployment environment instead of using a `.env` file.
+> - Never log, print, or expose your API keys in code or error messages.
 
 > **Note**: At least one API key is required for question generation. The app will try APIs in order: Azure OpenAI → Gemini → Hugging Face → Local GPT-2 fallback.
 

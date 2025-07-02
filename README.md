@@ -66,7 +66,8 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 
 # API Keys (Get your keys from the links below)
 GEMINI_API_KEY=your_gemini_key
-OPENAI_API_KEY=your_openai_key
+AZURE_OPENAI_API_KEY=your_azure_openai_key
+AZURE_OPENAI_ENDPOINT=your_azure_openai_endpoint
 HUGGING_FACE_API_TOKEN=your_huggingface_token
 
 # Optional: Gemini Model
@@ -75,10 +76,10 @@ GEMINI_MODEL=models/gemini-1.5-pro-latest
 
 **Get your API keys:**
 - **Gemini**: https://makersuite.google.com/app/apikey
-- **OpenAI**: https://platform.openai.com/api-keys  
+- **Azure OpenAI**: https://portal.azure.com/#view/Microsoft_Azure_ProjectOxford/CognitiveServicesHub/~/OpenAI
 - **Hugging Face**: https://huggingface.co/settings/tokens
 
-> **Note**: At least one API key is required for question generation. The app will try APIs in order: Gemini → OpenAI → Hugging Face → Local GPT-2 fallback.
+> **Note**: At least one API key is required for question generation. The app will try APIs in order: Azure OpenAI → Gemini → Hugging Face → Local GPT-2 fallback.
 
 ### 5. Test API Configuration
 ```sh

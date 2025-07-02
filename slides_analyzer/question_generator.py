@@ -10,16 +10,17 @@ logger = logging.getLogger(__name__)
 
 class QuestionGenerator:
     def __init__(self):
+        self.azure_openai_api_key = getattr(settings, 'AZURE_OPENAI_API_KEY', None)
+        self.azure_openai_endpoint = getattr(settings, 'AZURE_OPENAI_ENDPOINT', None)
         self.gemini_api_key = getattr(settings, 'GEMINI_API_KEY', None)
         self.gemini_model = getattr(settings, 'GEMINI_MODEL', 'gemini-1.5-pro')
-        self.openai_api_key = getattr(settings, 'OPENAI_API_KEY', None)
         self.hf_token = getattr(settings, 'HUGGING_FACE_API_TOKEN', None)
         
-        # Prefer Gemini, fallback to OpenAI, then Hugging Face
-        if self.gemini_api_key:
+        # Prefer Azure OpenAI, then Gemini, then Hugging Face
+        if self.azure_openai_api_key and self.azure_openai_endpoint:
+            self.primary_api = 'azure_openai'
+        elif self.gemini_api_key:
             self.primary_api = 'gemini'
-        elif self.openai_api_key:
-            self.primary_api = 'openai'
         elif self.hf_token:
             self.primary_api = 'huggingface'
         else:
@@ -42,20 +43,26 @@ class QuestionGenerator:
             logger.error(f"Gemini API error: {e}")
             raise
 
-    def _call_openai_api(self, prompt: str) -> str:
-        """Call OpenAI API"""
+    def _call_azure_openai_api(self, prompt: str) -> str:
+        """Call Azure OpenAI API (chat/completions endpoint)"""
         try:
-            import openai
-            client = openai.OpenAI(api_key=self.openai_api_key)
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=1000,
-                temperature=0.7
-            )
-            return response.choices[0].message.content
+            headers = {
+                'Content-Type': 'application/json',
+                'api-key': self.azure_openai_api_key
+            }
+            payload = {
+                "messages": [
+                    {"role": "user", "content": prompt}
+                ],
+                "max_tokens": 1000,
+                "temperature": 0.7
+            }
+            response = requests.post(self.azure_openai_endpoint, headers=headers, json=payload, timeout=60)
+            response.raise_for_status()
+            result = response.json()
+            return result['choices'][0]['message']['content']
         except Exception as e:
-            logger.error(f"OpenAI API error: {e}")
+            logger.error(f"Azure OpenAI API error: {e}")
             raise
 
     def _call_huggingface_api(self, prompt: str) -> str:
@@ -250,10 +257,10 @@ class QuestionGenerator:
             pass
         
         # Add other APIs based on available keys
+        if self.azure_openai_api_key and self.azure_openai_endpoint:
+            apis_to_try.append(('azure_openai', self._call_azure_openai_api))
         if self.gemini_api_key:
             apis_to_try.append(('gemini', self._call_gemini_api))
-        if self.openai_api_key:
-            apis_to_try.append(('openai', self._call_openai_api))
         if self.hf_token:
             apis_to_try.append(('huggingface', self._call_huggingface_api))
         

@@ -19,11 +19,12 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 # API Keys (Replace with your actual keys)
 # Get your keys from:
 # - Gemini: https://makersuite.google.com/app/apikey
-# - OpenAI: https://platform.openai.com/api-keys
+# - Azure OpenAI: https://portal.azure.com/#view/Microsoft_Azure_ProjectOxford/CognitiveServicesHub/~/OpenAI
 # - Hugging Face: https://huggingface.co/settings/tokens
 
 GEMINI_API_KEY=your_gemini_api_key_here
-OPENAI_API_KEY=your_openai_api_key_here
+AZURE_OPENAI_API_KEY=your_azure_openai_api_key_here
+AZURE_OPENAI_ENDPOINT=your_azure_openai_endpoint_here
 HUGGING_FACE_API_TOKEN=your_huggingface_token_here
 
 # Gemini Model (Optional - uses default if not set)

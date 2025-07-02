@@ -1092,6 +1092,11 @@
         </div>
     </div>
     <div class="main-content" id="mainContent">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
         <section class="hero">
             <div class="hero-content">
                 <h1 class="hero-title">
@@ -1147,8 +1152,9 @@
         <section class="newsletter-section">
             <h2 class="newsletter-title">Stay Ahead with Lamla-AI</h2>
             <p class="newsletter-desc">Subscribe for study tips, feature updates, and exclusive offers. Lamla-AI is your intelligent study assistant that helps you prepare with purpose.</p>
-            <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
-                <input type="email" class="newsletter-input" placeholder="Your Email" required aria-label="Email for newsletter">
+            <form class="newsletter-form" method="post" action="">
+                {% csrf_token %}
+                <input type="email" class="newsletter-input" name="email" placeholder="Your Email" required aria-label="Email for newsletter">
                 <button type="submit" class="newsletter-btn">Subscribe</button>
             </form>
         </section>

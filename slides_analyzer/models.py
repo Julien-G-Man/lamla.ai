@@ -1,6 +1,8 @@
 from django.db import models
 import hashlib
 from django.contrib.auth.models import User
+from django.core.validators import EmailValidator
+from django.utils import timezone
 
 # Create your models here.
 
@@ -68,3 +70,53 @@ class Feedback(models.Model):
     
     def __str__(self):
         return f"Feedback from {self.user.username if self.user else 'Anonymous'} - {self.created_at.strftime('%Y-%m-%d')}"
+
+class Subscription(models.Model):
+    """Newsletter subscription from students"""
+    email = models.EmailField(
+        unique=True,
+        validators=[EmailValidator()],
+        help_text="Student's email address"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True, help_text="Whether subscription is active")
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Newsletter Subscription"
+        verbose_name_plural = "Newsletter Subscriptions"
+    
+    def __str__(self):
+        return f"{self.email} ({self.created_at.strftime('%Y-%m-%d')})"
+
+class Contact(models.Model):
+    """Contact form submissions from students"""
+    SUBJECT_CHOICES = [
+        ('general', 'General Inquiry'),
+        ('technical', 'Technical Support'),
+        ('feature', 'Feature Request'),
+        ('bug', 'Bug Report'),
+        ('feedback', 'Feedback'),
+        ('other', 'Other'),
+    ]
+    
+    name = models.CharField(max_length=100, help_text="Student's full name")
+    email = models.EmailField(validators=[EmailValidator()], help_text="Student's email address")
+    subject = models.CharField(max_length=200, help_text="Subject of the message")
+    message = models.TextField(help_text="Student's message")
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_resolved = models.BooleanField(default=False, help_text="Whether the issue has been resolved")
+    response_sent = models.BooleanField(default=False, help_text="Whether a response has been sent")
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Contact Form Submission"
+        verbose_name_plural = "Contact Form Submissions"
+    
+    def __str__(self):
+        return f"{self.name} - {self.subject} ({self.created_at.strftime('%Y-%m-%d')})"
+    
+    @property
+    def short_message(self):
+        """Return first 100 characters of message for admin display"""
+        return self.message[:100] + "..." if len(self.message) > 100 else self.message

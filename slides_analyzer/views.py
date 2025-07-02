@@ -8,7 +8,7 @@ from django.conf import settings
 import logging
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from .models import Question, Quiz, Feedback
+from .models import Question, Quiz, Feedback, Subscription, Contact
 from .question_generator import QuestionGenerator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
@@ -17,6 +17,12 @@ import mimetypes
 from django.views.decorators.csrf import csrf_exempt
 from allauth.account.views import LoginView as AllauthLoginView
 import json
+import requests
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.db import IntegrityError
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -288,6 +294,53 @@ def custom_quiz(request):
     })
 
 def home(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        
+        if not email:
+            messages.error(request, "Please enter a valid email address.")
+            return redirect('home')
+        
+        try:
+            # Validate email format
+            validate_email(email)
+            
+            # Check if already subscribed
+            existing_subscription = Subscription.objects.filter(email=email).first()
+            if existing_subscription:
+                if existing_subscription.is_active:
+                    messages.info(request, "You're already subscribed to our newsletter!")
+                else:
+                    existing_subscription.is_active = True
+                    existing_subscription.save()
+                    messages.success(request, "Welcome back! Your subscription has been reactivated.")
+            else:
+                # Create new subscription
+                subscription = Subscription.objects.create(email=email)
+                messages.success(request, "Thank you for subscribing! You'll receive updates about new features and study tips.")
+                
+                # Send email notification to admin
+                try:
+                    send_mail(
+                        subject='New Newsletter Subscription',
+                        message=f'A new student has subscribed to the newsletter:\n\nEmail: {email}\nDate: {subscription.created_at.strftime("%Y-%m-%d %H:%M:%S")}',
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[settings.ADMIN_EMAIL] if hasattr(settings, 'ADMIN_EMAIL') else ['admin@lamla.ai'],
+                        fail_silently=True,
+                    )
+                except Exception as e:
+                    logger.warning(f"Failed to send subscription notification email: {e}")
+                    
+        except DjangoValidationError:
+            messages.error(request, "Please enter a valid email address.")
+        except IntegrityError:
+            messages.error(request, "This email is already subscribed.")
+        except Exception as e:
+            logger.error(f"Error processing subscription: {e}")
+            messages.error(request, "Sorry, there was an error processing your subscription. Please try again.")
+        
+        return redirect('home')
+    
     return render(request, 'slides_analyzer/home.html', {'user_authenticated': request.user.is_authenticated})
 
 @login_required
@@ -392,6 +445,63 @@ def error(request, message="An error occurred"):
     return render(request, 'slides_analyzer/error.html', {'message': message, 'user_authenticated': request.user.is_authenticated})
 
 def about(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        message = request.POST.get('message', '').strip()
+        
+        # Validate all fields
+        if not all([name, email, subject, message]):
+            messages.error(request, "All fields are required. Please fill in all the information.")
+            return redirect('about')
+        
+        try:
+            # Validate email format
+            validate_email(email)
+            
+            # Create contact submission
+            contact = Contact.objects.create(
+                name=name,
+                email=email,
+                subject=subject,
+                message=message
+            )
+            
+            messages.success(request, "Thank you for your message! We'll get back to you soon.")
+            
+            # Send email notification to admin
+            try:
+                admin_message = f"""
+New contact form submission from a student:
+
+Name: {name}
+Email: {email}
+Subject: {subject}
+Message: {message}
+
+Submitted on: {contact.created_at.strftime("%Y-%m-%d %H:%M:%S")}
+
+You can view and manage all submissions in the Django admin panel.
+"""
+                send_mail(
+                    subject=f'New Contact Form Submission: {subject}',
+                    message=admin_message,
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[settings.ADMIN_EMAIL] if hasattr(settings, 'ADMIN_EMAIL') else ['admin@lamla.ai'],
+                    fail_silently=True,
+                )
+            except Exception as e:
+                logger.warning(f"Failed to send contact notification email: {e}")
+                
+        except DjangoValidationError:
+            messages.error(request, "Please enter a valid email address.")
+        except Exception as e:
+            logger.error(f"Error processing contact form: {e}")
+            messages.error(request, "Sorry, there was an error sending your message. Please try again.")
+        
+        return redirect('about')
+    
     return render(request, 'slides_analyzer/about.html')
 
 @csrf_exempt

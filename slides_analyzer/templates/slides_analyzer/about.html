@@ -1203,6 +1203,11 @@
         </div>
     </div>
     <div class="main-content" id="mainContent">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
         <section class="about-hero">
             <h1 class="about-hero-title">
                 About <span class="highlight">Lamla-AI</span>
@@ -1298,20 +1303,21 @@
         <section class="about-contact-section">
             <h2>📧 Get in Touch</h2>
             <p>Have questions, suggestions, or want to share your experience? We'd love to hear from you!<br><b>Lamla-AI is your intelligent study assistant that helps you prepare with purpose. With guided quizzes, focus tools, and performance insights, Lamla makes sure you're always learning—not guessing.</b></p>
-            <form class="contact-form" onsubmit="event.preventDefault(); handleContactSubmit();">
+            <form class="contact-form" method="post" action="">
+                {% csrf_token %}
                 <div class="contact-form-row">
                     <div class="contact-form-group">
-                        <input type="text" class="contact-input" placeholder="Your Name" required aria-label="Your Name">
+                        <input type="text" class="contact-input" name="name" placeholder="Your Name" required aria-label="Your Name">
                     </div>
                     <div class="contact-form-group">
-                        <input type="email" class="contact-input" placeholder="Your Email" required aria-label="Your Email">
+                        <input type="email" class="contact-input" name="email" placeholder="Your Email" required aria-label="Your Email">
                     </div>
                 </div>
                 <div class="contact-form-group">
-                    <input type="text" class="contact-input" placeholder="Subject" required aria-label="Subject">
+                    <input type="text" class="contact-input" name="subject" placeholder="Subject" required aria-label="Subject">
                 </div>
                 <div class="contact-form-group">
-                    <textarea class="contact-textarea" placeholder="Your Message" required aria-label="Your Message" rows="5"></textarea>
+                    <textarea class="contact-textarea" name="message" placeholder="Your Message" required aria-label="Your Message" rows="5"></textarea>
                 </div>
                 <button type="submit" class="contact-btn">Submit Form</button>
             </form>

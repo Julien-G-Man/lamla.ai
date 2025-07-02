@@ -5,6 +5,7 @@
 .env.production
 
 # Python
+setup_env.py
 __pycache__/
 *.py[cod]
 *$py.class

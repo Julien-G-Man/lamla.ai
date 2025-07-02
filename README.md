@@ -73,6 +73,12 @@ HUGGING_FACE_API_TOKEN=your_huggingface_token
 
 # Optional: Gemini Model
 GEMINI_MODEL=models/gemini-1.5-pro-latest
+
+# Email Configuration for Form Notifications
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+DEFAULT_FROM_EMAIL=noreply@lamla.ai
+ADMIN_EMAIL=admin@lamla.ai
 ```
 
 **Get your API keys:**

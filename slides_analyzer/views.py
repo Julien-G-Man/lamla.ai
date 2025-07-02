@@ -456,7 +456,7 @@ def quiz_results(request):
     
     # Short answer questions are for review only (not auto-graded)
     short_questions = questions.get('short_questions', [])
-
+    
     # Calculate number of incorrect answers
     wrong = total - score if total is not None and score is not None else 0
 

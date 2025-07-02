@@ -108,8 +108,9 @@
             transform: translateY(-2px);
         }
 
+        /* Always show hamburger on all screen sizes */
         .hamburger {
-            display: none;
+            display: flex !important;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -682,10 +683,8 @@
             justify-content: center;
             font-size: 1.2rem;
             font-weight: bold;
-            cursor: not-allowed;
             transition: all 0.3s ease;
             text-decoration: none;
-            opacity: 0.6;
         }
         .social-icon:hover {
             opacity: 0.8;
@@ -693,6 +692,12 @@
         }
         .social-icon i {
             font-size: 1.2em;
+        }
+        .social-icon.instagram {
+            color: #fff;
+            background: linear-gradient(45deg, #f9ce34 0%, #ee2a7b 50%, #6228d7 100%);
+            cursor: pointer;
+            opacity: 1;
         }
         
         @media (max-width: 768px) {
@@ -771,7 +776,7 @@
                 height: 35px;
             }
             .hamburger {
-                display: flex;
+                display: flex !important;
                 margin-left: auto;
             }
             .nav-links {
@@ -956,12 +961,95 @@
                 justify-content: center;
             }
         }
+
+        /* Sidebar styles for large screens */
+        @media (min-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 230px;
+                height: 100vh;
+                background: var(--background-white);
+                box-shadow: 2px 0 16px var(--shadow-light);
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 30px 0 0 0;
+                z-index: 1100;
+                transform: translateX(0);
+                transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+            }
+            .sidebar.closed {
+                transform: translateX(-100%);
+            }
+            .sidebar .sidebar-logo {
+                display: flex;
+                align-items: center;
+                padding: 0 32px 30px 32px;
+                margin-bottom: 10px;
+                text-decoration: none;
+            }
+            .sidebar .sidebar-logo img {
+                height: 40px;
+                margin-right: 10px;
+            }
+            .sidebar .sidebar-links {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                gap: 6px;
+                padding: 0 32px;
+            }
+            .sidebar .sidebar-links a {
+                color: var(--secondary-color);
+                text-decoration: none;
+                font-size: 1.08rem;
+                font-weight: 500;
+                padding: 12px 0 12px 0;
+                border-radius: 8px;
+                transition: background 0.2s, color 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .sidebar .sidebar-links a:hover {
+                background: var(--background-light);
+                color: var(--primary-color);
+            }
+            .sidebar .sidebar-links .active {
+                color: var(--primary-color);
+                font-weight: 700;
+            }
+            .main-content {
+                margin-left: 230px;
+                transition: margin-left 0.35s cubic-bezier(.77,0,.18,1);
+            }
+            .sidebar.closed ~ .main-content {
+                margin-left: 0;
+            }
+            .navbar {
+                z-index: 1200;
+            }
+            .navbar .nav-links {
+                display: none !important;
+            }
+        }
+        @media (max-width: 1023px) {
+            .sidebar {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
     <header class="navbar">
         <a href="/" class="logo">
             <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
+            <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
         </a>
         <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
             <span></span>
@@ -983,8 +1071,27 @@
             {% endif %}
         </nav>
     </header>
-
-    <main>
+    <div class="sidebar" id="sidebar">
+        <a href="/" class="sidebar-logo">
+            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
+            <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
+        </a>
+        <div class="sidebar-links">
+            <a href="/"> <i class="fas fa-home"></i> Home</a>
+            <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
+            <a href="/custom-quiz/"> <i class="fas fa-question-circle"></i> Quiz</a>
+            <a href="/flashcards/"> <i class="fas fa-clone"></i> Flashcards</a>
+            <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
+            <a href="/exam-analyzer/"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
+            <a href="#"> <i class="fas fa-history"></i> History</a>
+            {% if user_authenticated %}
+                <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
+            {% else %}
+                <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="main-content" id="mainContent">
         <section class="hero">
             <div class="hero-content">
                 <h1 class="hero-title">
@@ -1063,7 +1170,7 @@
         </section>
 
         <div class="section-divider"></div>
-    </main>
+    </div>
 
     <!-- Footer -->
     <footer class="footer-section">
@@ -1096,7 +1203,7 @@
                     <a href="#" class="social-icon" title="Twitter - Coming soon">
                         <i class="fab fa-twitter"></i>
                     </a>
-                    <a href="#" class="social-icon" title="Instagram - Coming soon">
+                    <a href="https://www.instagram.com/lamla.io" class="social-icon instagram" title="Instagram" target="_blank">
                         <i class="fab fa-instagram"></i>
                     </a>
                     <a href="#" class="social-icon" title="LinkedIn - Coming soon">
@@ -1119,11 +1226,28 @@
         // Hamburger menu toggle with slide-out effect
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('navLinks');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        function isLargeScreen() {
+            return window.innerWidth >= 1024;
+        }
         hamburger.onclick = function() {
-            const expanded = this.getAttribute('aria-expanded') === 'true';
-            navLinks.classList.toggle('open');
-            this.classList.toggle('open');
-            this.setAttribute('aria-expanded', !expanded);
+            if (isLargeScreen()) {
+                // Toggle sidebar on large screens
+                sidebar.classList.toggle('closed');
+                // Adjust main content margin
+                if (sidebar.classList.contains('closed')) {
+                    mainContent.style.marginLeft = '0';
+                } else {
+                    mainContent.style.marginLeft = '230px';
+                }
+            } else {
+                // Mobile nav as before
+                const expanded = this.getAttribute('aria-expanded') === 'true';
+                navLinks.classList.toggle('open');
+                this.classList.toggle('open');
+                this.setAttribute('aria-expanded', !expanded);
+            }
         };
         // Close menu when clicking on links (mobile only)
         document.querySelectorAll('#navLinks a').forEach(function(link) {
@@ -1133,7 +1257,18 @@
                 hamburger.setAttribute('aria-expanded', 'false');
             }
         });
-        
+        window.addEventListener('resize', function() {
+            if (isLargeScreen()) {
+                navLinks.classList.remove('open');
+                hamburger.classList.remove('open');
+                hamburger.setAttribute('aria-expanded', 'false');
+                sidebar.classList.remove('closed');
+                mainContent.style.marginLeft = '230px';
+            } else {
+                sidebar.classList.remove('closed');
+                mainContent.style.marginLeft = '0';
+            }
+        });
         // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {

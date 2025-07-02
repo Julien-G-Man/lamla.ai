@@ -76,36 +76,78 @@
         }
         @media (max-width: 900px) {
             .nav-links {
-                display: none;
-                position: absolute;
-                top: 64px;
-                right: 0;
-                width: 220px;
+                display: block;
+                position: fixed;
+                top: 0;
+                right: -360px;
+                width: 300px;
+                height: 100vh;
                 background: #fff;
+                box-shadow: -4px 0 24px rgba(0,0,0,0.10);
+                padding: 90px 30px 30px 30px;
+                transition: right 0.35s cubic-bezier(.77,0,.18,1);
+                border-radius: 0 0 0 24px;
                 flex-direction: column;
-                gap: 0;
-                box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-                z-index: 2000;
-                padding: 10px 0;
-                border-radius: 0 0 8px 8px;
-                overflow-y: auto;
-                max-height: calc(100vh - 64px);
+                gap: 18px;
+                margin-left: 0;
+                z-index: 4000;
             }
             .nav-links.open {
-                display: flex;
-                right: 15px;
+                right: 0;
             }
             .nav-links a {
-                padding: 12px 20px;
-                text-align: left;
+                display: block;
+                padding: 16px 0;
+                font-size: 1.15rem;
                 border-bottom: 1px solid #eee;
-                box-sizing: border-box;
+                color: #222;
+                transition: color 0.2s, background 0.2s;
             }
             .nav-links a:last-child {
                 border-bottom: none;
             }
             .hamburger {
                 display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                width: 48px;
+                height: 48px;
+                background: none;
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+                margin-left: 0;
+                z-index: 5000;
+                position: relative;
+                transition: none;
+                padding: 0;
+            }
+            .hamburger.open {
+                background: none;
+                box-shadow: none;
+            }
+            .hamburger span {
+                width: 28px;
+                height: 3.5px;
+                margin: 4px 0;
+                background: #FFD600;
+                border-radius: 2px;
+                transition: all 0.3s cubic-bezier(.77,0,.18,1);
+                position: relative;
+            }
+            .hamburger.open span {
+                background: #222;
+            }
+            .hamburger.open span:nth-child(1) {
+                transform: translateY(11.5px) rotate(45deg);
+            }
+            .hamburger.open span:nth-child(2) {
+                opacity: 0;
+                transform: scaleX(0);
+            }
+            .hamburger.open span:nth-child(3) {
+                transform: translateY(-11.5px) rotate(-45deg);
             }
         }
         .questions {
@@ -159,10 +201,25 @@
         </div>
     </div>
     <script>
-        // Hamburger menu toggle
-        document.getElementById('hamburger').onclick = function() {
-            document.getElementById('navLinks').classList.toggle('open');
-        };
+        // Hamburger menu toggle with slide-out effect (unified with home/about)
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        if (hamburger && navLinks) {
+            hamburger.onclick = function() {
+                const expanded = this.getAttribute('aria-expanded') === 'true';
+                navLinks.classList.toggle('open');
+                this.classList.toggle('open');
+                this.setAttribute('aria-expanded', !expanded);
+            };
+            // Close menu when clicking on links (mobile only)
+            navLinks.querySelectorAll('a').forEach(function(link) {
+                link.onclick = function() {
+                    navLinks.classList.remove('open');
+                    hamburger.classList.remove('open');
+                    hamburger.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
     </script>
     <h1>Generated Questions</h1>
     {% if questions %}

@@ -23,6 +23,7 @@ from django.core.mail import send_mail
 from django.db import IntegrityError
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.utils import timezone
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -620,3 +621,161 @@ def terms_of_service(request):
 def cookie_policy(request):
     """Render the Cookie Policy page"""
     return render(request, 'slides_analyzer/cookie_policy.html')
+
+@login_required
+def dashboard(request):
+    """User dashboard showing statistics and recent activity"""
+    user = request.user
+    
+    # Get user statistics
+    from django.db.models import Count, Q
+    from datetime import datetime, timedelta
+    
+    # Recent activity (last 30 days)
+    thirty_days_ago = timezone.now() - timedelta(days=30)
+    
+    # Get user's feedback submissions
+    user_feedback = Feedback.objects.filter(user=user).order_by('-created_at')[:5]
+    
+    # Get user's contact submissions
+    user_contacts = Contact.objects.filter(email=user.email).order_by('-created_at')[:5]
+    
+    # Count total feedback submissions
+    total_feedback = Feedback.objects.filter(user=user).count()
+    
+    # Count total contact submissions
+    total_contacts = Contact.objects.filter(email=user.email).count()
+    
+    # Get recent questions from session (if any)
+    recent_questions = request.session.get('recent_questions', [])
+    
+    # Get user's subscription status
+    subscription = Subscription.objects.filter(email=user.email, is_active=True).first()
+    
+    # Calculate user engagement metrics
+    recent_feedback_count = Feedback.objects.filter(
+        user=user, 
+        created_at__gte=thirty_days_ago
+    ).count()
+    
+    recent_contacts_count = Contact.objects.filter(
+        email=user.email, 
+        created_at__gte=thirty_days_ago
+    ).count()
+    
+    # Get user's join date
+    days_since_joined = (timezone.now() - user.date_joined).days
+    
+    context = {
+        'user': user,
+        'user_feedback': user_feedback,
+        'user_contacts': user_contacts,
+        'total_feedback': total_feedback,
+        'total_contacts': total_contacts,
+        'recent_questions': recent_questions[:5],  # Show last 5 questions
+        'subscription': subscription,
+        'thirty_days_ago': thirty_days_ago,
+        'recent_feedback_count': recent_feedback_count,
+        'recent_contacts_count': recent_contacts_count,
+        'days_since_joined': days_since_joined,
+    }
+    
+    return render(request, 'slides_analyzer/dashboard.html', context)
+
+@csrf_exempt
+@login_required
+def subscribe_newsletter(request):
+    """Handle newsletter subscription via AJAX"""
+    if request.method == 'POST':
+        try:
+            email = request.user.email
+            if not email:
+                return JsonResponse({
+                    'success': False,
+                    'message': 'Email address not found in your profile'
+                }, status=400)
+            
+            # Check if already subscribed
+            existing_subscription = Subscription.objects.filter(email=email).first()
+            if existing_subscription:
+                if existing_subscription.is_active:
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'You are already subscribed to our newsletter'
+                    }, status=400)
+                else:
+                    # Reactivate subscription
+                    existing_subscription.is_active = True
+                    existing_subscription.save()
+                    return JsonResponse({
+                        'success': True,
+                        'message': 'Newsletter subscription reactivated successfully!'
+                    })
+            
+            # Create new subscription
+            subscription = Subscription.objects.create(
+                email=email,
+                is_active=True
+            )
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Successfully subscribed to our newsletter!'
+            })
+            
+        except Exception as e:
+            logger.error(f"Newsletter subscription error: {e}")
+            return JsonResponse({
+                'success': False,
+                'message': 'An error occurred while subscribing. Please try again.'
+            }, status=500)
+    
+    return JsonResponse({
+        'success': False,
+        'message': 'Invalid request method'
+    }, status=405)
+
+@login_required
+def user_profile(request):
+    """User profile view for viewing and editing profile information"""
+    user = request.user
+    
+    if request.method == 'POST':
+        # Handle profile updates
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        email = request.POST.get('email', '').strip()
+        
+        # Basic validation
+        if not email:
+            messages.error(request, 'Email is required.')
+        elif not first_name:
+            messages.error(request, 'First name is required.')
+        else:
+            try:
+                # Update user information
+                user.first_name = first_name
+                user.last_name = last_name
+                user.email = email
+                user.save()
+                
+                messages.success(request, 'Profile updated successfully!')
+                return redirect('user_profile')
+                
+            except Exception as e:
+                logger.error(f"Profile update error: {e}")
+                messages.error(request, 'An error occurred while updating your profile.')
+    
+    # Get user statistics for profile
+    total_feedback = Feedback.objects.filter(user=user).count()
+    total_contacts = Contact.objects.filter(email=user.email).count()
+    subscription = Subscription.objects.filter(email=user.email, is_active=True).first()
+    
+    context = {
+        'user': user,
+        'total_feedback': total_feedback,
+        'total_contacts': total_contacts,
+        'subscription': subscription,
+    }
+    
+    return render(request, 'slides_analyzer/user_profile.html', context)

@@ -3,6 +3,9 @@ from . import views
 import requests
 
 urlpatterns = [
+    path('', views.home, name='home'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('profile/', views.user_profile, name='user_profile'),
     path('upload/', views.upload_slides, name='upload_slides'),
     path('generate/', views.generate_questions, name='generate_questions'),
     path('custom-quiz/', views.custom_quiz, name='custom_quiz'),
@@ -14,6 +17,7 @@ urlpatterns = [
     path('about/', views.about, name='about'),
     path('ajax/extract-text/', views.ajax_extract_text, name='ajax_extract_text'),
     path('ajax/submit-feedback/', views.submit_feedback, name='submit_feedback'),
+    path('ajax/subscribe-newsletter/', views.subscribe_newsletter, name='subscribe_newsletter'),
     path('accounts/login/', views.CustomLoginView.as_view(), name='account_login'),
     path('custom-logout/', views.custom_logout, name='custom_logout'),
     # Legal pages

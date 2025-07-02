@@ -1,0 +1,596 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Lamla AI{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="profile-avatar">
+            <img src="{% static 'slide_analyzer/images/student.jpeg' %}" alt="Profile" class="avatar-image">
+            <div class="avatar-overlay">
+                <i class="fas fa-camera"></i>
+            </div>
+        </div>
+        <div class="profile-info">
+            <h1>{{ user.get_full_name|default:user.username }}</h1>
+            <p class="user-email">{{ user.email }}</p>
+            <p class="member-since">Member since {{ user.date_joined|date:"F d, Y" }}</p>
+        </div>
+        <div class="profile-actions">
+            <a href="{% url 'dashboard' %}" class="btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                    <button class="message-close" onclick="this.parentElement.remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Profile Content -->
+    <div class="profile-content">
+        <div class="profile-grid">
+            <!-- Profile Form -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-user-edit"></i> Edit Profile</h2>
+                </div>
+                <div class="card-content">
+                    <form method="post" class="profile-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="first_name">First Name *</label>
+                            <input type="text" id="first_name" name="first_name" value="{{ user.first_name }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="last_name">Last Name</label>
+                            <input type="text" id="last_name" name="last_name" value="{{ user.last_name }}">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" value="{{ user.username }}" disabled>
+                            <small>Username cannot be changed</small>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-save"></i>
+                                Save Changes
+                            </button>
+                            <button type="reset" class="btn-secondary">
+                                <i class="fas fa-undo"></i>
+                                Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Account Statistics -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-chart-bar"></i> Account Statistics</h2>
+                </div>
+                <div class="card-content">
+                    <div class="stats-list">
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h4>{{ total_feedback }}</h4>
+                                <p>Feedback Submissions</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h4>{{ total_contacts }}</h4>
+                                <p>Contact Messages</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h4>{{ user.date_joined|date:"M d, Y" }}</h4>
+                                <p>Join Date</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-item">
+                            <div class="stat-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h4>{% if subscription %}Active{% else %}Inactive{% endif %}</h4>
+                                <p>Newsletter Status</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Actions -->
+            <div class="profile-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-cog"></i> Account Actions</h2>
+                </div>
+                <div class="card-content">
+                    <div class="actions-list">
+                        <a href="{% url 'dashboard' %}" class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <div class="action-content">
+                                <h4>Dashboard</h4>
+                                <p>View your learning dashboard</p>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'upload_slides' %}" class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <div class="action-content">
+                                <h4>Upload Content</h4>
+                                <p>Upload slides or documents</p>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'custom_quiz' %}" class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <div class="action-content">
+                                <h4>Create Quiz</h4>
+                                <p>Generate custom questions</p>
+                            </div>
+                        </a>
+                        
+                        <a href="{% url 'custom_logout' %}" class="action-item logout">
+                            <div class="action-icon">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </div>
+                            <div class="action-content">
+                                <h4>Logout</h4>
+                                <p>Sign out of your account</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-top: 90px;
+}
+
+/* Profile Header */
+.profile-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #FFE066 100%);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    color: var(--secondary-color);
+    box-shadow: 0 10px 30px rgba(255, 214, 0, 0.3);
+}
+
+.profile-avatar {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.avatar-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-overlay {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 35px;
+    height: 35px;
+    background: var(--secondary-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.avatar-overlay:hover {
+    transform: scale(1.1);
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+}
+
+.user-email {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    opacity: 0.9;
+}
+
+.member-since {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.profile-actions {
+    flex-shrink: 0;
+}
+
+/* Messages */
+.messages-container {
+    margin-bottom: 30px;
+}
+
+.message {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.message.success {
+    background: #E8F5E8;
+    color: #2E7D32;
+    border: 1px solid #C8E6C9;
+}
+
+.message.error {
+    background: #FFEBEE;
+    color: #C62828;
+    border: 1px solid #FFCDD2;
+}
+
+.message.warning {
+    background: #FFF3E0;
+    color: #EF6C00;
+    border: 1px solid #FFE0B2;
+}
+
+.message-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    font-size: 1.1rem;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.message-close:hover {
+    opacity: 1;
+}
+
+/* Profile Content */
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 25px;
+}
+
+.profile-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+.profile-card:hover {
+    transform: translateY(-2px);
+}
+
+.card-header {
+    padding: 25px 25px 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-header h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--secondary-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-content {
+    padding: 25px;
+}
+
+/* Profile Form */
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: var(--secondary-color);
+    font-size: 0.95rem;
+}
+
+.form-group input {
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.form-group input:disabled {
+    background: #f5f5f5;
+    color: #666;
+    cursor: not-allowed;
+}
+
+.form-group small {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+.btn-secondary {
+    background: var(--background-light);
+    color: var(--secondary-color);
+    border: 2px solid var(--border-color);
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Stats List */
+.stats-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border-radius: 12px;
+    background: var(--background-light);
+    transition: background 0.3s ease;
+}
+
+.stat-item:hover {
+    background: #f0f0f0;
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+    flex-shrink: 0;
+}
+
+.stat-details h4 {
+    margin: 0 0 5px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.stat-details p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Actions List */
+.actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.action-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--background-light);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+.action-item:hover {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.action-item.logout:hover {
+    background: #f44336;
+    color: white;
+}
+
+.action-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.action-item:hover .action-icon {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.action-item.logout:hover .action-icon {
+    background: white;
+    color: #f44336;
+}
+
+.action-content h4 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.action-content p {
+    margin: 0;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 15px;
+        margin-top: 80px;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+    }
+    
+    .profile-info h1 {
+        font-size: 2rem;
+    }
+    
+    .profile-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .card-header, .card-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-info h1 {
+        font-size: 1.8rem;
+    }
+    
+    .avatar-image {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .stat-item, .action-item {
+        padding: 15px;
+    }
+}
+</style>
+{% endblock %} 

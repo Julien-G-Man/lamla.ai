@@ -182,6 +182,9 @@
         </div>
         <div class="nav-links" id="navLinks">
             <a href="/">Home</a>
+            {% if user_authenticated %}
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+            {% endif %}
             <a href="/about/">About</a>
             <a href="/custom-quiz/">Quiz</a>
             <a href="/flashcards/">Flashcards</a>

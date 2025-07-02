@@ -1,0 +1,806 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Lamla AI{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="welcome-content">
+            <h1>Welcome back, {{ user.first_name|default:user.username }}!</h1>
+            <p class="welcome-subtitle">Here's what's happening with your learning journey</p>
+            <div class="welcome-actions">
+                <a href="{% url 'upload_slides' %}" class="btn-primary">
+                    <i class="fas fa-upload"></i>
+                    Upload New Content
+                </a>
+                <a href="{% url 'custom_quiz' %}" class="btn-secondary">
+                    <i class="fas fa-question-circle"></i>
+                    Create Quiz
+                </a>
+                <a href="{% url 'user_profile' %}" class="btn-secondary">
+                    <i class="fas fa-user"></i>
+                    My Profile
+                </a>
+            </div>
+        </div>
+        <div class="welcome-illustration">
+            <img src="{% static 'slide_analyzer/images/student.jpeg' %}" alt="Student" class="student-image">
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-comments"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ total_feedback }}</h3>
+                <p>Total Feedback</p>
+                <small>{{ recent_feedback_count }} this month</small>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ total_contacts }}</h3>
+                <p>Contact Messages</p>
+                <small>{{ recent_contacts_count }} this month</small>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-question-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ recent_questions|length }}</h3>
+                <p>Recent Questions</p>
+                <small>From your sessions</small>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ days_since_joined }}</h3>
+                <p>Days as Member</p>
+                <small>Since {{ user.date_joined|date:"M d, Y" }}</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="dashboard-grid">
+        <!-- Recent Activity -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2><i class="fas fa-history"></i> Recent Activity</h2>
+                <a href="#" class="view-all">View All</a>
+            </div>
+            <div class="card-content">
+                {% if user_feedback or user_contacts %}
+                    <div class="activity-list">
+                        {% for feedback in user_feedback %}
+                        <div class="activity-item">
+                            <div class="activity-icon feedback">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Feedback Submitted</h4>
+                                <p>{{ feedback.feedback_text|truncatechars:50 }}</p>
+                                <span class="activity-time">{{ feedback.created_at|timesince }} ago</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        {% for contact in user_contacts %}
+                        <div class="activity-item">
+                            <div class="activity-icon contact">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Contact Message</h4>
+                                <p>{{ contact.subject }}</p>
+                                <span class="activity-time">{{ contact.created_at|timesince }} ago</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No recent activity</p>
+                        <a href="{% url 'upload_slides' %}" class="btn-primary">Start Learning</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+            </div>
+            <div class="card-content">
+                <div class="quick-actions">
+                    <a href="{% url 'upload_slides' %}" class="quick-action">
+                        <div class="action-icon">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Upload Content</h4>
+                            <p>Upload slides or documents</p>
+                        </div>
+                    </a>
+                    
+                    <a href="{% url 'custom_quiz' %}" class="quick-action">
+                        <div class="action-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Create Quiz</h4>
+                            <p>Generate custom questions</p>
+                        </div>
+                    </a>
+                    
+                    <a href="{% url 'exam_analyzer' %}" class="quick-action">
+                        <div class="action-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Exam Analyzer</h4>
+                            <p>Analyze exam content</p>
+                        </div>
+                    </a>
+                    
+                    <a href="{% url 'flashcards' %}" class="quick-action">
+                        <div class="action-icon">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div class="action-content">
+                            <h4>Flashcards</h4>
+                            <p>Study with flashcards</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Questions -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2><i class="fas fa-lightbulb"></i> Recent Questions</h2>
+            </div>
+            <div class="card-content">
+                {% if recent_questions %}
+                    <div class="questions-list">
+                        {% for question in recent_questions %}
+                        <div class="question-item">
+                            <div class="question-type">
+                                <i class="fas fa-{% if question.question_type == 'mcq' %}list{% else %}pen{% endif %}"></i>
+                            </div>
+                            <div class="question-content">
+                                <p>{{ question.question_text|truncatechars:80 }}</p>
+                                <span class="question-meta">{{ question.question_type|upper }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-lightbulb"></i>
+                        <p>No recent questions</p>
+                        <a href="{% url 'custom_quiz' %}" class="btn-primary">Generate Questions</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Newsletter Status -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2><i class="fas fa-newspaper"></i> Newsletter</h2>
+            </div>
+            <div class="card-content">
+                {% if subscription %}
+                    <div class="newsletter-status active">
+                        <div class="status-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="status-content">
+                            <h4>Subscribed</h4>
+                            <p>You're receiving our newsletter updates</p>
+                            <small>Subscribed on {{ subscription.created_at|date:"M d, Y" }}</small>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="newsletter-status inactive">
+                        <div class="status-icon">
+                            <i class="fas fa-bell-slash"></i>
+                        </div>
+                        <div class="status-content">
+                            <h4>Not Subscribed</h4>
+                            <p>Stay updated with our latest features</p>
+                            <button class="btn-primary" onclick="subscribeNewsletter()" id="subscribeBtn">Subscribe Now</button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-top: 90px;
+}
+
+/* Welcome Section */
+.welcome-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #FFE066 100%);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--secondary-color);
+    box-shadow: 0 10px 30px rgba(255, 214, 0, 0.3);
+}
+
+.welcome-content h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+}
+
+.welcome-subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+    opacity: 0.9;
+}
+
+.welcome-actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 12px 24px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--secondary-color);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.welcome-illustration {
+    flex-shrink: 0;
+}
+
+.student-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary-color), #FFE066);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--secondary-color);
+}
+
+.stat-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--secondary-color);
+}
+
+.stat-content p {
+    margin: 5px 0 0 0;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.stat-content small {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    opacity: 0.8;
+    display: block;
+    margin-top: 2px;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 25px;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-2px);
+}
+
+.card-header {
+    padding: 25px 25px 15px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0;
+    color: var(--secondary-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.view-all {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.card-content {
+    padding: 25px;
+}
+
+/* Activity List */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    border-radius: 12px;
+    background: var(--background-light);
+    transition: background 0.3s ease;
+}
+
+.activity-item:hover {
+    background: #f0f0f0;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.activity-icon.feedback {
+    background: linear-gradient(135deg, #4CAF50, #66BB6A);
+    color: white;
+}
+
+.activity-icon.contact {
+    background: linear-gradient(135deg, #2196F3, #42A5F5);
+    color: white;
+}
+
+.activity-content h4 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.activity-content p {
+    margin: 0 0 5px 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.activity-time {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Quick Actions */
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.quick-action {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--background-light);
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+.quick-action:hover {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    transform: translateY(-2px);
+}
+
+.action-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--secondary-color);
+    flex-shrink: 0;
+}
+
+.quick-action:hover .action-icon {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+}
+
+.action-content h4 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.action-content p {
+    margin: 0;
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* Questions List */
+.questions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.question-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    border-radius: 12px;
+    background: var(--background-light);
+    transition: background 0.3s ease;
+}
+
+.question-item:hover {
+    background: #f0f0f0;
+}
+
+.question-type {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    flex-shrink: 0;
+}
+
+.question-content p {
+    margin: 0 0 5px 0;
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+}
+
+.question-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: rgba(0, 0, 0, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* Newsletter Status */
+.newsletter-status {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.newsletter-status.active {
+    background: linear-gradient(135deg, #E8F5E8, #F1F8F1);
+}
+
+.newsletter-status.inactive {
+    background: linear-gradient(135deg, #FFF3E0, #FFF8E1);
+}
+
+.status-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.newsletter-status.active .status-icon {
+    background: #4CAF50;
+    color: white;
+}
+
+.newsletter-status.inactive .status-icon {
+    background: #FF9800;
+    color: white;
+}
+
+.status-content h4 {
+    margin: 0 0 5px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.status-content p {
+    margin: 0 0 10px 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.status-content small {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 15px;
+        margin-top: 80px;
+    }
+    
+    .welcome-section {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+    }
+    
+    .welcome-content h1 {
+        font-size: 2rem;
+    }
+    
+    .welcome-actions {
+        justify-content: center;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+    }
+    
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-card {
+        padding: 20px;
+    }
+    
+    .card-header, .card-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .welcome-content h1 {
+        font-size: 1.8rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-card {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+function subscribeNewsletter() {
+    const button = document.getElementById('subscribeBtn');
+    const originalText = button.textContent;
+    
+    // Show loading state
+    button.textContent = 'Subscribing...';
+    button.disabled = true;
+    
+    fetch('{% url "subscribe_newsletter" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            showNotification(data.message, 'success');
+            // Update the UI to show subscribed state
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            showNotification(data.message, 'error');
+            button.textContent = originalText;
+            button.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred. Please try again.', 'error');
+        button.textContent = originalText;
+        button.disabled = false;
+    });
+}
+
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    // Add styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        z-index: 10000;
+        animation: slideIn 0.3s ease;
+        max-width: 300px;
+    `;
+    
+    if (type === 'success') {
+        notification.style.background = '#4CAF50';
+    } else {
+        notification.style.background = '#f44336';
+    }
+    
+    // Add animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 5 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+</script>
+{% endblock %} 

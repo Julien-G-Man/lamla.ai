@@ -198,6 +198,9 @@
         </div>
         <div class="nav-links" id="navLinks">
             <a href="/"> <i class="fas fa-home"></i> Home</a>
+            {% if user_authenticated %}
+                <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            {% endif %}
             <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
             <a href="/custom-quiz/"> <i class="fas fa-question-circle"></i> Quiz</a>
             <a href="/flashcards/"> <i class="fas fa-clone"></i> Flashcards</a>

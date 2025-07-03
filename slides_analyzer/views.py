@@ -24,6 +24,7 @@ from django.db import IntegrityError
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils import timezone
+import dj_database_url
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -827,3 +828,7 @@ def user_profile(request):
     }
     
     return render(request, 'slides_analyzer/user_profile.html', context)
+
+DATABASES = {
+    'default': dj_database_url.config(default='sqlite:///db.sqlite3')
+}

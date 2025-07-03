@@ -13,6 +13,10 @@ Lamla-AI empowers students to upload their study materials, generate AI-powered 
 - **Performance Tracking** (color-coded bar charts, robust analytics)
 - **Subject & Topic Selection** (focus your study)
 - **User Authentication** (Sign up, Login, Logout)
+- **Profile Management**
+  - **Edit Name, Email, and Bio**
+  - **Profile Picture Upload** (JPG/PNG/GIF, up to 5MB, with instant preview and persistence)
+  - **Unified Modern Card UI** (profile and dashboard cards match)
 - **Modern, Responsive UI** (mobile-friendly, branded)
 
 > **Lamla-AI is not a shortcut or cheat tool — it's a smart compass for students who want to prepare better, not later.**
@@ -115,6 +119,20 @@ python manage.py runserver
 
 Visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser.
 
+### 9. Serve Media Files in Development
+To display uploaded profile pictures and other media, add this to your `edtech_project/urls.py`:
+```python
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    # ... your other url patterns ...
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+```
+
 ---
 
 ## 📁 Project Structure
@@ -124,11 +142,20 @@ LAMLA-AI/
 ├── slides_analyzer/        # Main app: views, models, templates, static
 ├── templates/              # Global templates (auth, base)
 ├── static/                 # (Optional) Global static files
+├── media/                  # User-uploaded files (profile pictures, etc.)
 ├── db.sqlite3              # SQLite database (default)
 ├── requirements.txt        # Python dependencies
 ├── README.md               # This file
 └── ...
 ```
+
+---
+
+## 👤 Profile Management
+- **Edit your name, email, and bio** from the profile page.
+- **Upload a profile picture** (JPG, PNG, or GIF, up to 5MB). Click the camera icon on your profile image, select a file, and save changes. The image will instantly preview and persist across sessions.
+- **Unified look:** The profile card now matches the dashboard's main card (black background, white text).
+- **Bio field:** Share a bit about yourself for a more personalized experience.
 
 ---
 

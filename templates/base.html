@@ -223,6 +223,99 @@
             opacity: 1;
         }
         
+        /* Sidebar styles - Hidden by default, only show on large screens */
+        .sidebar {
+            display: none;
+        }
+        
+        .main-content {
+            margin-left: 0;
+        }
+        
+        /* Sidebar styles for large screens */
+        @media (min-width: 1024px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 230px;
+                height: 100vh;
+                background: var(--background-white);
+                box-shadow: 2px 0 16px var(--shadow-light);
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 30px 0 0 0;
+                z-index: 1100;
+                transform: translateX(0);
+                transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+            }
+            .sidebar.closed {
+                transform: translateX(-100%);
+            }
+            .sidebar .sidebar-logo {
+                display: flex;
+                align-items: center;
+                padding: 0 32px 30px 32px;
+                margin-bottom: 10px;
+                text-decoration: none;
+            }
+            .sidebar .sidebar-logo img {
+                height: 40px;
+                margin-right: 10px;
+            }
+            .sidebar .sidebar-links {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                gap: 6px;
+                padding: 0 32px;
+            }
+            .sidebar .sidebar-links a {
+                color: var(--secondary-color);
+                text-decoration: none;
+                font-size: 1.08rem;
+                font-weight: 500;
+                padding: 12px 0 12px 0;
+                border-radius: 8px;
+                transition: background 0.2s, color 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .sidebar .sidebar-links a:hover {
+                background: var(--background-light);
+                color: var(--primary-color);
+            }
+            .sidebar .sidebar-links .active {
+                color: var(--primary-color);
+                font-weight: 700;
+            }
+            .main-content {
+                margin-left: 230px;
+                transition: margin-left 0.35s cubic-bezier(.77,0,.18,1);
+            }
+            .sidebar.closed ~ .main-content {
+                margin-left: 0;
+            }
+            .navbar {
+                z-index: 1200;
+            }
+            .navbar .nav-links {
+                display: none !important;
+            }
+        }
+        
+        /* Ensure sidebar is hidden on smaller screens */
+        @media (max-width: 1023px) {
+            .sidebar {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+            }
+        }
+        
         @media (max-width: 768px) {
             .navbar {
                 padding: 0 20px;
@@ -404,7 +497,7 @@
             <div class="footer-col">
                 <h3>Contact Us</h3>
                 <ul>
-                    <li><i class="fas fa-envelope"></i> <a href="mailto:support@lamla.ai">support@lamla.ai</a></li>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:contact.lamla1@gmail.com">contact.lamla1@gmail.com</a></li>
                     <li><i class="fas fa-phone"></i> +233 50 934 1251</li>
                 </ul>
             </div>

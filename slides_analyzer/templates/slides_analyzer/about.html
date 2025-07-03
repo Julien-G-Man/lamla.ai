@@ -1059,6 +1059,15 @@
             }
         }
 
+        /* Sidebar styles - Hidden by default, only show on large screens */
+        .sidebar {
+            display: none;
+        }
+        
+        .main-content {
+            margin-left: 0;
+        }
+        
         /* Sidebar styles for large screens */
         @media (min-width: 1024px) {
             .sidebar {
@@ -1169,7 +1178,7 @@
         </button>
         <nav class="nav-links" id="navLinks" aria-label="Main navigation">
             <a href="/"> <i class="fas fa-home"></i> Home</a>
-            {% if user_authenticated %}
+            {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
             {% endif %}
             <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
@@ -1178,7 +1187,7 @@
             <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
             <a href="/exam-analyzer/"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
             <a href="#"> <i class="fas fa-history"></i> History</a>
-            {% if user_authenticated %}
+            {% if user.is_authenticated %}
                 <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
             {% else %}
                 <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
@@ -1192,7 +1201,7 @@
         </a>
         <div class="sidebar-links">
             <a href="/"> <i class="fas fa-home"></i> Home</a>
-            {% if user_authenticated %}
+            {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
             {% endif %}
             <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
@@ -1201,7 +1210,7 @@
             <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
             <a href="/exam-analyzer/"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
             <a href="#"> <i class="fas fa-history"></i> History</a>
-            {% if user_authenticated %}
+            {% if user.is_authenticated %}
                 <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
             {% else %}
                 <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
@@ -1277,7 +1286,7 @@
             <p>If you want to prepare with purpose, not panic—Lamla-AI was built for you.</p>
             <p>This is more than a platform. It's a toolset. A mindset. A movement.</p>
             <p><strong>Study Smarter. Perform Better.</strong></p>
-            {% if not user_authenticated %}
+            {% if not user.is_authenticated %}
                 <a href="/accounts/signup/" class="get-started-btn">Get Started</a>
             {% endif %}
         </section>

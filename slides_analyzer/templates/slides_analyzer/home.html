@@ -962,6 +962,11 @@
             }
         }
 
+        /* Sidebar styles - Hidden by default, only show on large screens */
+        .sidebar {
+            display: none;
+        }
+        
         /* Sidebar styles for large screens */
         @media (min-width: 1024px) {
             .sidebar {
@@ -1035,12 +1040,14 @@
                 display: none !important;
             }
         }
+        
+        /* Ensure sidebar is hidden on smaller screens */
         @media (max-width: 1023px) {
             .sidebar {
                 display: none !important;
             }
             .main-content {
-                margin-left: 0;
+                margin-left: 0 !important;
             }
         }
     </style>

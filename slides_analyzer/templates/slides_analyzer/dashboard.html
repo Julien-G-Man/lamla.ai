@@ -8,19 +8,19 @@
     <!-- Welcome Section -->
     <div class="welcome-section">
         <div class="welcome-content">
-            <h1>Welcome back, {{ user.first_name|default:user.username }}!</h1>
+            <h1><span class="hello-yellow">Hello,</span> <span class="username-highlight">{{ user.first_name|default:user.username }}</span>!</h1>
             <p class="welcome-subtitle">Here's what's happening with your learning journey</p>
             <div class="welcome-actions">
-                <a href="{% url 'upload_slides' %}" class="btn-primary">
-                    <i class="fas fa-upload"></i>
+                <a href="{% url 'upload_slides' %}" class="btn-secondary">
+                    <i class="fas fa-upload action-icon-welcome"></i>
                     Upload New Content
                 </a>
                 <a href="{% url 'custom_quiz' %}" class="btn-secondary">
-                    <i class="fas fa-question-circle"></i>
+                    <i class="fas fa-question-circle action-icon-welcome"></i>
                     Create Quiz
                 </a>
                 <a href="{% url 'user_profile' %}" class="btn-secondary">
-                    <i class="fas fa-user"></i>
+                    <i class="fas fa-user action-icon-welcome"></i>
                     My Profile
                 </a>
             </div>
@@ -248,28 +248,35 @@
 
 /* Welcome Section */
 .welcome-section {
-    background: linear-gradient(135deg, var(--primary-color) 0%, #FFE066 100%);
+    background: #222;
     border-radius: 20px;
     padding: 40px;
     margin-bottom: 30px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    color: var(--secondary-color);
-    box-shadow: 0 10px 30px rgba(255, 214, 0, 0.3);
+    color: #fff;
+    box-shadow: none;
 }
 
 .welcome-content h1 {
     font-size: 2.5rem;
     font-weight: 700;
     margin-bottom: 10px;
-    color: var(--secondary-color);
+    color: #fff;
+}
+
+.welcome-content h1 .username-highlight {
+    color: #fff;
+    font-weight: 700;
 }
 
 .welcome-subtitle {
     font-size: 1.1rem;
     margin-bottom: 25px;
-    opacity: 0.9;
+    opacity: 1;
+    color: #fff;
+    font-weight: 500;
 }
 
 .welcome-actions {
@@ -282,7 +289,7 @@
     padding: 12px 24px;
     border-radius: 12px;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -292,19 +299,21 @@
 }
 
 .btn-primary {
-    background: var(--secondary-color);
-    color: var(--primary-color);
+    background: #FDC72B;
+    color: #222;
 }
 
 .btn-secondary {
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--secondary-color);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: transparent;
+    color: #FDC72B;
+    border: 2px solid #FDC72B;
 }
 
 .btn-primary:hover, .btn-secondary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    background: #ffe08a;
+    color: #222;
 }
 
 .welcome-illustration {
@@ -316,8 +325,8 @@
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid white;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border: 4px solid #FDC72B;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 /* Stats Grid */
@@ -717,6 +726,16 @@
         flex-direction: column;
         text-align: center;
     }
+}
+
+.hello-yellow {
+    color: #FFD600;
+    font-weight: 700;
+}
+
+.action-icon-welcome {
+    color: #FDC72B !important;
+    background: none !important;
 }
 </style>
 

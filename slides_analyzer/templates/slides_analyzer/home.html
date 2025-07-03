@@ -406,59 +406,100 @@
 
         /* Newsletter Form - Recreated based on screenshot */
         .newsletter-form {
+            max-width: 500px;
+            margin: 0 auto;
             display: flex;
+            gap: 15px;
+            align-items: center;
             justify-content: center;
-            max-width: 500px; /* Adjust to match screenshot width */
-            margin: 15px auto 0 auto;
-            height: 55px; /* Fixed height for the combined unit */
-            border-radius: 50px; /* Full pill shape */
-            overflow: hidden; /* Crucial for internal elements to respect border-radius */
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Subtle shadow for the combined unit */
-            border: 1px solid var(--border-color); /* Subtle border around the combined unit */
+            flex-wrap: wrap;
         }
 
         .newsletter-input {
-            flex-grow: 1; /* Allow input to take available space */
-            padding: 0 20px; /* Adjusted padding */
-            border: none; /* Remove individual border */
-            background-color: var(--enactus-light-yellow-bg); /* Light yellow background */
-            font-size: 1.05rem;
+            flex: 1;
+            min-width: 250px;
+            padding: 15px 20px;
+            border-radius: 25px;
+            border: 1px solid var(--border-color);
+            background-color: var(--enactus-light-yellow-bg);
             color: var(--text-dark);
-            outline: none; /* Remove default focus outline */
-            box-sizing: border-box; /* Include padding in element's total width and height */
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
         .newsletter-input::placeholder {
-            color: var(--enactus-placeholder); /* Placeholder color from screenshot */
-            opacity: 1; /* Ensure placeholder is not transparent */
+            color: var(--enactus-placeholder);
+            opacity: 1;
         }
 
         .newsletter-input:focus {
-            box-shadow: none; /* Remove focus shadow for this design */
-            border: none; /* Ensure no border appears on focus */
+            border-color: var(--enactus-yellow);
+            background-color: var(--background-white);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(253, 199, 43, 0.2);
         }
 
         .newsletter-btn {
-            flex-shrink: 0; /* Prevent button from shrinking */
-            background: var(--enactus-yellow); /* Bright yellow from screenshot */
+            background: var(--enactus-yellow);
             color: var(--secondary-color);
-            border: none; /* Remove individual border */
-            border-radius: 0; /* No individual border radius as parent handles it */
-            padding: 0 30px; /* Adjusted padding */
-            font-size: 1.15rem;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 30px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-            box-shadow: none; /* Remove individual button shadow, use parent's */
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(253, 199, 43, 0.3);
+            white-space: nowrap;
         }
 
         .newsletter-btn:hover {
-            background: var(--primary-color); /* Slightly different yellow on hover for contrast */
-            color: var(--secondary-color);
-            transform: none; /* Remove transform on hover for this button */
-            box-shadow: none;
+            background: var(--secondary-color);
+            color: var(--enactus-yellow);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
         }
 
+        /* Message Alerts */
+        .alert {
+            padding: 15px 20px;
+            margin: 20px auto;
+            border-radius: 8px;
+            font-weight: 500;
+            max-width: 500px;
+            text-align: center;
+            animation: slideInDown 0.3s ease-out;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         /* Testimonials Section */
         .testimonials {
@@ -776,7 +817,7 @@
                 height: 35px;
             }
             .hamburger {
-                display: flex !important;
+                display: flex;
                 margin-left: auto;
             }
             .nav-links {
@@ -791,71 +832,32 @@
                 padding: 90px 30px 30px 30px;
                 transition: right 0.35s cubic-bezier(.77,0,.18,1);
                 border-radius: 0 0 0 24px;
-                flex-direction: column;
-                gap: 18px;
-                margin-left: 0;
-                z-index: 4000;
+                z-index: 2000;
             }
             .nav-links.open {
                 right: 0;
             }
             .nav-links a {
                 display: block;
-                padding: 16px 0;
-                font-size: 1.15rem;
+                padding: 15px 0;
+                font-size: 1.1rem;
                 border-bottom: 1px solid var(--border-color);
-                color: var(--secondary-color);
-                transition: color 0.2s, background 0.2s;
             }
             .nav-links a:last-child {
                 border-bottom: none;
             }
-            .hamburger {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                width: 48px;
-                height: 48px;
-                background: none;
-                border: none;
-                border-radius: 0;
-                box-shadow: none;
-                margin-left: 0;
-                z-index: 5000;
-                position: relative;
-                transition: none;
-                padding: 0;
-            }
-            .hamburger.open {
-                background: none;
-                box-shadow: none;
-            }
-            .hamburger span {
-                width: 28px;
-                height: 3.5px;
-                margin: 4px 0;
-                background: var(--primary-color);
-                border-radius: 2px;
-                transition: all 0.3s cubic-bezier(.77,0,.18,1);
-                position: relative;
-            }
-            .hamburger.open span {
-                background: var(--secondary-color);
-            }
             .hamburger.open span:nth-child(1) {
-                transform: translateY(11.5px) rotate(45deg);
+                transform: rotate(45deg) translate(5px, 5px);
             }
             .hamburger.open span:nth-child(2) {
                 opacity: 0;
-                transform: scaleX(0);
             }
             .hamburger.open span:nth-child(3) {
-                transform: translateY(-11.5px) rotate(-45deg);
+                transform: rotate(-45deg) translate(7px, -6px);
             }
 
             .hero {
-                padding: 100px 20px 50px 20px;
+                padding: 100px 20px 60px 20px;
                 min-height: 70vh;
                 gap: 20px;
             }
@@ -894,7 +896,6 @@
                 left: -120%;
             }
 
-
             #features .section-header span:first-child {
                 font-size: 2rem;
             }
@@ -914,17 +915,22 @@
                 font-size: 1.1rem;
             }
             .newsletter-form {
+                flex-direction: column;
                 width: 100%;
-                max-width: 350px; /* Constrain on smaller screens */
-                height: 50px; /* Slightly smaller on mobile */
+                max-width: 350px;
+                gap: 15px;
             }
             .newsletter-input {
-                padding: 0 15px;
+                width: 100%;
+                padding: 15px 20px;
                 font-size: 1rem;
+                border-radius: 25px;
             }
             .newsletter-btn {
-                padding: 0 20px;
+                width: 100%;
+                padding: 15px 30px;
                 font-size: 1.05rem;
+                border-radius: 25px;
             }
 
             .testimonial-quote {
@@ -959,6 +965,80 @@
             }
             .bottom-socials {
                 justify-content: center;
+            }
+        }
+
+        @media (max-width: 500px) {
+            .navbar {
+                padding: 0 15px;
+                height: 60px;
+            }
+            .navbar .logo {
+                font-size: 1.5rem;
+            }
+            .navbar .logo img {
+                height: 30px;
+            }
+            
+            .hero {
+                padding: 80px 15px 50px 15px;
+                min-height: 60vh;
+            }
+            .hero-title {
+                font-size: 1.8rem;
+                line-height: 1.2;
+            }
+            .hero-desc {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            .hero-img {
+                max-width: 300px;
+            }
+            .hero-btn {
+                padding: 14px 25px;
+                font-size: 1rem;
+            }
+
+            .section-header span:first-child {
+                font-size: 1.8rem;
+            }
+            .section-header p {
+                font-size: 0.95rem;
+            }
+
+            .newsletter-title {
+                font-size: 1.5rem;
+            }
+            .newsletter-desc {
+                font-size: 1rem;
+            }
+            .newsletter-form {
+                max-width: 300px;
+            }
+
+            .testimonial-quote {
+                font-size: 1.1rem;
+                padding: 0 10px;
+            }
+            .testimonial-logo-row {
+                gap: 15px;
+            }
+            .testimonial-logo {
+                padding: 6px 15px;
+                font-size: 1rem;
+            }
+
+            .footer-content {
+                padding: 0 15px;
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            .footer-col h3 {
+                font-size: 1.1rem;
+            }
+            .footer-col ul li {
+                font-size: 0.95rem;
             }
         }
 
@@ -1165,7 +1245,16 @@
         <section class="newsletter-section">
             <h2 class="newsletter-title">Stay Ahead with Lamla-AI</h2>
             <p class="newsletter-desc">Subscribe for study tips, feature updates, and exclusive offers. Lamla-AI is your intelligent study assistant that helps you prepare with purpose.</p>
-            <form class="newsletter-form" method="post" action="">
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <form class="newsletter-form" method="post" action="" id="newsletterForm">
                 {% csrf_token %}
                 <input type="email" class="newsletter-input" name="email" placeholder="Your Email" required aria-label="Email for newsletter">
                 <button type="submit" class="newsletter-btn">Subscribe</button>

@@ -455,6 +455,46 @@
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
 
+        /* Message Alerts */
+        .alert {
+            padding: 15px 20px;
+            margin: 20px auto;
+            border-radius: 8px;
+            font-weight: 500;
+            max-width: 600px;
+            text-align: center;
+            animation: slideInDown 0.3s ease-out;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         /* Founder Section */
         .about-founder-section {
             text-align: center;
@@ -848,202 +888,120 @@
                 padding: 90px 30px 30px 30px;
                 transition: right 0.35s cubic-bezier(.77,0,.18,1);
                 border-radius: 0 0 0 24px;
-                flex-direction: column;
-                gap: 18px;
-                margin-left: 0;
-                z-index: 4000;
+                z-index: 2000;
             }
             .nav-links.open {
                 right: 0;
             }
             .nav-links a {
                 display: block;
-                padding: 16px 0;
-                font-size: 1.15rem;
+                padding: 15px 0;
+                font-size: 1.1rem;
                 border-bottom: 1px solid var(--border-color);
-                color: var(--secondary-color);
-                transition: color 0.2s, background 0.2s;
             }
             .nav-links a:last-child {
                 border-bottom: none;
             }
-            .hamburger {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                width: 48px;
-                height: 48px;
-                background: none;
-                border: none;
-                border-radius: 0;
-                box-shadow: none;
-                margin-left: 0;
-                z-index: 5000;
-                position: relative;
-                transition: none;
-                padding: 0;
-            }
-            .hamburger.open {
-                background: none;
-                box-shadow: none;
-            }
-            .hamburger span {
-                width: 28px;
-                height: 3.5px;
-                margin: 4px 0;
-                background: var(--primary-color);
-                border-radius: 2px;
-                transition: all 0.3s cubic-bezier(.77,0,.18,1);
-                position: relative;
-            }
-            .hamburger.open span {
-                background: var(--secondary-color);
-            }
             .hamburger.open span:nth-child(1) {
-                transform: translateY(11.5px) rotate(45deg);
+                transform: rotate(45deg) translate(5px, 5px);
             }
             .hamburger.open span:nth-child(2) {
                 opacity: 0;
-                transform: scaleX(0);
             }
             .hamburger.open span:nth-child(3) {
-                transform: translateY(-11.5px) rotate(-45deg);
+                transform: rotate(-45deg) translate(7px, -6px);
             }
+
             .about-hero {
-                padding: 80px 15px 40px 15px;
+                padding: 100px 20px 50px 20px;
             }
             .about-hero-title {
-                font-size: 2rem;
+                font-size: 2.5rem;
             }
             .about-hero-desc {
-                font-size: 1rem;
-                margin-bottom: 20px;
+                font-size: 1.15rem;
             }
-            .about-tabs {
-                flex-direction: column; /* Stack tabs vertically */
-                border-bottom: none; /* Remove bottom border if stacked */
-                top: 64px; /* Adjust sticky position */
+            .about-tabs-container {
+                margin-top: -20px;
             }
             .about-tab {
-                width: 100%; /* Full width for stacked tabs */
-                border-bottom: 1px solid var(--border-color); /* Add individual border */
-                padding: 14px 20px;
-                text-align: center;
-            }
-            .about-tab:last-child {
-                border-bottom: none;
+                font-size: 1rem;
+                padding: 16px 25px 12px 25px;
             }
             .about-tab-content {
-                padding: 25px 20px;
-                margin-top: 20px; /* Space from tabs */
-                border-radius: 12px;
+                padding: 30px 25px;
             }
             .about-tab-content h2 {
-                font-size: 1.4rem;
-                flex-direction: column; /* Stack emoji and title */
-                align-items: center;
-                text-align: center;
-                gap: 8px;
-            }
-            .about-tab-content .emoji {
-                font-size: 1.8rem;
-                margin-bottom: 5px;
+                font-size: 1.6rem;
             }
             .about-tab-content p, .about-tab-content ul li {
-                font-size: 0.95rem;
+                font-size: 1rem;
             }
-            .about-tab-content ul li {
-                padding-left: 20px;
-                margin-bottom: 10px;
-            }
-            .about-tab-content ul li::before {
-                font-size: 1.2em;
-                top: 2px;
-            }
-
             .about-join-section {
-                padding: 30px 20px;
-                margin: 40px auto;
+                padding: 40px 25px;
+                margin: 50px auto;
             }
             .about-join-section h2 {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             .about-join-section p {
-                font-size: 1rem;
+                font-size: 1.1rem;
             }
             .get-started-btn {
-                padding: 14px 30px;
-                font-size: 1.05rem;
+                padding: 16px 35px;
+                font-size: 1.1rem;
+            }
+            .about-founder-card {
+                margin: 50px auto 60px auto;
+            }
+            .about-founder-name {
+                font-size: 1.4rem;
+            }
+            .bottom-section {
+                gap: 60px;
             }
 
+            /* Contact form mobile improvements */
             .about-contact-section {
-                padding: 30px 20px;
-                margin: 40px auto;
+                padding: 40px 25px 0 25px;
+                margin: 50px auto 0 auto;
             }
             .about-contact-section h2 {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             .about-contact-section p {
-                font-size: 1rem;
+                font-size: 1.1rem;
+            }
+            .contact-form {
+                max-width: 100%;
             }
             .contact-form-row {
                 flex-direction: column;
                 gap: 0;
             }
+            .contact-form-group {
+                margin-bottom: 15px;
+            }
             .contact-input, .contact-textarea {
                 padding: 12px 15px;
                 font-size: 1rem;
-                border-radius: 25px;
             }
             .contact-btn {
-                padding: 14px 0;
+                padding: 16px 0;
                 font-size: 1.1rem;
-            }
-
-            .about-founder-card {
-                margin: 40px auto 50px auto;
-                max-width: 350px;
-            }
-            .about-founder-card-top {
-                padding: 30px 0 0 0;
-                margin-bottom: 50px;
-            }
-            .about-founder-photo {
-                width: 100px;
-                height: 100px;
-                bottom: -50px;
-                border-width: 5px;
-            }
-            .about-founder-name {
-                font-size: 1.3rem;
-            }
-            .about-founder-role {
-                font-size: 1rem;
-            }
-            .about-founder-desc {
-                font-size: 0.95rem;
-                padding: 0 20px 20px 20px;
-            }
-            .about-founder-socials {
-                gap: 15px;
-                margin: 15px 0 20px 0;
-            }
-            .about-founder-socials a {
-                font-size: 1.4rem;
             }
 
             .bottom-section {
                 flex-direction: column;
                 align-items: center;
-                gap: 40px;
-                padding: 40px 20px 20px 20px;
+                gap: 30px;
+                padding: 30px 15px 15px 15px;
             }
             .bottom-col {
                 text-align: center;
                 min-width: unset;
                 width: 100%;
-                max-width: 300px;
+                max-width: 280px;
             }
             .bottom-socials {
                 justify-content: center;
@@ -1052,10 +1010,139 @@
                 padding: 20px 0 10px 0;
                 font-size: 0.9rem;
             }
+        }
 
-            .about-founder-heading {
+        @media (max-width: 500px) {
+            .navbar {
+                padding: 0 15px;
+                height: 60px;
+            }
+            .navbar .logo {
+                font-size: 1.5rem;
+            }
+            .navbar .logo img {
+                height: 30px;
+            }
+            
+            .about-hero {
+                padding: 80px 15px 40px 15px;
+            }
+            .about-hero-title {
                 font-size: 2rem;
-                margin-bottom: 25px;
+                line-height: 1.2;
+            }
+            .about-hero-desc {
+                font-size: 1rem;
+            }
+            
+            .about-tab {
+                font-size: 0.95rem;
+                padding: 14px 20px 10px 20px;
+            }
+            .about-tab-content {
+                padding: 25px 20px;
+            }
+            .about-tab-content h2 {
+                font-size: 1.4rem;
+            }
+            .about-tab-content p, .about-tab-content ul li {
+                font-size: 0.95rem;
+            }
+            
+            .about-join-section {
+                padding: 30px 20px;
+                margin: 40px auto;
+            }
+            .about-join-section h2 {
+                font-size: 1.8rem;
+            }
+            .about-join-section p {
+                font-size: 1rem;
+            }
+            .get-started-btn {
+                padding: 14px 30px;
+                font-size: 1rem;
+            }
+            
+            .about-founder-heading {
+                font-size: 1.8rem;
+                margin-bottom: 20px;
+            }
+            .about-founder-card {
+                margin: 30px auto 50px auto;
+                max-width: 350px;
+            }
+            .about-founder-card-top {
+                height: 80px;
+            }
+            .about-founder-photo {
+                width: 100px;
+                height: 100px;
+                top: 30px;
+                border-width: 5px;
+            }
+            .about-founder-content {
+                padding-top: 60px;
+            }
+            .about-founder-name {
+                font-size: 1.2rem;
+            }
+            .about-founder-role {
+                font-size: 1rem;
+            }
+            .about-founder-desc {
+                font-size: 0.95rem;
+                padding: 0 15px 15px 15px;
+            }
+            .about-founder-socials {
+                gap: 15px;
+                margin: 15px 0 15px 0;
+            }
+            .about-founder-socials a {
+                font-size: 1.4rem;
+            }
+
+            /* Contact form mobile improvements */
+            .about-contact-section {
+                padding: 30px 20px 0 20px;
+                margin: 40px auto 0 auto;
+            }
+            .about-contact-section h2 {
+                font-size: 1.8rem;
+            }
+            .about-contact-section p {
+                font-size: 1rem;
+            }
+            .contact-form-group {
+                margin-bottom: 12px;
+            }
+            .contact-input, .contact-textarea {
+                padding: 10px 12px;
+                font-size: 0.95rem;
+            }
+            .contact-btn {
+                padding: 14px 0;
+                font-size: 1rem;
+            }
+
+            .bottom-section {
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+                padding: 30px 15px 15px 15px;
+            }
+            .bottom-col {
+                text-align: center;
+                min-width: unset;
+                width: 100%;
+                max-width: 280px;
+            }
+            .bottom-socials {
+                justify-content: center;
+            }
+            .footer {
+                padding: 20px 0 10px 0;
+                font-size: 0.9rem;
             }
         }
 
@@ -1315,10 +1402,19 @@
             </div>
         </section>
 
-        <section class="about-contact-section">
+        <section class="about-contact-section" id="get-in-touch">
             <h2>📧 Get in Touch</h2>
             <p>Have questions, suggestions, or want to share your experience? We'd love to hear from you!</p>
-            <form class="contact-form" method="post" action="">
+            
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            
+            <form class="contact-form" method="post" action="" id="contactForm">
                 {% csrf_token %}
                 <div class="contact-form-row">
                     <div class="contact-form-group">

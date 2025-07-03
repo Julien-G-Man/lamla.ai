@@ -612,11 +612,13 @@ def submit_feedback(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
+            user = request.user if request.user.is_authenticated else None
             feedback = Feedback.objects.create(
+                user=user,
                 rating=data.get('rating', 0),
                 feedback_text=data.get('feedback', ''),
-                quiz_score=data.get('quiz_score', 0),
-                user_email=data.get('email', '')
+                feedback_type=data.get('feedback_type', 'general'),
+                page_url=data.get('page_url', ''),
             )
             return JsonResponse({'status': 'success', 'message': 'Feedback submitted successfully'})
         except Exception as e:

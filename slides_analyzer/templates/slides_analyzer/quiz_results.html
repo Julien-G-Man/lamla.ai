@@ -122,9 +122,9 @@
             
             <div class="feedback-actions">
                 {% if not no_quiz_message %}
-                <button class="feedback-btn" onclick="openFeedback()">
+                <a class="feedback-btn" href="/about/#get-in-touch">
                     <i class="fas fa-comment"></i> Give us detailed feedback
-                </button>
+                </a>
                 <button class="share-btn" onclick="shareResults()">
                     <i class="fas fa-share-alt"></i> Share Lamla AI 
                 </button>
@@ -446,7 +446,9 @@
     
     @media (max-width: 768px) {
         .container {
-            padding: 30px;
+            padding: 30px 20px;
+            margin-top: 15px;
+            margin-bottom: 15px;
         }
         .main-page-title {
             font-size: 1.8rem;
@@ -471,6 +473,7 @@
         }
         .feedback-section {
             padding: 20px;
+            margin-top: 30px;
         }
         .feedback-actions {
             flex-direction: column;
@@ -480,23 +483,36 @@
             width: 100%;
             min-width: unset;
         }
+        .stars i {
+            font-size: 1.8rem;
+        }
+        .question-item {
+            padding: 15px 12px;
+        }
+        .options-list li {
+            padding: 8px 12px;
+            font-size: 0.95rem;
+        }
+        .question-answer {
+            font-size: 0.95rem;
+        }
     }
     @media (max-width: 500px) {
         .page-wrapper {
             padding: 20px 10px;
         }
         .container {
-            padding: 18px;
+            padding: 20px 15px;
             border-radius: 10px;
         }
         .main-page-title {
-            font-size: 1.3rem;
+            font-size: 1.5rem;
         }
         .results-title {
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
         .question-type-title {
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
         .question-text {
             font-size: 0.95rem;
@@ -508,8 +524,31 @@
         .feedback-title {
             font-size: 1.2rem;
         }
+        .feedback-desc {
+            font-size: 0.95rem;
+        }
         .stars i {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
+        }
+        .feedback-btn, .share-btn {
+            font-size: 0.95rem;
+            padding: 10px 15px;
+        }
+        .question-item {
+            padding: 12px 10px;
+            margin-bottom: 15px;
+        }
+        .options-list li {
+            padding: 6px 10px;
+            font-size: 0.9rem;
+        }
+        .question-answer {
+            font-size: 0.9rem;
+        }
+        .try-another-btn {
+            padding: 14px 25px;
+            font-size: 1rem;
+            min-width: 180px;
         }
     }
     .bar-success {
@@ -537,7 +576,6 @@
         stars.forEach(star => {
             star.addEventListener('click', function() {
                 const rating = this.getAttribute('data-rating');
-                
                 // Update stars
                 stars.forEach((s, index) => {
                     if (index < rating) {
@@ -546,7 +584,6 @@
                         s.classList.remove('active');
                     }
                 });
-                
                 // Update text
                 const messages = {
                     1: 'Thanks for your feedback!',
@@ -556,11 +593,9 @@
                     5: 'Excellent! Thank you for the perfect rating!'
                 };
                 ratingText.textContent = messages[rating];
-                
-                // Optional: Send rating to server
-                // sendRating(rating);
+                // Send rating to server
+                sendRating(rating);
             });
-            
             // Hover effects
             star.addEventListener('mouseenter', function() {
                 const rating = this.getAttribute('data-rating');
@@ -570,7 +605,6 @@
                     }
                 });
             });
-            
             star.addEventListener('mouseleave', function() {
                 stars.forEach(s => {
                     if (!s.classList.contains('active')) {
@@ -580,6 +614,47 @@
             });
         });
     });
+
+    function sendRating(rating) {
+        fetch('/submit_feedback/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                rating: parseInt(rating),
+                feedback_type: 'quiz',
+                page_url: window.location.pathname
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Optionally show a toast or thank you message
+            if (data.status === 'success') {
+                // Already handled by ratingText, but you can add more UI feedback here
+            }
+        })
+        .catch(error => {
+            console.error('Error submitting rating:', error);
+        });
+    }
+
+    // Helper to get CSRF token from cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
     
     function openFeedback() {
         const scoreElement = document.querySelector('.score-value');

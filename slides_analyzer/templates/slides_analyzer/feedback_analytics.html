@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Feedback Analytics - Lamla AI{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="text-center mb-4">📊 Feedback Analytics</h1>
+            <p class="text-center text-muted">Star ratings and user feedback insights</p>
+        </div>
+    </div>
+
+    <!-- Overall Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3 class="card-title">⭐ Overall Rating</h3>
+                    <div class="display-4 text-warning">{{ avg_rating }}/5</div>
+                    <p class="text-muted">Average from {{ total_ratings }} ratings</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h3 class="card-title">📈 Total Ratings</h3>
+                    <div class="display-4 text-primary">{{ total_ratings }}</div>
+                    <p class="text-muted">User feedback submissions</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rating Distribution -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>📊 Rating Distribution</h4>
+                </div>
+                <div class="card-body">
+                    {% for rating, data in rating_distribution.items %}
+                    <div class="row align-items-center mb-2">
+                        <div class="col-md-2">
+                            <span class="text-warning">
+                                {% for i in rating|times %}{% if forloop.counter <= rating %}★{% else %}☆{% endif %}{% endfor %}
+                            </span>
+                            <span class="ms-2">{{ rating }} stars</span>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" role="progressbar" 
+                                     style="width: {{ data.percentage }}%" 
+                                     aria-valuenow="{{ data.percentage }}" 
+                                     aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2 text-end">
+                            <span class="badge bg-secondary">{{ data.count }} ({{ data.percentage }}%)</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Analytics -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>📄 Page Analytics</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Page</th>
+                                    <th>Ratings</th>
+                                    <th>Average Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for page in page_analytics %}
+                                <tr>
+                                    <td>
+                                        <code>{{ page.page_url|default:"Unknown Page" }}</code>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">{{ page.count }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-warning">
+                                            {% for i in page.avg_rating|floatformat:0|times %}
+                                                {% if forloop.counter <= page.avg_rating %}★{% else %}☆{% endif %}
+                                            {% endfor %}
+                                        </span>
+                                        <span class="ms-1">{{ page.avg_rating|floatformat:1 }}/5</span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No page analytics available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Feedback -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>💬 Recent Feedback</h4>
+                </div>
+                <div class="card-body">
+                    {% for feedback in recent_feedback %}
+                    <div class="border-bottom pb-3 mb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="mb-1">
+                                    <span class="text-warning">
+                                        {% for i in feedback.rating|times %}
+                                            {% if forloop.counter <= feedback.rating %}★{% else %}☆{% endif %}
+                                        {% endfor %}
+                                    </span>
+                                    <span class="ms-2">{{ feedback.rating }}/5</span>
+                                </div>
+                                {% if feedback.feedback_text %}
+                                <p class="mb-1">{{ feedback.feedback_text }}</p>
+                                {% endif %}
+                                <small class="text-muted">
+                                    {% if feedback.user %}
+                                        {{ feedback.user.email }}
+                                    {% else %}
+                                        Anonymous user
+                                    {% endif %}
+                                    • {{ feedback.created_at|date:"M d, Y H:i" }}
+                                    {% if feedback.page_url %}
+                                        • <code>{{ feedback.page_url }}</code>
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-center text-muted">No feedback available yet</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.progress {
+    height: 20px;
+    border-radius: 10px;
+}
+.progress-bar {
+    border-radius: 10px;
+}
+.card {
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 15px 15px 0 0 !important;
+}
+</style>
+{% endblock %} 

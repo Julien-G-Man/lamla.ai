@@ -24,6 +24,8 @@ urlpatterns = [
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
     path('terms-of-service/', views.terms_of_service, name='terms_of_service'),
     path('cookie-policy/', views.cookie_policy, name='cookie_policy'),
+    path('user-profile/', views.user_profile, name='user_profile'),
+    path('feedback-analytics/', views.feedback_analytics, name='feedback_analytics'),
 ] 
 
 def call_ollama(prompt, model='llama3'):

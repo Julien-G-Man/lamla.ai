@@ -17,4 +17,12 @@ def letter_to_option(letter, options):
             return options[index]
         return ''
     except (TypeError, IndexError):
-        return '' 
+        return ''
+
+@register.filter
+def times(number):
+    """Returns a range of numbers from 1 to the given number"""
+    try:
+        return range(1, int(number) + 1)
+    except (ValueError, TypeError):
+        return range(0) 

@@ -451,6 +451,9 @@
             <a href="/"> <i class="fas fa-home"></i> Home</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                {% if user.is_staff %}
+                    <a href="{% url 'feedback_analytics' %}"> <i class="fas fa-chart-line"></i> Feedback Analytics</a>
+                {% endif %}
             {% endif %}
             <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
             <a href="/custom-quiz/"> <i class="fas fa-question-circle"></i> Quiz</a>
@@ -474,6 +477,9 @@
             <a href="/"> <i class="fas fa-home"></i> Home</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                {% if user.is_staff %}
+                    <a href="{% url 'feedback_analytics' %}"> <i class="fas fa-chart-line"></i> Feedback Analytics</a>
+                {% endif %}
             {% endif %}
             <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
             <a href="/custom-quiz/"> <i class="fas fa-question-circle"></i> Quiz</a>

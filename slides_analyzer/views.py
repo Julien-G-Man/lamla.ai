@@ -10,6 +10,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from .models import Question, Quiz, Feedback, Subscription, Contact, UserProfile
 from .question_generator import QuestionGenerator
+from .flashcard_generator import FlashcardGenerator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
 from django.core.exceptions import ValidationError
@@ -25,6 +26,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils import timezone
 import dj_database_url
+from django.db import models
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -36,6 +38,14 @@ try:
 except Exception as e:
     logger.error(f"Error initializing Question Generator: {e}")
     question_generator = None
+
+# Initialize the flashcard generator
+try:
+    flashcard_generator = FlashcardGenerator()
+    logger.info("Flashcard Generator initialized successfully")
+except Exception as e:
+    logger.error(f"Error initializing Flashcard Generator: {e}")
+    flashcard_generator = None
 
 # Configure Gemini API
 try:
@@ -419,30 +429,53 @@ def quiz(request):
 def flashcards(request):
     flashcard_results = None
     error_message = None
+    flashcard_type = 'general'
+    
     if request.method == 'POST':
         extracted_text = request.POST.get('extractedText', '').strip()
+        flashcard_type = request.POST.get('flashcard_type', 'general')
         try:
             num_flashcards = int(request.POST.get('num_flashcards', 10))
         except Exception:
             num_flashcards = 10
+            
         if not extracted_text:
             error_message = 'No extracted text provided.'
         else:
             try:
-                # If you have a flashcard generator, use it here. Otherwise, use question_generator for demo.
-                # flashcards = flashcard_generator.generate_flashcards(text=extracted_text, num=num_flashcards)
-                flashcards = question_generator.generate_questions(
-                    text=extracted_text,
-                    num_mcq=0,
-                    num_short=num_flashcards
-                )
-                flashcard_results = flashcards.get('short_questions', [])
+                if not flashcard_generator:
+                    error_message = 'Flashcard generator not properly initialized.'
+                else:
+                    # Generate flashcards based on type
+                    if flashcard_type == 'concepts':
+                        result = flashcard_generator.generate_concept_flashcards(
+                            text=extracted_text, 
+                            num_flashcards=num_flashcards
+                        )
+                    elif flashcard_type == 'processes':
+                        result = flashcard_generator.generate_process_flashcards(
+                            text=extracted_text, 
+                            num_flashcards=num_flashcards
+                        )
+                    else:  # general
+                        result = flashcard_generator.generate_flashcards(
+                            text=extracted_text, 
+                            num_flashcards=num_flashcards
+                        )
+                    
+                    if 'error' in result:
+                        error_message = result['error']
+                    else:
+                        flashcard_results = result.get('flashcards', [])
+                        
             except Exception as e:
                 error_message = f'Error generating flashcards: {str(e)}'
+                
     return render(request, 'slides_analyzer/flashcards.html', {
         'user_authenticated': request.user.is_authenticated,
         'flashcard_results': flashcard_results,
-        'error_message': error_message
+        'error_message': error_message,
+        'flashcard_type': flashcard_type
     })
 
 @login_required
@@ -830,6 +863,47 @@ def user_profile(request):
     }
     
     return render(request, 'slides_analyzer/user_profile.html', context)
+
+@login_required
+def feedback_analytics(request):
+    """Admin view to see star ratings and feedback analytics"""
+    # Check if user is staff/admin
+    if not request.user.is_staff:
+        messages.error(request, 'Access denied. Admin privileges required.')
+        return redirect('home')
+    
+    # Get all feedback with ratings
+    feedback_with_ratings = Feedback.objects.filter(rating__isnull=False).order_by('-created_at')
+    
+    # Calculate statistics
+    total_ratings = feedback_with_ratings.count()
+    avg_rating = feedback_with_ratings.aggregate(avg=models.Avg('rating'))['avg'] or 0
+    
+    # Rating distribution
+    rating_distribution = {}
+    for i in range(1, 6):
+        count = feedback_with_ratings.filter(rating=i).count()
+        percentage = (count / total_ratings * 100) if total_ratings > 0 else 0
+        rating_distribution[i] = {'count': count, 'percentage': round(percentage, 1)}
+    
+    # Recent feedback
+    recent_feedback = feedback_with_ratings[:10]
+    
+    # Page analytics
+    page_analytics = feedback_with_ratings.values('page_url').annotate(
+        count=models.Count('id'),
+        avg_rating=models.Avg('rating')
+    ).order_by('-count')
+    
+    context = {
+        'total_ratings': total_ratings,
+        'avg_rating': round(avg_rating, 1),
+        'rating_distribution': rating_distribution,
+        'recent_feedback': recent_feedback,
+        'page_analytics': page_analytics,
+    }
+    
+    return render(request, 'slides_analyzer/feedback_analytics.html', context)
 
 DATABASES = {
     'default': dj_database_url.config(default='sqlite:///db.sqlite3')

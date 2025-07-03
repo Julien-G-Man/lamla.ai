@@ -913,6 +913,199 @@
                 margin-left: 0;
             }
         }
+
+        /* Flashcard Styles */
+        .flashcard-results-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        }
+
+        .flashcard-results-section h3 {
+            text-align: center;
+            color: #222;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+
+        .flashcard-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .flashcard-btn {
+            background: #FFD600;
+            color: #222;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .flashcard-btn:hover {
+            background: #222;
+            color: #FFD600;
+            transform: translateY(-2px);
+        }
+
+        #cardCounter {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .flashcard-container {
+            position: relative;
+            min-height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .flashcard {
+            width: 100%;
+            max-width: 500px;
+            perspective: 1000px;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .flashcard-front {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .flashcard-back {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-content h4 {
+            margin: 0 0 20px 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .flashcard-content p {
+            margin: 0;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .flip-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .flip-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .flashcard-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: #f8f9fa;
+            color: #222;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            background: #FFD600;
+            border-color: #FFD600;
+            transform: translateY(-2px);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .flashcard-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .flashcard-inner {
+                height: 250px;
+            }
+
+            .flashcard-front, .flashcard-back {
+                padding: 20px;
+            }
+
+            .flashcard-content p {
+                font-size: 1rem;
+            }
+
+            .flashcard-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .action-btn {
+                width: 100%;
+                max-width: 200px;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1000,6 +1193,14 @@
                         <span id="fileNameDisplay" style="display:block;margin:15px 0 0 0;color:#222;font-weight:500;"></span>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="flashcardType">Flashcard Type</label>
+                    <select id="flashcardType" name="flashcard_type" style="background: #f8f9fa; color: #222; border: 1.5px solid #ddd; padding: 14px; border-radius: 10px; width: 100%; font-size: 1rem; transition: border-color 0.2s, box-shadow 0.2s;">
+                        <option value="general" {% if flashcard_type == 'general' %}selected{% endif %}>General Flashcards (Mixed)</option>
+                        <option value="concepts" {% if flashcard_type == 'concepts' %}selected{% endif %}>Concept Definitions</option>
+                        <option value="processes" {% if flashcard_type == 'processes' %}selected{% endif %}>Process & Steps</option>
+                    </select>
+                </div>
                 <div class="num-flashcards-group">
                     <label for="numFlashcards">Number of Flashcards (Max 40)</label>
                     <input type="number" id="numFlashcards" name="num_flashcards" value="10" min="1" max="40">
@@ -1017,14 +1218,45 @@
             {% if flashcard_results %}
                 <div class="flashcard-results-section">
                     <h3>Your Generated Flashcards</h3>
-                    <ol>
-                    {% for card in flashcard_results %}
-                        <li>
-                            <div class="question-text"><b>Q{{ forloop.counter }}:</b> {{ card.question }}</div>
-                            <div class="answer-text"><b>A:</b> {{ card.answer }}</div>
-                        </li>
-                    {% endfor %}
-                    </ol>
+                    <div class="flashcard-controls">
+                        <button type="button" class="flashcard-btn" id="prevCard">← Previous</button>
+                        <span id="cardCounter">1 of {{ flashcard_results|length }}</span>
+                        <button type="button" class="flashcard-btn" id="nextCard">Next →</button>
+                    </div>
+                    <div class="flashcard-container">
+                        {% for card in flashcard_results %}
+                        <div class="flashcard" data-card="{{ forloop.counter0 }}" {% if forloop.first %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                            <div class="flashcard-inner">
+                                <div class="flashcard-front">
+                                    <div class="flashcard-content">
+                                        <h4>Front</h4>
+                                        <p>{{ card.front }}</p>
+                                    </div>
+                                </div>
+                                <div class="flashcard-back">
+                                    <div class="flashcard-content">
+                                        <h4>Back</h4>
+                                        <p>{{ card.back }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="flip-btn" onclick="flipCard({{ forloop.counter0 }})">
+                                <i class="fas fa-sync-alt"></i> Flip Card
+                            </button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="flashcard-actions">
+                        <button type="button" class="action-btn" onclick="shuffleCards()">
+                            <i class="fas fa-random"></i> Shuffle
+                        </button>
+                        <button type="button" class="action-btn" onclick="resetCards()">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                        <button type="button" class="action-btn" onclick="exportCards()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
                 </div>
             {% endif %}
         </div>
@@ -1301,6 +1533,107 @@
         document.addEventListener('DOMContentLoaded', function() {
             if (deckTitle.value.trim() === '') {
                 deckTitle.value = 'My Custom Flashcards';
+            }
+        });
+
+        // Flashcard functionality
+        let currentCardIndex = 0;
+        const totalCards = {{ flashcard_results|length|default:0 }};
+        const cards = document.querySelectorAll('.flashcard');
+
+        function showCard(index) {
+            cards.forEach((card, i) => {
+                card.style.display = i === index ? 'block' : 'none';
+            });
+            const counter = document.getElementById('cardCounter');
+            if (counter) {
+                counter.textContent = `${index + 1} of ${totalCards}`;
+            }
+            currentCardIndex = index;
+        }
+
+        function flipCard(cardIndex) {
+            const card = document.querySelector(`[data-card="${cardIndex}"]`);
+            if (card) {
+                card.classList.toggle('flipped');
+            }
+        }
+
+        function nextCard() {
+            if (currentCardIndex < totalCards - 1) {
+                showCard(currentCardIndex + 1);
+            }
+        }
+
+        function prevCard() {
+            if (currentCardIndex > 0) {
+                showCard(currentCardIndex - 1);
+            }
+        }
+
+        function shuffleCards() {
+            const cardArray = Array.from(cards);
+            for (let i = cardArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                cardArray[i].parentNode.insertBefore(cardArray[j], cardArray[i]);
+            }
+            showCard(0);
+        }
+
+        function resetCards() {
+            cards.forEach((card, i) => {
+                card.classList.remove('flipped');
+                card.style.display = i === 0 ? 'block' : 'none';
+            });
+            currentCardIndex = 0;
+            const counter = document.getElementById('cardCounter');
+            if (counter) {
+                counter.textContent = `1 of ${totalCards}`;
+            }
+        }
+
+        function exportCards() {
+            const cardsData = [];
+            cards.forEach((card, index) => {
+                const front = card.querySelector('.flashcard-front p').textContent;
+                const back = card.querySelector('.flashcard-back p').textContent;
+                cardsData.push({
+                    front: front,
+                    back: back
+                });
+            });
+
+            const dataStr = JSON.stringify(cardsData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'flashcards.json';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Add event listeners for flashcard controls
+        if (document.getElementById('nextCard')) {
+            document.getElementById('nextCard').addEventListener('click', nextCard);
+        }
+        if (document.getElementById('prevCard')) {
+            document.getElementById('prevCard').addEventListener('click', prevCard);
+        }
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (totalCards > 0) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    e.preventDefault();
+                    nextCard();
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    prevCard();
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    flipCard(currentCardIndex);
+                }
             }
         });
     </script>

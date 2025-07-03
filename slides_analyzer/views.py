@@ -8,7 +8,7 @@ from django.conf import settings
 import logging
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from .models import Question, Quiz, Feedback, Subscription, Contact
+from .models import Question, Quiz, Feedback, Subscription, Contact, UserProfile
 from .question_generator import QuestionGenerator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
@@ -666,8 +666,12 @@ def dashboard(request):
     # Get user's join date
     days_since_joined = (timezone.now() - user.date_joined).days
     
+    # Get or create user profile
+    profile, created = UserProfile.objects.get_or_create(user=user)
+    
     context = {
         'user': user,
+        'profile': profile,
         'user_feedback': user_feedback,
         'user_contacts': user_contacts,
         'total_feedback': total_feedback,
@@ -745,6 +749,7 @@ def user_profile(request):
         first_name = request.POST.get('first_name', '').strip()
         last_name = request.POST.get('last_name', '').strip()
         email = request.POST.get('email', '').strip()
+        bio = request.POST.get('bio', '').strip()
         
         # Basic validation
         if not email:
@@ -759,6 +764,31 @@ def user_profile(request):
                 user.email = email
                 user.save()
                 
+                # Update or create user profile
+                profile, created = UserProfile.objects.get_or_create(user=user)
+                profile.bio = bio
+                
+                # Handle profile picture upload
+                if 'profile_picture' in request.FILES:
+                    profile_picture = request.FILES['profile_picture']
+                    
+                    # Validate file size (5MB limit)
+                    if profile_picture.size > 5 * 1024 * 1024:
+                        messages.error(request, 'Profile picture must be under 5MB.')
+                    else:
+                        # Validate file type
+                        allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']
+                        if profile_picture.content_type in allowed_types:
+                            # Delete old profile picture if it exists
+                            if profile.profile_picture:
+                                profile.profile_picture.delete(save=False)
+                            
+                            profile.profile_picture = profile_picture
+                            messages.success(request, 'Profile picture updated successfully!')
+                        else:
+                            messages.error(request, 'Please upload a valid image file (JPG, PNG, or GIF).')
+                
+                profile.save()
                 messages.success(request, 'Profile updated successfully!')
                 return redirect('user_profile')
                 
@@ -771,8 +801,12 @@ def user_profile(request):
     total_contacts = Contact.objects.filter(email=user.email).count()
     subscription = Subscription.objects.filter(email=user.email, is_active=True).first()
     
+    # Get or create user profile
+    profile, created = UserProfile.objects.get_or_create(user=user)
+    
     context = {
         'user': user,
+        'profile': profile,
         'total_feedback': total_feedback,
         'total_contacts': total_contacts,
         'subscription': subscription,

@@ -3,8 +3,45 @@ import hashlib
 from django.contrib.auth.models import User
 from django.core.validators import EmailValidator
 from django.utils import timezone
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
+
+class UserProfile(models.Model):
+    """Extended user profile with additional fields like profile picture"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    profile_picture = models.ImageField(
+        upload_to='profile_pictures/',
+        null=True,
+        blank=True,
+        help_text="Upload your profile picture (JPG, PNG, GIF up to 5MB)"
+    )
+    bio = models.TextField(max_length=500, blank=True, help_text="Tell us about yourself")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
+    
+    @property
+    def profile_picture_url(self):
+        """Return the profile picture URL or default image"""
+        if self.profile_picture:
+            return self.profile_picture.url
+        return '/static/slide_analyzer/images/student.jpeg'
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    """Create a UserProfile when a User is created"""
+    if created:
+        UserProfile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    """Save the UserProfile when a User is saved"""
+    if hasattr(instance, 'profile'):
+        instance.profile.save()
 
 class Quiz(models.Model):
     title = models.CharField(max_length=255)

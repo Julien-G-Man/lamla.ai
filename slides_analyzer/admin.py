@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Question, Quiz, Feedback, Subscription, Contact
+from .models import Question, Quiz, Feedback, Subscription, Contact, UserProfile
 
 # Register your models here.
 
@@ -46,3 +46,22 @@ class ContactAdmin(admin.ModelAdmin):
     def mark_response_sent(self, request, queryset):
         queryset.update(response_sent=True)
     mark_response_sent.short_description = "Mark response as sent"
+
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ['user', 'created_at', 'updated_at']
+    list_filter = ['created_at', 'updated_at']
+    search_fields = ['user__username', 'user__email', 'user__first_name', 'user__last_name']
+    readonly_fields = ['created_at', 'updated_at']
+    fieldsets = (
+        ('User Information', {
+            'fields': ('user',)
+        }),
+        ('Profile Details', {
+            'fields': ('profile_picture', 'bio')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )

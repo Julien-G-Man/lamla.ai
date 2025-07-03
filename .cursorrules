@@ -1,0 +1,28 @@
+# Cursor Rules for Django Project
+
+# Django Template Files
+*.html files in templates/ directories should be treated as Django templates
+- Django template syntax like {% for %}, {{ variable }}, etc. is valid
+- Don't show errors for Django template tags in HTML files
+- Template inheritance with {% extends %} and {% block %} is correct
+
+# Python Files
+*.py files should follow PEP 8 standards
+- Use 4 spaces for indentation
+- Maximum line length of 120 characters
+- Import statements at the top
+
+# Static Files
+*.css files in static/ directories are valid CSS
+*.js files in static/ directories are valid JavaScript
+
+# Ignore common Django patterns
+- Don't flag Django template variables in HTML attributes
+- Don't flag Django template tags in script blocks
+- Don't flag Django URL patterns in href attributes
+
+# File Associations
+- *.html files in templates/ should be treated as Django templates
+- *.py files should be treated as Python
+- *.css files should be treated as CSS
+- *.js files should be treated as JavaScript 

@@ -127,6 +127,10 @@
             .navigation-footer { padding: 10px; }
             .navigation-footer .nav-btn { padding: 10px 15px; font-size: 0.9em; }
         }
+        /* Ensure sidebar is hidden on quiz page */
+        .sidebar {
+            display: none !important;
+        }
     </style>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -201,6 +205,8 @@
                 parseError = (parseError ? parseError + '\n' : '') + 'Error parsing short_questions: ' + e;
             }
             const quizData = { mcq, short };
+            console.log('DEBUG: Loaded MCQ questions:', mcq.length, mcq);
+            console.log('DEBUG: Loaded Short questions:', short.length, short);
             if (mcq.length === 0 && short.length === 0) {
                 document.getElementById('question-math').innerHTML = '<span style="color:red">No questions available. Please check your input or contact support.</span>';
                 return;
@@ -408,7 +414,7 @@
                 nextBtn.style.background = '#6c757d';
                 nextBtn.style.color = '#fff';
                 nextBtn.onclick = function() {
-                    // Go back to last question
+                    // Go back to last question and resume quiz
                     isCompletionScreen = false;
                     currentQuestionIndex = totalQuestions - 1;
                     displayQuestion();
@@ -428,7 +434,7 @@
             }
             document.getElementById('prev-btn').addEventListener('click', () => {
                 if (isCompletionScreen) {
-                    // If in completion screen, go back to last question
+                    // If in completion screen, go back to last question and resume quiz
                     isCompletionScreen = false;
                     currentQuestionIndex = totalQuestions - 1;
                     displayQuestion();

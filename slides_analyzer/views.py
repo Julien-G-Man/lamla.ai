@@ -221,7 +221,16 @@ def generate_questions(request):
                     'error': questions["error"]
                 }, status=500)
             
-            # Store questions in session for the quiz view
+            # Ensure only the requested number of questions are stored
+            if 'mcq_questions' in questions:
+                questions['mcq_questions'] = questions['mcq_questions'][:num_mcq]
+            if 'short_questions' in questions:
+                questions['short_questions'] = questions['short_questions'][:num_short]
+            
+            # Debug print to check how many questions are being stored
+            print('DEBUG: Storing MCQs:', len(questions.get('mcq_questions', [])), 'Short:', len(questions.get('short_questions', [])))
+            # Clear old questions before storing new ones
+            request.session['questions'] = None
             request.session['questions'] = questions
             
             # Redirect to the quiz page
@@ -267,6 +276,11 @@ def custom_quiz(request):
                     num_mcq=num_mcq,
                     num_short=num_short
                 )
+                # Ensure only the requested number of questions are stored
+                if 'mcq_questions' in questions:
+                    questions['mcq_questions'] = questions['mcq_questions'][:num_mcq]
+                if 'short_questions' in questions:
+                    questions['short_questions'] = questions['short_questions'][:num_short]
                 print('DEBUG: Generated questions:', questions)
                 if 'error' in questions and questions['error']:
                     error_message = (

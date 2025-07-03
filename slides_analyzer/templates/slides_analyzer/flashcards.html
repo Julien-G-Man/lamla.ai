@@ -1240,7 +1240,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" class="flip-btn" onclick="flipCard({{ forloop.counter0 }})">
+                            <button type="button" class="flip-btn" data-card-index="{{ forloop.counter0 }}">
                                 <i class="fas fa-sync-alt"></i> Flip Card
                             </button>
                         </div>
@@ -1538,8 +1538,9 @@
 
         // Flashcard functionality
         let currentCardIndex = 0;
-        const totalCards = {{ flashcard_results|length|default:0 }};
+        let totalCards = 0;
         const cards = document.querySelectorAll('.flashcard');
+        totalCards = cards.length;
 
         function showCard(index) {
             cards.forEach((card, i) => {
@@ -1620,6 +1621,14 @@
         if (document.getElementById('prevCard')) {
             document.getElementById('prevCard').addEventListener('click', prevCard);
         }
+
+        // Add event listeners for flip buttons
+        document.querySelectorAll('.flip-btn').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const cardIndex = parseInt(this.getAttribute('data-card-index'));
+                flipCard(cardIndex);
+            });
+        });
 
         // Add keyboard navigation
         document.addEventListener('keydown', function(e) {

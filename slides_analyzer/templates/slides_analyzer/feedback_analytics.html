@@ -3,6 +3,10 @@
 
 {% block title %}Feedback Analytics - Lamla AI{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'slide_analyzer/css/feedback_analytics.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
     <div class="row">
@@ -46,7 +50,7 @@
                     <div class="row align-items-center mb-2">
                         <div class="col-md-2">
                             <span class="text-warning">
-                                {% for i in rating|times %}{% if forloop.counter <= rating %}★{% else %}☆{% endif %}{% endfor %}
+                                {% for i in "12345" %}{% if forloop.counter <= rating %}★{% else %}☆{% endif %}{% endfor %}
                             </span>
                             <span class="ms-2">{{ rating }} stars</span>
                         </div>
@@ -97,7 +101,7 @@
                                     </td>
                                     <td>
                                         <span class="text-warning">
-                                            {% for i in page.avg_rating|floatformat:0|times %}
+                                            {% for i in "12345" %}
                                                 {% if forloop.counter <= page.avg_rating %}★{% else %}☆{% endif %}
                                             {% endfor %}
                                         </span>
@@ -131,7 +135,7 @@
                             <div>
                                 <div class="mb-1">
                                     <span class="text-warning">
-                                        {% for i in feedback.rating|times %}
+                                        {% for i in "12345" %}
                                             {% if forloop.counter <= feedback.rating %}★{% else %}☆{% endif %}
                                         {% endfor %}
                                     </span>
@@ -163,22 +167,4 @@
     </div>
 </div>
 
-<style>
-.progress {
-    height: 20px;
-    border-radius: 10px;
-}
-.progress-bar {
-    border-radius: 10px;
-}
-.card {
-    border-radius: 15px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-.card-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
-    border-radius: 15px 15px 0 0 !important;
-}
-</style>
 {% endblock %} 

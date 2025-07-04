@@ -1185,11 +1185,8 @@
         </div>
     </div>
     <div class="main-content" id="mainContent">
-        {% if messages %}
-          {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-          {% endfor %}
-        {% endif %}
+        <!-- Popup notification container -->
+        <div id="popup-message" style="display:none;position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:9999;min-width:260px;max-width:90vw;padding:16px 32px;background:#222;color:#fff;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);font-size:1.1rem;text-align:center;transition:opacity 0.3s;opacity:0;pointer-events:none;"></div>
         <section class="hero">
             <div class="hero-content">
                 <h1 class="hero-title">
@@ -1245,14 +1242,6 @@
         <section class="newsletter-section">
             <h2 class="newsletter-title">Stay Ahead with Lamla-AI</h2>
             <p class="newsletter-desc">Subscribe for study tips, feature updates, and exclusive offers. Lamla-AI is your intelligent study assistant that helps you prepare with purpose.</p>
-            
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
             
             <form class="newsletter-form" method="post" action="" id="newsletterForm">
                 {% csrf_token %}
@@ -1384,5 +1373,26 @@
             });
         });
     </script>
+    {% if messages %}
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          var popup = document.getElementById('popup-message');
+          var messages = [
+            {% for message in messages %}'{{ message|escapejs }}'{% if not forloop.last %}, {% endif %}{% endfor %}
+          ];
+          if (messages.length > 0) {
+            popup.textContent = messages.join('\n');
+            popup.style.display = 'block';
+            setTimeout(function() {
+              popup.style.opacity = 1;
+            }, 100);
+            setTimeout(function() {
+              popup.style.opacity = 0;
+              setTimeout(function() { popup.style.display = 'none'; }, 400);
+            }, 3100);
+          }
+        });
+      </script>
+    {% endif %}
 </body>
 </html>

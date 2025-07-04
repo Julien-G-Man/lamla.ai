@@ -13,7 +13,7 @@
             </div>
         {% else %}
             <div class="auth-container">
-                <h2 class="login-heading">Sign In to Lamla AI</h2>
+                <h2 class="login-heading">Sign In</h2>
                 <p class="login-description">Welcome back! Sign in to access your personalized study tools and resources.</p>
                 <form method="post" action="{% url 'account_login' %}">
                     {% csrf_token %}

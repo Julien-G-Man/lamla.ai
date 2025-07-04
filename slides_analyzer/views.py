@@ -240,8 +240,9 @@ def generate_questions(request):
             
             # Debug print to check how many questions are being stored
             print('DEBUG: Storing MCQs:', len(questions.get('mcq_questions', [])), 'Short:', len(questions.get('short_questions', [])))
-            # Clear old questions before storing new ones
+            # Clear old questions and user answers before storing new ones
             request.session['questions'] = None
+            request.session['user_answers'] = None
             request.session['questions'] = questions
             
             # Redirect to the quiz page
@@ -304,6 +305,9 @@ def custom_quiz(request):
                         'error_message': error_message
                     })
                 request.session['quiz_time'] = quiz_time
+                # Clear old questions and user answers before storing new ones
+                request.session['questions'] = None
+                request.session['user_answers'] = None
                 request.session['questions'] = questions
                 return redirect('quiz')
             except Exception as e:
@@ -589,6 +593,18 @@ def quiz_results(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     questions = request.session.get('questions', {})
     user_answers = request.session.get('user_answers', {})
+    # If user_answers is missing or empty, show a user-friendly message
+    if not user_answers:
+        return render(request, 'slides_analyzer/quiz_results.html', {
+            'score': 0,
+            'total': 0,
+            'wrong': 0,
+            'mcq_questions': questions.get('mcq_questions', []),
+            'short_questions': questions.get('short_questions', []),
+            'user_answers': {},
+            'user_authenticated': request.user.is_authenticated,
+            'no_quiz_message': 'No answers submitted. Please complete the quiz.'
+        })
     if not questions or (not questions.get('mcq_questions') and not questions.get('short_questions')):
         # Instead of redirecting to custom_quiz (which requires login), show a message
         return render(request, 'slides_analyzer/quiz_results.html', {
@@ -609,7 +625,9 @@ def quiz_results(request):
     for idx, q in enumerate(mcq_questions):
         total += 1
         user_ans = user_answers.get(str(idx))
-        correct_ans = q.get('answer', '').upper()
+        # Ensure correct_ans is a string before calling .upper()
+        correct_ans_raw = q.get('answer', '')
+        correct_ans = (correct_ans_raw if correct_ans_raw is not None else '').upper()
         if user_ans and user_ans.upper() == correct_ans:
             score += 1
     

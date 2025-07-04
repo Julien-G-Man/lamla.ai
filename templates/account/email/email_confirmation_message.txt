@@ -1,8 +1,12 @@
 Hello from LAMLA AI!
 
-You're receiving this email because user {{ user_display }} has given your email address to register an account on LAMLA AI.
+You're receiving this email because user {{ user.username|default:user.email }} has given your email address to register an account on LAMLA AI.
 
-To confirm your email and register on Lamla AI, go to {{ activate_url }}
+To confirm your email and register on LAMLA AI, please click the link below:
+
+{{ activate_url }}
+
+If you did not request this, you can safely ignore this email.
 
 Thank you for using LAMLA AI!
 lamla-ai.onrender.com 

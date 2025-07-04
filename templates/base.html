@@ -498,6 +498,33 @@
         {% block content %}{% endblock %}
     </div>
     
+    <!-- Toast Notification Container -->
+    <div id="toast-container" style="position: fixed; top: 80px; right: 20px; z-index: 9999;"></div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Display Django messages as toast notifications
+        {% if messages %}
+            {% for message in messages %}
+                (function() {
+                    var toast = document.createElement('div');
+                    toast.className = 'toast-message toast-{{ message.tags|default:'info' }}';
+                    toast.textContent = {{ message|stringformat:'s'|escapejs }};
+                    toast.style.cssText = 'background:#222;color:#fff;padding:16px 24px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);margin-bottom:12px;font-size:1.05rem;min-width:220px;max-width:350px;word-break:break-word;opacity:0.97;transition:opacity 0.3s;';
+                    if (toast.className.includes('success')) toast.style.background = '#4CAF50';
+                    if (toast.className.includes('error')) toast.style.background = '#E74C3C';
+                    if (toast.className.includes('warning')) toast.style.background = '#FFD600';
+                    if (toast.className.includes('info')) toast.style.background = '#3498DB';
+                    document.getElementById('toast-container').appendChild(toast);
+                    setTimeout(function() {
+                        toast.style.opacity = '0';
+                        setTimeout(function() { toast.remove(); }, 400);
+                    }, 3500);
+                })();
+            {% endfor %}
+        {% endif %}
+    });
+    </script>
+    
     <!-- Footer -->
     <footer class="footer-section">
         <div class="footer-content">

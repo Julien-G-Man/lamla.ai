@@ -5,12 +5,12 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         :root {
-            --enactus-yellow: #FDC72B;
-            --enactus-dark-blue: #2C3E50;
-            --enactus-text-dark: #34495E;
+            --primary-color: #FFD600;
+            --secondary-color: #222;
+            --background-white: #fff;
+            --light-yellow: #FFFBE6;
             --enactus-light-grey: #ECF0F1;
-            --enactus-white: #FFFFFF;
-            --enactus-border-light: #BDC3C7;
+            --enactus-border-light: #ECECEC;
             --enactus-shadow-light: rgba(0, 0, 0, 0.08);
             --enactus-shadow-medium: rgba(0, 0, 0, 0.15);
             --enactus-error-red: #E74C3C;
@@ -21,7 +21,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--enactus-light-grey);
-            color: var(--enactus-text-dark);
+            color: var(--secondary-color);
         }
         .page-wrapper {
             display: flex;
@@ -35,7 +35,7 @@
         .container {
             max-width: 700px;
             width: 100%;
-            background: var(--enactus-white);
+            background: var(--background-white);
             border-radius: 15px;
             box-shadow: 0 10px 25px var(--enactus-shadow-light);
             padding: 40px;
@@ -44,14 +44,14 @@
             box-sizing: border-box;
         }
         .main-page-title {
-            color: var(--enactus-dark-blue);
+            color: var(--secondary-color);
             font-size: 2.2rem;
             font-weight: 700;
             margin-bottom: 10px;
             text-align: center;
         }
         .main-page-description {
-            color: var(--enactus-text-dark);
+            color: var(--secondary-color);
             font-size: 1.05rem;
             margin-bottom: 30px;
             text-align: center;
@@ -67,7 +67,7 @@
         .tab {
             flex-grow: 1;
             text-align: center;
-            color: var(--enactus-text-dark);
+            color: var(--secondary-color);
             background: none;
             border: none;
             font-size: 1.1rem;
@@ -79,16 +79,16 @@
             transition: color 0.3s, border-bottom 0.3s, background 0.3s;
         }
         .tab.active {
-            color: var(--enactus-yellow);
-            border-bottom: 3px solid var(--enactus-yellow);
-            background: var(--enactus-light-grey);
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+            background: var(--light-yellow);
         }
         .tab:not(.active):hover {
-            color: var(--enactus-dark-blue);
-            background: rgba(253, 199, 43, 0.05);
+            color: var(--primary-color);
+            background: var(--light-yellow);
         }
         .tab-content {
-            background: var(--enactus-white);
+            background: var(--background-white);
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             padding: 30px;
@@ -106,41 +106,41 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .upload-zone {
-            border: 2px dashed var(--enactus-border-light);
+            border: 2px dashed var(--primary-color);
             border-radius: 12px;
             padding: 50px 20px;
             text-align: center;
-            background: var(--enactus-light-grey);
-            color: var(--enactus-text-dark);
+            background: var(--light-yellow);
+            color: var(--secondary-color);
             transition: border-color 0.3s, background 0.3s;
             cursor: pointer;
         }
         .upload-zone:hover {
-            border-color: var(--enactus-yellow);
-            background: rgba(253, 199, 43, 0.08);
+            border-color: var(--primary-color);
+            background: #fffbe6;
         }
         .upload-icon {
             font-size: 3.5rem;
-            color: var(--enactus-yellow);
+            color: var(--primary-color);
             margin-bottom: 15px;
         }
         .upload-text {
             font-size: 1.3rem;
             font-weight: 600;
             margin-bottom: 8px;
-            color: var(--enactus-dark-blue);
+            color: var(--secondary-color);
         }
         .upload-description {
             font-size: 0.95rem;
-            color: var(--enactus-text-dark);
+            color: var(--secondary-color);
             margin-bottom: 25px;
         }
         .hidden-file-input {
             display: none;
         }
         .select-file-button {
-            background: var(--enactus-yellow);
-            color: var(--enactus-dark-blue);
+            background: var(--primary-color);
+            color: var(--secondary-color);
             border: none;
             border-radius: 8px;
             padding: 12px 28px;
@@ -152,15 +152,15 @@
             box-shadow: 0 4px 10px rgba(253, 199, 43, 0.2);
         }
         .select-file-button:hover {
-            background: var(--enactus-dark-blue);
-            color: var(--enactus-yellow);
+            background: var(--secondary-color);
+            color: var(--primary-color);
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
         }
         .file-name-display {
             display: block;
             margin: 15px 0 0 0;
-            color: var(--enactus-text-dark);
+            color: var(--secondary-color);
             font-weight: 500;
             font-size: 0.95rem;
         }
@@ -168,7 +168,7 @@
             width: 100%;
             min-height: 250px;
             background: var(--enactus-light-grey);
-            color: var(--enactus-text-dark);
+            color: var(--secondary-color);
             border: 1px solid var(--enactus-border-light);
             border-radius: 10px;
             padding: 20px;
@@ -180,8 +180,8 @@
         }
         .tab-content textarea:focus {
             outline: none;
-            border-color: var(--enactus-yellow);
-            background: var(--enactus-white);
+            border-color: var(--primary-color);
+            background: var(--background-white);
             box-shadow: 0 0 0 3px rgba(253, 199, 43, 0.15);
         }
         .options-row {
@@ -201,7 +201,7 @@
         }
         .option-group span {
             font-size: 1.05rem;
-            color: var(--enactus-dark-blue);
+            color: var(--secondary-color);
             font-weight: 600;
         }
         .number-input {
@@ -210,7 +210,7 @@
             border-radius: 8px;
             border: 1px solid var(--enactus-border-light);
             background: var(--enactus-light-grey);
-            color: var(--enactus-text-dark);
+            color: var(--secondary-color);
             font-size: 1rem;
             text-align: center;
             appearance: textfield;
@@ -225,8 +225,8 @@
         }
         .number-input:focus {
             outline: none;
-            border-color: var(--enactus-yellow);
-            background: var(--enactus-white);
+            border-color: var(--primary-color);
+            background: var(--background-white);
             box-shadow: 0 0 0 3px rgba(253, 199, 43, 0.15);
         }
         .actions-row {
@@ -236,8 +236,8 @@
             flex-wrap: wrap;
         }
         .main-btn {
-            background: var(--enactus-yellow);
-            color: var(--enactus-dark-blue);
+            background: var(--primary-color);
+            color: var(--secondary-color);
             border: none;
             border-radius: 10px;
             padding: 18px 0;
@@ -250,17 +250,17 @@
             box-shadow: 0 5px 15px rgba(253, 199, 43, 0.3);
         }
         .main-btn:hover {
-            background: var(--enactus-dark-blue);
-            color: var(--enactus-yellow);
+            background: var(--secondary-color);
+            color: var(--primary-color);
             transform: translateY(-3px);
             box-shadow: 0 8px 20px var(--enactus-shadow-medium);
         }
         .clear-btn {
             flex: 1;
             min-width: 100px;
-            background: var(--enactus-light-grey);
-            color: var(--enactus-text-dark);
-            border: 1px solid var(--enactus-border-light);
+            background: var(--light-yellow);
+            color: var(--secondary-color);
+            border: 1px solid var(--primary-color);
             border-radius: 10px;
             padding: 18px 0;
             font-size: 1.1rem;
@@ -269,9 +269,9 @@
             transition: background 0.3s, color 0.3s, border-color 0.3s, transform 0.3s;
         }
         .clear-btn:hover {
-            background: var(--enactus-yellow);
-            color: var(--enactus-dark-blue);
-            border-color: var(--enactus-yellow);
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border-color: var(--primary-color);
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(253, 199, 43, 0.15);
         }
@@ -280,7 +280,7 @@
             margin: 25px auto;
             text-align: center;
             font-size: 1.1rem;
-            color: var(--enactus-dark-blue);
+            color: var(--secondary-color);
             font-weight: 500;
             gap: 10px;
             align-items: center;
@@ -288,7 +288,7 @@
         }
         .spinner {
             border: 4px solid var(--enactus-border-light);
-            border-top: 4px solid var(--enactus-yellow);
+            border-top: 4px solid var(--primary-color);
             border-radius: 50%;
             width: 24px;
             height: 24px;
@@ -329,20 +329,20 @@
         .quiz-results-container {
             margin-top: 35px;
             background: rgba(253, 199, 43, 0.08);
-            border: 1px solid var(--enactus-yellow);
+            border: 1px solid var(--primary-color);
             border-radius: 15px;
             padding: 30px;
             box-shadow: 0 5px 15px rgba(253, 199, 43, 0.1);
         }
         .results-title {
-            color: var(--enactus-dark-blue);
+            color: var(--secondary-color);
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 25px;
             text-align: center;
         }
         .question-type-title {
-            color: var(--enactus-dark-blue);
+            color: var(--secondary-color);
             font-size: 1.5rem;
             font-weight: 600;
             margin-top: 25px;
@@ -365,12 +365,12 @@
         }
         .question-text {
             font-size: 1.15rem;
-            color: var(--enactus-text-dark);
+            color: var(--secondary-color);
             margin-bottom: 10px;
             line-height: 1.6;
         }
         .question-text b {
-            color: var(--enactus-dark-blue);
+            color: var(--secondary-color);
         }
         .options-list {
             list-style: lower-alpha;
@@ -379,11 +379,11 @@
         }
         .options-list li {
             margin-bottom: 5px;
-            color: var(--enactus-text-dark);
+            color: var(--secondary-color);
             font-size: 1rem;
         }
         .question-answer {
-            color: var(--enactus-info-blue);
+            color: var(--primary-color);
             font-size: 0.95rem;
             font-weight: 500;
             margin-top: 10px;
@@ -627,13 +627,13 @@
             width: 28px;
             height: 3.5px;
             margin: 4px 0;
-            background: var(--enactus-yellow);
+            background: var(--primary-color);
             border-radius: 2px;
             transition: all 0.3s cubic-bezier(.77,0,.18,1);
             position: relative;
         }
         .hamburger.open span {
-            background: var(--enactus-dark-blue);
+            background: var(--secondary-color);
         }
         .hamburger.open span:nth-child(1) {
             transform: translateY(11.5px) rotate(45deg);
@@ -661,10 +661,10 @@
             <form id="quizForm" method="post" enctype="multipart/form-data" action="{% url 'custom_quiz' %}">
                 {% csrf_token %}
                 <div style="margin-bottom:22px;">
-                    <label for="subjectSelect" style="font-weight:600;color:var(--enactus-yellow);font-size:1.1rem;display:flex;align-items:center;gap:8px;">
+                    <label for="subjectSelect" style="font-weight:600;color:var(--primary-color);font-size:1.1rem;display:flex;align-items:center;gap:8px;">
                         <span style="font-size:1.3rem;">📚</span> Subject/Topic
                     </label>
-                    <select name="subject" id="subjectSelect" style="width:100%;padding:12px 15px;border-radius:8px;border:1.5px solid var(--enactus-border-light);background:var(--enactus-light-grey);color:var(--enactus-dark-blue);font-size:1rem;margin-top:6px;">
+                    <select name="subject" id="subjectSelect" style="width:100%;padding:12px 15px;border-radius:8px;border:1.5px solid var(--enactus-border-light);background:var(--enactus-light-grey);color:var(--secondary-color);font-size:1rem;margin-top:6px;">
                         <option value="" disabled selected>Select a subject or topic</option>
                         <option value="Mathematics">Mathematics</option>
                         <option value="Computer Science">Computer Science</option>

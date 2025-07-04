@@ -1,6 +1,5 @@
 # Environment variables
 .env
-.env.example
 .env.local
 .env.production
 
@@ -40,6 +39,7 @@ staticfiles/
 venv/
 env/
 ENV/
+
 
 # IDE
 .vscode/

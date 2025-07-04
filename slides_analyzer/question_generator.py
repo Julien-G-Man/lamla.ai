@@ -340,9 +340,14 @@ class QuestionGenerator:
                     "answer": None,
                     "explanation": None
                 }
-            elif line.startswith(('A)', 'B)', 'C)', 'D)')):
+            elif line.startswith(('A)', 'B)', 'C)', 'D)', 'E)')):
                 if current_mcq:
-                    current_mcq["options"].append(line[3:].strip())
+                    option_text = line[3:].strip()
+                    # If this is E) and is 'None of the above', mark it
+                    if line[:2] == 'E)' and option_text.lower() == 'none of the above':
+                        current_mcq["options"].append('None of the above')
+                    else:
+                        current_mcq["options"].append(option_text)
             elif line.startswith('Correct Answer:'):
                 if current_mcq:
                     current_mcq["answer"] = line.split(':', 1)[1].strip()
@@ -364,6 +369,22 @@ class QuestionGenerator:
                     current_short["answer"] = line.split(':', 1)[1].strip()
         # Add the last questions if they exist
         if current_mcq:
+            # Only add 'None of the above' as E if:
+            # - The correct answer is E and none of the options (A-D) match the answer text (i.e., answer is not present among A-D),
+            # - OR if the question or any option text contains 'none of the above' (case-insensitive)
+            add_none_of_above = False
+            if current_mcq["answer"] and current_mcq["answer"].upper() == 'E':
+                # Check if any option contains 'none of the above'
+                if any('none of the above' in opt.lower() for opt in current_mcq["options"]):
+                    add_none_of_above = True
+                # Check if the question text contains 'none of the above'
+                elif 'none of the above' in current_mcq["question"].lower():
+                    add_none_of_above = True
+                # Check if the answer is not present among A-D
+                elif len(current_mcq["options"]) == 4:
+                    add_none_of_above = True
+            if add_none_of_above and len(current_mcq["options"]) == 4:
+                current_mcq["options"].append('None of the above')
             questions["mcq_questions"].append(current_mcq)
         if current_short:
             questions["short_questions"].append(current_short)

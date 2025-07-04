@@ -20,6 +20,9 @@
             --enactus-success-green: #2ECC71;
             --enactus-info-blue: #3498DB;
             --enactus-placeholder: #a0a0a0;
+            --primary-color: #FFD600;
+            --secondary-color: #222;
+            --background-white: #fff;
         }
 
         /* Base styles */
@@ -712,6 +715,12 @@
                 right: 24px !important;
                 z-index: 5001 !important;
             }
+        }
+
+        /* Replace blue backgrounds and text with black, white, or yellow */
+        .footer, .icon, .some-blue-class {
+            background: var(--secondary-color) !important;
+            color: var(--primary-color) !important;
         }
     </style>
 

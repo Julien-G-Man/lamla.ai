@@ -17,7 +17,7 @@
             <div class="results-summary-card">
                 <h2 class="results-title">Your Score: <span class="score-value">{{ score }}/{{ total }}</span></h2>
                 <div style="margin:18px 0 10px 0;">
-                    <div style="font-weight:600;color:var(--enactus-yellow);font-size:1.1rem;">Your Performance</div>
+                    <div style="font-weight:600;color:var(--primary-color);font-size:1.1rem;">Your Performance</div>
                     <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
                         <div style="flex:1;background:#eee;border-radius:8px;height:22px;overflow:hidden;box-shadow:0 2px 8px #fdf2d0;">
                             {% if total > 0 %}
@@ -29,9 +29,9 @@
                         </div>
                         <span style="font-weight:600;color:var(--enactus-success-green);min-width:60px;text-align:right;">{{ score|floatformat:0 }}/{{ total }}</span>
                     </div>
-                    <div style="font-size:0.98rem;color:var(--enactus-info-blue);margin-top:6px;">
+                    <div style="font-size:0.98rem;color:var(--primary-color);margin-top:6px;">
                         <b>Great job!</b> Here's where you're strong, and where you can improve. Review your answers below and focus on your growth areas.<br>
-                        <span style="color:var(--enactus-yellow);font-weight:600;">Study Smarter. Perform Better.</span>
+                        <span style="color:var(--primary-color);font-weight:600;">Study Smarter. Perform Better.</span>
                     </div>
                 </div>
                 <p class="results-desc">Review your answers below. MCQs are auto-graded. Short answers are for your review.</p>
@@ -72,12 +72,12 @@
                                     <span style="color:var(--enactus-success-green);font-weight:600;margin-left:8px;">Great job! You mastered this concept.</span>
                                 {% else %}
                                     <span class="icon-wrong">&#10008; Incorrect</span>
-                                    <br><small style="color: var(--enactus-info-blue);">Correct answer: <b>{{ q.answer|upper }}. {{ q.answer|letter_to_option:q.options }}</b></small>
+                                    <br><small style="color: var(--primary-color);">Correct answer: <b>{{ q.answer|upper }}. {{ q.answer|letter_to_option:q.options }}</b></small>
                                     <br><span style="color:var(--enactus-error-red);font-weight:600;">Review this topic to strengthen your understanding.</span>
                                 {% endif %}
                             {% else %}
                                 <span style="color: var(--enactus-error-red);">No answer provided</span>
-                                <br><small style="color: var(--enactus-info-blue);">Correct answer: <b>{{ q.answer|upper }}. {{ q.answer|letter_to_option:q.options }}</b></small>
+                                <br><small style="color: var(--primary-color);">Correct answer: <b>{{ q.answer|upper }}. {{ q.answer|letter_to_option:q.options }}</b></small>
                                 <br><span style="color:var(--enactus-error-red);font-weight:600;">Try to answer every question for best results!</span>
                             {% endif %}
                             {% endwith %}
@@ -153,22 +153,21 @@
     }
     
     :root {
-        --enactus-yellow: #FDC72B;
-        --enactus-dark-blue: #2C3E50;
-        --enactus-text-dark: #34495E;
+        --primary-color: #FFD600;
+        --secondary-color: #222;
+        --background-white: #fff;
+        --light-yellow: #FFFBE6;
         --enactus-light-grey: #ECF0F1;
-        --enactus-white: #FFFFFF;
-        --enactus-border-light: #BDC3C7;
+        --enactus-border-light: #ECECEC;
         --enactus-shadow-light: rgba(0, 0, 0, 0.08);
         --enactus-shadow-medium: rgba(0, 0, 0, 0.15);
         --enactus-error-red: #E74C3C;
         --enactus-success-green: #2ECC71;
-        --enactus-info-blue: #3498DB;
     }
     body {
         font-family: 'Poppins', sans-serif;
         background-color: var(--enactus-light-grey);
-        color: var(--enactus-text-dark);
+        color: var(--secondary-color);
     }
     .page-wrapper {
         display: flex;
@@ -182,7 +181,7 @@
     .container {
         max-width: 700px;
         width: 100%;
-        background: var(--enactus-white);
+        background: var(--background-white);
         border-radius: 15px;
         box-shadow: 0 10px 25px var(--enactus-shadow-light);
         padding: 40px;
@@ -191,14 +190,14 @@
         box-sizing: border-box;
     }
     .main-page-title {
-        color: var(--enactus-dark-blue);
+        color: var(--secondary-color);
         font-size: 2.2rem;
         font-weight: 700;
         margin-bottom: 10px;
         text-align: center;
     }
     .results-summary-card {
-        background: var(--enactus-light-grey);
+        background: var(--light-yellow);
         border-radius: 12px;
         box-shadow: 0 2px 8px var(--enactus-shadow-light);
         padding: 24px 18px;
@@ -206,7 +205,7 @@
         text-align: center;
     }
     .results-title {
-        color: var(--enactus-dark-blue);
+        color: var(--secondary-color);
         font-size: 1.5rem;
         font-weight: 700;
         margin-bottom: 8px;
@@ -217,7 +216,7 @@
         font-size: 1.3em;
     }
     .results-desc {
-        color: var(--enactus-info-blue);
+        color: var(--primary-color);
         font-size: 1.05rem;
         margin-bottom: 0;
     }
@@ -225,7 +224,7 @@
         margin-bottom: 30px;
     }
     .question-type-title {
-        color: var(--enactus-yellow);
+        color: var(--primary-color);
         font-size: 1.2rem;
         font-weight: 700;
         margin-bottom: 18px;
@@ -235,14 +234,14 @@
     }
     .question-item {
         margin-bottom: 18px;
-        background: var(--enactus-light-grey);
+        background: var(--light-yellow);
         border-radius: 10px;
         padding: 18px 16px;
         box-shadow: 0 2px 8px var(--enactus-shadow-light);
     }
     .question-text {
         margin-bottom: 8px;
-        color: var(--enactus-dark-blue);
+        color: var(--secondary-color);
         font-weight: 600;
     }
     .options-list {
@@ -255,6 +254,7 @@
         padding: 6px 10px;
         border-radius: 6px;
         display: inline-block;
+        color: var(--secondary-color);
     }
     .options-list li.correct {
         font-weight: bold;
@@ -294,7 +294,7 @@
     }
     .question-answer {
         margin-top: 10px;
-        color: var(--enactus-info-blue);
+        color: var(--primary-color);
         font-size: 0.98rem;
         font-weight: 500;
     }
@@ -316,8 +316,8 @@
         justify-content: center;
     }
     .main-btn {
-        background: var(--enactus-yellow);
-        color: var(--enactus-dark-blue);
+        background: var(--primary-color);
+        color: var(--secondary-color);
         border: none;
         border-radius: 10px;
         padding: 18px 0;
@@ -332,29 +332,29 @@
         display: inline-block;
     }
     .main-btn:hover {
-        background: var(--enactus-dark-blue);
-        color: var(--enactus-yellow);
+        background: var(--secondary-color);
+        color: var(--primary-color);
         transform: translateY(-3px);
         box-shadow: 0 8px 24px rgba(253, 199, 43, 0.5);
     }
     
     /* Feedback Section Styles */
     .feedback-section {
-        background: var(--enactus-light-grey);
+        background: var(--light-yellow);
         border-radius: 12px;
         padding: 30px;
         margin-top: 40px;
         text-align: center;
-        border: 2px solid var(--enactus-yellow);
+        border: 2px solid var(--primary-color);
     }
     .feedback-title {
-        color: var(--enactus-dark-blue);
+        color: var(--secondary-color);
         font-size: 1.4rem;
         font-weight: 700;
         margin-bottom: 8px;
     }
     .feedback-desc {
-        color: var(--enactus-text-dark);
+        color: var(--primary-color);
         font-size: 1rem;
         margin-bottom: 25px;
     }
@@ -375,11 +375,11 @@
     }
     .stars i:hover,
     .stars i.active {
-        color: var(--enactus-yellow);
+        color: var(--primary-color);
         transform: scale(1.1);
     }
     .rating-text {
-        color: var(--enactus-text-dark);
+        color: var(--primary-color);
         font-size: 0.95rem;
         margin: 0;
     }
@@ -390,26 +390,19 @@
         flex-wrap: wrap;
     }
     .feedback-btn, .share-btn {
-        background: var(--enactus-yellow);
-        color: var(--enactus-dark-blue);
+        background: var(--primary-color);
+        color: var(--secondary-color);
         border: none;
         border-radius: 8px;
         padding: 12px 20px;
         font-size: 1rem;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        text-decoration: none;
-        min-width: 180px;
-        justify-content: center;
+        transition: background 0.2s, color 0.2s;
     }
     .feedback-btn:hover, .share-btn:hover {
-        background: var(--enactus-dark-blue);
-        color: var(--enactus-yellow);
-        transform: translateY(-2px);
+        background: var(--secondary-color);
+        color: var(--primary-color);
     }
     
     /* Try Another Quiz Button - Outside the card */
@@ -420,8 +413,8 @@
         margin-bottom: 40px;
     }
     .try-another-btn {
-        background: var(--enactus-yellow);
-        color: var(--enactus-dark-blue);
+        background: var(--primary-color);
+        color: var(--secondary-color);
         border: none;
         border-radius: 12px;
         padding: 16px 32px;
@@ -438,8 +431,8 @@
         justify-content: center;
     }
     .try-another-btn:hover {
-        background: var(--enactus-dark-blue);
-        color: var(--enactus-yellow);
+        background: var(--secondary-color);
+        color: var(--primary-color);
         transform: translateY(-3px);
         box-shadow: 0 6px 20px rgba(44, 62, 80, 0.3);
     }

@@ -67,16 +67,21 @@ class FlashcardGenerator:
             STUDY MATERIAL:
             {text[:4000]}
             
-            FORMAT:
-            Output the flashcards in this strict format (do not skip numbers):
-            1. Front: [question/concept]
-               Back: [answer/explanation]
-            2. Front: [question/concept]
-               Back: [answer/explanation]
-            ...
-            {num_flashcards}. Front: [question/concept]
-               Back: [answer/explanation]
+            STRICT OUTPUT FORMAT:
+            You MUST output exactly {num_flashcards} flashcards in this EXACT format:
             
+            1. Front: [Write the question or concept here]
+            1. Back: [Write the answer or explanation here]
+            2. Front: [Write the question or concept here]
+            2. Back: [Write the answer or explanation here]
+            3. Front: [Write the question or concept here]
+            3. Back: [Write the answer or explanation here]
+            ...
+            {num_flashcards}. Front: [Write the question or concept here]
+            {num_flashcards}. Back: [Write the answer or explanation here]
+            
+            IMPORTANT: Each flashcard must have TWO separate lines - one for Front and one for Back, both with the same number.
+            Do NOT combine Front and Back on the same line.
             Generate exactly {num_flashcards} flashcards using ONLY information from the provided text.
             """
 
@@ -114,11 +119,38 @@ class FlashcardGenerator:
     def _parse_flashcards(self, response_text, expected_count):
         """
         Parse the AI response to extract structured flashcards.
+        Expected format: 
+        1. Front: [content]
+        1. Back: [content]
+        2. Front: [content]
+        2. Back: [content]
+        etc.
         """
         flashcards = []
-        # Strict numbered format: 1. Front: ... Back: ...
-        pattern = r'\d+\.\s*Front:\s*(.*?)\s*Back:\s*(.*?)(?=\n\d+\.|$)'
-        matches = re.findall(pattern, response_text, re.DOTALL | re.IGNORECASE)
+        
+        # First, try to parse the new format where each flashcard has two separate lines
+        # Pattern: number. Front: content (until next number or end)
+        pattern_front = r'(\d+)\.\s*Front:\s*(.*?)(?=\n\d+\.|$)'
+        front_matches = re.findall(pattern_front, response_text, re.DOTALL | re.IGNORECASE)
+        
+        pattern_back = r'(\d+)\.\s*Back:\s*(.*?)(?=\n\d+\.|$)'
+        back_matches = re.findall(pattern_back, response_text, re.DOTALL | re.IGNORECASE)
+        
+        # Create a dictionary to pair fronts and backs by number
+        fronts = {int(num): self._clean_text(content) for num, content in front_matches}
+        backs = {int(num): self._clean_text(content) for num, content in back_matches}
+        
+        # Pair them up
+        for num in sorted(fronts.keys()):
+            if num in backs and fronts[num] and backs[num]:
+                flashcards.append({'front': fronts[num], 'back': backs[num]})
+        
+        if flashcards:
+            return flashcards[:expected_count]
+        
+        # Fallback: try the old format (Front and Back on same line)
+        pattern_old = r'\d+\.\s*Front:\s*(.*?)\s*Back:\s*(.*?)(?=\n\d+\.|$)'
+        matches = re.findall(pattern_old, response_text, re.DOTALL | re.IGNORECASE)
         if matches:
             for match in matches:
                 if len(match) == 2:
@@ -128,6 +160,7 @@ class FlashcardGenerator:
                         flashcards.append({'front': front, 'back': back})
             if flashcards:
                 return flashcards[:expected_count]
+        
         # Fallback: try to pair every two lines (question, answer)
         lines = [l.strip() for l in response_text.splitlines() if l.strip()]
         i = 0
@@ -142,15 +175,20 @@ class FlashcardGenerator:
                 i += 1
         if flashcards:
             return flashcards[:expected_count]
-        # Fallback: try to pair lines in order
+        
+        # Final fallback: try to pair lines in order
         pairs = [lines[j:j+2] for j in range(0, len(lines), 2)]
         for pair in pairs:
             if len(pair) == 2:
                 flashcards.append({'front': self._clean_text(pair[0]), 'back': self._clean_text(pair[1])})
+        
         return flashcards[:expected_count]
 
     def _clean_text(self, text):
         """Clean and format text for flashcards while preserving important content."""
+        if not text:
+            return ""
+            
         # Remove extra whitespace and newlines but preserve paragraph breaks
         text = re.sub(r'\n\s*\n', '\n\n', text.strip())
         text = re.sub(r'[ \t]+', ' ', text)
@@ -259,10 +297,21 @@ class FlashcardGenerator:
             STUDY MATERIAL:
             {text[:4000]}
             
-            FORMAT EACH FLASHCARD AS:
-            Front: [Exact term/concept from the text]
-            Back: [Complete definition/explanation from the text]
+            STRICT OUTPUT FORMAT:
+            You MUST output exactly {num_flashcards} concept flashcards in this EXACT format:
             
+            1. Front: [Write the exact term/concept from the text here]
+            1. Back: [Write the complete definition/explanation from the text here]
+            2. Front: [Write the exact term/concept from the text here]
+            2. Back: [Write the complete definition/explanation from the text here]
+            3. Front: [Write the exact term/concept from the text here]
+            3. Back: [Write the complete definition/explanation from the text here]
+            ...
+            {num_flashcards}. Front: [Write the exact term/concept from the text here]
+            {num_flashcards}. Back: [Write the complete definition/explanation from the text here]
+            
+            IMPORTANT: Each flashcard must have TWO separate lines - one for Front and one for Back, both with the same number.
+            Do NOT combine Front and Back on the same line.
             Generate exactly {num_flashcards} concept flashcards using ONLY information from the provided text.
             """
 
@@ -326,10 +375,21 @@ class FlashcardGenerator:
             STUDY MATERIAL:
             {text[:4000]}
             
-            FORMAT EACH FLASHCARD AS:
-            Front: [Specific question about process/step from the text]
-            Back: [Exact answer/explanation from the text]
+            STRICT OUTPUT FORMAT:
+            You MUST output exactly {num_flashcards} process flashcards in this EXACT format:
             
+            1. Front: [Write the specific question about process/step from the text here]
+            1. Back: [Write the exact answer/explanation from the text here]
+            2. Front: [Write the specific question about process/step from the text here]
+            2. Back: [Write the exact answer/explanation from the text here]
+            3. Front: [Write the specific question about process/step from the text here]
+            3. Back: [Write the exact answer/explanation from the text here]
+            ...
+            {num_flashcards}. Front: [Write the specific question about process/step from the text here]
+            {num_flashcards}. Back: [Write the exact answer/explanation from the text here]
+            
+            IMPORTANT: Each flashcard must have TWO separate lines - one for Front and one for Back, both with the same number.
+            Do NOT combine Front and Back on the same line.
             Generate exactly {num_flashcards} process flashcards using ONLY information from the provided text.
             """
 

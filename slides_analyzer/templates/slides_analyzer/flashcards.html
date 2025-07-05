@@ -1110,6 +1110,72 @@
             }
         }
     </style>
+    <style>
+    /* Decorative Color Shapes (copied and adapted from home page) */
+    .main-content .shape-1 {
+        position: absolute;
+        top: 12%;
+        left: 8%;
+        width: 60px;
+        height: 60px;
+        background: rgba(255, 214, 0, 0.13);
+        border-radius: 20px;
+        transform: rotate(45deg);
+        animation: float 6s ease-in-out infinite;
+        z-index: 0;
+    }
+    .main-content .shape-2 {
+        position: absolute;
+        top: 65%;
+        right: 10%;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 214, 0, 0.10);
+        border-radius: 50%;
+        animation: float 8s ease-in-out infinite reverse;
+        z-index: 0;
+    }
+    .main-content .shape-3 {
+        position: absolute;
+        bottom: 18%;
+        left: 18%;
+        width: 30px;
+        height: 30px;
+        background: rgba(255, 214, 0, 0.08);
+        border-radius: 8px;
+        transform: rotate(30deg);
+        animation: float 7s ease-in-out infinite;
+        z-index: 0;
+    }
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0px) rotate(45deg);
+        }
+        50% {
+            transform: translateY(-10px) rotate(45deg);
+        }
+    }
+    @media (max-width: 768px) {
+        .main-content .shape-1 {
+            width: 40px;
+            height: 40px;
+            top: 8%;
+            left: 4%;
+        }
+        .main-content .shape-2 {
+            width: 25px;
+            height: 25px;
+            top: 75%;
+            right: 4%;
+        }
+        .main-content .shape-3 {
+            width: 18px;
+            height: 18px;
+            bottom: 10%;
+            left: 10%;
+        }
+    }
+    </style>
 </head>
 <body>
     <header class="navbar">
@@ -1164,6 +1230,10 @@
         </div>
     </div>
     <div class="main-content" id="mainContent">
+        <!-- Decorative Color Shapes for Visual Consistency -->
+        <div class="shape-1"></div>
+        <div class="shape-2"></div>
+        <div class="shape-3"></div>
         <div class="page-title">
             <span class="highlight">Flashcards</span> for Quick Study
         </div>
@@ -1232,13 +1302,13 @@
                             <div class="flashcard-inner">
                                 <div class="flashcard-front">
                                     <div class="flashcard-content">
-                                        <h4>Front</h4>
+                                        <h4>{{ forloop.counter }} Front</h4>
                                         <p>{{ card.front }}</p>
                                     </div>
                                 </div>
                                 <div class="flashcard-back">
                                     <div class="flashcard-content">
-                                        <h4>Back</h4>
+                                        <h4>{{ forloop.counter }} Back</h4>
                                         <p>{{ card.back }}</p>
                                     </div>
                                 </div>

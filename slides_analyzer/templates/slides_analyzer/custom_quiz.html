@@ -392,24 +392,31 @@
             font-weight: 600;
         }
         @media (max-width: 768px) {
+            .page-wrapper {
+                padding: 20px 15px;
+                margin-top: 80px;
+            }
             .container {
-                padding: 30px;
+                padding: 25px 20px;
+                margin-top: 0;
             }
             .main-page-title {
                 font-size: 1.8rem;
+                margin-bottom: 8px;
             }
             .main-page-description {
                 font-size: 0.95rem;
+                margin-bottom: 25px;
             }
             .tab {
                 font-size: 1rem;
                 padding: 15px 0 12px 0;
             }
             .tab-content {
-                padding: 25px;
+                padding: 20px;
             }
             .upload-zone {
-                padding: 40px 15px;
+                padding: 35px 15px;
             }
             .upload-icon {
                 font-size: 3rem;
@@ -418,7 +425,8 @@
                 font-size: 1.2rem;
             }
             .tab-content textarea {
-                min-height: 200px;
+                min-height: 180px;
+                padding: 15px;
             }
             .options-row {
                 flex-direction: column;
@@ -427,6 +435,13 @@
             .option-group {
                 width: 100%;
                 justify-content: space-between;
+            }
+            .option-group span {
+                font-size: 1rem;
+            }
+            .number-input {
+                width: 80px;
+                padding: 12px 10px;
             }
             .actions-row {
                 flex-direction: column;
@@ -437,6 +452,7 @@
                 flex: none;
                 min-width: unset;
                 padding: 16px 0;
+                font-size: 1.1rem;
             }
             .results-title {
                 font-size: 1.8rem;
@@ -449,6 +465,9 @@
             }
             .options-list li, .question-answer {
                 font-size: 0.9rem;
+            }
+            .quiz-results-container {
+                padding: 20px;
             }
         }
         @media (max-width: 500px) {

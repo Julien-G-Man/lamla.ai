@@ -602,31 +602,83 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .contact-container {
+        margin-top: 80px;
+        padding: 15px;
+    }
+    
     .contact-hero {
         flex-direction: column;
         text-align: center;
         padding: 40px 20px;
+        margin-bottom: 30px;
     }
     
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
+        margin-bottom: 15px;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+        line-height: 1.5;
     }
     
     .contact-hero-icon {
-        font-size: 5rem;
+        font-size: 4rem;
         margin-top: 20px;
     }
     
     .contact-grid {
         grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .contact-form-card,
+    .contact-info-card {
+        padding: 25px 20px;
     }
     
     .form-row {
         grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-input,
+    .form-textarea {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+    
+    .contact-submit {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.1rem;
     }
     
     .social-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .social-card {
+        padding: 20px 15px;
+    }
+    
+    .social-section {
+        padding: 30px 20px;
+    }
+    
+    .social-header h2 {
+        font-size: 1.8rem;
+    }
+    
+    .social-header p {
+        font-size: 1rem;
     }
 }
 

@@ -522,7 +522,6 @@ def flashcards(request):
                     
                     if 'error' in result:
                         error_message = result['error']
-                        logger.error(f"Flashcard generation error: {result['error']}")
                     else:
                         flashcard_results = result.get('flashcards', [])
                         logger.info(f"Successfully generated {len(flashcard_results)} flashcards")

@@ -11,10 +11,6 @@
             <h1><span class="hello-yellow">Hello,</span> <span class="username-highlight">{{ user.first_name|default:user.username }}</span>!</h1>
             <p class="welcome-subtitle">Here's what's happening with your learning journey</p>
             <div class="welcome-actions">
-                <a href="{% url 'upload_slides' %}" class="btn-secondary">
-                    <i class="fas fa-upload action-icon-welcome"></i>
-                    Upload New Content
-                </a>
                 <a href="{% url 'custom_quiz' %}" class="btn-secondary">
                     <i class="fas fa-question-circle action-icon-welcome"></i>
                     Create Quiz
@@ -274,6 +270,8 @@
         background: var(--enactus-light-grey);
         min-height: 100vh;
         padding-bottom: 40px;
+        margin-top: 80px; /* Add top margin to prevent navbar overlap */
+        padding-top: 20px; /* Add some top padding for better spacing */
     }
     .welcome-section {
         background: var(--secondary-color);

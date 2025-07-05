@@ -122,7 +122,7 @@
             
             <div class="feedback-actions">
                 {% if not no_quiz_message %}
-                <a class="feedback-btn" href="/about/#get-in-touch">
+                <a class="feedback-btn" href="/about/#get-in-touch?subject=Quiz%20Feedback">
                     <i class="fas fa-comment"></i> Give us detailed feedback
                 </a>
                 <button class="share-btn" onclick="shareResults()">
@@ -437,6 +437,49 @@
         box-shadow: 0 6px 20px rgba(44, 62, 80, 0.3);
     }
     
+    @media (max-width: 1024px) {
+        .page-wrapper {
+            padding: 25px 20px;
+            margin-top: 90px;
+        }
+        .container {
+            padding: 30px 25px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .main-page-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .results-summary-card {
+            padding: 30px 25px;
+        }
+        .results-title {
+            font-size: 1.8rem;
+            margin-bottom: 18px;
+        }
+        .question-type-title {
+            font-size: 1.4rem;
+            margin-bottom: 18px;
+        }
+        .question-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .options-list li {
+            padding: 10px 15px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        .feedback-btn, .share-btn {
+            padding: 18px;
+            font-size: 1.2rem;
+        }
+        .stars i {
+            font-size: 2rem;
+        }
+    }
+    
     @media (max-width: 768px) {
         .page-wrapper {
             padding: 20px 15px;
@@ -573,6 +616,114 @@
             min-width: 180px;
         }
     }
+    
+    @media (max-width: 480px) {
+        .page-wrapper {
+            padding: 15px 8px;
+        }
+        .container {
+            padding: 18px 12px;
+            border-radius: 8px;
+        }
+        .main-page-title {
+            font-size: 1.4rem;
+        }
+        .results-summary-card {
+            padding: 20px 15px;
+        }
+        .results-title {
+            font-size: 1rem;
+        }
+        .question-type-title {
+            font-size: 0.9rem;
+        }
+        .question-text {
+            font-size: 0.9rem;
+        }
+        .options-list li {
+            padding: 5px 8px;
+            font-size: 0.85rem;
+        }
+        .question-answer {
+            font-size: 0.85rem;
+        }
+        .feedback-title {
+            font-size: 1.1rem;
+        }
+        .feedback-desc {
+            font-size: 0.9rem;
+        }
+        .stars i {
+            font-size: 1.5rem;
+        }
+        .feedback-btn, .share-btn {
+            font-size: 0.9rem;
+            padding: 8px 12px;
+        }
+        .question-item {
+            padding: 10px 8px;
+            margin-bottom: 12px;
+        }
+        .try-another-btn {
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            min-width: 160px;
+        }
+    }
+    
+    @media (max-width: 360px) {
+        .page-wrapper {
+            padding: 12px 5px;
+        }
+        .container {
+            padding: 15px 10px;
+            border-radius: 6px;
+        }
+        .main-page-title {
+            font-size: 1.3rem;
+        }
+        .results-summary-card {
+            padding: 18px 12px;
+        }
+        .results-title {
+            font-size: 0.95rem;
+        }
+        .question-type-title {
+            font-size: 0.85rem;
+        }
+        .question-text {
+            font-size: 0.85rem;
+        }
+        .options-list li {
+            padding: 4px 6px;
+            font-size: 0.8rem;
+        }
+        .question-answer {
+            font-size: 0.8rem;
+        }
+        .feedback-title {
+            font-size: 1rem;
+        }
+        .feedback-desc {
+            font-size: 0.85rem;
+        }
+        .stars i {
+            font-size: 1.4rem;
+        }
+        .feedback-btn, .share-btn {
+            font-size: 0.85rem;
+            padding: 6px 10px;
+        }
+        .question-item {
+            padding: 8px 6px;
+            margin-bottom: 10px;
+        }
+        .try-another-btn {
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            min-width: 140px;
+        }
+    }
     .bar-success {
         height: 100%;
         background: var(--enactus-success-green);
@@ -638,7 +789,7 @@
     });
 
     function sendRating(rating) {
-        fetch('/submit_feedback/', {
+        fetch('/ajax/submit-feedback/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -678,13 +829,7 @@
         return cookieValue;
     }
     
-    function openFeedback() {
-        const scoreElement = document.querySelector('.score-value');
-        const score = scoreElement ? scoreElement.textContent : 'N/A';
-        const subject = encodeURIComponent('Feedback for Lamla AI Quiz');
-        const body = encodeURIComponent(`Hi Lamla AI team,\n\nI would like to share my feedback:\n\nQuiz Score: ${score}\n\nMy feedback:\n[Your detailed feedback here]\n\nThank you!`);
-        window.open(`mailto:support@lamla.ai?subject=${subject}&body=${body}`, '_blank');
-    }
+    // openFeedback function removed - now using contact form approach
     
     function shareResults() {
         const scoreElement = document.querySelector('.score-value');

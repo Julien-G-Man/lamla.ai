@@ -576,6 +576,22 @@ def about(request):
                 message=message
             )
             
+            # Also create a feedback record if this is quiz feedback
+            if subject.lower() in ['quiz feedback', 'feedback for lamla ai quiz']:
+                # Try to get the user if they're authenticated
+                user = request.user if request.user.is_authenticated else None
+                
+                # Create feedback record
+                feedback = Feedback.objects.create(
+                    user=user,
+                    rating=None,  # No rating for detailed feedback
+                    feedback_text=message,
+                    feedback_type='quiz_detailed',
+                    page_url='/about/',
+                )
+                
+                logger.info(f"Quiz feedback submitted via contact form: ID={feedback.id}, User={'Authenticated' if user else 'Anonymous'}")
+            
             messages.success(request, "Thank you for your message! We'll get back to you soon.")
             
             # Send email notification to admin
@@ -727,17 +743,37 @@ def submit_feedback(request):
         try:
             data = json.loads(request.body)
             user = request.user if request.user.is_authenticated else None
+            
+            # Validate rating
+            rating = data.get('rating', 0)
+            if rating and (rating < 1 or rating > 5):
+                logger.warning(f"Invalid rating received: {rating}")
+                return JsonResponse({'status': 'error', 'message': 'Invalid rating value'}, status=400)
+            
+            # Create feedback record
             feedback = Feedback.objects.create(
                 user=user,
-                rating=data.get('rating', 0),
+                rating=rating if rating else None,  # Only set if rating is provided
                 feedback_text=data.get('feedback', ''),
                 feedback_type=data.get('feedback_type', 'general'),
                 page_url=data.get('page_url', ''),
             )
-            return JsonResponse({'status': 'success', 'message': 'Feedback submitted successfully'})
+            
+            logger.info(f"Feedback submitted successfully: ID={feedback.id}, Rating={rating}, Type={data.get('feedback_type')}, User={'Authenticated' if user else 'Anonymous'}")
+            
+            return JsonResponse({
+                'status': 'success', 
+                'message': 'Feedback submitted successfully',
+                'feedback_id': feedback.id
+            })
+            
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error in submit_feedback: {e}")
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON data'}, status=400)
         except Exception as e:
             logger.error(f"Error submitting feedback: {e}")
             return JsonResponse({'status': 'error', 'message': 'Failed to submit feedback'}, status=500)
+    
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
 # Legal page views
@@ -1002,38 +1038,82 @@ def feedback_analytics(request):
         messages.error(request, 'Access denied. Admin privileges required.')
         return redirect('home')
     
-    # Get all feedback with ratings
-    feedback_with_ratings = Feedback.objects.filter(rating__isnull=False).order_by('-created_at')
-    
-    # Calculate statistics
-    total_ratings = feedback_with_ratings.count()
-    avg_rating = feedback_with_ratings.aggregate(avg=models.Avg('rating'))['avg'] or 0
-    
-    # Rating distribution
-    rating_distribution = {}
-    for i in range(1, 6):
-        count = feedback_with_ratings.filter(rating=i).count()
-        percentage = (count / total_ratings * 100) if total_ratings > 0 else 0
-        rating_distribution[i] = {'count': count, 'percentage': round(percentage, 1)}
-    
-    # Recent feedback
-    recent_feedback = feedback_with_ratings[:10]
-    
-    # Page analytics
-    page_analytics = feedback_with_ratings.values('page_url').annotate(
-        count=models.Count('id'),
-        avg_rating=models.Avg('rating')
-    ).order_by('-count')
-    
-    context = {
-        'total_ratings': total_ratings,
-        'avg_rating': round(avg_rating, 1),
-        'rating_distribution': rating_distribution,
-        'recent_feedback': recent_feedback,
-        'page_analytics': page_analytics,
-    }
-    
-    return render(request, 'slides_analyzer/feedback_analytics.html', context)
+    try:
+        # Filter out test data - exclude feedback that looks like test data
+        # Exclude feedback with very short or generic text that suggests test data
+        all_feedback = Feedback.objects.exclude(
+            feedback_text__in=['test', 'Test', 'TEST', 'test feedback', 'Test feedback', 'TEST FEEDBACK']
+        ).exclude(
+            feedback_text__startswith='test'
+        ).exclude(
+            feedback_text__startswith='Test'
+        ).exclude(
+            feedback_text__startswith='TEST'
+        ).order_by('-created_at')
+        
+        total_feedback = all_feedback.count()
+        
+        # Get all feedback with ratings (also filtered)
+        feedback_with_ratings = all_feedback.filter(rating__isnull=False).order_by('-created_at')
+        total_ratings = feedback_with_ratings.count()
+        
+        # Calculate average rating
+        avg_rating = 0
+        if total_ratings > 0:
+            avg_rating = feedback_with_ratings.aggregate(avg=models.Avg('rating'))['avg'] or 0
+        
+        # Rating distribution
+        rating_distribution = {}
+        for i in range(1, 6):
+            count = feedback_with_ratings.filter(rating=i).count()
+            percentage = (count / total_ratings * 100) if total_ratings > 0 else 0
+            rating_distribution[i] = {'count': count, 'percentage': round(percentage, 1)}
+        
+        # Recent feedback (show all feedback, not just those with ratings)
+        recent_feedback = all_feedback[:10]
+        
+        # Page analytics (only for feedback with ratings)
+        page_analytics = []
+        if total_ratings > 0:
+            page_analytics = feedback_with_ratings.values('page_url').annotate(
+                count=models.Count('id'),
+                avg_rating=models.Avg('rating')
+            ).order_by('-count')
+        
+        # Debug information
+        debug_info = {
+            'total_feedback_records': total_feedback,
+            'feedback_with_ratings': total_ratings,
+            'feedback_without_ratings': total_feedback - total_ratings,
+            'recent_feedback_sample': list(all_feedback[:3].values('rating', 'feedback_text', 'created_at', 'page_url'))
+        }
+        
+        context = {
+            'total_ratings': total_ratings,
+            'avg_rating': round(avg_rating, 1),
+            'rating_distribution': rating_distribution,
+            'recent_feedback': recent_feedback,
+            'page_analytics': page_analytics,
+            'debug_info': debug_info,
+            'total_feedback': total_feedback,
+        }
+        
+        logger.info(f"Feedback analytics loaded: {total_ratings} ratings out of {total_feedback} total feedback records")
+        
+        return render(request, 'slides_analyzer/feedback_analytics.html', context)
+        
+    except Exception as e:
+        logger.error(f"Error in feedback_analytics view: {e}")
+        messages.error(request, f'Error loading feedback analytics: {str(e)}')
+        return render(request, 'slides_analyzer/feedback_analytics.html', {
+            'total_ratings': 0,
+            'avg_rating': 0,
+            'rating_distribution': {},
+            'recent_feedback': [],
+            'page_analytics': [],
+            'debug_info': {'error': str(e)},
+            'total_feedback': 0,
+        })
 
 DATABASES = {
     'default': dj_database_url.config(default='sqlite:///db.sqlite3')

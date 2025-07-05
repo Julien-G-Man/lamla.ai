@@ -8,32 +8,60 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
+<!-- Page Header -->
+<div class="analytics-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1>📊 Feedback Analytics</h1>
+                <p>Star ratings and user feedback insights</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Data Filtering Notice -->
+    <div class="row mb-3">
         <div class="col-12">
-            <h1 class="text-center mb-4">📊 Feedback Analytics</h1>
-            <p class="text-center text-muted">Star ratings and user feedback insights</p>
+            <div class="alert alert-info" role="alert">
+                <i class="fas fa-info-circle"></i>
+                <strong>Data Filtering:</strong> Test data and generic feedback have been automatically filtered out to show only genuine user feedback.
+            </div>
         </div>
     </div>
 
     <!-- Overall Statistics -->
     <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h3 class="card-title">⭐ Overall Rating</h3>
-                    <div class="display-4 text-warning">{{ avg_rating }}/5</div>
-                    <p class="text-muted">Average from {{ total_ratings }} ratings</p>
-                </div>
+        <div class="col-md-4">
+            <div class="stats-card">
+                <h3 class="card-title">
+                    <i class="fas fa-star"></i>
+                    Overall Rating
+                </h3>
+                <div class="display-4 text-warning">{{ avg_rating }}/5</div>
+                <p class="text-muted">Average from {{ total_ratings }} ratings</p>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h3 class="card-title">📈 Total Ratings</h3>
-                    <div class="display-4 text-primary">{{ total_ratings }}</div>
-                    <p class="text-muted">User feedback submissions</p>
-                </div>
+        <div class="col-md-4">
+            <div class="stats-card">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-line"></i>
+                    Total Ratings
+                </h3>
+                <div class="display-4 text-primary">{{ total_ratings }}</div>
+                <p class="text-muted">User feedback submissions</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stats-card">
+                <h3 class="card-title">
+                    <i class="fas fa-comments"></i>
+                    Total Feedback
+                </h3>
+                <div class="display-4 text-info">{{ total_feedback }}</div>
+                <p class="text-muted">All feedback records</p>
             </div>
         </div>
     </div>
@@ -41,30 +69,33 @@
     <!-- Rating Distribution -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card">
+            <div class="rating-distribution-card">
                 <div class="card-header">
-                    <h4>📊 Rating Distribution</h4>
+                    <h4>
+                        <i class="fas fa-chart-pie"></i>
+                        Rating Distribution
+                    </h4>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-0">
                     {% for rating, data in rating_distribution.items %}
-                    <div class="row align-items-center mb-2">
-                        <div class="col-md-2">
+                    <div class="rating-row">
+                        <div class="rating-stars">
                             <span class="text-warning">
                                 {% for i in "12345" %}{% if forloop.counter <= rating %}★{% else %}☆{% endif %}{% endfor %}
                             </span>
-                            <span class="ms-2">{{ rating }} stars</span>
+                            <span class="rating-label">{{ rating }} stars</span>
                         </div>
-                        <div class="col-md-8">
+                        <div class="progress-container">
                             <div class="progress">
-                                <div class="progress-bar bg-warning" role="progressbar" 
+                                <div class="progress-bar" role="progressbar" 
                                      style="width: {{ data.percentage }}%" 
                                      aria-valuenow="{{ data.percentage }}" 
                                      aria-valuemin="0" aria-valuemax="100">
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-2 text-end">
-                            <span class="badge bg-secondary">{{ data.count }} ({{ data.percentage }}%)</span>
+                        <div class="rating-count">
+                            <span class="badge">{{ data.count }} ({{ data.percentage }}%)</span>
                         </div>
                     </div>
                     {% endfor %}
@@ -76,13 +107,16 @@
     <!-- Page Analytics -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card">
+            <div class="page-analytics-card">
                 <div class="card-header">
-                    <h4>📄 Page Analytics</h4>
+                    <h4>
+                        <i class="fas fa-file-alt"></i>
+                        Page Analytics
+                    </h4>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table page-analytics-table">
                             <thead>
                                 <tr>
                                     <th>Page</th>
@@ -94,18 +128,20 @@
                                 {% for page in page_analytics %}
                                 <tr>
                                     <td>
-                                        <code>{{ page.page_url|default:"Unknown Page" }}</code>
+                                        <span class="page-url">{{ page.page_url|default:"Unknown Page" }}</span>
                                     </td>
                                     <td>
                                         <span class="badge bg-primary">{{ page.count }}</span>
                                     </td>
                                     <td>
-                                        <span class="text-warning">
-                                            {% for i in "12345" %}
-                                                {% if forloop.counter <= page.avg_rating %}★{% else %}☆{% endif %}
-                                            {% endfor %}
-                                        </span>
-                                        <span class="ms-1">{{ page.avg_rating|floatformat:1 }}/5</span>
+                                        <div class="page-rating">
+                                            <span class="text-warning">
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= page.avg_rating %}★{% else %}☆{% endif %}
+                                                {% endfor %}
+                                            </span>
+                                            <span>{{ page.avg_rating|floatformat:1 }}/5</span>
+                                        </div>
                                     </td>
                                 </tr>
                                 {% empty %}
@@ -124,47 +160,282 @@
     <!-- Recent Feedback -->
     <div class="row">
         <div class="col-12">
-            <div class="card">
+            <div class="recent-feedback-card">
                 <div class="card-header">
-                    <h4>💬 Recent Feedback</h4>
+                    <h4>
+                        <i class="fas fa-comments"></i>
+                        Recent Feedback
+                    </h4>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-0">
                     {% for feedback in recent_feedback %}
-                    <div class="border-bottom pb-3 mb-3">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <div class="mb-1">
-                                    <span class="text-warning">
-                                        {% for i in "12345" %}
-                                            {% if forloop.counter <= feedback.rating %}★{% else %}☆{% endif %}
-                                        {% endfor %}
-                                    </span>
-                                    <span class="ms-2">{{ feedback.rating }}/5</span>
-                                </div>
-                                {% if feedback.feedback_text %}
-                                <p class="mb-1">{{ feedback.feedback_text }}</p>
+                    <div class="feedback-item">
+                        {% if feedback.rating %}
+                        <div class="feedback-rating">
+                            <span class="text-warning">
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= feedback.rating %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                            </span>
+                            <span class="rating-badge">{{ feedback.rating }}/5</span>
+                        </div>
+                        {% else %}
+                        <div class="feedback-rating">
+                            <span class="badge bg-secondary">No Rating</span>
+                        </div>
+                        {% endif %}
+                        {% if feedback.feedback_text %}
+                        <p class="feedback-text">{{ feedback.feedback_text }}</p>
+                        {% endif %}
+                        <div class="feedback-meta">
+                            <span class="user-info">
+                                <i class="fas fa-user"></i>
+                                {% if feedback.user %}
+                                    {{ feedback.user.email }}
+                                {% else %}
+                                    Anonymous user
                                 {% endif %}
-                                <small class="text-muted">
-                                    {% if feedback.user %}
-                                        {{ feedback.user.email }}
-                                    {% else %}
-                                        Anonymous user
-                                    {% endif %}
-                                    • {{ feedback.created_at|date:"M d, Y H:i" }}
-                                    {% if feedback.page_url %}
-                                        • <code>{{ feedback.page_url }}</code>
-                                    {% endif %}
-                                </small>
-                            </div>
+                            </span>
+                            <span>
+                                <i class="fas fa-clock"></i>
+                                {{ feedback.created_at|date:"M d, Y H:i" }}
+                            </span>
+                            {% if feedback.page_url %}
+                            <span class="page-url">
+                                <i class="fas fa-link"></i>
+                                {{ feedback.page_url }}
+                            </span>
+                            {% endif %}
+                            <span class="feedback-type">
+                                <i class="fas fa-tag"></i>
+                                {{ feedback.feedback_type }}
+                            </span>
                         </div>
                     </div>
                     {% empty %}
-                    <p class="text-center text-muted">No feedback available yet</p>
+                    <div class="empty-state">
+                        <i class="fas fa-comments"></i>
+                        <h5>No feedback available yet</h5>
+                        <p>Feedback will appear here once users start rating and commenting</p>
+                    </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Debug Information (Admin Only) -->
+    {% if debug_info %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="debug-card">
+                <div class="card-header">
+                    <h4>
+                        <i class="fas fa-tools"></i>
+                        Debug Information
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="debug-stats">
+                        <div class="debug-stat">
+                            <strong>{{ debug_info.total_feedback_records }}</strong>
+                            <span>Total Feedback Records</span>
+                        </div>
+                        <div class="debug-stat">
+                            <strong>{{ debug_info.feedback_with_ratings }}</strong>
+                            <span>Feedback with Ratings</span>
+                        </div>
+                        <div class="debug-stat">
+                            <strong>{{ debug_info.feedback_without_ratings }}</strong>
+                            <span>Feedback without Ratings</span>
+                        </div>
+                    </div>
+                    
+                    {% if debug_info.recent_feedback_sample %}
+                    <h6>Recent Sample:</h6>
+                    <div class="debug-sample">
+                        {% for item in debug_info.recent_feedback_sample %}
+                        <div>
+                            <strong>ID:</strong> {{ forloop.counter }} | 
+                            <strong>Rating:</strong> {{ item.rating|default:"None" }} | 
+                            <strong>Date:</strong> {{ item.created_at|date:"M d, Y H:i" }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    {% if debug_info.error %}
+                    <div class="alert alert-danger mt-3">
+                        <strong>Error:</strong> {{ debug_info.error }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate progress bars on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const progressBar = entry.target;
+                const width = progressBar.style.width;
+                progressBar.style.width = '0%';
+                setTimeout(() => {
+                    progressBar.style.width = width;
+                }, 100);
+                observer.unobserve(progressBar);
+            }
+        });
+    }, observerOptions);
+
+    // Observe all progress bars
+    document.querySelectorAll('.progress-bar').forEach(bar => {
+        observer.observe(bar);
+    });
+
+    // Add hover effects to stats cards
+    document.querySelectorAll('.stats-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+
+    // Add click to copy functionality for page URLs
+    document.querySelectorAll('.page-url').forEach(url => {
+        url.style.cursor = 'pointer';
+        url.title = 'Click to copy';
+        
+        url.addEventListener('click', function() {
+            const text = this.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                // Show temporary feedback
+                const originalText = this.textContent;
+                this.textContent = 'Copied!';
+                this.style.background = '#28a745';
+                this.style.color = 'white';
+                
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.style.background = '';
+                    this.style.color = '';
+                }, 1000);
+            });
+        });
+    });
+
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Add loading states for any future AJAX calls
+    function showLoading(element) {
+        element.classList.add('loading');
+    }
+
+    function hideLoading(element) {
+        element.classList.remove('loading');
+    }
+
+    // Export functionality (if needed)
+    window.exportFeedbackData = function() {
+        const data = {
+            total_ratings: {{ total_ratings }},
+            avg_rating: {{ avg_rating }},
+            total_feedback: {{ total_feedback }},
+            rating_distribution: {{ rating_distribution|safe }},
+            timestamp: new Date().toISOString()
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'feedback-analytics-' + new Date().toISOString().split('T')[0] + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + E to export data
+        if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+            e.preventDefault();
+            window.exportFeedbackData();
+        }
+        
+        // Escape to close any modals (if any)
+        if (e.key === 'Escape') {
+            // Close any open modals or dropdowns
+        }
+    });
+
+    // Add tooltips for better UX
+    const tooltipElements = document.querySelectorAll('[title]');
+    tooltipElements.forEach(element => {
+        element.addEventListener('mouseenter', function(e) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'custom-tooltip';
+            tooltip.textContent = this.title;
+            tooltip.style.cssText = `
+                position: absolute;
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                z-index: 10000;
+                pointer-events: none;
+                white-space: nowrap;
+            `;
+            
+            document.body.appendChild(tooltip);
+            
+            const rect = this.getBoundingClientRect();
+            tooltip.style.left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + 'px';
+            tooltip.style.top = rect.top - tooltip.offsetHeight - 8 + 'px';
+            
+            this._tooltip = tooltip;
+        });
+        
+        element.addEventListener('mouseleave', function() {
+            if (this._tooltip) {
+                this._tooltip.remove();
+                this._tooltip = null;
+            }
+        });
+    });
+
+    console.log('Feedback Analytics page loaded successfully!');
+    console.log('Keyboard shortcuts: Ctrl/Cmd + E to export data');
+});
+</script>
 {% endblock %} 

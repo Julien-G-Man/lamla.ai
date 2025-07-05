@@ -8,9 +8,10 @@ from django.conf import settings
 import logging
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-from .models import Question, Quiz, Feedback, Subscription, Contact, UserProfile
+from .models import Question, Quiz, Feedback, Subscription, Contact, UserProfile, ChatMessage, ChatbotKnowledge
 from .question_generator import QuestionGenerator
 from .flashcard_generator import FlashcardGenerator
+from .chatbot_service import ChatbotService
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout as auth_logout
 from django.core.exceptions import ValidationError
@@ -46,6 +47,14 @@ try:
 except Exception as e:
     logger.error(f"Error initializing Flashcard Generator: {e}")
     flashcard_generator = None
+
+# Initialize the chatbot service
+try:
+    chatbot_service = ChatbotService()
+    logger.info("Chatbot Service initialized successfully")
+except Exception as e:
+    logger.error(f"Error initializing Chatbot Service: {e}")
+    chatbot_service = None
 
 # Configure OpenAI API
 try:
@@ -1118,3 +1127,154 @@ def feedback_analytics(request):
 DATABASES = {
     'default': dj_database_url.config(default='sqlite:///db.sqlite3')
 }
+
+# Chatbot Views
+@csrf_exempt
+def chatbot_message(request):
+    """Handle chatbot message API endpoint"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            user_message = data.get('message', '').strip()
+            session_id = data.get('session_id', '')
+            
+            if not user_message:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Message is required'
+                }, status=400)
+            
+            # Get or create user
+            user = request.user if request.user.is_authenticated else None
+            
+            # Save user message
+            ChatMessage.objects.create(
+                user=user,
+                session_id=session_id,
+                message_type='user',
+                content=user_message
+            )
+            
+            # Get conversation history for context
+            conversation_history = []
+            if user:
+                # Get recent messages for authenticated user
+                recent_messages = ChatMessage.objects.filter(
+                    user=user
+                ).order_by('-created_at')[:10]
+            else:
+                # Get recent messages for session
+                recent_messages = ChatMessage.objects.filter(
+                    session_id=session_id
+                ).order_by('-created_at')[:10]
+            
+            # Convert to list format for chatbot service
+            for msg in reversed(recent_messages):
+                conversation_history.append({
+                    'message_type': msg.message_type,
+                    'content': msg.content
+                })
+            
+            # Generate bot response
+            if chatbot_service:
+                bot_response = chatbot_service.generate_response(user_message, conversation_history)
+            else:
+                bot_response = "I'm sorry, I'm having trouble connecting right now. Please try again later or contact support@lamla.ai for assistance."
+            
+            # Save bot response
+            ChatMessage.objects.create(
+                user=user,
+                session_id=session_id,
+                message_type='bot',
+                content=bot_response
+            )
+            
+            return JsonResponse({
+                'status': 'success',
+                'response': bot_response
+            })
+            
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error in chatbot_message: {e}")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid JSON data'
+            }, status=400)
+        except Exception as e:
+            logger.error(f"Error in chatbot_message: {e}")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'An error occurred while processing your message'
+            }, status=500)
+    
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Invalid request method'
+    }, status=405)
+
+@csrf_exempt
+def chatbot_suggestions(request):
+    """Get suggested questions for the chatbot"""
+    try:
+        if chatbot_service:
+            suggestions = chatbot_service.get_suggested_questions()
+        else:
+            suggestions = [
+                "How do I navigate the platform?",
+                "How do I use Custom Quiz?",
+                "How do I create flashcards?",
+                "What is the Exam Analyzer?",
+                "How do I upload study materials?"
+            ]
+        
+        return JsonResponse({
+            'status': 'success',
+            'suggestions': suggestions
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting chatbot suggestions: {e}")
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Failed to get suggestions'
+        }, status=500)
+
+@csrf_exempt
+def chatbot_history(request):
+    """Get chat history for a user or session"""
+    try:
+        session_id = request.GET.get('session_id', '')
+        user = request.user if request.user.is_authenticated else None
+        
+        if not user and not session_id:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Session ID required for anonymous users'
+            }, status=400)
+        
+        # Get recent messages
+        if user:
+            messages = ChatMessage.objects.filter(user=user).order_by('created_at')[:20]
+        else:
+            messages = ChatMessage.objects.filter(session_id=session_id).order_by('created_at')[:20]
+        
+        # Convert to list format
+        chat_history = []
+        for msg in messages:
+            chat_history.append({
+                'message_type': msg.message_type,
+                'content': msg.content,
+                'timestamp': msg.created_at.isoformat()
+            })
+        
+        return JsonResponse({
+            'status': 'success',
+            'history': chat_history
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting chat history: {e}")
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Failed to get chat history'
+        }, status=500)

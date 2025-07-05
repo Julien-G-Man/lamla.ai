@@ -28,6 +28,11 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),
     path('user-profile/', views.user_profile, name='user_profile'),
     path('feedback-analytics/', views.feedback_analytics, name='feedback_analytics'),
+    
+    # Chatbot URLs
+    path('api/chatbot/message/', views.chatbot_message, name='chatbot_message'),
+    path('api/chatbot/suggestions/', views.chatbot_suggestions, name='chatbot_suggestions'),
+    path('api/chatbot/history/', views.chatbot_history, name='chatbot_history'),
 ] 
 
 def call_ollama(prompt, model='llama3'):

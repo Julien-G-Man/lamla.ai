@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Collapsible Sidebar Example</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #FFD600;
+      --sidebar-width: 260px;
+      --sidebar-collapsed-width: 64px;
+      --sidebar-bg: #181818;
+      --sidebar-active-bg: #232323;
+      --sidebar-text: #fff;
+      --navbar-height: 64px;
+      --navbar-bg: #fff;
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #222;
+    }
+    .hamburger {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      z-index: 2002;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      padding: 0;
+    }
+    .hamburger span {
+      display: block;
+      width: 28px;
+      height: 3.5px;
+      margin: 4px 0;
+      background: var(--primary-color);
+      border-radius: 2px;
+      transition: all 0.3s cubic-bezier(.77,0,.18,1);
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      z-index: 1001;
+      transition: width 0.2s;
+    }
+    .sidebar.collapsed {
+      width: var(--sidebar-collapsed-width);
+    }
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 32px 32px 18px 32px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      text-decoration: none;
+      letter-spacing: 0.5px;
+      transition: padding 0.2s;
+    }
+    .sidebar.collapsed .sidebar-logo span,
+    .sidebar.collapsed .sidebar-section-title,
+    .sidebar.collapsed .sidebar-links a span,
+    .sidebar.collapsed .sidebar-footer {
+      display: none !important;
+    }
+    .sidebar.collapsed .sidebar-logo {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .sidebar-section-title {
+      font-size: 0.85rem;
+      color: #888;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 18px 32px 6px 32px;
+    }
+    .sidebar-links {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .sidebar-links a {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 32px;
+      color: var(--sidebar-text);
+      text-decoration: none;
+      font-size: 1.08rem;
+      font-weight: 500;
+      border-left: 4px solid transparent;
+      border-radius: 0 6px 6px 0;
+      transition: background 0.18s, color 0.18s, border-color 0.18s;
+    }
+    .sidebar-links a i {
+      color: var(--primary-color);
+      font-size: 1.15rem;
+      min-width: 22px;
+      text-align: center;
+    }
+    .sidebar-links a.active, .sidebar-links a:focus {
+      background: var(--sidebar-active-bg);
+      border-left: 4px solid var(--primary-color);
+      color: var(--primary-color);
+    }
+    .sidebar-links a.active i, .sidebar-links a:focus i {
+      color: var(--primary-color);
+    }
+    .sidebar-links a:hover {
+      background: var(--sidebar-active-bg);
+      color: var(--primary-color);
+    }
+    .sidebar-links a:hover i {
+      color: var(--primary-color);
+    }
+    .sidebar-footer {
+      padding: 20px 32px 24px 32px;
+      font-size: 0.97rem;
+      color: #aaa;
+      border-top: 1px solid #232323;
+    }
+    .main-content {
+      margin-left: var(--sidebar-width);
+      margin-top: var(--navbar-height);
+      padding: 36px 32px 32px 32px;
+      min-height: calc(100vh - var(--navbar-height));
+      background: #f8f9fa;
+      transition: margin-left 0.2s;
+    }
+    .main-content.sidebar-collapsed {
+      margin-left: var(--sidebar-collapsed-width) !important;
+    }
+    .navbar {
+      position: fixed;
+      left: var(--sidebar-width);
+      top: 0;
+      right: 0;
+      height: var(--navbar-height);
+      background: var(--navbar-bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      z-index: 1000;
+      padding: 0 36px;
+      transition: left 0.2s;
+    }
+    .navbar.sidebar-collapsed {
+      left: var(--sidebar-collapsed-width) !important;
+    }
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .navbar-project {
+      font-size: 1.13rem;
+      font-weight: 600;
+      color: #222;
+      letter-spacing: 0.5px;
+    }
+    .navbar-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+    .navbar-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.05rem;
+      color: #222;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <button class="hamburger" id="sidebarToggle" aria-label="Toggle sidebar">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <aside class="sidebar" id="sidebar">
+    <a href="#" class="sidebar-logo" aria-label="Lamla AI Home">
+      <img src="https://dummyimage.com/40x40/ffd600/222&text=L" alt="Lamla AI Logo">
+      <span>Lamla AI</span>
+    </a>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Dashboard</div>
+      <nav class="sidebar-links" aria-label="Main Navigation">
+        <a href="#" class="active"><i class="fas fa-home"></i> <span>Home</span></a>
+        <a href="#"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a>
+        <a href="#"><i class="fas fa-upload"></i> <span>Upload</span></a>
+      </nav>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Learning</div>
+      <nav class="sidebar-links">
+        <a href="#"><i class="fas fa-question-circle"></i> <span>Quiz</span></a>
+        <a href="#"><i class="fas fa-clone"></i> <span>Flashcards</span></a>
+        <a href="#"><i class="fas fa-chart-bar"></i> <span>Exam Analyzer</span></a>
+      </nav>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Account</div>
+      <nav class="sidebar-links">
+        <a href="#"><i class="fas fa-user"></i> <span>Profile</span></a>
+        <a href="#"><i class="fas fa-info-circle"></i> <span>About</span></a>
+        <a href="#"><i class="fas fa-envelope"></i> <span>Contact</span></a>
+        <a href="#"><i class="fas fa-sign-in-alt"></i> <span>Login</span></a>
+      </nav>
+    </div>
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-footer">
+      &copy; 2024 Lamla AI
+    </div>
+  </aside>
+  <header class="navbar" id="navbar">
+    <div class="navbar-left">
+      <span class="navbar-project">Default project</span>
+    </div>
+    <div class="navbar-right">
+      <div class="navbar-user">
+        <i class="fas fa-user-circle"></i>
+        Guest
+      </div>
+    </div>
+  </header>
+  <main class="main-content" id="mainContent">
+    <h1>Test Content</h1>
+    <p>This is the main content area. Click the hamburger to collapse/expand the sidebar.</p>
+  </main>
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const mainContent = document.getElementById('mainContent');
+    const navbar = document.getElementById('navbar');
+    sidebarToggle.addEventListener('click', function() {
+      sidebar.classList.toggle('collapsed');
+      mainContent.classList.toggle('sidebar-collapsed');
+      navbar.classList.toggle('sidebar-collapsed');
+    });
+  </script>
+</body>
+</html>

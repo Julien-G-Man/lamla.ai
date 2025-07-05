@@ -1,0 +1,648 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - Lamla AI{% endblock %}
+
+{% block content %}
+<div class="contact-container">
+    <!-- Hero Section -->
+    <div class="contact-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="hello-yellow">Get in</span> 
+                <span class="username-highlight">Touch</span>
+            </h1>
+            <p class="hero-subtitle">Have questions or feedback? We'd love to hear from you and help you succeed!</p>
+        </div>
+        <div class="hero-illustration">
+            <i class="fas fa-headset contact-hero-icon"></i>
+        </div>
+    </div>
+
+    <!-- Main Contact Section -->
+    <div class="contact-main">
+        <div class="contact-grid">
+            <!-- Contact Form -->
+            <div class="contact-form-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-envelope"></i> Send Message</h2>
+                    <p>We'll get back to you within 24 hours</p>
+                </div>
+                <div class="card-content">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% else %}info{% endif %}">
+                                <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" class="contact-form">
+                        {% csrf_token %}
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name" class="form-label">Full Name *</label>
+                                <input type="text" id="name" name="name" class="form-input" required placeholder="Enter your full name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" id="email" name="email" class="form-input" required placeholder="Enter your email">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject" class="form-label">Subject *</label>
+                            <input type="text" id="subject" name="subject" class="form-input" required placeholder="What's this about?">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message" class="form-label">Message *</label>
+                            <textarea id="message" name="message" class="form-textarea" rows="6" required placeholder="Tell us more about your inquiry..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-primary contact-submit">
+                            <i class="fas fa-paper-plane"></i>
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="contact-info-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-info-circle"></i> Contact Information</h2>
+                    <p>Multiple ways to reach us</p>
+                </div>
+                <div class="card-content">
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <div class="method-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="method-content">
+                                <h4>Email Support</h4>
+                                <p>support@lamla-ai.com</p>
+                                <small>We typically respond within 24 hours</small>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-method">
+                            <div class="method-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="method-content">
+                                <h4>Response Time</h4>
+                                <p>24-48 hours</p>
+                                <small>Monday to Friday, 9 AM - 6 PM EST</small>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-method">
+                            <div class="method-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <div class="method-content">
+                                <h4>FAQ Section</h4>
+                                <p>Find quick answers</p>
+                                <a href="#" class="text-yellow">View FAQ →</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="contact-tips">
+                        <h4><i class="fas fa-lightbulb"></i> Before Contacting Us</h4>
+                        <ul>
+                            <li>Check our FAQ section for common questions</li>
+                            <li>Make sure you've tried our troubleshooting guide</li>
+                            <li>Include relevant details in your message</li>
+                            <li>Provide screenshots if reporting an issue</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Social Media Section -->
+        <div class="social-section">
+            <div class="social-header">
+                <h2>Connect With Us</h2>
+                <p>Follow us on social media for updates, tips, and community</p>
+            </div>
+            
+            <div class="social-grid">
+                <a href="#" class="social-card">
+                    <div class="social-icon">
+                        <i class="fab fa-twitter"></i>
+                    </div>
+                    <div class="social-content">
+                        <h4>Twitter</h4>
+                        <p>Follow for updates and tips</p>
+                    </div>
+                </a>
+                
+                <a href="#" class="social-card">
+                    <div class="social-icon">
+                        <i class="fab fa-linkedin"></i>
+                    </div>
+                    <div class="social-content">
+                        <h4>LinkedIn</h4>
+                        <p>Professional updates and insights</p>
+                    </div>
+                </a>
+                
+                <a href="#" class="social-card">
+                    <div class="social-icon">
+                        <i class="fab fa-github"></i>
+                    </div>
+                    <div class="social-content">
+                        <h4>GitHub</h4>
+                        <p>Open source projects and code</p>
+                    </div>
+                </a>
+                
+                <a href="#" class="social-card">
+                    <div class="social-icon">
+                        <i class="fab fa-discord"></i>
+                    </div>
+                    <div class="social-content">
+                        <h4>Discord</h4>
+                        <p>Join our community</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Contact Page Styles */
+.contact-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Hero Section */
+.contact-hero {
+    background: linear-gradient(135deg, #222 0%, #333 100%);
+    border-radius: 20px;
+    padding: 60px 40px;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 214, 0, 0.1);
+    border-radius: 50%;
+    transform: translate(50%, -50%);
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 600px;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.1;
+}
+
+.hello-yellow {
+    color: #FFD600;
+}
+
+.username-highlight {
+    color: white;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: #ccc;
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.hero-illustration {
+    flex-shrink: 0;
+    margin-left: 40px;
+}
+
+.contact-hero-icon {
+    font-size: 8rem;
+    color: #FFD600;
+    opacity: 0.8;
+}
+
+/* Main Contact Section */
+.contact-main {
+    margin-bottom: 40px;
+}
+
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+/* Contact Form Card */
+.contact-form-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.contact-form-card .card-header {
+    background: linear-gradient(135deg, #FFD600 0%, #FDC72B 100%);
+    color: #222;
+    padding: 30px;
+    text-align: center;
+}
+
+.contact-form-card .card-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.contact-form-card .card-header p {
+    margin: 0;
+    opacity: 0.8;
+}
+
+.contact-form-card .card-content {
+    padding: 40px;
+}
+
+/* Form Styles */
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.form-input,
+.form-textarea {
+    padding: 16px;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #FFD600;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.1);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.contact-submit {
+    background: linear-gradient(135deg, #FFD600 0%, #FDC72B 100%);
+    color: #222;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.contact-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 214, 0, 0.3);
+}
+
+/* Contact Info Card */
+.contact-info-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.contact-info-card .card-header {
+    background: #222;
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.contact-info-card .card-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.contact-info-card .card-header p {
+    margin: 0;
+    opacity: 0.8;
+}
+
+.contact-info-card .card-content {
+    padding: 40px;
+}
+
+/* Contact Methods */
+.contact-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.contact-method {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.contact-method:hover {
+    background: #f0f0f0;
+    transform: translateX(5px);
+}
+
+.method-icon {
+    width: 50px;
+    height: 50px;
+    background: #FFD600;
+    color: #222;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.method-content h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.method-content p {
+    color: #666;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.method-content small {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.method-content a {
+    color: #FFD600;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.method-content a:hover {
+    color: #FDC72B;
+}
+
+/* Contact Tips */
+.contact-tips {
+    background: #f8f9fa;
+    padding: 24px;
+    border-radius: 12px;
+    border-left: 4px solid #FFD600;
+}
+
+.contact-tips h4 {
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.contact-tips ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contact-tips li {
+    color: #666;
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.contact-tips li::before {
+    content: '•';
+    color: #FFD600;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+/* Social Section */
+.social-section {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.social-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.social-header h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.social-header p {
+    color: #666;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.social-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.social-card {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+    text-align: center;
+    border: 2px solid transparent;
+}
+
+.social-card:hover {
+    background: white;
+    border-color: #FFD600;
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.social-icon {
+    width: 60px;
+    height: 60px;
+    background: #FFD600;
+    color: #222;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 20px;
+}
+
+.social-content h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.social-content p {
+    color: #666;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+/* Alert Styles */
+.alert {
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .contact-hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 20px;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .contact-hero-icon {
+        font-size: 5rem;
+        margin-top: 20px;
+    }
+    
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .social-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-container {
+        padding: 10px;
+    }
+    
+    .contact-form-card .card-content,
+    .contact-info-card .card-content {
+        padding: 20px;
+    }
+    
+    .social-section {
+        padding: 20px;
+    }
+}
+</style>
+{% endblock %} 

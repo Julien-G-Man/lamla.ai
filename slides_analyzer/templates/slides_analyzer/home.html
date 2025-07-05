@@ -1,1262 +1,96 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Lamla AI - Home</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        :root {
-            --primary-color: #FFD600; /* Yellow */
-            --secondary-color: #222; /* Dark text */
-            --background-light: #f8f9fa;
-            --background-white: #fff;
-            --text-muted: #555;
-            --text-dark: #333;
-            --shadow-light: rgba(0,0,0,0.07);
-            --shadow-medium: rgba(0,0,0,0.15);
-            --border-color: #eee;
 
-            /* Specific colors from the provided images */
-            --enactus-yellow: #FDC72B; /* Closer to the button yellow in image */
-            --enactus-light-yellow-bg: #FFFBF0; /* For the input background */
-            --enactus-dark-text: #4a4a4a; /* For the body text */
-            --enactus-heading-color: #333; /* For section headings */
-            --enactus-blue: #3E8EFF; /* For the globe emoji color, if needed, though emoji color is often fixed */
-            --enactus-placeholder: #a0a0a0; /* For the input placeholder */
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background: var(--background-light);
-            color: var(--enactus-dark-text); /* Use darker text for body */
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Navbar */
-        .navbar {
-            background: var(--background-white);
-            color: var(--secondary-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            height: 70px;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            box-shadow: 0 2px 10px var(--shadow-light);
-            box-sizing: border-box;
-        }
-
-        .navbar .logo {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--primary-color); /* Kept original yellow for Lamla AI logo */
-            letter-spacing: 0.5px;
-            flex-shrink: 0;
-            margin-right: 60px;
-            display: flex;
-            align-items: center;
-            text-decoration: none; /* Ensure logo link has no underline */
-        }
-
-        .navbar .logo img {
-            height: 45px;
-            margin-right: 8px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 25px;
-            align-items: center;
-            z-index: 3000;
-            margin-left: auto;
-            flex-shrink: 0;
-            transition: none;
-        }
-
-        .nav-links a {
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-size: 1.05rem;
-            font-weight: 500;
-            transition: color 0.3s ease, transform 0.2s ease;
-            padding: 8px 0;
-            white-space: nowrap;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-
-        /* Always show hamburger on all screen sizes */
-        .hamburger {
-            display: flex !important;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 45px;
-            height: 45px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 3000;
-            margin-left: auto;
-            padding: 0;
-        }
-
-        .hamburger span {
-            display: block;
-            width: 30px;
-            height: 3px;
-            margin: 5px 0;
-            background: var(--primary-color);
-            border-radius: 2px;
-            transition: 0.3s ease;
-        }
-
-        /* Hero Section */
-        .hero {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 85vh;
-            padding: 140px 20px 80px 20px;
-            background: var(--background-white); /* Base background for hero */
-            position: relative; /* Needed for pseudo-elements */
-            overflow: hidden; /* Crucial to clip the skewed shapes */
-            text-align: center;
-        }
-
-        /* Background shapes for Hero Section */
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--background-light); /* Light grey/faint yellow background */
-            transform-origin: top left;
-            transform: skewY(-8deg); /* Adjust angle as needed */
-            z-index: 1; /* Below content */
-            pointer-events: none; /* Allow interaction with elements behind it */
-        }
-        
-        .hero::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--enactus-light-yellow-bg); /* The light yellow stripe */
-            transform-origin: top left;
-            transform: skewY(-8deg); /* Same angle as before */
-            z-index: 1;
-            /* Position this stripe within the light grey area */
-            /* These values will need fine-tuning based on visual output */
-            left: -30%; /* Adjust to move the stripe left/right */
-            top: 20%;   /* Adjust to move the stripe up/down */
-            width: 150%; /* Make it wide enough to cover the skewed area */
-            opacity: 0.8; /* Slight transparency if needed */
-        }
-        
-        /* Adjustments for the content to be above the pseudo-elements */
-        .hero-content, .hero-img {
-            position: relative; /* Ensure these are stacked above pseudo-elements */
-            z-index: 2; /* Higher z-index than pseudo-elements */
-        }
-
-
-        .hero-content {
-            max-width: 900px;
-            margin-bottom: 50px;
-        }
-
-        .hero-img {
-            max-width: 650px;
-            width: 100%;
-            height: auto;
-            border-radius: 25px;
-            box-shadow: 0 15px 50px rgba(255, 214, 0, 0.25);
-            background: #f5f5f5;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .hero-img:hover {
-            transform: translateY(-5px);
-        }
-
-        .hero-title {
-            font-size: 3.8rem;
-            font-weight: 700;
-            margin-bottom: 1.8rem;
-            line-height: 1.15;
-            letter-spacing: -1.5px;
-            color: var(--enactus-heading-color); /* Adjusted for the screenshot look */
-        }
-
-        .hero-title .highlight {
-            color: var(--primary-color); /* Kept Lamla AI yellow */
-        }
-
-        .hero-desc {
-            color: var(--text-muted);
-            font-size: 1.45rem;
-            margin-bottom: 3rem;
-            line-height: 1.7;
-            max-width: 100%;
-        }
-
-        .hero-btns {
-            display: flex;
-            gap: 25px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        .hero-btn {
-            background: var(--primary-color);
-            color: var(--secondary-color);
-            border: none;
-            border-radius: 12px;
-            padding: 18px 40px;
-            font-size: 1.15rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.35);
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .hero-btn:hover {
-            background: var(--secondary-color);
-            color: var(--primary-color);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(255, 214, 0, 0.5);
-        }
-
-        .hero-btn.share-btn {
-            background: var(--enactus-yellow);
-            color: var(--enactus-dark-blue);
-            border: 2px solid var(--enactus-yellow);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .hero-btn.share-btn:hover {
-            background: var(--enactus-dark-blue);
-            color: var(--enactus-yellow);
-            border-color: var(--enactus-dark-blue);
-        }
-
-        .hero-btn.secondary {
-            background: transparent;
-            color: var(--enactus-dark-blue);
-            border: 2px solid var(--enactus-dark-blue);
-        }
-        .hero-btn.secondary:hover {
-            background: var(--enactus-dark-blue);
-            color: var(--enactus-white);
-        }
-
-        /* Section Divider - Kept simple for general purpose, could also be skewed */
-        .section-divider {
-            width: 100%;
-            height: 40px;
-            background: var(--background-light);
-            border: none;
-            position: relative;
-        }
-
-        /* Features Section */
-        #features {
-            padding: 80px 0 100px 0;
-            background: var(--background-light);
-            text-align: center;
-        }
-
-        #features .section-header {
-            margin-bottom: 50px;
-        }
-
-        #features .section-header span:first-child {
-            font-size: 2.8rem;
-            font-weight: 700;
-            line-height: 1.2;
-            color: var(--enactus-heading-color);
-        }
-
-        #features .section-header span:first-child span {
-            color: var(--primary-color);
-        }
-
-        #features .section-header p {
-            color: var(--text-muted);
-            font-size: 1.3rem;
-            margin-top: 15px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .feature-card {
-            background: var(--background-white);
-            border-radius: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            padding: 35px 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            transition: box-shadow 0.3s ease, transform 0.3s ease, border 0.3s ease;
-            border: 2px solid transparent;
-            text-align: left;
-        }
-
-        .feature-card:hover {
-            box-shadow: 0 10px 40px rgba(255, 214, 0, 0.3);
-            transform: translateY(-8px) scale(1.02);
-            border-color: var(--primary-color);
-        }
-
-        .feature-icon {
-            background: #fdf2d0;
-            color: var(--primary-color);
-            font-size: 2.8rem;
-            border-radius: 12px;
-            padding: 10px 14px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 60px;
-            height: 60px;
-            box-shadow: 0 2px 10px rgba(255, 214, 0, 0.1);
-        }
-
-        .feature-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--secondary-color);
-        }
-
-        .feature-desc {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            line-height: 1.6;
-        }
-
-        /* Newsletter Section */
-        .newsletter-section {
-            background: var(--background-white);
-            padding: 60px 20px;
-            text-align: center;
-            border-top: 2px solid var(--border-color);
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .newsletter-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--enactus-heading-color); /* Adjusted for the screenshot look */
-            margin-bottom: 15px;
-        }
-
-        .newsletter-desc {
-            color: var(--text-dark);
-            font-size: 1.25rem;
-            margin-bottom: 30px;
-            max-width: 700px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* Newsletter Form - Recreated based on screenshot */
-        .newsletter-form {
-            max-width: 500px;
-            margin: 0 auto;
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .newsletter-input {
-            flex: 1;
-            min-width: 250px;
-            padding: 15px 20px;
-            border-radius: 25px;
-            border: 1px solid var(--border-color);
-            background-color: var(--enactus-light-yellow-bg);
-            color: var(--text-dark);
-            font-size: 1rem;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-
-        .newsletter-input::placeholder {
-            color: var(--enactus-placeholder);
-            opacity: 1;
-        }
-
-        .newsletter-input:focus {
-            border-color: var(--enactus-yellow);
-            background-color: var(--background-white);
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(253, 199, 43, 0.2);
-        }
-
-        .newsletter-btn {
-            background: var(--enactus-yellow);
-            color: var(--secondary-color);
-            border: none;
-            border-radius: 25px;
-            padding: 15px 30px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(253, 199, 43, 0.3);
-            white-space: nowrap;
-        }
-
-        .newsletter-btn:hover {
-            background: var(--secondary-color);
-            color: var(--enactus-yellow);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-        }
-
-        /* Message Alerts */
-        .alert {
-            padding: 15px 20px;
-            margin: 20px auto;
-            border-radius: 8px;
-            font-weight: 500;
-            max-width: 500px;
-            text-align: center;
-            animation: slideInDown 0.3s ease-out;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .alert-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-        }
-
-        @keyframes slideInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Testimonials Section */
-        .testimonials {
-            background: var(--background-light);
-            padding: 60px 20px;
-            text-align: center;
-        }
-
-        .testimonial-quote {
-            font-size: 1.6rem;
-            color: var(--enactus-heading-color); /* Darker for the quote */
-            font-style: italic;
-            margin-bottom: 25px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.5;
-            position: relative;
-        }
-
-        .testimonial-quote::before,
-        .testimonial-quote::after {
-            content: '“';
-            font-size: 4rem;
-            color: var(--primary-color);
-            position: absolute;
-            opacity: 0.3;
-        }
-
-        .testimonial-quote::before {
-            content: '“';
-            top: -10px;
-            left: -20px;
-        }
-
-        .testimonial-quote::after {
-            content: '”';
-            bottom: -10px;
-            right: -20px;
-        }
-
-        .testimonial-user {
-            color: var(--primary-color);
-            font-weight: 700;
-            font-size: 1.2rem;
-            margin-top: 10px;
-            display: block;
-        }
-
-        .testimonial-logo-row {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-top: 40px;
-            flex-wrap: wrap;
-        }
-
-        .testimonial-logo {
-            background: var(--background-white);
-            color: var(--primary-color);
-            border-radius: 10px;
-            padding: 10px 22px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            box-shadow: 0 3px 12px rgba(255, 214, 0, 0.2);
-            opacity: 0.95;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .testimonial-logo:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.35);
-        }
-
-        /* Bottom Section */
-        .bottom-section {
-            background: var(--secondary-color);
-            color: #f0f0f0;
-            padding: 60px 20px 30px 20px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 80px;
-            border-top: 2px solid var(--secondary-color);
-        }
-
-        .bottom-col {
-            min-width: 250px;
-            max-width: 350px;
-            text-align: left;
-        }
-
-        .bottom-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 18px;
-        }
-
-        .bottom-list, .bottom-contact {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .bottom-list li, .bottom-contact li {
-            margin-bottom: 10px;
-            font-size: 1.05rem;
-        }
-
-        .bottom-list a, .bottom-contact span, .bottom-contact a {
-            color: #f0f0f0;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .bottom-list a:hover {
-            color: var(--primary-color);
-        }
-
-        .bottom-socials {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .bottom-social-icon {
-            width: 40px;
-            height: 40px;
-            background: #555;
-            color: #999;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: not-allowed;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            opacity: 0.6;
-        }
-        .bottom-social-icon:hover {
-            opacity: 0.8;
-            transform: none;
-        }
-        .bottom-social-icon i {
-            font-size: 1.1rem;
-        }
-
-        /* FOOTER */
-        .footer-section {
-            background: var(--secondary-color);
-            color: white;
-            padding: 40px 0 20px 0;
-            margin-top: 60px;
-        }
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 40px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-        }
-        .footer-col h3 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-        }
-        .footer-col ul {
-            list-style: none;
-            padding: 0;
-        }
-        .footer-col ul li {
-            margin-bottom: 10px;
-        }
-        .footer-col ul li a {
-            color: #ccc;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        .footer-col ul li a:hover {
-            color: var(--primary-color);
-        }
-        .footer-bottom {
-            text-align: center;
-            padding: 20px 0;
-            border-top: 1px solid #eee;
-            color: #666;
-        }
-        .legal-links {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .legal-links a {
-            color: #999;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-        .legal-links a:hover {
-            color: var(--primary-color);
-        }
-        
-        /* Social Media Icons Styling */
-        .social-icons {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        .social-icon {
-            width: 40px;
-            height: 40px;
-            background: #555;
-            color: #999;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        .social-icon:hover {
-            opacity: 0.8;
-            transform: none;
-        }
-        .social-icon i {
-            font-size: 1.2em;
-        }
-        .social-icon.instagram {
-            color: #fff;
-            background: linear-gradient(45deg, #f9ce34 0%, #ee2a7b 50%, #6228d7 100%);
-            cursor: pointer;
-            opacity: 1;
-        }
-        
-        @media (max-width: 768px) {
-            .footer-content {
-                padding: 0 20px;
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 1200px) {
-            .hero-title {
-                font-size: 3.2rem;
-            }
-            .hero-desc {
-                font-size: 1.3rem;
-            }
-            #features .section-header span:first-child {
-                font-size: 2.5rem;
-            }
-            #features .section-header p {
-                font-size: 1.15rem;
-            }
-        }
-
-        @media (max-width: 992px) {
-            .navbar {
-                padding: 0 30px;
-            }
-            .hero {
-                padding: 120px 20px 60px 20px;
-            }
-            .hero-title {
-                font-size: 2.8rem;
-            }
-            .hero-desc {
-                font-size: 1.15rem;
-            }
-            .hero-img {
-                max-width: 550px;
-            }
-            .nav-links {
-                gap: 20px;
-            }
-            .feature-card {
-                padding: 30px 25px;
-            }
-            .features-grid {
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            }
-            .testimonial-quote {
-                font-size: 1.4rem;
-            }
-
-            /* Adjust hero pseudo-elements for smaller screens if they look off */
-            .hero::before, .hero::after {
-                transform: skewY(-6deg); /* Slightly less aggressive skew */
-            }
-            .hero::after {
-                left: -50%;
-                top: 10%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 0 20px;
-                height: 64px;
-            }
-            .navbar .logo {
-                font-size: 1.8rem;
-                margin-right: 0;
-            }
-            .navbar .logo img {
-                height: 35px;
-            }
-            .hamburger {
-                display: flex;
-                margin-left: auto;
-            }
-            .nav-links {
-                display: block;
-                position: fixed;
-                top: 0;
-                right: -360px;
-                width: 300px;
-                height: 100vh;
-                background: var(--background-white);
-                box-shadow: -4px 0 24px rgba(0,0,0,0.10);
-                padding: 90px 30px 30px 30px;
-                transition: right 0.35s cubic-bezier(.77,0,.18,1);
-                border-radius: 0 0 0 24px;
-                z-index: 2000;
-            }
-            .nav-links.open {
-                right: 0;
-            }
-            .nav-links a {
-                display: block;
-                padding: 15px 0;
-                font-size: 1.1rem;
-                border-bottom: 1px solid var(--border-color);
-            }
-            .nav-links a:last-child {
-                border-bottom: none;
-            }
-            .hamburger.open span:nth-child(1) {
-                transform: rotate(45deg) translate(5px, 5px);
-            }
-            .hamburger.open span:nth-child(2) {
-                opacity: 0;
-            }
-            .hamburger.open span:nth-child(3) {
-                transform: rotate(-45deg) translate(7px, -6px);
-            }
-
-            .hero {
-                padding: 100px 20px 60px 20px;
-                min-height: 70vh;
-                gap: 20px;
-            }
-            .hero-title {
-                font-size: 2.2rem;
-                letter-spacing: -1px;
-            }
-            .hero-desc {
-                font-size: 1.05rem;
-                margin-bottom: 2rem;
-            }
-            .hero-img {
-                max-width: 380px;
-            }
-            .hero-btns {
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
-            }
-            .hero-btn {
-                width: 100%;
-                max-width: 300px;
-                text-align: center;
-                padding: 16px 30px;
-            }
-
-            /* Adjust hero pseudo-elements for mobile */
-            .hero::before, .hero::after {
-                transform: skewY(-4deg); /* Even less aggressive skew */
-                top: 0;
-                left: -100%; /* Ensure they still cover the screen */
-                width: 200%;
-            }
-            .hero::after {
-                top: 5%; /* Adjust specific stripe position */
-                left: -120%;
-            }
-
-            #features .section-header span:first-child {
-                font-size: 2rem;
-            }
-            #features .section-header p {
-                font-size: 1rem;
-            }
-            .feature-card {
-                width: 100%;
-                max-width: 400px;
-                margin: 0 auto;
-            }
-
-            .newsletter-title {
-                font-size: 1.7rem;
-            }
-            .newsletter-desc {
-                font-size: 1.1rem;
-            }
-            .newsletter-form {
-                flex-direction: column;
-                width: 100%;
-                max-width: 350px;
-                gap: 15px;
-            }
-            .newsletter-input {
-                width: 100%;
-                padding: 15px 20px;
-                font-size: 1rem;
-                border-radius: 25px;
-            }
-            .newsletter-btn {
-                width: 100%;
-                padding: 15px 30px;
-                font-size: 1.05rem;
-                border-radius: 25px;
-            }
-
-            .testimonial-quote {
-                font-size: 1.2rem;
-                padding: 0 15px;
-            }
-            .testimonial-quote::before {
-                left: 5px;
-            }
-            .testimonial-quote::after {
-                right: 5px;
-            }
-            .testimonial-logo-row {
-                gap: 20px;
-            }
-            .testimonial-logo {
-                padding: 8px 18px;
-                font-size: 1.1rem;
-            }
-
-            .bottom-section {
-                flex-direction: column;
-                align-items: center;
-                gap: 40px;
-                padding: 40px 20px 20px 20px;
-            }
-            .bottom-col {
-                text-align: center;
-                min-width: unset;
-                width: 100%;
-                max-width: 300px;
-            }
-            .bottom-socials {
-                justify-content: center;
-            }
-        }
-
-        @media (max-width: 500px) {
-            .navbar {
-                padding: 0 15px;
-                height: 60px;
-            }
-            .navbar .logo {
-                font-size: 1.5rem;
-            }
-            .navbar .logo img {
-                height: 30px;
-            }
-            
-            .hero {
-                padding: 80px 15px 50px 15px;
-                min-height: 60vh;
-            }
-            .hero-title {
-                font-size: 1.8rem;
-                line-height: 1.2;
-            }
-            .hero-desc {
-                font-size: 1rem;
-                margin-bottom: 1.5rem;
-            }
-            .hero-img {
-                max-width: 300px;
-            }
-            .hero-btn {
-                padding: 14px 25px;
-                font-size: 1rem;
-            }
-
-            .section-header span:first-child {
-                font-size: 1.8rem;
-            }
-            .section-header p {
-                font-size: 0.95rem;
-            }
-
-            .newsletter-title {
-                font-size: 1.5rem;
-            }
-            .newsletter-desc {
-                font-size: 1rem;
-            }
-            .newsletter-form {
-                max-width: 300px;
-            }
-
-            .testimonial-quote {
-                font-size: 1.1rem;
-                padding: 0 10px;
-            }
-            .testimonial-logo-row {
-                gap: 15px;
-            }
-            .testimonial-logo {
-                padding: 6px 15px;
-                font-size: 1rem;
-            }
-
-            .footer-content {
-                padding: 0 15px;
-                grid-template-columns: 1fr;
-                gap: 25px;
-            }
-            .footer-col h3 {
-                font-size: 1.1rem;
-            }
-            .footer-col ul li {
-                font-size: 0.95rem;
-            }
-        }
-
-        /* Sidebar styles - Hidden by default, only show on large screens */
-        .sidebar {
-            display: none;
-        }
-        
-        /* Sidebar styles for large screens */
-        @media (min-width: 1024px) {
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 230px;
-                height: 100vh;
-                background: var(--background-white);
-                box-shadow: 2px 0 16px var(--shadow-light);
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 30px 0 0 0;
-                z-index: 1100;
-                transform: translateX(0);
-                transition: transform 0.35s cubic-bezier(.77,0,.18,1);
-            }
-            .sidebar.closed {
-                transform: translateX(-100%);
-            }
-            .sidebar .sidebar-logo {
-                display: flex;
-                align-items: center;
-                padding: 0 32px 30px 32px;
-                margin-bottom: 10px;
-                text-decoration: none;
-            }
-            .sidebar .sidebar-logo img {
-                height: 40px;
-                margin-right: 10px;
-            }
-            .sidebar .sidebar-links {
-                display: flex;
-                flex-direction: column;
-                width: 100%;
-                gap: 6px;
-                padding: 0 32px;
-            }
-            .sidebar .sidebar-links a {
-                color: var(--secondary-color);
-                text-decoration: none;
-                font-size: 1.08rem;
-                font-weight: 500;
-                padding: 12px 0 12px 0;
-                border-radius: 8px;
-                transition: background 0.2s, color 0.2s;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            .sidebar .sidebar-links a:hover {
-                background: var(--background-light);
-                color: var(--primary-color);
-            }
-            .sidebar .sidebar-links .active {
-                color: var(--primary-color);
-                font-weight: 700;
-            }
-            .main-content {
-                margin-left: 230px;
-                transition: margin-left 0.35s cubic-bezier(.77,0,.18,1);
-            }
-            .sidebar.closed ~ .main-content {
-                margin-left: 0;
-            }
-            .navbar {
-                z-index: 1200;
-            }
-            .navbar .nav-links {
-                display: none !important;
-            }
-        }
-        
-        /* Ensure sidebar is hidden on smaller screens */
-        @media (max-width: 1023px) {
-            .sidebar {
-                display: none !important;
-            }
-            .main-content {
-                margin-left: 0 !important;
-            }
-        }
-    </style>
-</head>
-<body>
-    <header class="navbar">
-        <a href="/" class="logo">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
-            <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
-        </a>
-        <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-            <a href="/"> <i class="fas fa-home"></i> Home</a>
-            {% if user_authenticated %}
-                <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            {% endif %}
-            <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
-            <a href="/custom-quiz/"> <i class="fas fa-question-circle"></i> Quiz</a>
-            <a href="/flashcards/"> <i class="fas fa-clone"></i> Flashcards</a>
-            <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
-            <a href="/exam-analyzer/"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
-            <a href="#"> <i class="fas fa-history"></i> History</a>
-            {% if user_authenticated %}
-                <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
-            {% else %}
-                <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
-            {% endif %}
-        </nav>
-    </header>
-    <div class="sidebar" id="sidebar">
-        <a href="/" class="sidebar-logo">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
-            <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
-        </a>
-        <div class="sidebar-links">
-            <a href="/"> <i class="fas fa-home"></i> Home</a>
-            {% if user_authenticated %}
-                <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            {% endif %}
-            <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
-            <a href="/custom-quiz/"> <i class="fas fa-question-circle"></i> Quiz</a>
-            <a href="/flashcards/"> <i class="fas fa-clone"></i> Flashcards</a>
-            <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
-            <a href="/exam-analyzer/"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
-            <a href="#"> <i class="fas fa-history"></i> History</a>
-            {% if user_authenticated %}
-                <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
-            {% else %}
-                <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
-            {% endif %}
+{% block title %}Lamla AI - Empowering Education with AI{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="shape-1"></div>
+        <div class="shape-2"></div>
+        <div class="shape-3"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="hello-yellow">Empowering</span> 
+                <span class="username-highlight">Education</span>
+            </h1>
+            <p class="hero-desc">Transform your study materials into interactive quizzes and flashcards with AI-powered learning tools. Study smarter, perform better.</p>
+            <div class="hero-btns">
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'signup' %}" class="hero-btn">Get Started</a>
+                {% endif %}
+                <a href="#features" class="hero-btn secondary">Explore Features</a>
+            </div>
         </div>
-    </div>
-    <div class="main-content" id="mainContent">
-        <!-- Popup notification container -->
-        <div id="popup-message" style="display:none;position:fixed;top:30px;left:50%;transform:translateX(-50%);z-index:9999;min-width:260px;max-width:90vw;padding:16px 32px;background:#222;color:#fff;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);font-size:1.1rem;text-align:center;transition:opacity 0.3s;opacity:0;pointer-events:none;"></div>
-        <section class="hero">
-            <div class="hero-content">
-                <h1 class="hero-title">
-                    Study Smarter. Perform Better.<br>
-                    <span class="highlight">Lamla-AI</span>
-                </h1>
-                <p class="hero-desc">
-                    Lamla-AI is a smart exam preparation assistant designed to help you study with intention, not panic. Upload your study materials, generate AI-powered quizzes, and get instant feedback and performance insights. Lamla-AI empowers you to learn deeply, track your understanding, and focus on what matters most across your academic journey.
-                </p>
-                <div class="hero-btns">
-                    {% if not user_authenticated %}
-                        <a href="/accounts/signup/" class="hero-btn">Get Started</a>
-                    {% endif %}
-                    <a href="#features" class="hero-btn secondary">Explore Features</a>
-                </div>
-            </div>
+        <div class="hero-illustration">
             <img src="{% static 'slide_analyzer/images/student.jpeg' %}" alt="Study Illustration" class="hero-img">
-        </section>
+        </div>
+    </section>
 
-        <div class="section-divider"></div>
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="shape-4"></div>
+        <div class="shape-5"></div>
+        <div class="section-header">
+            <h2>Smart Features for <span class="highlight">Smart Students</span></h2>
+            <p>Lamla-AI helps you prepare with purpose using these core features:</p>
+        </div>
+        <div class="features-grid">
+            <a href="{% url 'custom_quiz' %}" class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3 class="feature-title">Upload Study Materials</h3>
+                <p class="feature-desc">Upload PDF or text-based materials. Content is extracted to power quiz generation.</p>
+                <div class="feature-hint">Click to explore →</div>
+            </a>
+            <a href="{% url 'custom_quiz' %}" class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3 class="feature-title">AI Quiz Generator</h3>
+                <p class="feature-desc">Automatically generates multiple-choice questions from your materials or typed content. Get instant feedback on your responses.</p>
+                <div class="feature-hint">Click to explore →</div>
+            </a>
+            <a href="{% url 'dashboard' %}" class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3 class="feature-title">Performance Tracking</h3>
+                <p class="feature-desc">Tracks your score per quiz and uses color-coded indicators to highlight strong and weak areas.</p>
+                <div class="feature-hint">Click to explore →</div>
+            </a>
+            <a href="{% url 'custom_quiz' %}" class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3 class="feature-title">Subject + Topic Selection</h3>
+                <p class="feature-desc">Select your subject or topic before quiz generation. Early foundation for syllabus-aware functionality.</p>
+                <div class="feature-hint">Click to explore →</div>
+            </a>
+            <a href="{% url 'flashcards' %}" class="feature-card">
+                <div class="feature-icon">🃏</div>
+                <h3 class="feature-title">Interactive Flashcards</h3>
+                <p class="feature-desc">Create and study with AI-generated flashcards. Perfect for memorization and quick review sessions.</p>
+                <div class="feature-hint">Click to explore →</div>
+            </a>
+        </div>
+    </section>
 
-        <section id="features">
-            <div class="section-header">
-                <span>Smart Features for <span class="highlight">Smart Students</span></span>
-                <p>Lamla-AI helps you prepare with purpose using these core features:</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">📄</div>
-                    <h3 class="feature-title">Upload Study Materials</h3>
-                    <p class="feature-desc">Upload PDF or text-based materials. Content is extracted to power quiz generation.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🧠</div>
-                    <h3 class="feature-title">AI Quiz Generator</h3>
-                    <p class="feature-desc">Automatically generates multiple-choice questions from your materials or typed content. Get instant feedback on your responses.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📈</div>
-                    <h3 class="feature-title">Performance Tracking</h3>
-                    <p class="feature-desc">Tracks your score per quiz and uses color-coded indicators to highlight strong and weak areas.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📚</div>
-                    <h3 class="feature-title">Subject + Topic Selection</h3>
-                    <p class="feature-desc">Select your subject or topic before quiz generation. Early foundation for syllabus-aware functionality.</p>
-                </div>
-            </div>
-        </section>
-
-        <div class="section-divider"></div>
-
-        <section class="newsletter-section">
+    <!-- Newsletter Section -->
+    <section class="newsletter-section">
+        <div class="newsletter-content">
             <h2 class="newsletter-title">Stay Ahead with Lamla-AI</h2>
             <p class="newsletter-desc">Subscribe for study tips, feature updates, and exclusive offers. Lamla-AI is your intelligent study assistant that helps you prepare with purpose.</p>
             
-            <form class="newsletter-form" method="post" action="" id="newsletterForm">
+            <form class="newsletter-form" method="post" action="{% url 'subscribe_newsletter' %}" id="newsletterForm">
                 {% csrf_token %}
                 <input type="email" class="newsletter-input" name="email" placeholder="Your Email" required aria-label="Email for newsletter">
                 <button type="submit" class="newsletter-btn">Subscribe</button>
             </form>
-        </section>
+        </div>
+    </section>
 
-        <div class="section-divider"></div>
-
-        <section class="testimonials">
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="testimonial-content">
             <blockquote class="testimonial-quote">
-                "Lamla-AI helped me turn my lecture slides into practice quizzes and flashcards in seconds. I felt more confident and focused for my finals!"
+                "Lamla-AI helped me turn my lecture slides into practice quizzes and flashcards in seconds. It's an amazing tool for exam preps!"
             </blockquote>
-            <p class="testimonial-user">— Agyemang N., Computer Science Student</p>
+            <p class="testimonial-user">— Christopher N, Computer Science Student</p>
             <div class="testimonial-logo-row">
                 <div class="testimonial-logo">UG</div>
                 <div class="testimonial-logo">KNUST</div>
@@ -1264,100 +98,713 @@
                 <div class="testimonial-logo">UDS</div>
                 <div class="testimonial-logo">UEW</div>
             </div>
-        </section>
-
-        <div class="section-divider"></div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="footer-section">
-        <div class="footer-content">
-            <div class="footer-col">
-                <h3>Contact Us</h3>
-                <ul>
-                    <li><i class="fas fa-envelope"></i> <a href="mailto:support@lamla.ai">contact.lamla1@gmail.com</a></li>
-                    <li><i class="fas fa-phone"></i> +233 50 934 1251</li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/about/">About</a></li>
-                    <li><a href="/custom-quiz/">Quiz</a></li>
-                    <li><a href="/flashcards/">Flashcards</a></li>
-                    <li><a href="#">Concepts</a></li>
-                    <li><a href="/exam-analyzer/">Exam Analyzer</a></li>
-                    <li><a href="#">History</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Social Media</h3>
-                <div class="social-icons">
-                    <a href="https://www.facebook.com/share/16pmyhCiUM/" class="social-icon" title="Facebook" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://x.com/lamla_io" class="social-icon" title="X (formerly Twitter)" target="_blank"><i class="fab fa-twitter"></i></a>
-                    <a href="https://instagram.com/lamla.io" class="social-icon" title="Instagram" target="_blank"><i class="fab fa-instagram"></i></a>
-                    <a href="https://linkedin.com/company/lamla-ai" class="social-icon" title="LinkedIn" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-            </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 All rights reserved | Lamla-AI. <span style="font-weight:600;">Study Smarter. Perform Better.</span></p>
-            <div class="legal-links">
-                <a href="/privacy-policy/">Privacy Policy</a>
-                <a href="/terms-of-service/">Terms of Service</a>
-                <a href="/cookie-policy/">Cookie Policy</a>
-            </div>
-        </div>
-    </footer>
+    </section>
+</div>
+
+<style>
+/* Home Page Styles */
+.home-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            align-items: center;
+    justify-content: space-between;
+    min-height: 80vh;
+    padding: 80px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 20px;
+    margin-bottom: 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+    right: 0;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 214, 0, 0.1);
+    border-radius: 50%;
+    transform: translate(50%, -50%);
+}
+
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: -50px;
+    left: -50px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 214, 0, 0.08);
+    border-radius: 50%;
+}
+
+.hero .shape-1 {
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 214, 0, 0.15);
+    border-radius: 20px;
+    transform: rotate(45deg);
+    animation: float 6s ease-in-out infinite;
+}
+
+.hero .shape-2 {
+    position: absolute;
+    top: 60%;
+    right: 15%;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 214, 0, 0.12);
+    border-radius: 50%;
+    animation: float 8s ease-in-out infinite reverse;
+}
+
+.hero .shape-3 {
+    position: absolute;
+    bottom: 20%;
+    left: 20%;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 214, 0, 0.1);
+    border-radius: 8px;
+    transform: rotate(30deg);
+    animation: float 7s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) rotate(45deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(45deg);
+    }
+}
+
+@keyframes float-reverse {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+        .hero-content {
+    flex: 1;
+    max-width: 600px;
+    z-index: 2;
+    position: relative;
+        }
+
+        .hero-title {
+    font-size: 3.5rem;
+            font-weight: 700;
+    margin-bottom: 24px;
+    line-height: 1.1;
+    color: #333;
+}
+
+.hello-yellow {
+    color: #FFD600;
+}
+
+.username-highlight {
+    color: #333;
+        }
+
+        .hero-desc {
+    font-size: 1.25rem;
+    color: #666;
+    margin-bottom: 40px;
+    line-height: 1.6;
+        }
+
+        .hero-btns {
+            display: flex;
+    gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .hero-btn {
+    background: #FFD600;
+    color: #222;
+            border: none;
+            border-radius: 12px;
+    padding: 16px 32px;
+    font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+    box-shadow: 0 4px 15px rgba(255, 214, 0, 0.3);
+}
+
+.hero-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 214, 0, 0.4);
+        }
+
+        .hero-btn.secondary {
+            background: transparent;
+    color: #333;
+    border: 2px solid #333;
+        }
+
+        .hero-btn.secondary:hover {
+    background: #333;
+    color: white;
+}
+
+.hero-illustration {
+    flex-shrink: 0;
+    margin-left: 40px;
+    z-index: 2;
+            position: relative;
+        }
+
+.hero-img {
+    max-width: 500px;
+    width: 100%;
+    height: auto;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.hero-img:hover {
+    transform: translateY(-5px);
+}
+
+        /* Features Section */
+.features-section {
+    padding: 80px 0;
+    background: #f8f9fa;
+    border-radius: 20px;
+    margin-bottom: 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+.features-section .shape-4 {
+    position: absolute;
+    top: 10%;
+    right: 5%;
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 214, 0, 0.1);
+    border-radius: 50%;
+}
+
+.features-section .shape-5 {
+    position: absolute;
+    bottom: 10%;
+    left: 5%;
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 214, 0, 0.08);
+    border-radius: 20px;
+    transform: rotate(45deg);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+            font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+.section-header .highlight {
+    color: #FFD600;
+}
+
+.section-header p {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    justify-items: center;
+}
+
+        .feature-card {
+    background: white;
+    border-radius: 16px;
+    padding: 40px 30px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    width: 100%;
+    max-width: 320px;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 214, 0, 0.05) 0%, rgba(255, 214, 0, 0.02) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(255, 214, 0, 0.25);
+    border-color: #FFD600;
+}
+
+.feature-card:hover::before {
+    opacity: 1;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(255, 214, 0, 0.4);
+}
+
+.feature-card:hover .feature-title {
+    color: #FFD600;
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: #FFD600;
+    color: #222;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 24px;
+    box-shadow: 0 4px 15px rgba(255, 214, 0, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.feature-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #222;
+    margin-bottom: 16px;
+    transition: color 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.feature-desc {
+    color: #555;
+    line-height: 1.6;
+    position: relative;
+    z-index: 1;
+}
+
+.feature-hint {
+    color: #FFD600;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 16px;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.feature-card:hover .feature-hint {
+    opacity: 1;
+    transform: translateX(5px);
+}
+
+        /* Newsletter Section */
+        .newsletter-section {
+    background: white;
+    padding: 60px 0;
+    border-radius: 20px;
+    margin-bottom: 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.newsletter-section::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 214, 0, 0.06);
+    border-radius: 50%;
+}
+
+.newsletter-section::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: -20px;
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 214, 0, 0.1);
+    border-radius: 15px;
+    transform: rotate(30deg);
+}
+
+.newsletter-content {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 20px;
+        }
+
+        .newsletter-title {
+    font-size: 2.2rem;
+            font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+        }
+
+        .newsletter-desc {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+        .newsletter-form {
+    display: flex;
+    gap: 16px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .newsletter-input {
+            flex: 1;
+    padding: 16px 20px;
+    border: 2px solid #eee;
+    border-radius: 12px;
+            font-size: 1rem;
+    transition: border-color 0.3s ease;
+        }
+
+        .newsletter-input:focus {
+            outline: none;
+    border-color: #FFD600;
+        }
+
+        .newsletter-btn {
+    background: #FFD600;
+    color: #222;
+            border: none;
+    border-radius: 12px;
+    padding: 16px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .newsletter-btn:hover {
+            transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 214, 0, 0.3);
+}
+
+/* Testimonials Section */
+.testimonials-section {
+    background: #f8f9fa;
+    padding: 60px 0;
+    border-radius: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.testimonials-section::before {
+    content: '';
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 214, 0, 0.12);
+    border-radius: 50%;
+}
+
+.testimonials-section::after {
+    content: '';
+    position: absolute;
+    bottom: 30%;
+    right: 15%;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 214, 0, 0.08);
+    border-radius: 8px;
+    transform: rotate(45deg);
+}
+
+.testimonial-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+        }
+
+        .testimonial-quote {
+    font-size: 1.4rem;
+    color: #333;
+            font-style: italic;
+    margin-bottom: 24px;
+    line-height: 1.6;
+            position: relative;
+    padding: 0 40px;
+        }
+
+        .testimonial-quote::before,
+        .testimonial-quote::after {
+    content: '"';
+    font-size: 3rem;
+    color: #FFD600;
+            position: absolute;
+    top: -10px;
+        }
+
+        .testimonial-quote::before {
+    left: 0;
+        }
+
+        .testimonial-quote::after {
+    right: 0;
+        }
+
+        .testimonial-user {
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 40px;
+        }
+
+        .testimonial-logo-row {
+            display: flex;
+            justify-content: center;
+    gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .testimonial-logo {
+    background: white;
+    color: #333;
+    padding: 12px 24px;
+    border-radius: 12px;
+            font-weight: 600;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile Responsive Design */
+@media (max-width: 768px) {
+    .home-container {
+        padding: 0 15px;
+    }
+    
+    .hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 60px 0;
+        min-height: auto;
+    }
+    
+    .hero-content {
+        margin-bottom: 40px;
+    }
+    
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-desc {
+        font-size: 1.1rem;
+    }
+    
+    .hero-illustration {
+        margin-left: 0;
+    }
+    
+    .hero-img {
+        max-width: 350px;
+    }
+    
+    .hero-btns {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .hero-btn {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+    
+    /* Mobile shape adjustments */
+    .hero .shape-1 {
+        width: 60px;
+        height: 60px;
+        top: 15%;
+        left: 5%;
+    }
+    
+    .hero .shape-2 {
+        width: 40px;
+        height: 40px;
+        top: 70%;
+        right: 10%;
+    }
+    
+    .hero .shape-3 {
+        width: 30px;
+        height: 30px;
+        bottom: 15%;
+        left: 15%;
+    }
+    
+    .features-section .shape-4 {
+        width: 80px;
+        height: 80px;
+        top: 5%;
+        right: 2%;
+    }
+    
+    .features-section .shape-5 {
+        width: 60px;
+        height: 60px;
+        bottom: 5%;
+        left: 2%;
+    }
+    
+    .features-section {
+        padding: 60px 0;
+    }
+    
+    .section-header h2 {
+        font-size: 2rem;
+    }
+    
+    .section-header p {
+        font-size: 1.1rem;
+    }
+    
+    .features-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 15px;
+    }
+    
+    .feature-card {
+        padding: 30px 20px;
+    }
+    
+    .newsletter-section {
+        padding: 40px 0;
+    }
+    
+    .newsletter-title {
+        font-size: 1.8rem;
+    }
+    
+    .newsletter-form {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .newsletter-input,
+    .newsletter-btn {
+        width: 100%;
+    }
+    
+    .testimonial-quote {
+        font-size: 1.2rem;
+        padding: 0 20px;
+    }
+    
+    .testimonial-logo-row {
+        gap: 15px;
+    }
+    
+    .testimonial-logo {
+        padding: 8px 16px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+            .hero-title {
+        font-size: 2rem;
+            }
+    
+            .hero-desc {
+                font-size: 1rem;
+            }
+    
+            .hero-img {
+        max-width: 280px;
+    }
+    
+    .section-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .newsletter-title {
+        font-size: 1.6rem;
+            }
+
+            .testimonial-quote {
+                font-size: 1.1rem;
+                padding: 0 15px;
+    }
+    
+    .testimonial-logo-row {
+                gap: 10px;
+    }
+    
+    .testimonial-logo {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+            }
+        }
+    </style>
 
     <script>
-        // Hamburger menu toggle with slide-out effect
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('navLinks');
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        function isLargeScreen() {
-            return window.innerWidth >= 1024;
-        }
-        hamburger.onclick = function() {
-            if (isLargeScreen()) {
-                // Toggle sidebar on large screens
-                sidebar.classList.toggle('closed');
-                // Adjust main content margin
-                if (sidebar.classList.contains('closed')) {
-                    mainContent.style.marginLeft = '0';
-                } else {
-                    mainContent.style.marginLeft = '230px';
-                }
-            } else {
-                // Mobile nav as before
-                const expanded = this.getAttribute('aria-expanded') === 'true';
-                navLinks.classList.toggle('open');
-                this.classList.toggle('open');
-                this.setAttribute('aria-expanded', !expanded);
-            }
-        };
-        // Close menu when clicking on links (mobile only)
-        document.querySelectorAll('#navLinks a').forEach(function(link) {
-            link.onclick = function() {
-                navLinks.classList.remove('open');
-                hamburger.classList.remove('open');
-                hamburger.setAttribute('aria-expanded', 'false');
-            }
-        });
-        window.addEventListener('resize', function() {
-            if (isLargeScreen()) {
-                navLinks.classList.remove('open');
-                hamburger.classList.remove('open');
-                hamburger.setAttribute('aria-expanded', 'false');
-                sidebar.classList.remove('closed');
-                mainContent.style.marginLeft = '230px';
-            } else {
-                sidebar.classList.remove('closed');
-                mainContent.style.marginLeft = '0';
-            }
-        });
         // Smooth scroll for anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -1373,26 +820,4 @@
             });
         });
     </script>
-    {% if messages %}
-      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          var popup = document.getElementById('popup-message');
-          var messages = [
-            {% for message in messages %}'{{ message|escapejs }}'{% if not forloop.last %}, {% endif %}{% endfor %}
-          ];
-          if (messages.length > 0) {
-            popup.textContent = messages.join('\n');
-            popup.style.display = 'block';
-            setTimeout(function() {
-              popup.style.opacity = 1;
-            }, 100);
-            setTimeout(function() {
-              popup.style.opacity = 0;
-              setTimeout(function() { popup.style.display = 'none'; }, 400);
-            }, 3100);
-          }
-        });
-      </script>
-    {% endif %}
-</body>
-</html>
+{% endblock %}

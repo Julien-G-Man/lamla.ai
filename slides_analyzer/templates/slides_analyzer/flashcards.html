@@ -6,6 +6,9 @@
     <title>Flashcards - Lamla AI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         /* CSS Variables */
         :root {
@@ -1253,8 +1256,11 @@
                         <button type="button" class="action-btn" onclick="resetCards()">
                             <i class="fas fa-redo"></i> Reset
                         </button>
-                        <button type="button" class="action-btn" onclick="exportCards()">
-                            <i class="fas fa-download"></i> Export
+                        <button type="button" class="action-btn" id="downloadPdfBtn">
+                            <i class="fas fa-file-pdf"></i> Download as PDF
+                        </button>
+                        <button type="button" class="action-btn" id="downloadImagesBtn">
+                            <i class="fas fa-image"></i> Download as Images
                         </button>
                     </div>
                 </div>
@@ -1637,6 +1643,105 @@
                 }
             }
         });
+
+        function renderCardSide(card, side) {
+            // Helper: returns a clone of the card with only the requested side visible, no flip effect
+            const clone = card.cloneNode(true);
+            clone.style.display = 'block';
+            clone.style.position = 'absolute';
+            clone.style.left = '-9999px';
+            clone.style.top = '0';
+            // Remove flip effect
+            clone.querySelector('.flashcard-inner').style.transform = 'none';
+            // Hide the other side
+            if (side === 'front') {
+                clone.querySelector('.flashcard-back').style.display = 'none';
+                clone.querySelector('.flashcard-front').style.display = 'block';
+            } else {
+                clone.querySelector('.flashcard-front').style.display = 'none';
+                clone.querySelector('.flashcard-back').style.display = 'block';
+            }
+            document.body.appendChild(clone);
+            return clone;
+        }
+
+        if (document.getElementById('downloadPdfBtn')) {
+            document.getElementById('downloadPdfBtn').onclick = function() {
+                const flashcards = document.querySelectorAll('.flashcard');
+                const pdf = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a5' });
+                let addPage = false;
+                let processed = 0;
+                let totalSides = flashcards.length * 2;
+                flashcards.forEach((card, idx) => {
+                    // Render front
+                    const frontClone = renderCardSide(card, 'front');
+                    html2canvas(frontClone, { backgroundColor: null }).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        if (addPage) pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', 20, 20, 400, 250);
+                        addPage = true;
+                        document.body.removeChild(frontClone);
+                        processed++;
+                        if (processed === totalSides) pdf.save('lamla_flashcards.pdf');
+                    });
+                    // Render back
+                    const backClone = renderCardSide(card, 'back');
+                    html2canvas(backClone, { backgroundColor: null }).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', 20, 20, 400, 250);
+                        document.body.removeChild(backClone);
+                        processed++;
+                        if (processed === totalSides) pdf.save('lamla_flashcards.pdf');
+                    });
+                });
+            };
+        }
+        if (document.getElementById('downloadImagesBtn')) {
+            document.getElementById('downloadImagesBtn').onclick = function() {
+                const flashcards = document.querySelectorAll('.flashcard');
+                const zip = new JSZip();
+                const deckTitle = document.getElementById('deckTitle') ? document.getElementById('deckTitle').value.trim() : 'Flashcards';
+                let processed = 0;
+                let totalSides = flashcards.length * 2;
+                flashcards.forEach((card, idx) => {
+                    // Front
+                    const frontClone = renderCardSide(card, 'front');
+                    html2canvas(frontClone, { backgroundColor: null }).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        zip.file(`flashcard_${idx+1}_front.png`, imgData.split(',')[1], {base64: true});
+                        document.body.removeChild(frontClone);
+                        processed++;
+                        if (processed === totalSides) {
+                            const zipName = `Lamla Flashcards ${deckTitle || 'Deck'}`.replace(/[^a-zA-Z0-9 _-]/g, '') + '.zip';
+                            zip.generateAsync({type:"blob"}).then(function(content) {
+                                const link = document.createElement('a');
+                                link.href = URL.createObjectURL(content);
+                                link.download = zipName;
+                                link.click();
+                            });
+                        }
+                    });
+                    // Back
+                    const backClone = renderCardSide(card, 'back');
+                    html2canvas(backClone, { backgroundColor: null }).then(canvas => {
+                        const imgData = canvas.toDataURL('image/png');
+                        zip.file(`flashcard_${idx+1}_back.png`, imgData.split(',')[1], {base64: true});
+                        document.body.removeChild(backClone);
+                        processed++;
+                        if (processed === totalSides) {
+                            const zipName = `Lamla Flashcards ${deckTitle || 'Deck'}`.replace(/[^a-zA-Z0-9 _-]/g, '') + '.zip';
+                            zip.generateAsync({type:"blob"}).then(function(content) {
+                                const link = document.createElement('a');
+                                link.href = URL.createObjectURL(content);
+                                link.download = zipName;
+                                link.click();
+                            });
+                        }
+                    });
+                });
+            };
+        }
     </script>
 </body>
 </html>

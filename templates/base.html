@@ -996,7 +996,7 @@
     </div>
     
     <header class="navbar">
-        <a href="/" class="logo">
+        <a href="{% url 'home' %}" class="logo">
             <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
             <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
         </a>
@@ -1006,49 +1006,49 @@
             <span></span>
         </button>
         <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-            <a href="/"> <i class="fas fa-home"></i> Home</a>
+            <a href="{% url 'home' %}"> <i class="fas fa-home"></i> Home</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 {% if user.is_staff %}
                     <a href="{% url 'feedback_analytics' %}"> <i class="fas fa-chart-line"></i> Feedback Analytics</a>
                 {% endif %}
             {% endif %}
-            <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
-            <a href="/custom-quiz/"> <i class="fas fa-question-circle"></i> Quiz</a>
-            <a href="/flashcards/"> <i class="fas fa-clone"></i> Flashcards</a>
+            <a href="{% url 'about' %}"> <i class="fas fa-info-circle"></i> About</a>
+            <a href="{% url 'custom_quiz' %}"> <i class="fas fa-question-circle"></i> Quiz</a>
+            <a href="{% url 'flashcards' %}"> <i class="fas fa-clone"></i> Flashcards</a>
             <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
-            <a href="/exam-analyzer/"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
+            <a href="{% url 'exam_analyzer' %}"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
             <a href="#"> <i class="fas fa-history"></i> History</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
             {% else %}
-                <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="{% url 'account_login' %}"> <i class="fas fa-sign-in-alt"></i> Login</a>
             {% endif %}
         </nav>
     </header>
     <div class="sidebar" id="sidebar">
-        <a href="/" class="sidebar-logo">
+        <a href="{% url 'home' %}" class="sidebar-logo">
             <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
             <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
         </a>
         <div class="sidebar-links">
-            <a href="/"> <i class="fas fa-home"></i> Home</a>
+            <a href="{% url 'home' %}"> <i class="fas fa-home"></i> Home</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 {% if user.is_staff %}
                     <a href="{% url 'feedback_analytics' %}"> <i class="fas fa-chart-line"></i> Feedback Analytics</a>
                 {% endif %}
             {% endif %}
-            <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
-            <a href="/custom-quiz/"> <i class="fas fa-question-circle"></i> Quiz</a>
-            <a href="/flashcards/"> <i class="fas fa-clone"></i> Flashcards</a>
+            <a href="{% url 'about' %}"> <i class="fas fa-info-circle"></i> About</a>
+            <a href="{% url 'custom_quiz' %}"> <i class="fas fa-question-circle"></i> Quiz</a>
+            <a href="{% url 'flashcards' %}"> <i class="fas fa-clone"></i> Flashcards</a>
             <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
-            <a href="/exam-analyzer/"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
+            <a href="{% url 'exam_analyzer' %}"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
             <a href="#"> <i class="fas fa-history"></i> History</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
             {% else %}
-                <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="{% url 'account_login' %}"> <i class="fas fa-sign-in-alt"></i> Login</a>
             {% endif %}
         </div>
     </div>
@@ -1154,12 +1154,12 @@
             <div class="footer-col">
                 <h3>Quick Links</h3>
                 <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/about/">About</a></li>
-                    <li><a href="/custom-quiz/">Quiz</a></li>
-                    <li><a href="/flashcards/">Flashcards</a></li>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'about' %}">About</a></li>
+                    <li><a href="{% url 'custom_quiz' %}">Quiz</a></li>
+                    <li><a href="{% url 'flashcards' %}">Flashcards</a></li>
                     <li><a href="#">Concepts</a></li>
-                    <li><a href="/exam-analyzer/">Exam Analyzer</a></li>
+                    <li><a href="{% url 'exam_analyzer' %}">Exam Analyzer</a></li>
                     <li><a href="#">History</a></li>
                 </ul>
             </div>
@@ -1184,9 +1184,9 @@
         <div class="footer-bottom">
             <p>Copyright &copy; 2025 All rights reserved | Lamla AI.</p>
             <div class="legal-links">
-                <a href="/privacy-policy/">Privacy Policy</a>
-                <a href="/terms-of-service/">Terms of Service</a>
-                <a href="/cookie-policy/">Cookie Policy</a>
+                <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+                <a href="{% url 'terms_of_service' %}">Terms of Service</a>
+                <a href="{% url 'cookie_policy' %}">Cookie Policy</a>
             </div>
         </div>
     </footer>

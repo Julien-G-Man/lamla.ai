@@ -18,7 +18,7 @@
             <p class="hero-desc">Lamla AI is a smart exam preparation assistant designed to help you study with intention, not panic. Upload your study materials and transform them into interactive quizzes and flashcards, get intant feedback and performance insights with AI-powered learning tools.<br><strong> Study smarter. Perform better.</strong></p>
             <div class="hero-btns">
                 {% if not user.is_authenticated %}
-                    <a href="{% url 'signup' %}" class="hero-btn">Get Started</a>
+                    <a href="{% url 'account_signup' %}" class="hero-btn">Get Started</a>
                 {% endif %}
                 <a href="#features" class="hero-btn secondary">Explore Features</a>
             </div>

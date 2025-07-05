@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.core.files.storage import FileSystemStorage
 from pptx import Presentation
 from PyPDF2 import PdfReader
+from docx import Document
+from io import TextIOWrapper
 import os
 
 from django.conf import settings
@@ -188,7 +190,6 @@ def test_flashcard_generator(request):
 
 def extract_text_from_file(uploaded_file):
     """Extract text from pptx, pdf, docx, or txt file-like object. Returns extracted text or raises Exception."""
-    from io import TextIOWrapper
     file_name = uploaded_file.name
     fs = FileSystemStorage()
     filename = fs.save(uploaded_file.name, uploaded_file)
@@ -208,7 +209,6 @@ def extract_text_from_file(uploaded_file):
                 if page_text:
                     extracted_text += page_text + "\n"
         elif file_name.lower().endswith('.docx'):
-            from docx import Document
             doc = Document(file_path)
             for paragraph in doc.paragraphs:
                 if paragraph.text.strip():
@@ -343,8 +343,7 @@ def generate_questions(request):
             if 'short_questions' in questions:
                 questions['short_questions'] = questions['short_questions'][:num_short]
             
-            # Debug print to check how many questions are being stored
-            print('DEBUG: Storing MCQs:', len(questions.get('mcq_questions', [])), 'Short:', len(questions.get('short_questions', [])))
+            # Store questions in session
             # Clear old questions and user answers before storing new ones
             request.session['questions'] = None
             request.session['user_answers'] = None
@@ -398,7 +397,7 @@ def custom_quiz(request):
                     questions['mcq_questions'] = questions['mcq_questions'][:num_mcq]
                 if 'short_questions' in questions:
                     questions['short_questions'] = questions['short_questions'][:num_short]
-                print('DEBUG: Generated questions:', questions)
+                # Questions generated successfully
                 if 'error' in questions and questions['error']:
                     error_message = (
                         'Sorry, we could not generate questions at this time. Reason: ' + str(questions['error']) +
@@ -531,7 +530,6 @@ def exam_analyzer(request):
 def quiz(request):
     # Get questions from session
     questions = request.session.get('questions', {})
-    print('DEBUG: Session questions:', questions)
     quiz_time = request.session.get('quiz_time', 10)
     if not questions or (not questions.get('mcq_questions') and not questions.get('short_questions')):
         return redirect('custom_quiz')
@@ -1210,6 +1208,92 @@ def download_subscribers_csv(request):
         ])
     
     return response
+
+@staff_member_required
+def get_subscribers_data(request):
+    """API endpoint to get subscriber data for auto-refresh"""
+    try:
+        subscribers = Subscription.objects.all().order_by('-created_at')
+        total_subscribers = subscribers.count()
+        active_subscribers = subscribers.filter(is_active=True).count()
+        
+        # Format subscribers for JSON response
+        subscribers_data = []
+        for subscriber in subscribers:
+            subscribers_data.append({
+                'id': subscriber.id,
+                'email': subscriber.email,
+                'created_at': subscriber.created_at.strftime('%b %d, %Y %H:%M'),
+                'is_active': subscriber.is_active
+            })
+        
+        stats = {
+            'total_subscribers': total_subscribers,
+            'active_subscribers': active_subscribers,
+            'inactive_subscribers': total_subscribers - active_subscribers,
+        }
+        
+        return JsonResponse({
+            'success': True,
+            'subscribers': subscribers_data,
+            'stats': stats
+        })
+        
+    except Exception as e:
+        logger.error(f"Error getting subscribers data: {e}")
+        return JsonResponse({
+            'success': False,
+            'error': 'Failed to get subscriber data'
+        }, status=500)
+
+@csrf_exempt
+@staff_member_required
+def toggle_subscription_status(request):
+    """API endpoint to toggle subscription status"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            subscriber_id = data.get('subscriber_id')
+            is_active = data.get('is_active')
+            
+            if not subscriber_id:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Subscriber ID is required'
+                }, status=400)
+            
+            try:
+                subscriber = Subscription.objects.get(id=subscriber_id)
+                subscriber.is_active = is_active
+                subscriber.save()
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': f'Subscription {"activated" if is_active else "deactivated"} successfully'
+                })
+                
+            except Subscription.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Subscriber not found'
+                }, status=404)
+                
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid JSON data'
+            }, status=400)
+        except Exception as e:
+            logger.error(f"Error toggling subscription status: {e}")
+            return JsonResponse({
+                'success': False,
+                'error': 'Failed to update subscription status'
+            }, status=500)
+    
+    return JsonResponse({
+        'success': False,
+        'error': 'Invalid request method'
+    }, status=405)
 
 DATABASES = {
     'default': dj_database_url.config(default='sqlite:///db.sqlite3')

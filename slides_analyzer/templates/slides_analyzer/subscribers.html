@@ -15,6 +15,14 @@
             <p class="header-subtitle">Manage and export your newsletter subscriber list</p>
         </div>
         <div class="header-actions">
+            <button id="refreshBtn" class="refresh-btn" onclick="refreshSubscriberList()">
+                <i class="fas fa-sync-alt"></i>
+                Refresh
+            </button>
+            <button id="autoRefreshToggle" class="auto-refresh-toggle" onclick="toggleAutoRefresh()">
+                <i class="fas fa-pause"></i>
+                Auto-refresh: OFF
+            </button>
             <a href="{% url 'download_subscribers_csv' %}" class="download-btn">
                 <i class="fas fa-download"></i>
                 Download CSV
@@ -29,25 +37,25 @@
                 <i class="fas fa-users"></i>
             </div>
             <div class="stat-content">
-                <h3>{{ total_subscribers }}</h3>
+                <h3 id="totalSubscribers">{{ total_subscribers }}</h3>
                 <p>Total Subscribers</p>
             </div>
         </div>
-        <div class="stat-card active">
-            <div class="stat-icon">
-                <i class="fas fa-check-circle"></i>
+        <div class="stat-card">
+            <div class="stat-icon active">
+                <i class="fas fa-user-check"></i>
             </div>
             <div class="stat-content">
-                <h3>{{ active_subscribers }}</h3>
+                <h3 id="activeSubscribers">{{ active_subscribers }}</h3>
                 <p>Active Subscribers</p>
             </div>
         </div>
-        <div class="stat-card inactive">
-            <div class="stat-icon">
-                <i class="fas fa-pause-circle"></i>
+        <div class="stat-card">
+            <div class="stat-icon inactive">
+                <i class="fas fa-user-times"></i>
             </div>
             <div class="stat-content">
-                <h3>{{ inactive_subscribers }}</h3>
+                <h3 id="inactiveSubscribers">{{ inactive_subscribers }}</h3>
                 <p>Inactive Subscribers</p>
             </div>
         </div>
@@ -56,15 +64,17 @@
     <!-- Subscribers Table -->
     <div class="subscribers-table-container">
         <div class="table-header">
-            <h2><i class="fas fa-list"></i> Subscriber List</h2>
-            <div class="table-actions">
-                <span class="subscriber-count">{{ total_subscribers }} subscribers</span>
+            <h2>Recent Subscribers</h2>
+            <div class="auto-refresh-status">
+                <span id="lastUpdated">Last updated: Just now</span>
+                <span id="autoRefreshStatus" class="auto-refresh-indicator">
+                    <i class="fas fa-hand-paper"></i> Manual refresh mode
+                </span>
             </div>
         </div>
         
-        {% if subscribers %}
-        <div class="table-responsive">
-            <table class="subscribers-table">
+        <div class="table-wrapper">
+            <table class="subscribers-table" id="subscribersTable">
                 <thead>
                     <tr>
                         <th>Email</th>
@@ -73,60 +83,226 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="subscribersTableBody">
                     {% for subscriber in subscribers %}
-                    <tr class="{% if subscriber.is_active %}active-row{% else %}inactive-row{% endif %}">
-                        <td class="email-cell">
-                            <div class="email-info">
-                                <i class="fas fa-envelope"></i>
-                                <span>{{ subscriber.email }}</span>
-                            </div>
+                    <tr>
+                        <td>{{ subscriber.email }}</td>
+                        <td>{{ subscriber.created_at|date:"M d, Y H:i" }}</td>
+                        <td>
+                            <span class="status-badge {% if subscriber.is_active %}active{% else %}inactive{% endif %}">
+                                {% if subscriber.is_active %}Active{% else %}Inactive{% endif %}
+                            </span>
                         </td>
-                        <td class="date-cell">
-                            <div class="date-info">
-                                <span class="date">{{ subscriber.created_at|date:"M d, Y" }}</span>
-                                <span class="time">{{ subscriber.created_at|date:"g:i A" }}</span>
-                            </div>
+                        <td>
+                            <button class="action-btn" onclick="toggleSubscriptionStatus('{{ subscriber.id }}', '{{ subscriber.is_active }}')">
+                                {% if subscriber.is_active %}
+                                    <i class="fas fa-pause"></i> Deactivate
+                                {% else %}
+                                    <i class="fas fa-play"></i> Activate
+                                {% endif %}
+                            </button>
                         </td>
-                        <td class="status-cell">
-                            {% if subscriber.is_active %}
-                                <span class="status-badge active">
-                                    <i class="fas fa-check-circle"></i>
-                                    Active
-                                </span>
-                            {% else %}
-                                <span class="status-badge inactive">
-                                    <i class="fas fa-pause-circle"></i>
-                                    Inactive
-                                </span>
-                            {% endif %}
-                        </td>
-                        <td class="actions-cell">
-                            <div class="action-buttons">
-                                <button class="action-btn view-btn" title="View Details">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn edit-btn" title="Edit Status">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </div>
-                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="no-data">No subscribers found</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        {% else %}
-        <div class="empty-state">
-            <div class="empty-icon">
-                <i class="fas fa-users-slash"></i>
-            </div>
-            <h3>No Subscribers Yet</h3>
-            <p>When students subscribe to your newsletter, they'll appear here.</p>
-        </div>
-        {% endif %}
     </div>
 </div>
+
+<!-- Auto-refresh JavaScript -->
+<script>
+let autoRefreshInterval = null;
+let autoRefreshEnabled = false;
+let lastSubscriberCount = {{ total_subscribers }};
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    updateLastUpdated();
+});
+
+function toggleAutoRefresh() {
+    const toggleBtn = document.getElementById('autoRefreshToggle');
+    const statusSpan = document.getElementById('autoRefreshStatus');
+    
+    if (autoRefreshEnabled) {
+        // Turn off auto-refresh
+        stopAutoRefresh();
+        toggleBtn.innerHTML = '<i class="fas fa-pause"></i> Auto-refresh: OFF';
+        toggleBtn.className = 'auto-refresh-toggle off';
+        statusSpan.innerHTML = '<i class="fas fa-hand-paper"></i> Manual refresh mode';
+        autoRefreshEnabled = false;
+    } else {
+        // Turn on auto-refresh
+        startAutoRefresh();
+        toggleBtn.innerHTML = '<i class="fas fa-play"></i> Auto-refresh: ON';
+        toggleBtn.className = 'auto-refresh-toggle on';
+        statusSpan.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Auto-refreshing every 30s';
+        autoRefreshEnabled = true;
+    }
+}
+
+function startAutoRefresh() {
+    // Refresh every 30 seconds (more reasonable)
+    autoRefreshInterval = setInterval(refreshSubscriberList, 30000);
+}
+
+function stopAutoRefresh() {
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+    }
+}
+
+function refreshSubscriberList() {
+    const refreshBtn = document.getElementById('refreshBtn');
+    const originalText = refreshBtn.innerHTML;
+    
+    // Show loading state
+    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+    refreshBtn.disabled = true;
+    
+    // Fetch updated subscriber data
+    fetch('/subscribers/data/', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateSubscriberTable(data.subscribers);
+            updateStatistics(data.stats);
+            
+            // Check if there are new subscribers
+            if (data.stats.total_subscribers > lastSubscriberCount) {
+                showNewSubscriberNotification(data.stats.total_subscribers - lastSubscriberCount);
+                lastSubscriberCount = data.stats.total_subscribers;
+            }
+            
+            updateLastUpdated();
+        } else {
+            console.error('Failed to refresh subscriber list:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error refreshing subscriber list:', error);
+    })
+    .finally(() => {
+        // Restore button state
+        refreshBtn.innerHTML = originalText;
+        refreshBtn.disabled = false;
+    });
+}
+
+function updateSubscriberTable(subscribers) {
+    const tbody = document.getElementById('subscribersTableBody');
+    
+    if (subscribers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="no-data">No subscribers found</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = subscribers.map(subscriber => `
+        <tr>
+            <td>${subscriber.email}</td>
+            <td>${subscriber.created_at}</td>
+            <td>
+                <span class="status-badge ${subscriber.is_active ? 'active' : 'inactive'}">
+                    ${subscriber.is_active ? 'Active' : 'Inactive'}
+                </span>
+            </td>
+            <td>
+                <button class="action-btn" onclick="toggleSubscriptionStatus('${subscriber.id}', '${subscriber.is_active}')">
+                    ${subscriber.is_active ? 
+                        '<i class="fas fa-pause"></i> Deactivate' : 
+                        '<i class="fas fa-play"></i> Activate'
+                    }
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function updateStatistics(stats) {
+    document.getElementById('totalSubscribers').textContent = stats.total_subscribers;
+    document.getElementById('activeSubscribers').textContent = stats.active_subscribers;
+    document.getElementById('inactiveSubscribers').textContent = stats.inactive_subscribers;
+}
+
+function updateLastUpdated() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    document.getElementById('lastUpdated').textContent = `Last updated: ${timeString}`;
+}
+
+function showNewSubscriberNotification(count) {
+    // Create a temporary notification
+    const notification = document.createElement('div');
+    notification.className = 'new-subscriber-notification';
+    notification.innerHTML = `
+        <i class="fas fa-user-plus"></i>
+        <span>${count} new subscriber${count > 1 ? 's' : ''} added!</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove notification after 3 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+function toggleSubscriptionStatus(subscriberId, currentStatus) {
+    const newStatus = currentStatus === 'True' ? false : true;
+    
+    fetch('/subscribers/toggle-status/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken'),
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify({
+            subscriber_id: subscriberId,
+            is_active: newStatus
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Refresh the list to show updated status
+            refreshSubscriberList();
+        } else {
+            alert('Error updating subscription status: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error toggling subscription status:', error);
+        alert('Error updating subscription status');
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
 
 <style>
     /* Import Poppins font */
@@ -518,6 +694,112 @@
 
         .date-info {
             font-size: 0.8rem;
+        }
+    }
+
+    /* Auto-refresh styles */
+    .auto-refresh-status {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-size: 0.9em;
+        color: #666;
+    }
+
+    .auto-refresh-indicator {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #28a745;
+    }
+
+    .refresh-btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.9em;
+        transition: background-color 0.3s;
+    }
+
+    .refresh-btn:hover {
+        background: #0056b3;
+    }
+
+    .refresh-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+    }
+
+    .auto-refresh-toggle {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.9em;
+        transition: background-color 0.3s;
+    }
+
+    .auto-refresh-toggle.on {
+        background: #28a745;
+    }
+
+    .auto-refresh-toggle.off {
+        background: #6c757d;
+    }
+
+    .auto-refresh-toggle:hover {
+        opacity: 0.9;
+    }
+
+    .new-subscriber-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 1000;
+        animation: slideIn 0.3s ease-out;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .auto-refresh-status {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+        
+        .header-actions {
+            flex-direction: column;
+            gap: 10px;
         }
     }
 </style>

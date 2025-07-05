@@ -30,8 +30,10 @@ urlpatterns = [
     path('feedback-analytics/', views.feedback_analytics, name='feedback_analytics'),
     
     # Subscriber Dashboard (Admin only)
-    path('admin/subscribers/', views.view_subscribers, name='view_subscribers'),
-    path('admin/subscribers/download/', views.download_subscribers_csv, name='download_subscribers_csv'),
+    path('subscribers/', views.view_subscribers, name='view_subscribers'),
+    path('subscribers/download/', views.download_subscribers_csv, name='download_subscribers_csv'),
+    path('subscribers/data/', views.get_subscribers_data, name='get_subscribers_data'),
+    path('subscribers/toggle-status/', views.toggle_subscription_status, name='toggle_subscription_status'),
     
     # Chatbot URLs
     path('api/chatbot/message/', views.chatbot_message, name='chatbot_message'),

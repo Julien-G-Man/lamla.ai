@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Question, Quiz, Feedback, Subscription, Contact, UserProfile
+from .models import Question, Quiz, Feedback, Subscription, Contact, UserProfile, ChatMessage, ChatbotKnowledge
 
 # Register your models here.
 
@@ -59,6 +59,45 @@ class UserProfileAdmin(admin.ModelAdmin):
         }),
         ('Profile Details', {
             'fields': ('profile_picture', 'bio')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+@admin.register(ChatMessage)
+class ChatMessageAdmin(admin.ModelAdmin):
+    list_display = ['message_type', 'user', 'session_id', 'content_preview', 'created_at']
+    list_filter = ['message_type', 'created_at']
+    search_fields = ['content', 'session_id', 'user__username']
+    readonly_fields = ['created_at']
+    fieldsets = (
+        ('Message Information', {
+            'fields': ('user', 'session_id', 'message_type', 'content')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def content_preview(self, obj):
+        return obj.content[:50] + "..." if len(obj.content) > 50 else obj.content
+    content_preview.short_description = "Content Preview"
+
+@admin.register(ChatbotKnowledge)
+class ChatbotKnowledgeAdmin(admin.ModelAdmin):
+    list_display = ['category', 'question', 'is_active', 'created_at']
+    list_filter = ['category', 'is_active', 'created_at']
+    search_fields = ['question', 'answer', 'keywords']
+    readonly_fields = ['created_at', 'updated_at']
+    fieldsets = (
+        ('Knowledge Information', {
+            'fields': ('category', 'question', 'answer', 'keywords')
+        }),
+        ('Status', {
+            'fields': ('is_active',)
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),

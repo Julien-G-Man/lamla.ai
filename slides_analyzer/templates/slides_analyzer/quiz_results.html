@@ -438,56 +438,85 @@
     }
     
     @media (max-width: 768px) {
+        .page-wrapper {
+            padding: 20px 15px;
+            margin-top: 80px;
+        }
         .container {
-            padding: 30px 20px;
-            margin-top: 15px;
+            padding: 25px 20px;
+            margin-top: 0;
             margin-bottom: 15px;
         }
         .main-page-title {
             font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+        .results-summary-card {
+            padding: 25px 20px;
         }
         .results-title {
-            font-size: 1.2rem;
+            font-size: 1.6rem;
+            margin-bottom: 15px;
         }
         .question-type-title {
-            font-size: 1.05rem;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
         }
         .question-text {
-            font-size: 1.02rem;
+            font-size: 1rem;
+            line-height: 1.5;
         }
-        .actions-row {
-            flex-direction: column;
-            gap: 15px;
-        }
-        .main-btn {
-            width: 100%;
-            min-width: unset;
-            padding: 16px 0;
-        }
-        .feedback-section {
-            padding: 20px;
-            margin-top: 30px;
-        }
-        .feedback-actions {
-            flex-direction: column;
-            gap: 12px;
-        }
-        .feedback-btn, .share-btn {
-            width: 100%;
-            min-width: unset;
-        }
-        .stars i {
-            font-size: 1.8rem;
-        }
-        .question-item {
-            padding: 15px 12px;
+        .options-list {
+            padding-left: 20px;
         }
         .options-list li {
             padding: 8px 12px;
             font-size: 0.95rem;
+            margin-bottom: 8px;
         }
         .question-answer {
             font-size: 0.95rem;
+            margin-top: 12px;
+        }
+        .results-section {
+            margin-bottom: 25px;
+        }
+        .question-item {
+            padding: 15px 12px;
+            margin-bottom: 15px;
+        }
+        .feedback-section {
+            padding: 25px 20px;
+            margin-top: 30px;
+        }
+        .feedback-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .feedback-desc {
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+        .feedback-actions {
+            flex-direction: column;
+            gap: 15px;
+        }
+        .feedback-btn, .share-btn {
+            width: 100%;
+            min-width: unset;
+            padding: 15px;
+            font-size: 1.1rem;
+        }
+        .stars i {
+            font-size: 1.8rem;
+        }
+        .try-another-quiz-section {
+            padding: 20px 15px;
+        }
+        .try-another-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
         }
     }
     @media (max-width: 500px) {

@@ -91,11 +91,16 @@
             --secondary-color: #222;
             --background-white: #fff;
             --light-yellow: #FFFBE6;
+            --enactus-white: #FFFFFF;
             --enactus-light-grey: #ECF0F1;
             --enactus-border-light: #ECECEC;
             --enactus-shadow-light: rgba(0, 0, 0, 0.08);
             --enactus-shadow-medium: rgba(0, 0, 0, 0.15);
             --enactus-error-red: #E74C3C;
+            --enactus-text-dark: #2C3E50;
+            --enactus-yellow: #FFD600;
+            --enactus-dark-blue: #2C3E50;
+            --enactus-placeholder: #95A5A6;
         }
 
         /*
@@ -127,17 +132,18 @@
 
 
         .auth-container {
-            background: var(--enactus-white); /* White background for the card */
+            background: #FFFFFF; /* Solid white background for the card */
             color: var(--enactus-text-dark); /* Dark text color */
             max-width: 450px; /* Slightly wider for a more modern feel */
             width: 100%; /* Ensure responsiveness */
             padding: 40px; /* Generous padding */
             border-radius: 15px; /* Softer rounded corners */
-            box-shadow: 0 10px 25px var(--enactus-shadow-light); /* More pronounced shadow */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1); /* Stronger, more visible shadow */
             text-align: center;
             box-sizing: border-box;
             transform: translateY(0); /* Base state for animation */
             transition: transform 0.3s ease-out; /* Smooth transition for hover effect */
+            border: 1px solid rgba(0, 0, 0, 0.05); /* Subtle border for definition */
         }
 
         .auth-container:hover {
@@ -176,8 +182,8 @@
             width: 100%;
             padding: 14px 18px; /* More generous padding inside inputs */
             border-radius: 8px; /* Consistent rounded corners for inputs */
-            border: 1px solid var(--enactus-border-light); /* Light, subtle border */
-            background-color: var(--enactus-light-grey); /* Light background for inputs */
+            border: 2px solid #E0E0E0; /* More visible border */
+            background-color: #FFFFFF; /* Solid white background for inputs */
             color: var(--enactus-text-dark);
             font-size: 1.05rem;
             box-sizing: border-box;
@@ -217,8 +223,8 @@
         }
 
         .auth-btn {
-            background-color: var(--enactus-yellow); /* Enactus yellow button */
-            color: var(--enactus-dark-blue); /* Dark text on yellow button */
+            background-color: #FFD600; /* Solid yellow button */
+            color: #2C3E50; /* Dark text on yellow button */
             border: none;
             border-radius: 10px; /* Slightly more rounded button */
             padding: 16px 0; /* More padding for a substantial button */
@@ -230,14 +236,14 @@
             transition: all 0.3s ease; /* Smooth hover effects */
             display: inline-block;
             text-decoration: none;
-            box-shadow: 0 5px 15px rgba(253, 199, 43, 0.3); /* Yellow shadow */
+            box-shadow: 0 8px 20px rgba(255, 214, 0, 0.4); /* Stronger yellow shadow */
         }
 
         .auth-btn:hover {
-            background-color: var(--enactus-dark-blue); /* Dark blue on hover */
-            color: var(--enactus-yellow); /* Yellow text on hover */
+            background-color: #2C3E50; /* Dark blue on hover */
+            color: #FFD600; /* Yellow text on hover */
             transform: translateY(-3px); /* Lift effect */
-            box-shadow: 0 8px 20px var(--enactus-shadow-medium); /* Stronger shadow */
+            box-shadow: 0 12px 25px rgba(44, 62, 80, 0.3); /* Stronger shadow */
         }
 
         .auth-links {

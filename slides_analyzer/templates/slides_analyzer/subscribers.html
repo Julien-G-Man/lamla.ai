@@ -1,0 +1,524 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Newsletter Subscribers - Lamla AI{% endblock %}
+
+{% block content %}
+<div class="subscribers-container">
+    <!-- Header Section -->
+    <div class="subscribers-header">
+        <div class="header-content">
+            <h1 class="header-title">
+                <span class="hello-yellow">Newsletter</span> 
+                <span class="username-highlight">Subscribers</span>
+            </h1>
+            <p class="header-subtitle">Manage and export your newsletter subscriber list</p>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'download_subscribers_csv' %}" class="download-btn">
+                <i class="fas fa-download"></i>
+                Download CSV
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ total_subscribers }}</h3>
+                <p>Total Subscribers</p>
+            </div>
+        </div>
+        <div class="stat-card active">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ active_subscribers }}</h3>
+                <p>Active Subscribers</p>
+            </div>
+        </div>
+        <div class="stat-card inactive">
+            <div class="stat-icon">
+                <i class="fas fa-pause-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ inactive_subscribers }}</h3>
+                <p>Inactive Subscribers</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscribers Table -->
+    <div class="subscribers-table-container">
+        <div class="table-header">
+            <h2><i class="fas fa-list"></i> Subscriber List</h2>
+            <div class="table-actions">
+                <span class="subscriber-count">{{ total_subscribers }} subscribers</span>
+            </div>
+        </div>
+        
+        {% if subscribers %}
+        <div class="table-responsive">
+            <table class="subscribers-table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Date Subscribed</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for subscriber in subscribers %}
+                    <tr class="{% if subscriber.is_active %}active-row{% else %}inactive-row{% endif %}">
+                        <td class="email-cell">
+                            <div class="email-info">
+                                <i class="fas fa-envelope"></i>
+                                <span>{{ subscriber.email }}</span>
+                            </div>
+                        </td>
+                        <td class="date-cell">
+                            <div class="date-info">
+                                <span class="date">{{ subscriber.created_at|date:"M d, Y" }}</span>
+                                <span class="time">{{ subscriber.created_at|date:"g:i A" }}</span>
+                            </div>
+                        </td>
+                        <td class="status-cell">
+                            {% if subscriber.is_active %}
+                                <span class="status-badge active">
+                                    <i class="fas fa-check-circle"></i>
+                                    Active
+                                </span>
+                            {% else %}
+                                <span class="status-badge inactive">
+                                    <i class="fas fa-pause-circle"></i>
+                                    Inactive
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="actions-cell">
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn" title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn edit-btn" title="Edit Status">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-users-slash"></i>
+            </div>
+            <h3>No Subscribers Yet</h3>
+            <p>When students subscribe to your newsletter, they'll appear here.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    /* Import Poppins font */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+    /* Root variables */
+    :root {
+        --primary-color: #FFD600;
+        --secondary-color: #222;
+        --text-color: #333;
+        --text-muted: #666;
+        --background-color: #f8f9fa;
+        --card-background: #ffffff;
+        --border-color: #e9ecef;
+        --success-color: #28a745;
+        --warning-color: #ffc107;
+        --danger-color: #dc3545;
+        --info-color: #17a2b8;
+    }
+
+    /* Container */
+    .subscribers-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* Header */
+    .subscribers-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding: 30px;
+        background: linear-gradient(135deg, var(--card-background), #f8f9fa);
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .header-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0 0 10px 0;
+        line-height: 1.2;
+    }
+
+    .hello-yellow {
+        color: var(--primary-color);
+    }
+
+    .username-highlight {
+        color: var(--secondary-color);
+    }
+
+    .header-subtitle {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .download-btn {
+        background: var(--primary-color);
+        color: var(--secondary-color);
+        border: none;
+        border-radius: 12px;
+        padding: 15px 25px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 214, 0, 0.3);
+    }
+
+    .download-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
+        color: var(--secondary-color);
+        text-decoration: none;
+    }
+
+    /* Statistics Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: var(--card-background);
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .stat-card.active {
+        border-left: 4px solid var(--success-color);
+    }
+
+    .stat-card.inactive {
+        border-left: 4px solid var(--warning-color);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        background: var(--primary-color);
+    }
+
+    .stat-card.active .stat-icon {
+        background: var(--success-color);
+    }
+
+    .stat-card.inactive .stat-icon {
+        background: var(--warning-color);
+    }
+
+    .stat-content h3 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 5px 0;
+        color: var(--text-color);
+    }
+
+    .stat-content p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* Table Container */
+    .subscribers-table-container {
+        background: var(--card-background);
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 25px 30px;
+        border-bottom: 1px solid var(--border-color);
+        background: #f8f9fa;
+    }
+
+    .table-header h2 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--text-color);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .subscriber-count {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    /* Table */
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .subscribers-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .subscribers-table th {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-color);
+        border-bottom: 1px solid var(--border-color);
+        font-size: 0.9rem;
+    }
+
+    .subscribers-table td {
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+        vertical-align: middle;
+    }
+
+    .subscribers-table tr:hover {
+        background: #f8f9fa;
+    }
+
+    .active-row {
+        background: rgba(40, 167, 69, 0.02);
+    }
+
+    .inactive-row {
+        background: rgba(255, 193, 7, 0.02);
+    }
+
+    /* Email Cell */
+    .email-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .email-info i {
+        color: var(--primary-color);
+        font-size: 0.9rem;
+    }
+
+    /* Date Cell */
+    .date-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .date {
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    .time {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+    }
+
+    /* Status Badge */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .status-badge.active {
+        background: rgba(40, 167, 69, 0.1);
+        color: var(--success-color);
+    }
+
+    .status-badge.inactive {
+        background: rgba(255, 193, 7, 0.1);
+        color: var(--warning-color);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-btn {
+        width: 35px;
+        height: 35px;
+        border: none;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .view-btn {
+        background: rgba(23, 162, 184, 0.1);
+        color: var(--info-color);
+    }
+
+    .view-btn:hover {
+        background: var(--info-color);
+        color: white;
+    }
+
+    .edit-btn {
+        background: rgba(255, 214, 0, 0.1);
+        color: var(--primary-color);
+    }
+
+    .edit-btn:hover {
+        background: var(--primary-color);
+        color: var(--secondary-color);
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: var(--border-color);
+        margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+        margin: 0 0 10px 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .empty-state p {
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .subscribers-container {
+            padding: 20px 15px;
+        }
+
+        .subscribers-header {
+            flex-direction: column;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .header-title {
+            font-size: 2rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .table-header {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .subscribers-table th,
+        .subscribers-table td {
+            padding: 12px 15px;
+            font-size: 0.85rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .subscribers-table {
+            font-size: 0.8rem;
+        }
+
+        .email-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 5px;
+        }
+
+        .date-info {
+            font-size: 0.8rem;
+        }
+    }
+</style>
+{% endblock %} 

@@ -1011,6 +1011,7 @@
                 <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 {% if user.is_staff %}
                     <a href="{% url 'feedback_analytics' %}"> <i class="fas fa-chart-line"></i> Feedback Analytics</a>
+                    <a href="{% url 'view_subscribers' %}"> <i class="fas fa-users"></i> Subscribers</a>
                 {% endif %}
             {% endif %}
             <a href="{% url 'about' %}"> <i class="fas fa-info-circle"></i> About</a>
@@ -1037,6 +1038,7 @@
                 <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
                 {% if user.is_staff %}
                     <a href="{% url 'feedback_analytics' %}"> <i class="fas fa-chart-line"></i> Feedback Analytics</a>
+                    <a href="{% url 'view_subscribers' %}"> <i class="fas fa-users"></i> Subscribers</a>
                 {% endif %}
             {% endif %}
             <a href="{% url 'about' %}"> <i class="fas fa-info-circle"></i> About</a>

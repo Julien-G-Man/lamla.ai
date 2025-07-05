@@ -28,6 +28,9 @@ from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils import timezone
 import dj_database_url
 from django.db import models
+import csv
+from django.http import HttpResponse
+from django.contrib.admin.views.decorators import staff_member_required
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -67,6 +70,48 @@ try:
         logger.warning("No OpenAI API credentials found in settings.py")
 except Exception as e:
     logger.error(f"Error configuring OpenAI API: {e}")
+
+def send_newsletter_welcome_email(email):
+    """Send a welcome email to new newsletter subscribers"""
+    try:
+        subject = "🎉 Welcome to Lamla AI! You're Successfully Subscribed"
+        message = f"""
+Hey there! 👋
+
+Welcome to the Lamla AI family! 🧠✨
+
+Thank you for subscribing to our newsletter. You're now part of a community of students who are preparing smarter, not just harder.
+
+Here's what you can expect from us:
+📚 Study tips and techniques that actually work
+⚙️ Updates on new features and improvements
+🚀 Smart ways to prepare for exams without stress
+💡 Insights on effective learning strategies
+
+We're excited to help you on your learning journey!
+
+Stay sharp,
+The Lamla AI Team 🧠
+
+---
+You can unsubscribe anytime by replying to this email with "unsubscribe".
+For support, contact us at: contact.lamla1@gmail.com
+"""
+        
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+        
+        logger.info(f"Welcome email sent successfully to {email}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Failed to send welcome email to {email}: {e}")
+        return False
 
 def validate_file_upload(file):
     """Validate uploaded file size and type"""
@@ -408,6 +453,9 @@ def home(request):
                 # Create new subscription
                 subscription = Subscription.objects.create(email=email)
                 messages.success(request, "Thank you for subscribing! You'll receive updates about new features and study tips.")
+                
+                # Send welcome email
+                send_newsletter_welcome_email(email)
                 
                 # Send email notification to admin
                 try:
@@ -947,6 +995,9 @@ def subscribe_newsletter(request):
                 is_active=True
             )
             
+            # Send welcome email
+            send_newsletter_welcome_email(email)
+            
             return JsonResponse({
                 'success': True,
                 'message': 'Successfully subscribed to our newsletter!'
@@ -1123,6 +1174,42 @@ def feedback_analytics(request):
             'debug_info': {'error': str(e)},
             'total_feedback': 0,
         })
+
+@staff_member_required
+def view_subscribers(request):
+    """Admin view to see all newsletter subscribers"""
+    subscribers = Subscription.objects.all().order_by('-created_at')
+    total_subscribers = subscribers.count()
+    active_subscribers = subscribers.filter(is_active=True).count()
+    
+    context = {
+        'subscribers': subscribers,
+        'total_subscribers': total_subscribers,
+        'active_subscribers': active_subscribers,
+        'inactive_subscribers': total_subscribers - active_subscribers,
+    }
+    
+    return render(request, 'slides_analyzer/subscribers.html', context)
+
+@staff_member_required
+def download_subscribers_csv(request):
+    """Download all subscribers as a CSV file"""
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="lamla_ai_newsletter_subscribers.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['Email', 'Date Subscribed', 'Status', 'Subscription Date'])
+    
+    for subscriber in Subscription.objects.all().order_by('-created_at'):
+        status = 'Active' if subscriber.is_active else 'Inactive'
+        writer.writerow([
+            subscriber.email,
+            subscriber.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            status,
+            subscriber.created_at.strftime('%Y-%m-%d')
+        ])
+    
+    return response
 
 DATABASES = {
     'default': dj_database_url.config(default='sqlite:///db.sqlite3')

@@ -149,7 +149,7 @@ HUGGING_FACE_API_TOKEN = os.getenv('HUGGING_FACE_API_TOKEN')
 
 # File upload settings
 MAX_UPLOAD_SIZE = 10 * 1024 * 1024  # 10MB limit
-ALLOWED_FILE_TYPES = ['.pdf', '.pptx']
+ALLOWED_FILE_TYPES = ['.pdf', '.pptx', '.docx', '.txt']
 
 # Media files (optional: Cloudinary setup)
 if os.getenv('CLOUDINARY_URL'):

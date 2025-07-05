@@ -14,6 +14,7 @@ urlpatterns = [
     path('quiz-results/', views.quiz_results, name='quiz_results'),
     path('flashcards/', views.flashcards, name='flashcards'),
     path('test-token/', views.test_token, name='test_token'),
+    path('test-flashcard/', views.test_flashcard_generator, name='test_flashcard_generator'),
     path('about/', views.about, name='about'),
     path('ajax/extract-text/', views.ajax_extract_text, name='ajax_extract_text'),
     path('ajax/submit-feedback/', views.submit_feedback, name='submit_feedback'),
@@ -24,6 +25,7 @@ urlpatterns = [
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
     path('terms-of-service/', views.terms_of_service, name='terms_of_service'),
     path('cookie-policy/', views.cookie_policy, name='cookie_policy'),
+    path('contact/', views.contact, name='contact'),
     path('user-profile/', views.user_profile, name='user_profile'),
     path('feedback-analytics/', views.feedback_analytics, name='feedback_analytics'),
 ] 

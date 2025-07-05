@@ -3,7 +3,7 @@ from django.core.files.storage import FileSystemStorage
 from pptx import Presentation
 from PyPDF2 import PdfReader
 import os
-import google.generativeai as genai
+
 from django.conf import settings
 import logging
 from django.http import JsonResponse
@@ -47,15 +47,17 @@ except Exception as e:
     logger.error(f"Error initializing Flashcard Generator: {e}")
     flashcard_generator = None
 
-# Configure Gemini API
+# Configure OpenAI API
 try:
-    if not hasattr(settings, 'GEMINI_API_KEY') or not settings.GEMINI_API_KEY:
-        logger.warning("GEMINI_API_KEY is not set in settings.py")
+    if (hasattr(settings, 'AZURE_OPENAI_API_KEY') and settings.AZURE_OPENAI_API_KEY and 
+        hasattr(settings, 'AZURE_OPENAI_ENDPOINT') and settings.AZURE_OPENAI_ENDPOINT):
+        logger.info("Azure OpenAI API configured successfully")
+    elif hasattr(settings, 'OPENAI_API_KEY') and settings.OPENAI_API_KEY:
+        logger.info("OpenAI API configured successfully")
     else:
-        genai.configure(api_key=settings.GEMINI_API_KEY)
-        logger.info("Gemini API configured successfully")
+        logger.warning("No OpenAI API credentials found in settings.py")
 except Exception as e:
-    logger.error(f"Error configuring Gemini API: {e}")
+    logger.error(f"Error configuring OpenAI API: {e}")
 
 def validate_file_upload(file):
     """Validate uploaded file size and type"""
@@ -87,8 +89,51 @@ def test_token(request):
             'message': 'Token not found in environment variables'
         }, status=500)
 
+def test_flashcard_generator(request):
+    """Test view to verify flashcard generator is working"""
+    if not flashcard_generator:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Flashcard generator not initialized',
+            'azure_openai_key_set': bool(getattr(settings, 'AZURE_OPENAI_API_KEY', None)),
+            'azure_openai_endpoint_set': bool(getattr(settings, 'AZURE_OPENAI_ENDPOINT', None)),
+            'openai_key_set': bool(getattr(settings, 'OPENAI_API_KEY', None))
+        }, status=500)
+    
+    try:
+        # Test with a simple text
+        test_text = "Photosynthesis is the process by which plants convert sunlight into energy. The main components are chlorophyll, carbon dioxide, and water."
+        result = flashcard_generator.generate_flashcards(test_text, 2)
+        
+        if 'error' in result:
+            return JsonResponse({
+                'status': 'error',
+                'message': result['error'],
+                'azure_openai_key_set': bool(getattr(settings, 'AZURE_OPENAI_API_KEY', None)),
+                'azure_openai_endpoint_set': bool(getattr(settings, 'AZURE_OPENAI_ENDPOINT', None)),
+                'openai_key_set': bool(getattr(settings, 'OPENAI_API_KEY', None))
+            }, status=500)
+        
+        return JsonResponse({
+            'status': 'success',
+            'message': 'Flashcard generator is working',
+            'flashcards_generated': len(result.get('flashcards', [])),
+            'azure_openai_key_set': bool(getattr(settings, 'AZURE_OPENAI_API_KEY', None)),
+            'azure_openai_endpoint_set': bool(getattr(settings, 'AZURE_OPENAI_ENDPOINT', None)),
+            'openai_key_set': bool(getattr(settings, 'OPENAI_API_KEY', None))
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Error testing flashcard generator: {str(e)}',
+            'azure_openai_key_set': bool(getattr(settings, 'AZURE_OPENAI_API_KEY', None)),
+            'azure_openai_endpoint_set': bool(getattr(settings, 'AZURE_OPENAI_ENDPOINT', None)),
+            'openai_key_set': bool(getattr(settings, 'OPENAI_API_KEY', None))
+        }, status=500)
+
 def extract_text_from_file(uploaded_file):
-    """Extract text from pptx, pdf, or txt file-like object. Returns extracted text or raises Exception."""
+    """Extract text from pptx, pdf, docx, or txt file-like object. Returns extracted text or raises Exception."""
     from io import TextIOWrapper
     file_name = uploaded_file.name
     fs = FileSystemStorage()
@@ -108,6 +153,12 @@ def extract_text_from_file(uploaded_file):
                 page_text = page.extract_text()
                 if page_text:
                     extracted_text += page_text + "\n"
+        elif file_name.lower().endswith('.docx'):
+            from docx import Document
+            doc = Document(file_path)
+            for paragraph in doc.paragraphs:
+                if paragraph.text.strip():
+                    extracted_text += paragraph.text + "\n"
         elif file_name.lower().endswith('.txt'):
             with open(file_path, 'r', encoding='utf-8') as f:
                 extracted_text = f.read()
@@ -448,8 +499,10 @@ def flashcards(request):
         else:
             try:
                 if not flashcard_generator:
-                    error_message = 'Flashcard generator not properly initialized.'
+                    error_message = 'Flashcard generator not properly initialized. Please check if AZURE_OPENAI_API_KEY and AZURE_OPENAI_ENDPOINT are set.'
+                    logger.error("Flashcard generator is None - Azure OpenAI credentials may not be set")
                 else:
+                    logger.info(f"Generating {num_flashcards} flashcards of type: {flashcard_type}")
                     # Generate flashcards based on type
                     if flashcard_type == 'concepts':
                         result = flashcard_generator.generate_concept_flashcards(
@@ -469,11 +522,14 @@ def flashcards(request):
                     
                     if 'error' in result:
                         error_message = result['error']
+                        logger.error(f"Flashcard generation error: {result['error']}")
                     else:
                         flashcard_results = result.get('flashcards', [])
+                        logger.info(f"Successfully generated {len(flashcard_results)} flashcards")
                         
             except Exception as e:
                 error_message = f'Error generating flashcards: {str(e)}'
+                logger.error(f"Exception in flashcard generation: {e}")
                 
     return render(request, 'slides_analyzer/flashcards.html', {
         'user_authenticated': request.user.is_authenticated,
@@ -560,16 +616,24 @@ You can view and manage all submissions in the Django admin panel.
 @csrf_exempt
 @login_required
 def ajax_extract_text(request):
-    if request.method == 'POST' and request.FILES.get('slide_file'):
-        uploaded_file = request.FILES['slide_file']
-        try:
-            validate_file_upload(uploaded_file)
-            extracted_text = extract_text_from_file(uploaded_file)
-            return JsonResponse({'text': extracted_text})
-        except ValidationError as e:
-            return JsonResponse({'error': str(e)}, status=400)
-        except Exception as e:
-            return JsonResponse({'error': f'File upload failed: {str(e)}'}, status=400)
+    if request.method == 'POST':
+        # Check for both possible file parameter names
+        uploaded_file = request.FILES.get('slide_file') or request.FILES.get('study_file')
+        if uploaded_file:
+            try:
+                logger.info(f"Processing file: {uploaded_file.name} ({uploaded_file.size} bytes)")
+                validate_file_upload(uploaded_file)
+                extracted_text = extract_text_from_file(uploaded_file)
+                logger.info(f"Successfully extracted {len(extracted_text)} characters from {uploaded_file.name}")
+                return JsonResponse({'text': extracted_text})
+            except ValidationError as e:
+                logger.error(f"Validation error for {uploaded_file.name}: {e}")
+                return JsonResponse({'error': str(e)}, status=400)
+            except Exception as e:
+                logger.error(f"File processing error for {uploaded_file.name}: {e}")
+                return JsonResponse({'error': f'File upload failed: {str(e)}'}, status=400)
+        else:
+            logger.warning("No file found in request")
     return JsonResponse({'error': 'No file uploaded'}, status=400)
 
 class CustomLoginView(AllauthLoginView):
@@ -689,6 +753,55 @@ def terms_of_service(request):
 def cookie_policy(request):
     """Render the Cookie Policy page"""
     return render(request, 'slides_analyzer/cookie_policy.html')
+
+def contact(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        
+        # Basic validation
+        if not all([name, email, subject, message]):
+            messages.error(request, 'Please fill in all required fields.')
+            return render(request, 'slides_analyzer/contact.html')
+        
+        try:
+            # Validate email
+            validate_email(email)
+        except DjangoValidationError:
+            messages.error(request, 'Please enter a valid email address.')
+            return render(request, 'slides_analyzer/contact.html')
+        
+        try:
+            # Save contact message to database
+            Contact.objects.create(
+                name=name,
+                email=email,
+                subject=subject,
+                message=message
+            )
+            
+            # Send email notification (optional)
+            try:
+                send_mail(
+                    f'New Contact Form Submission: {subject}',
+                    f'Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}',
+                    email,  # From email
+                    [settings.DEFAULT_FROM_EMAIL],  # To email (admin)
+                    fail_silently=True,
+                )
+            except Exception as e:
+                logger.warning(f"Failed to send contact form email: {e}")
+            
+            messages.success(request, 'Thank you for your message! We will get back to you soon.')
+            return redirect('contact')
+            
+        except Exception as e:
+            logger.error(f"Error saving contact form: {e}")
+            messages.error(request, 'Sorry, there was an error sending your message. Please try again.')
+    
+    return render(request, 'slides_analyzer/contact.html')
 
 @login_required
 def dashboard(request):

@@ -29,6 +29,10 @@ urlpatterns = [
     path('user-profile/', views.user_profile, name='user_profile'),
     path('feedback-analytics/', views.feedback_analytics, name='feedback_analytics'),
     
+    # Subscriber Dashboard (Admin only)
+    path('admin/subscribers/', views.view_subscribers, name='view_subscribers'),
+    path('admin/subscribers/download/', views.download_subscribers_csv, name='download_subscribers_csv'),
+    
     # Chatbot URLs
     path('api/chatbot/message/', views.chatbot_message, name='chatbot_message'),
     path('api/chatbot/suggestions/', views.chatbot_suggestions, name='chatbot_suggestions'),

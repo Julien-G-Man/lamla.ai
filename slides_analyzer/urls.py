@@ -36,6 +36,7 @@ urlpatterns = [
     path('subscribers/toggle-status/', views.toggle_subscription_status, name='toggle_subscription_status'),
     
     # Chatbot URLs
+    path('api/chatbot/support-request/', views.chatbot_support_request, name='chatbot_support_request'),
     path('api/chatbot/message/', views.chatbot_message, name='chatbot_message'),
     path('api/chatbot/suggestions/', views.chatbot_suggestions, name='chatbot_suggestions'),
     path('api/chatbot/history/', views.chatbot_history, name='chatbot_history'),

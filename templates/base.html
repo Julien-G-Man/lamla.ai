@@ -1040,60 +1040,54 @@
     <div id="toast-container" style="position: fixed; top: 80px; right: 20px; z-index: 9999;"></div>
     
     <!-- Chatbot Container -->
-    <div id="chatbot-container" class="chatbot-container">
-        <!-- Chatbot Toggle Button -->
-        <div id="chatbot-toggle" class="chatbot-toggle">
-            <i class="fas fa-comments"></i>
-            <span class="chatbot-toggle-text">Ask AI</span>
-        </div>
-        
-        <!-- Chatbot Window -->
-        <div id="chatbot-window" class="chatbot-window">
-            <!-- Chatbot Header -->
-            <div class="chatbot-header">
-                <div class="chatbot-header-content">
-                    <div class="chatbot-avatar">
-                        <i class="fas fa-robot"></i>
+    {% block chatbot %}
+        <div id="chatbot-container" class="chatbot-container">
+            <!-- Chatbot Toggle Button -->
+            <div id="chatbot-toggle" class="chatbot-toggle">
+                <i class="fas fa-comments"></i>
+                <span class="chatbot-toggle-text">Ask AI</span>
+            </div>
+            <!-- Chatbot Window -->
+            <div id="chatbot-window" class="chatbot-window">
+                <!-- Chatbot Header -->
+                <div class="chatbot-header">
+                    <div class="chatbot-header-content">
+                        <div class="chatbot-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="chatbot-info">
+                            <h3>Lamla AI Assistant</h3>
+                            <p>Ask me anything!</p>
+                        </div>
                     </div>
-                    <div class="chatbot-info">
-                        <h3>Lamla AI Assistant</h3>
-                        <p>Ask me anything!</p>
-                    </div>
-                </div>
-                <button id="chatbot-close" class="chatbot-close">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <!-- Chatbot Messages -->
-            <div id="chatbot-messages" class="chatbot-messages">
-                <!-- Welcome message will be added here -->
-            </div>
-            
-            <!-- Chatbot Suggestions -->
-            <div id="chatbot-suggestions" class="chatbot-suggestions">
-                <!-- Suggested questions will be added here -->
-            </div>
-            
-            <!-- Chatbot Input -->
-            <div class="chatbot-input-container">
-                <div class="chatbot-input-wrapper">
-                    <input type="text" id="chatbot-input" class="chatbot-input" placeholder="Type your question here..." maxlength="500">
-                    <button id="chatbot-send" class="chatbot-send">
-                        <i class="fas fa-paper-plane"></i>
+                    <button id="chatbot-close" class="chatbot-close">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="chatbot-typing" id="chatbot-typing" style="display: none;">
-                    <div class="typing-indicator">
-                        <span></span>
-                        <span></span>
-                        <span></span>
+                <!-- Chatbot Messages -->
+                <div id="chatbot-messages" class="chatbot-messages"></div>
+                <!-- Chatbot Suggestions -->
+                <div id="chatbot-suggestions" class="chatbot-suggestions"></div>
+                <!-- Chatbot Input -->
+                <div class="chatbot-input-container">
+                    <div class="chatbot-input-wrapper">
+                        <input type="text" id="chatbot-input" class="chatbot-input" placeholder="Type your question here..." maxlength="500">
+                        <button id="chatbot-send" class="chatbot-send">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
                     </div>
-                    <span>AI is typing...</span>
+                    <div class="chatbot-typing" id="chatbot-typing" style="display: none;">
+                        <div class="typing-indicator">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <span>AI is typing...</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endblock %}
     
 
     <script>

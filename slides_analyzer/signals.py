@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
-from .email_backend import send_email_with_custom_from
+from .email_backend import send_email
 
 
 @receiver(post_save, sender=User)
@@ -28,7 +28,7 @@ def send_welcome_email(sender, instance, created, **kwargs):
         plain_message = render_to_string('emails/welcome_email.txt', context)
         
         # Send email using custom backend
-        send_email_with_custom_from(
+        send_email(
             subject=subject,
             message=plain_message,
             recipient_list=[instance.email],
@@ -75,7 +75,7 @@ def send_notification_email(user_email, subject, template_name, context, from_em
     plain_message = render_to_string(f'emails/{template_name}.txt', context)
     
     # Send email using custom backend
-    return send_email_with_custom_from(
+    return send_email(
         subject=subject,
         message=plain_message,
         recipient_list=[user_email],

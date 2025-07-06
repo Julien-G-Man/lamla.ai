@@ -1,7 +1,8 @@
 from django.core.mail.backends.smtp import EmailBackend as SMTPEmailBackend
-from django.core.mail import EmailMessage
+from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.conf import settings
 import os
+import logging
 
 
 class CustomEmailBackend(SMTPEmailBackend):
@@ -48,45 +49,36 @@ class CustomEmailBackend(SMTPEmailBackend):
             return 'contact.lamla1@gmail.com'
 
 
-def send_email_with_custom_from(subject, message, recipient_list, from_email=None, **kwargs):
+def send_email(subject, message, recipient_list, from_email=None, html_message=None, fail_silently=False, **kwargs):
     """
-    Utility function to send emails with custom from_email.
-    
-    Args:
-        subject: Email subject
-        message: Email message content
-        recipient_list: List of recipient email addresses
-        from_email: Custom from_email (optional, will be determined automatically if not provided)
-        **kwargs: Additional arguments for EmailMessage
+    Reusable utility to send email with plain and HTML content, logging, and fallback.
     """
-    if from_email is None:
-        # Determine from_email based on subject
-        subject_lower = subject.lower()
-        
-        # Email confirmations and password resets
-        if any(keyword in subject_lower for keyword in [
-            'confirm', 'verification', 'verify', 'password reset', 
-            'password change', 'reset password', 'change password', 'reset request'
-        ]):
-            from_email = 'contact.lamla1@gmail.com'
-        
-        # Welcome emails and general notifications
-        elif any(keyword in subject_lower for keyword in [
-            'welcome', 'thank you', 'registration', 'signup', 'sign up',
-            'account created', 'new account'
-        ]):
-            from_email = 'juliengmanana@gmail.com'
-        
-        # Default to contact.lamla1@gmail.com for security-related emails
+    logger = logging.getLogger(__name__)
+    try:
+        if from_email is None:
+            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')
+        if html_message:
+            email = EmailMultiAlternatives(
+                subject=subject,
+                body=message,
+                from_email=from_email,
+                to=recipient_list,
+                **kwargs
+            )
+            email.attach_alternative(html_message, "text/html")
         else:
-            from_email = 'contact.lamla1@gmail.com'
-    
-    email = EmailMessage(
-        subject=subject,
-        body=message,
-        from_email=from_email,
-        to=recipient_list,
-        **kwargs
-    )
-    
-    return email.send() 
+            email = EmailMessage(
+                subject=subject,
+                body=message,
+                from_email=from_email,
+                to=recipient_list,
+                **kwargs
+            )
+        email.send(fail_silently=fail_silently)
+        logger.info(f"Email sent to {recipient_list} (subject: {subject})")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send email to {recipient_list}: {e}")
+        if not fail_silently:
+            raise
+        return False 

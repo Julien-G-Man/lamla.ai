@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.core.mail import send_mail
 from django.conf import settings
-from slides_analyzer.email_backend import send_email_with_custom_from
+from slides_analyzer.email_backend import send_email
 
 
 class Command(BaseCommand):
@@ -25,7 +25,7 @@ class Command(BaseCommand):
         # Test 1: Email confirmation (should come from contact.lamla1@gmail.com)
         self.stdout.write('\n1. Testing email confirmation...')
         try:
-            send_email_with_custom_from(
+            send_email(
                 subject='Email Confirmation - LAMLA AI',
                 message='This is a test email confirmation message.',
                 recipient_list=[test_email],
@@ -42,7 +42,7 @@ class Command(BaseCommand):
         # Test 2: Password reset (should come from contact.lamla1@gmail.com)
         self.stdout.write('\n2. Testing password reset...')
         try:
-            send_email_with_custom_from(
+            send_email(
                 subject='LAMLA AI - Password Reset Request',
                 message='This is a test password reset message.',
                 recipient_list=[test_email],
@@ -59,7 +59,7 @@ class Command(BaseCommand):
         # Test 3: Welcome email (should come from juliengmanana@gmail.com)
         self.stdout.write('\n3. Testing welcome email...')
         try:
-            send_email_with_custom_from(
+            send_email(
                 subject='Welcome to LAMLA AI! 🎉',
                 message='This is a test welcome email message.',
                 recipient_list=[test_email],
@@ -76,7 +76,7 @@ class Command(BaseCommand):
         # Test 4: General notification (should come from contact.lamla1@gmail.com)
         self.stdout.write('\n4. Testing general notification...')
         try:
-            send_email_with_custom_from(
+            send_email(
                 subject='General Notification - LAMLA AI',
                 message='This is a test general notification message.',
                 recipient_list=[test_email],

@@ -1,0 +1,560 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="page-wrapper">
+        <div class="container">
+            <h1 class="main-page-title">🔗 Account Connections</h1>
+            <p class="main-page-description">Manage your connected social media and third-party accounts for LAMLA AI.</p>
+            
+            <div class="connections-card">
+                <div class="connections-icon">
+                    <i class="fas fa-link"></i>
+                </div>
+                
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                                <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <div class="connections-section">
+                    <h3>Connected Accounts</h3>
+                    {% if form.accounts %}
+                        <div class="connected-accounts">
+                            {% for base_account in form.accounts %}
+                                {% with base_account.get_provider_account as account %}
+                                    <div class="account-item">
+                                        <div class="account-info">
+                                            <div class="provider-icon">
+                                                {% if account.provider == 'google' %}
+                                                    <i class="fab fa-google"></i>
+                                                {% elif account.provider == 'facebook' %}
+                                                    <i class="fab fa-facebook"></i>
+                                                {% elif account.provider == 'github' %}
+                                                    <i class="fab fa-github"></i>
+                                                {% elif account.provider == 'twitter' %}
+                                                    <i class="fab fa-twitter"></i>
+                                                {% else %}
+                                                    <i class="fas fa-user"></i>
+                                                {% endif %}
+                                            </div>
+                                            <div class="account-details">
+                                                <div class="account-name">{{ account.get_brand.name }}</div>
+                                                <div class="account-email">{{ account.extra_data.email|default:account.extra_data.login|default:"Connected account" }}</div>
+                                            </div>
+                                        </div>
+                                        <form method="post" action="{% url 'socialaccount_connections' %}" class="disconnect-form">
+                                            {% csrf_token %}
+                                            <input name="account" type="hidden" value="{{ base_account.id }}">
+                                            <button type="submit" class="disconnect-btn" name="action_remove">
+                                                <i class="fas fa-unlink"></i>
+                                                Disconnect
+                                            </button>
+                                        </form>
+                                    </div>
+                                {% endwith %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="no-connections">
+                            <div class="no-connections-icon">
+                                <i class="fas fa-link-slash"></i>
+                            </div>
+                            <p>No social accounts connected yet.</p>
+                            <p class="no-connections-subtitle">Connect your social media accounts for easier login and enhanced features.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="connections-section">
+                    <h3>Add New Connection</h3>
+                    <div class="social-providers">
+                        {% get_providers as socialaccount_providers %}
+                        {% for provider in socialaccount_providers %}
+                            {% if provider.social_app %}
+                                <div class="provider-item">
+                                    <div class="provider-info">
+                                        <div class="provider-icon">
+                                            {% if provider.id == 'google' %}
+                                                <i class="fab fa-google"></i>
+                                            {% elif provider.id == 'facebook' %}
+                                                <i class="fab fa-facebook"></i>
+                                            {% elif provider.id == 'github' %}
+                                                <i class="fab fa-github"></i>
+                                            {% elif provider.id == 'twitter' %}
+                                                <i class="fab fa-twitter"></i>
+                                            {% else %}
+                                                <i class="fas fa-user"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="provider-details">
+                                            <div class="provider-name">{{ provider.name }}</div>
+                                            <div class="provider-description">Connect your {{ provider.name }} account</div>
+                                        </div>
+                                    </div>
+                                    <a href="{% provider_login_url provider.id process="connect" %}" class="connect-btn">
+                                        <i class="fas fa-plus"></i>
+                                        Connect
+                                    </a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if not socialaccount_providers %}
+                            <div class="no-providers">
+                                <div class="no-providers-icon">
+                                    <i class="fas fa-cog"></i>
+                                </div>
+                                <p>No social providers configured.</p>
+                                <p class="no-providers-subtitle">Contact support to enable social login options.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="connections-tips">
+                    <h4>🔒 Connection Security:</h4>
+                    <ul>
+                        <li>Only connect accounts you trust and own</li>
+                        <li>You can disconnect accounts at any time</li>
+                        <li>Connected accounts provide faster login</li>
+                        <li>Your data remains secure and private</li>
+                        <li>You can still use email/password login</li>
+                    </ul>
+                </div>
+                
+                <div class="form-actions">
+                    <a href="{% url 'account_login' %}" class="back-btn">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to Login
+                    </a>
+                    <a href="{% url 'home' %}" class="home-btn">
+                        <i class="fas fa-home"></i>
+                        Go Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #FFD600;
+            --secondary-color: #222;
+            --background-white: #fff;
+            --light-yellow: #FFFBE6;
+            --enactus-light-grey: #ECF0F1;
+            --enactus-border-light: #ECECEC;
+            --enactus-shadow-light: rgba(0, 0, 0, 0.08);
+            --enactus-shadow-medium: rgba(0, 0, 0, 0.15);
+            --enactus-error-red: #E74C3C;
+            --enactus-success-green: #2ECC71;
+            --enactus-info-blue: #3498DB;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--enactus-light-grey);
+            color: var(--secondary-color);
+        }
+        
+        .page-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: calc(100vh - 80px);
+            padding: 40px 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: var(--background-white);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px var(--enactus-shadow-light);
+            padding: 40px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        
+        .main-page-title {
+            color: var(--secondary-color);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .main-page-description {
+            color: var(--secondary-color);
+            font-size: 1.05rem;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        .connections-card {
+            background: var(--light-yellow);
+            border: 2px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(253, 199, 43, 0.1);
+        }
+        
+        .connections-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .messages {
+            margin: 20px 0;
+        }
+        
+        .message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .message.success {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--enactus-success-green);
+            border: 1px solid var(--enactus-success-green);
+        }
+        
+        .message.error {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--enactus-error-red);
+            border: 1px solid var(--enactus-error-red);
+        }
+        
+        .message.info {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--enactus-info-blue);
+            border: 1px solid var(--enactus-info-blue);
+        }
+        
+        .connections-section {
+            margin: 30px 0;
+        }
+        
+        .connections-section h3 {
+            color: var(--secondary-color);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .connected-accounts {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .account-item {
+            background: var(--background-white);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px var(--enactus-shadow-light);
+            transition: all 0.3s ease;
+        }
+        
+        .account-item:hover {
+            box-shadow: 0 4px 12px var(--enactus-shadow-medium);
+            transform: translateY(-2px);
+        }
+        
+        .account-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .provider-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            width: 50px;
+            text-align: center;
+        }
+        
+        .account-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .account-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+        }
+        
+        .account-email {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            opacity: 0.7;
+        }
+        
+        .disconnect-form {
+            margin: 0;
+        }
+        
+        .disconnect-btn {
+            background: var(--enactus-error-red);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .disconnect-btn:hover {
+            background: #c0392b;
+            transform: translateY(-1px);
+        }
+        
+        .no-connections {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--background-white);
+            border-radius: 12px;
+            border: 2px dashed var(--enactus-border-light);
+        }
+        
+        .no-connections-icon {
+            font-size: 3rem;
+            color: var(--enactus-border-light);
+            margin-bottom: 15px;
+        }
+        
+        .no-connections p {
+            margin: 5px 0;
+            color: var(--secondary-color);
+        }
+        
+        .no-connections-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .social-providers {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .provider-item {
+            background: var(--background-white);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px var(--enactus-shadow-light);
+            transition: all 0.3s ease;
+        }
+        
+        .provider-item:hover {
+            box-shadow: 0 4px 12px var(--enactus-shadow-medium);
+            transform: translateY(-2px);
+        }
+        
+        .provider-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .provider-details {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .provider-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+        }
+        
+        .provider-description {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            opacity: 0.7;
+        }
+        
+        .connect-btn {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .connect-btn:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+        
+        .no-providers {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--background-white);
+            border-radius: 12px;
+            border: 2px dashed var(--enactus-border-light);
+        }
+        
+        .no-providers-icon {
+            font-size: 3rem;
+            color: var(--enactus-border-light);
+            margin-bottom: 15px;
+        }
+        
+        .no-providers p {
+            margin: 5px 0;
+            color: var(--secondary-color);
+        }
+        
+        .no-providers-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .connections-tips {
+            background: var(--background-white);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .connections-tips h4 {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .connections-tips ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .connections-tips li {
+            margin: 8px 0;
+            padding: 8px 0;
+            color: var(--secondary-color);
+            font-size: 0.95rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0 0 0;
+            flex-wrap: wrap;
+        }
+        
+        .back-btn, .home-btn {
+            background: var(--enactus-light-grey);
+            color: var(--secondary-color);
+            border: 1px solid var(--enactus-border-light);
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-btn:hover, .home-btn:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px var(--enactus-shadow-medium);
+        }
+        
+        @media (max-width: 768px) {
+            .page-wrapper {
+                padding: 20px 15px;
+            }
+            
+            .container {
+                padding: 25px 20px;
+            }
+            
+            .main-page-title {
+                font-size: 1.8rem;
+            }
+            
+            .main-page-description {
+                font-size: 0.95rem;
+            }
+            
+            .connections-card {
+                padding: 20px;
+            }
+            
+            .connections-icon {
+                font-size: 3rem;
+            }
+            
+            .account-item, .provider-item {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .account-info, .provider-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .back-btn, .home-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+{% endblock %} 

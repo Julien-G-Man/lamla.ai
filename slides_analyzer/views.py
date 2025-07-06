@@ -76,11 +76,11 @@ except Exception as e:
 def send_newsletter_welcome_email(email):
     """Send a welcome email to new newsletter subscribers"""
     try:
-        subject = "🎉 Welcome to Lamla AI! You're Successfully Subscribed"
+        subject = "🎉 Welcome to LAMLA AI! You're Successfully Subscribed"
         message = f"""
 Hey there! 👋
 
-Welcome to the Lamla AI family! 🧠✨
+Welcome to the LAMLA AI family! 🧠✨
 
 Thank you for subscribing to our newsletter. You're now part of a community of students who are preparing smarter, not just harder.
 
@@ -93,8 +93,8 @@ Here's what you can expect from us:
 We're excited to help you on your learning journey!
 
 Stay sharp,
-The Lamla AI Team 🧠
-
+The LAMLA AI Team 🧠
+https://lamla-ai.onrender.com
 ---
 You can unsubscribe anytime by replying to this email with "unsubscribe".
 For support, contact us at: contact.lamla1@gmail.com
@@ -462,7 +462,7 @@ def home(request):
                         subject='New Newsletter Subscription',
                         message=f'A new student has subscribed to the newsletter:\n\nEmail: {email}\nDate: {subscription.created_at.strftime("%Y-%m-%d %H:%M:%S")}',
                         from_email=settings.DEFAULT_FROM_EMAIL,
-                        recipient_list=[settings.ADMIN_EMAIL] if hasattr(settings, 'ADMIN_EMAIL') else ['admin@lamla.ai'],
+                        recipient_list=[settings.ADMIN_EMAIL] if hasattr(settings, 'ADMIN_EMAIL') else ['contact.lamla1@gmail.com'],
                         fail_silently=True,
                     )
                 except Exception as e:
@@ -649,25 +649,13 @@ def about(request):
             
             messages.success(request, "Thank you for your message! We'll get back to you soon.")
             
-            # Send email notification to admin
+            # Send email notification (optional)
             try:
-                admin_message = f"""
-New contact form submission from a student:
-
-Name: {name}
-Email: {email}
-Subject: {subject}
-Message: {message}
-
-Submitted on: {contact.created_at.strftime("%Y-%m-%d %H:%M:%S")}
-
-You can view and manage all submissions in the Django admin panel.
-"""
                 send_mail(
-                    subject=f'New Contact Form Submission: {subject}',
-                    message=admin_message,
-                    from_email=settings.DEFAULT_FROM_EMAIL,
-                    recipient_list=[settings.ADMIN_EMAIL] if hasattr(settings, 'ADMIN_EMAIL') else ['admin@lamla.ai'],
+                    f'LAMLAAI Contact Form Submission: {subject}',
+                    f'Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}\n\nThank you for contacting LAMLA AI! We will get back to you soon.\n\nBest regards,\nThe LAMLA AI Team\nhttps://lamla-ai.onrender.com',
+                    'contact.lamla1@gmail.com',  # From email
+                    [settings.DEFAULT_FROM_EMAIL],  # To email (admin)
                     fail_silently=True,
                 )
             except Exception as e:
@@ -875,9 +863,9 @@ def contact(request):
             # Send email notification (optional)
             try:
                 send_mail(
-                    f'New Contact Form Submission: {subject}',
-                    f'Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}',
-                    email,  # From email
+                    f'LAMLAAI Contact Form Submission: {subject}',
+                    f'Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}\n\nThank you for contacting LAMLA AI! We will get back to you soon.\n\nBest regards,\nThe LAMLA AI Team\nhttps://lamla-ai.onrender.com',
+                    'contact.lamla1@gmail.com',  # From email
                     [settings.DEFAULT_FROM_EMAIL],  # To email (admin)
                     fail_silently=True,
                 )

@@ -1,0 +1,497 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="page-wrapper">
+        <div class="container">
+            {% if confirmation %}
+                <!-- Individual email confirmation page -->
+                <h1 class="main-page-title">🎉 Welcome to LAMLA AI!</h1>
+                <p class="main-page-description">Please confirm your email address to complete your registration.</p>
+                
+                <div class="confirmation-card">
+                    <div class="confirmation-icon">
+                        <i class="fas fa-envelope-open"></i>
+                    </div>
+                    
+                    <div class="confirmation-details">
+                        <p><strong>Email:</strong> {{ confirmation.email_address.email }}</p>
+                        <p><strong>Username:</strong> {{ confirmation.email_address.user.username }}</p>
+                    </div>
+                    
+                    <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+                        {% csrf_token %}
+                        <button type="submit" class="confirm-btn">
+                            <i class="fas fa-check"></i>
+                            Confirm Email Address
+                        </button>
+                    </form>
+                    
+                    <div class="confirmation-note">
+                        <p>By confirming your email, you'll have full access to all LAMLA AI features including:</p>
+                        <ul>
+                            <li>📚 Custom quiz generation</li>
+                            <li>🧠 Smart flashcards</li>
+                            <li>📊 Exam analysis tools</li>
+                            <li>💡 Personalized study recommendations</li>
+                        </ul>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Email confirmation list page -->
+                <h1 class="main-page-title">📧 Confirm Your Email Address</h1>
+                <p class="main-page-description">Please confirm your email address to complete your registration and unlock all LAMLA AI features.</p>
+                
+                <div class="email-list-card">
+                    <div class="email-list-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    
+                    {% if email_addresses %}
+                        <div class="email-addresses">
+                            {% for emailaddress in email_addresses %}
+                                <div class="email-item {% if emailaddress.verified %}verified{% else %}unverified{% endif %}">
+                                    <div class="email-info">
+                                        <div class="email-address">{{ emailaddress.email }}</div>
+                                        <div class="email-status">
+                                            {% if emailaddress.verified %}
+                                                <span class="status-badge verified">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    Verified
+                                                </span>
+                                            {% else %}
+                                                <span class="status-badge unverified">
+                                                    <i class="fas fa-clock"></i>
+                                                    Pending Confirmation
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    {% if not emailaddress.verified %}
+                                        <div class="email-actions">
+                                            <form method="post" action="{% url 'account_email' %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="email" value="{{ emailaddress.email }}">
+                                                <button type="submit" name="action_send" class="resend-btn">
+                                                    <i class="fas fa-paper-plane"></i>
+                                                    Resend Confirmation
+                                                </button>
+                                            </form>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="confirmation-note">
+                            <p><strong>Why confirm your email?</strong></p>
+                            <ul>
+                                <li>🔐 Secure your account</li>
+                                <li>📧 Receive important updates</li>
+                                <li>🎯 Get personalized study recommendations</li>
+                                <li>📱 Reset password if needed</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="help-section">
+                            <p><strong>Didn't receive the email?</strong></p>
+                            <ul>
+                                <li>Check your spam/junk folder</li>
+                                <li>Make sure you entered the correct email address</li>
+                                <li>Click "Resend Confirmation" above</li>
+                                <li>Contact us at <a href="mailto:contact.lamla1@gmail.com">contact.lamla1@gmail.com</a></li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="no-email-message">
+                            <div class="no-email-icon">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <h3>No Email Addresses Found</h3>
+                            <p>You don't have any email addresses associated with your account. Please add an email address to continue.</p>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="action-buttons">
+                        <a href="{% url 'account_login' %}" class="back-btn">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to Sign In
+                        </a>
+                        <a href="/" class="home-btn">
+                            <i class="fas fa-home"></i>
+                            Go to Home
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #FFD600;
+            --secondary-color: #222;
+            --background-white: #fff;
+            --light-yellow: #FFFBE6;
+            --enactus-light-grey: #ECF0F1;
+            --enactus-border-light: #ECECEC;
+            --enactus-shadow-light: rgba(0, 0, 0, 0.08);
+            --enactus-shadow-medium: rgba(0, 0, 0, 0.15);
+            --enactus-error-red: #E74C3C;
+            --enactus-success-green: #2ECC71;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--enactus-light-grey);
+            color: var(--secondary-color);
+        }
+        
+        .page-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: calc(100vh - 80px);
+            padding: 40px 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: var(--background-white);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px var(--enactus-shadow-light);
+            padding: 40px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        
+        .main-page-title {
+            color: var(--secondary-color);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .main-page-description {
+            color: var(--secondary-color);
+            font-size: 1.05rem;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        .confirmation-card, .email-list-card {
+            background: var(--light-yellow);
+            border: 2px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(253, 199, 43, 0.1);
+        }
+        
+        .confirmation-icon, .email-list-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .confirmation-details {
+            background: var(--background-white);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .confirmation-details p {
+            margin: 10px 0;
+            font-size: 1rem;
+        }
+        
+        .confirmation-details strong {
+            color: var(--secondary-color);
+        }
+        
+        .confirm-btn {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            border-radius: 10px;
+            padding: 18px 30px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(253, 199, 43, 0.3);
+            margin: 20px 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .confirm-btn:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--enactus-shadow-medium);
+        }
+        
+        .email-addresses {
+            margin: 25px 0;
+        }
+        
+        .email-item {
+            background: var(--background-white);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 2px solid var(--enactus-border-light);
+            transition: all 0.3s ease;
+        }
+        
+        .email-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(253, 199, 43, 0.1);
+        }
+        
+        .email-item.verified {
+            border-color: var(--enactus-success-green);
+            background: rgba(46, 204, 113, 0.05);
+        }
+        
+        .email-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .email-address {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        .email-status {
+            flex-shrink: 0;
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-badge.verified {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--enactus-success-green);
+        }
+        
+        .status-badge.unverified {
+            background: rgba(253, 199, 43, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .email-actions {
+            text-align: right;
+        }
+        
+        .resend-btn {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .resend-btn:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .confirmation-note, .help-section {
+            margin-top: 25px;
+            text-align: left;
+            background: var(--background-white);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        
+        .confirmation-note p, .help-section p {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--secondary-color);
+        }
+        
+        .confirmation-note ul, .help-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .confirmation-note li, .help-section li {
+            margin: 8px 0;
+            padding: 8px 0;
+            color: var(--secondary-color);
+            font-size: 0.95rem;
+        }
+        
+        .help-section a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .help-section a:hover {
+            text-decoration: underline;
+        }
+        
+        .no-email-message {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .no-email-icon {
+            font-size: 3rem;
+            color: var(--enactus-error-red);
+            margin-bottom: 15px;
+        }
+        
+        .no-email-message h3 {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .no-email-message p {
+            color: var(--secondary-color);
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .back-btn, .home-btn {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            border-radius: 10px;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 5px 15px rgba(253, 199, 43, 0.3);
+        }
+        
+        .back-btn:hover, .home-btn:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px var(--enactus-shadow-medium);
+        }
+        
+        .error-card {
+            background: rgba(231, 76, 60, 0.1);
+            border: 2px solid var(--enactus-error-red);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .error-icon {
+            font-size: 4rem;
+            color: var(--enactus-error-red);
+            margin-bottom: 20px;
+        }
+        
+        .error-card h2 {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .error-card p {
+            color: var(--secondary-color);
+            font-size: 1rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .page-wrapper {
+                padding: 20px 15px;
+            }
+            
+            .container {
+                padding: 25px 20px;
+            }
+            
+            .main-page-title {
+                font-size: 1.8rem;
+            }
+            
+            .main-page-description {
+                font-size: 0.95rem;
+            }
+            
+            .confirmation-card, .email-list-card {
+                padding: 20px;
+            }
+            
+            .confirmation-icon, .email-list-icon {
+                font-size: 3rem;
+            }
+            
+            .confirm-btn {
+                padding: 16px 25px;
+                font-size: 1.1rem;
+            }
+            
+            .email-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .email-actions {
+                text-align: left;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+{% endblock %} 

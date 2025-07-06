@@ -995,65 +995,43 @@
         <div class="shape shape-10"></div>
     </div>
     
-    <header class="navbar">
-        <a href="{% url 'home' %}" class="logo">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
-            <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
-        </a>
-        <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
+    <header class="navbar" role="banner">
+        <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
             <span></span>
             <span></span>
             <span></span>
         </button>
-        <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-            <a href="{% url 'home' %}"> <i class="fas fa-home"></i> Home</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                {% if user.is_staff %}
-                    <a href="{% url 'feedback_analytics' %}"> <i class="fas fa-chart-line"></i> Feedback Analytics</a>
-                    <a href="{% url 'view_subscribers' %}"> <i class="fas fa-users"></i> Subscribers</a>
-                {% endif %}
-            {% endif %}
-            <a href="{% url 'about' %}"> <i class="fas fa-info-circle"></i> About</a>
-            <a href="{% url 'custom_quiz' %}"> <i class="fas fa-question-circle"></i> Quiz</a>
-            <a href="{% url 'flashcards' %}"> <i class="fas fa-clone"></i> Flashcards</a>
-            <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
-            <a href="{% url 'exam_analyzer' %}"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
-            <a href="#"> <i class="fas fa-history"></i> History</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
-            {% else %}
-                <a href="{% url 'account_login' %}"> <i class="fas fa-sign-in-alt"></i> Login</a>
-            {% endif %}
-        </nav>
-    </header>
-    <div class="sidebar" id="sidebar">
-        <a href="{% url 'home' %}" class="sidebar-logo">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
+        <a href="{% url 'home' %}" class="logo" style="display:flex;align-items:center;gap:10px;">
+            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" style="width:32px;height:32px;">
             <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
         </a>
-        <div class="sidebar-links">
-            <a href="{% url 'home' %}"> <i class="fas fa-home"></i> Home</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
-                {% if user.is_staff %}
-                    <a href="{% url 'feedback_analytics' %}"> <i class="fas fa-chart-line"></i> Feedback Analytics</a>
-                    <a href="{% url 'view_subscribers' %}"> <i class="fas fa-users"></i> Subscribers</a>
+    </header>
+    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Sidebar Navigation" style="background: var(--primary-yellow-light);">
+        <div class="sidebar-content">
+            <button class="compose-btn" style="width:90%;margin:18px auto 12px auto;display:block;background:var(--primary-yellow);color:#222;font-weight:600;padding:12px 0;border:none;border-radius:18px;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.04);cursor:pointer;">Get Started</button>
+            <nav class="sidebar-links" style="display:flex;flex-direction:column;gap:2px;">
+                <a href="{% url 'home' %}" class="sidebar-link"><i class="fas fa-home"></i> Home</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="sidebar-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    {% if user.is_staff %}
+                        <a href="{% url 'feedback_analytics' %}" class="sidebar-link"><i class="fas fa-chart-line"></i> Feedback Analytics</a>
+                        <a href="{% url 'view_subscribers' %}" class="sidebar-link"><i class="fas fa-users"></i> Subscribers</a>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-            <a href="{% url 'about' %}"> <i class="fas fa-info-circle"></i> About</a>
-            <a href="{% url 'custom_quiz' %}"> <i class="fas fa-question-circle"></i> Quiz</a>
-            <a href="{% url 'flashcards' %}"> <i class="fas fa-clone"></i> Flashcards</a>
-            <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
-            <a href="{% url 'exam_analyzer' %}"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
-            <a href="#"> <i class="fas fa-history"></i> History</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
-            {% else %}
-                <a href="{% url 'account_login' %}"> <i class="fas fa-sign-in-alt"></i> Login</a>
-            {% endif %}
+                <a href="{% url 'about' %}" class="sidebar-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="{% url 'custom_quiz' %}" class="sidebar-link"><i class="fas fa-question-circle"></i> Quiz</a>
+                <a href="{% url 'flashcards' %}" class="sidebar-link"><i class="fas fa-clone"></i> Flashcards</a>
+                <a href="#" class="sidebar-link"><i class="fas fa-lightbulb"></i> Concepts</a>
+                <a href="{% url 'exam_analyzer' %}" class="sidebar-link"><i class="fas fa-chart-bar"></i> Exam Analyzer</a>
+                <a href="#" class="sidebar-link"><i class="fas fa-history"></i> History</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'custom_logout' %}" class="sidebar-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                {% else %}
+                    <a href="{% url 'account_login' %}" class="sidebar-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+                {% endif %}
+            </nav>
         </div>
-    </div>
+    </aside>
     <div class="main-content" id="mainContent">
         {% block content %}{% endblock %}
     </div>

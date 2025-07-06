@@ -1,0 +1,489 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="page-wrapper">
+        <div class="container">
+            <h1 class="main-page-title">📧 Email Verification</h1>
+            <p class="main-page-description">Please verify your email address to complete your registration and unlock all LAMLA AI features.</p>
+            
+            <div class="email-verification-card">
+                <div class="verification-icon">
+                    <i class="fas fa-envelope-open"></i>
+                </div>
+                
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                                <i class="fas fa-{% if message.tags == 'error' %}exclamation-circle{% elif message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <div class="verification-info">
+                    <h3>Verification Email Sent</h3>
+                    <p>We have sent a verification email to your email address. Please check your inbox and click the verification link to complete your registration.</p>
+                    
+                    <div class="email-tips">
+                        <h4>📧 Email Tips:</h4>
+                        <ul>
+                            <li>Check your spam/junk folder if you don't see the email</li>
+                            <li>Make sure you entered the correct email address</li>
+                            <li>The verification link expires in 24 hours</li>
+                            <li>Contact us if you don't receive the email within a few minutes</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                {% if email_addresses %}
+                    <div class="email-addresses">
+                        <h4>Your Email Addresses:</h4>
+                        {% for emailaddress in email_addresses %}
+                            <div class="email-item {% if emailaddress.verified %}verified{% else %}unverified{% endif %}">
+                                <div class="email-info">
+                                    <div class="email-address">{{ emailaddress.email }}</div>
+                                    <div class="email-status">
+                                        {% if emailaddress.verified %}
+                                            <span class="status-badge verified">
+                                                <i class="fas fa-check-circle"></i>
+                                                Verified
+                                            </span>
+                                        {% else %}
+                                            <span class="status-badge unverified">
+                                                <i class="fas fa-clock"></i>
+                                                Pending Verification
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                {% if not emailaddress.verified %}
+                                    <div class="email-actions">
+                                        <form method="post" action="{% url 'account_email' %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="email" value="{{ emailaddress.email }}">
+                                            <button type="submit" name="action_send" class="resend-btn">
+                                                <i class="fas fa-paper-plane"></i>
+                                                Resend Verification
+                                            </button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <div class="action-buttons">
+                    <a href="{% url 'account_login' %}" class="nav-btn signin-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Sign In
+                    </a>
+                    <a href="{% url 'account_signup' %}" class="nav-btn signup-btn">
+                        <i class="fas fa-user-plus"></i>
+                        Sign Up
+                    </a>
+                    <a href="/" class="nav-btn home-btn">
+                        <i class="fas fa-home"></i>
+                        Go to Home
+                    </a>
+                </div>
+                
+                <div class="help-section">
+                    <p><strong>Need Help?</strong></p>
+                    <p>If you're having trouble with email verification, contact our support team:</p>
+                    <a href="mailto:contact.lamla1@gmail.com" class="support-link">
+                        <i class="fas fa-envelope"></i>
+                        contact.lamla1@gmail.com
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #FFD600;
+            --secondary-color: #222;
+            --background-white: #fff;
+            --light-yellow: #FFFBE6;
+            --enactus-light-grey: #ECF0F1;
+            --enactus-border-light: #ECECEC;
+            --enactus-shadow-light: rgba(0, 0, 0, 0.08);
+            --enactus-shadow-medium: rgba(0, 0, 0, 0.15);
+            --enactus-error-red: #E74C3C;
+            --enactus-success-green: #2ECC71;
+            --enactus-info-blue: #3498DB;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--enactus-light-grey);
+            color: var(--secondary-color);
+        }
+        
+        .page-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: calc(100vh - 80px);
+            padding: 40px 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: var(--background-white);
+            border-radius: 15px;
+            box-shadow: 0 10px 25px var(--enactus-shadow-light);
+            padding: 40px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        
+        .main-page-title {
+            color: var(--secondary-color);
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .main-page-description {
+            color: var(--secondary-color);
+            font-size: 1.05rem;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        .email-verification-card {
+            background: var(--light-yellow);
+            border: 2px solid var(--primary-color);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(253, 199, 43, 0.1);
+        }
+        
+        .verification-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+        
+        .messages {
+            margin: 20px 0;
+        }
+        
+        .message {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .message.success {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--enactus-success-green);
+            border: 1px solid var(--enactus-success-green);
+        }
+        
+        .message.error {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--enactus-error-red);
+            border: 1px solid var(--enactus-error-red);
+        }
+        
+        .message.info {
+            background: rgba(52, 152, 219, 0.1);
+            color: var(--enactus-info-blue);
+            border: 1px solid var(--enactus-info-blue);
+        }
+        
+        .verification-info {
+            background: var(--background-white);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .verification-info h3 {
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .verification-info p {
+            color: var(--secondary-color);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .email-tips {
+            background: var(--light-yellow);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .email-tips h4 {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .email-tips ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .email-tips li {
+            margin: 8px 0;
+            padding: 8px 0;
+            color: var(--secondary-color);
+            font-size: 0.95rem;
+        }
+        
+        .email-addresses {
+            margin: 25px 0;
+            text-align: left;
+        }
+        
+        .email-addresses h4 {
+            color: var(--secondary-color);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .email-item {
+            background: var(--background-white);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 2px solid var(--enactus-border-light);
+            transition: all 0.3s ease;
+        }
+        
+        .email-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(253, 199, 43, 0.1);
+        }
+        
+        .email-item.verified {
+            border-color: var(--enactus-success-green);
+            background: rgba(46, 204, 113, 0.05);
+        }
+        
+        .email-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .email-address {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        .email-status {
+            flex-shrink: 0;
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .status-badge.verified {
+            background: rgba(46, 204, 113, 0.1);
+            color: var(--enactus-success-green);
+        }
+        
+        .status-badge.unverified {
+            background: rgba(253, 199, 43, 0.1);
+            color: var(--primary-color);
+        }
+        
+        .email-actions {
+            text-align: right;
+        }
+        
+        .resend-btn {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .resend-btn:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            border-radius: 10px;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 5px 15px rgba(253, 199, 43, 0.3);
+        }
+        
+        .nav-btn:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px var(--enactus-shadow-medium);
+        }
+        
+        .signin-btn {
+            background: var(--primary-color);
+        }
+        
+        .signup-btn {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+        }
+        
+        .signup-btn:hover {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+        }
+        
+        .home-btn {
+            background: var(--enactus-light-grey);
+            color: var(--secondary-color);
+        }
+        
+        .help-section {
+            background: var(--background-white);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 25px;
+            text-align: center;
+        }
+        
+        .help-section p {
+            color: var(--secondary-color);
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        
+        .support-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .support-link:hover {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .page-wrapper {
+                padding: 20px 15px;
+            }
+            
+            .container {
+                padding: 25px 20px;
+            }
+            
+            .main-page-title {
+                font-size: 1.8rem;
+            }
+            
+            .main-page-description {
+                font-size: 0.95rem;
+            }
+            
+            .email-verification-card {
+                padding: 20px;
+            }
+            
+            .verification-icon {
+                font-size: 3rem;
+            }
+            
+            .email-info {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .email-actions {
+                text-align: left;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+{% endblock %} 

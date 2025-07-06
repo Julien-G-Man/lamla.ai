@@ -175,18 +175,38 @@ ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
 ACCOUNT_LOGIN_METHODS = {'username', 'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 
+# Allauth settings
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
+
+# Site domain configuration
+SITE_DOMAIN = os.getenv('SITE_DOMAIN', 'lamla-ai.onrender.com')
+
 # Email Configuration for Form Notifications
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'slides_analyzer.email_backend.CustomEmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # Change to your email provider
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'juliengmanana@gmail.com')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'contact.lamla1@gmail.com')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'your-app-password')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@lamla.ai')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'contact.lamla1@gmail.com')
 
+# Email sender configuration
+SECURITY_EMAIL_SENDER = 'contact.lamla1@gmail.com'  # For confirmations and password resets
+WELCOME_EMAIL_SENDER = 'juliengmanana@gmail.com'    # For welcome emails and notifications
+
+# Note: To send from juliengmanana@gmail.com, you need to:
+# 1. Set up "Send mail as" in Gmail for contact.lamla1@gmail.com
+# 2. Add juliengmanana@gmail.com as an alias
+# 3. Or use a different approach with multiple SMTP configurations
+
 # For development, you can use console backend instead:
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Security settings
 if not DEBUG:

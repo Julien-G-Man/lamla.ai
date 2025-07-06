@@ -1,0 +1,29 @@
+Welcome to LAMLA AI! 🎉
+
+Hi {{ user.first_name|default:user.username }},
+
+Welcome to the future of learning! 🚀
+
+Thank you for joining LAMLA AI - your personal AI tutor that transforms study materials into interactive learning experiences.
+
+✨ What you can do with LAMLA AI:
+
+• Upload Study Materials: PDFs, PowerPoints, documents, or text
+• Generate Custom Quizzes: Multiple choice and short answer questions
+• Create Flashcards: Perfect for memorization and review
+• Get Instant Feedback: AI-powered analysis and explanations
+• Track Your Progress: Monitor your learning journey
+
+Ready to start learning? Visit your dashboard:
+https://{{ site_domain }}
+
+Pro Tip: Upload your first study material to see LAMLA AI in action. Our AI will analyze your content and create personalized learning materials just for you!
+
+---
+LAMLA AI - Transforming Education with AI
+
+Contact Support: contact.lamla1@gmail.com
+About Us: https://{{ site_domain }}/about
+
+This email was sent to {{ user.email }} from juliengmanana@gmail.com
+If you have any questions, feel free to reply to this email. 

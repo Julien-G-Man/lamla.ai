@@ -128,6 +128,14 @@
             .options-list label { padding: 8px 10px; }
             .navigation-footer { padding: 10px; }
             .navigation-footer .nav-btn { padding: 10px 15px; font-size: 0.9em; }
+            .bottom-nav-bar { padding: 4px 0; }
+            .bottom-nav-bar .nav-item { font-size: 0.7em; }
+            .bottom-nav-bar .nav-item i { font-size: 1.1em; }
+            .bottom-nav-bar .prev-next-btn, .bottom-nav-bar .submit {
+                padding: 7px 10px;
+                font-size: 0.85em;
+                border-radius: 30px;
+            }
         }
         /* Ensure sidebar is hidden on quiz page */
         .sidebar {
@@ -375,14 +383,26 @@
                 // Hide timer
                 document.querySelector('.timer-container').style.display = 'none';
                 
+                // Debug: Log userAnswers and question arrays
+                console.log('DEBUG: userAnswers:', userAnswers);
+                console.log('DEBUG: MCQ questions:', quizData.mcq);
+                console.log('DEBUG: Short questions:', quizData.short);
+                console.log('DEBUG: totalQuestions:', totalQuestions);
+                
                 // Update question display
                 document.getElementById('current-question').textContent = 'Quiz Complete';
                 document.getElementById('question-status').textContent = 'Ready to Submit';
                 document.getElementById('question-status').style.color = '#28a745';
                 document.getElementById('question-status').style.fontWeight = 'bold';
                 
-                // Calculate actual answered questions
-                const answeredCount = Object.keys(userAnswers).length;
+                // Calculate actual answered questions (only non-empty answers)
+                let answeredCount = 0;
+                for (let i = 0; i < totalQuestions; i++) {
+                    const ans = userAnswers[i];
+                    if (typeof ans === 'string' && ans.trim() !== '') {
+                        answeredCount++;
+                    }
+                }
                 const unansweredCount = totalQuestions - answeredCount;
                 
                 // Show completion message

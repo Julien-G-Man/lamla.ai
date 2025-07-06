@@ -743,11 +743,10 @@ def quiz_results(request):
     mcq_questions = questions.get('mcq_questions', [])
     for idx, q in enumerate(mcq_questions):
         total += 1
-        user_ans = user_answers.get(str(idx))
-        # Ensure correct_ans is a string before calling .upper()
+        user_ans = user_answers.get(str(idx), '')
         correct_ans_raw = q.get('answer', '')
-        correct_ans = (correct_ans_raw if correct_ans_raw is not None else '').upper()
-        if user_ans and user_ans.upper() == correct_ans:
+        correct_ans = str(correct_ans_raw).strip().upper() if correct_ans_raw else ''
+        if user_ans and user_ans.strip().upper() == correct_ans:
             score += 1
     
     # Short answer questions are for review only (not auto-graded)

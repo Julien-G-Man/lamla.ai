@@ -760,7 +760,20 @@
         /* Ensure sidebar is hidden on smaller screens */
         @media (max-width: 1023px) {
             .sidebar {
-                display: none !important;
+                display: block !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 230px;
+                height: 100vh;
+                background: var(--background-white);
+                box-shadow: 2px 0 16px rgba(0,0,0,0.08);
+                z-index: 3000;
+                transform: translateX(-100%);
+                transition: transform 0.35s cubic-bezier(.77,0,.18,1);
+            }
+            .sidebar.open {
+                transform: translateX(0);
             }
             .main-content {
                 margin-left: 0 !important;
@@ -1008,7 +1021,6 @@
     </header>
     <aside class="sidebar" id="sidebar" role="navigation" aria-label="Sidebar Navigation" style="background: var(--primary-yellow-light);">
         <div class="sidebar-content">
-            <button class="compose-btn" style="width:90%;margin:18px auto 12px auto;display:block;background:var(--primary-yellow);color:#222;font-weight:600;padding:12px 0;border:none;border-radius:18px;font-size:1.1rem;box-shadow:0 2px 8px rgba(0,0,0,0.04);cursor:pointer;">Get Started</button>
             <nav class="sidebar-links" style="display:flex;flex-direction:column;gap:2px;">
                 <a href="{% url 'home' %}" class="sidebar-link"><i class="fas fa-home"></i> Home</a>
                 {% if user.is_authenticated %}
@@ -1112,6 +1124,34 @@
                 })();
             {% endfor %}
         {% endif %}
+
+        // Hamburger menu toggle for mobile
+        const hamburger = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        hamburger.onclick = function() {
+            if (window.innerWidth <= 1023) {
+                document.body.classList.toggle('sidebar-open');
+                sidebar.classList.toggle('open');
+                // Optionally, add overlay or prevent background scroll
+            } else {
+                sidebar.classList.toggle('closed');
+                if (sidebar.classList.contains('closed')) {
+                    mainContent.style.marginLeft = '0';
+                } else {
+                    mainContent.style.marginLeft = '230px';
+                }
+            }
+        };
+        // Close sidebar when clicking a link (mobile only)
+        document.querySelectorAll('#sidebar a').forEach(function(link) {
+            link.onclick = function() {
+                if (window.innerWidth <= 1023) {
+                    document.body.classList.remove('sidebar-open');
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
     });
     </script>
     

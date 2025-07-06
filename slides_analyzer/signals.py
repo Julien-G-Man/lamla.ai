@@ -5,6 +5,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 from .email_backend import send_email
+from allauth.account.signals import email_confirmed
 
 
 @receiver(post_save, sender=User)
@@ -32,6 +33,30 @@ def send_welcome_email(sender, instance, created, **kwargs):
             subject=subject,
             message=plain_message,
             recipient_list=[instance.email],
+            from_email='juliengmanana@gmail.com',
+            html_message=html_message
+        )
+
+
+@receiver(email_confirmed)
+def send_welcome_email_after_confirmation(request, email_address, **kwargs):
+    """
+    Send a welcome email after the user confirms their email address.
+    """
+    user = email_address.user
+    if user and user.email:
+        subject = "Welcome to LAMLA AI! 🎉"
+        context = {
+            'user': user,
+            'site_name': 'LAMLA AI',
+            'site_domain': getattr(settings, 'SITE_DOMAIN', 'lamla-ai.onrender.com'),
+        }
+        html_message = render_to_string('emails/welcome_email.html', context)
+        plain_message = render_to_string('emails/welcome_email.txt', context)
+        send_email(
+            subject=subject,
+            message=plain_message,
+            recipient_list=[user.email],
             from_email='juliengmanana@gmail.com',
             html_message=html_message
         )

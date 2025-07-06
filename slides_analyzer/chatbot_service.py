@@ -44,11 +44,30 @@ class ChatbotService:
         
         return knowledge_text
 
+    def clean_markdown(self, text):
+        """Remove markdown symbols and fix indentation for lists."""
+        # Remove bold, italics, headings
+        text = re.sub(r'\*\*(.*?)\*\*', r'\1', text)
+        text = re.sub(r'__(.*?)__', r'\1', text)
+        text = re.sub(r'^#+\s*', '', text, flags=re.MULTILINE)
+        text = re.sub(r'`([^`]*)`', r'\1', text)
+        # Remove extra asterisks and underscores
+        text = text.replace('*', '').replace('_', '')
+        # Fix numbered list indentation
+        text = re.sub(r'^(\d+)\.\s*', r'    \1. ', text, flags=re.MULTILINE)
+        # Fix bullet list indentation
+        text = re.sub(r'^[-•]\s*', '    • ', text, flags=re.MULTILINE)
+        # Remove extra spaces at line start
+        text = re.sub(r'^\s+', '', text, flags=re.MULTILINE)
+        # Remove multiple blank lines
+        text = re.sub(r'\n{3,}', '\n\n', text)
+        return text.strip()
+
     def generate_response(self, user_message, conversation_history=None):
         """Generate a response to user message using Azure ChatGPT"""
         try:
             if not self.client:
-                return self._get_fallback_response(user_message)
+                return self.clean_markdown(self._get_fallback_response(user_message))
 
             # Get Lamla AI knowledge base for context
             lamla_knowledge = self.get_lamla_knowledge_base()
@@ -75,8 +94,10 @@ IMPORTANT RESPONSE GUIDELINES:
 5. Break down complex information into digestible chunks
 6. Always introduce yourself as Lamla AI when appropriate
 7. Be helpful, concise, and well-organized
-8. When providing step-by-step instructions, use numbered lists
+8. When providing step-by-step instructions, use numbered lists with proper indentation
 9. When listing features or options, use bullet points with proper indentation
+10. DO NOT use markdown symbols like ** or ## in your responses
+11. Use clean, readable formatting without bold or heading symbols
 
 You can also answer general questions and help with various topics. Always maintain a helpful and friendly demeanor."""
 
@@ -99,13 +120,13 @@ You can also answer general questions and help with various topics. Always maint
             )
             
             if not response.choices or not response.choices[0].message.content:
-                return self._get_fallback_response(user_message)
+                return self.clean_markdown(self._get_fallback_response(user_message))
 
-            return response.choices[0].message.content.strip()
+            return self.clean_markdown(response.choices[0].message.content.strip())
 
         except Exception as e:
             logger.error(f"Error generating chatbot response: {e}")
-            return self._get_fallback_response(user_message)
+            return self.clean_markdown(self._get_fallback_response(user_message))
 
     def _get_fallback_response(self, user_message):
         """Provide fallback responses when AI is not available"""
@@ -138,34 +159,34 @@ What would you like to learn about?"""
         elif any(word in user_message_lower for word in ['feature', 'quiz', 'flashcard']):
             return """Great question! Lamla AI offers several amazing features to help you study smarter:
 
-📚 **Core Features:**
-• AI-powered quiz generation from your study materials
-• Interactive flashcard creation
-• Performance tracking and analytics
-• Personalized study insights
-• Multiple file format support (PDF, PPTX, DOCX)
+📚 Core Features:
+    • AI-powered quiz generation from your study materials
+    • Interactive flashcard creation
+    • Performance tracking and analytics
+    • Personalized study insights
+    • Multiple file format support (PDF, PPTX, DOCX)
 
-🎯 **Study Tools:**
-• Custom Quiz creator
-• Exam Analyzer
-• Progress dashboard
-• Feedback system
+🎯 Study Tools:
+    • Custom Quiz creator
+    • Exam Analyzer
+    • Progress dashboard
+    • Feedback system
 
 Would you like me to explain any specific feature in detail?"""
         
         elif any(word in user_message_lower for word in ['contact', 'support', 'email']):
             return """Need help? I'm here for you! 💪
 
-**Contact Information:**
-• Email: support@lamla.ai
-• Our support team is always happy to help
-• Response time: Usually within 24 hours
+Contact Information:
+    • Email: support@lamla.ai
+    • Our support team is always happy to help
+    • Response time: Usually within 24 hours
 
-**What we can help with:**
-• Technical issues
-• Account questions
-• Feature explanations
-• General inquiries
+What we can help with:
+    • Technical issues
+    • Account questions
+    • Feature explanations
+    • General inquiries
 
 Feel free to reach out anytime!"""
         

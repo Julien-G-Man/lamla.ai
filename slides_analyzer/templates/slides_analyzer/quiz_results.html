@@ -47,15 +47,15 @@
                             {% with option_letter=forloop.counter0|add:97|stringformat:"c" %}
                             {% with user_ans=user_answers|get_item:forloop.counter0 %}
                             <li class="option
-                                {% if option_letter == q.answer %}correct{% endif %}
-                                {% if user_ans == option_letter and option_letter != q.answer %}user-wrong{% endif %}
-                                {% if user_ans == option_letter and option_letter == q.answer %}user-correct{% endif %}">
+                                {% if user_ans and user_ans|upper == option_letter|upper and option_letter|upper != q.answer|upper %}user-wrong{% endif %}
+                                {% if user_ans and user_ans|upper == option_letter|upper and option_letter|upper == q.answer|upper %}user-correct{% endif %}
+                                {% if option_letter|upper == q.answer|upper %}correct{% endif %}">
                                 {{ forloop.counter0|add:97|stringformat:"c" }}. {{ opt }}
-                                {% if option_letter == q.answer %}<span class="correct-label"> (Correct Answer)</span>{% endif %}
-                                {% if user_ans == option_letter and option_letter != q.answer %}
+                                {% if option_letter|upper == q.answer|upper %}<span class="correct-label"> (Correct Answer)</span>{% endif %}
+                                {% if user_ans and user_ans|upper == option_letter|upper and option_letter|upper != q.answer|upper %}
                                     <span class="user-label"> (Your Answer - Wrong)</span>
                                 {% endif %}
-                                {% if user_ans == option_letter and option_letter == q.answer %}
+                                {% if user_ans and user_ans|upper == option_letter|upper and option_letter|upper == q.answer|upper %}
                                     <span class="user-correct-label"> (Your Answer - Correct!)</span>
                                 {% endif %}
                             </li>
@@ -67,7 +67,7 @@
                             {% with user_ans=user_answers|get_item:forloop.counter0 %}
                             {% if user_ans %}
                                 Your answer: <b>{{ user_ans|upper }}. {{ user_ans|letter_to_option:q.options }}</b>
-                                {% if user_ans == q.answer %}
+                                {% if user_ans|upper == q.answer|upper %}
                                     <span class="icon-correct">&#10004; Correct!</span>
                                     <span style="color:var(--enactus-success-green);font-weight:600;margin-left:8px;">Great job! You mastered this concept.</span>
                                 {% else %}
@@ -122,7 +122,7 @@
             
             <div class="feedback-actions">
                 {% if not no_quiz_message %}
-                <a class="feedback-btn" href="/about/#get-in-touch?subject=Quiz%20Feedback">
+                <a class="feedback-btn" href="/about/?subject=Quiz%20Feedback#get-in-touch">
                     <i class="fas fa-comment"></i> Give us detailed feedback
                 </a>
                 <button class="share-btn" onclick="shareResults()">
@@ -134,12 +134,14 @@
     </div>
 </div>
 
-<!-- Try Another Quiz Button - Outside the card -->
-{% if not no_quiz_message %}
+<!-- Quiz Action Buttons - Outside the card -->
 <div class="try-another-quiz-section">
-    <a href="{% url 'custom_quiz' %}" class="try-another-btn">Try Another Quiz</a>
+    {% if no_quiz_message %}
+        <a href="{% url 'quiz' %}" class="try-another-btn">Retake Quiz</a>
+    {% else %}
+        <a href="{% url 'custom_quiz' %}" class="try-another-btn">Try Another Quiz</a>
+    {% endif %}
 </div>
-{% endif %}
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');

@@ -30,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -184,13 +184,13 @@ SITE_DOMAIN = os.getenv('SITE_DOMAIN', 'lamla-ai.onrender.com')
 
 # Email Configuration for Form Notifications
 EMAIL_BACKEND = 'slides_analyzer.email_backend.CustomEmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # Change to your email provider
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'contact.lamla1@gmail.com')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'your-app-password')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')
-ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'contact.lamla1@gmail.com')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'juliengmanana@gmail.com')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'your_app_password_here')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'juliengmanana@gmail.com')
+ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'juliengmanana@gmail.com')
 
 # Email sender configuration
 SECURITY_EMAIL_SENDER = 'contact.lamla1@gmail.com'  # For confirmations and password resets

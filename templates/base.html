@@ -1097,6 +1097,26 @@
                         <span>AI is typing...</span>
                     </div>
                 </div>
+                <!-- Chatbot Support Request Form (hidden by default) -->
+                <div id="chatbot-support-form" style="display:none;padding:24px;">
+                    <h4 style="margin-bottom:12px;">Contact Human Support</h4>
+                    <form id="supportRequestForm">
+                        <div style="margin-bottom:10px;">
+                            <input type="text" id="supportName" placeholder="Your Name" required style="width:100%;padding:8px;">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <input type="email" id="supportEmail" placeholder="Your Email" required style="width:100%;padding:8px;">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <input type="text" id="supportSubject" placeholder="Subject" required style="width:100%;padding:8px;">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <textarea id="supportMessage" placeholder="Describe your issue..." required style="width:100%;padding:8px;min-height:80px;"></textarea>
+                        </div>
+                        <button type="submit" style="background:#FFD600;color:#222;padding:10px 24px;border:none;border-radius:8px;font-weight:600;cursor:pointer;width:100%;">Send Request</button>
+                        <div id="supportFormStatus" style="margin-top:10px;font-size:0.95em;"></div>
+                    </form>
+                </div>
             </div>
         </div>
     {% endblock %}
@@ -1152,6 +1172,53 @@
                 }
             }
         });
+
+        // Support request form logic
+        const chatbotWindow = document.getElementById('chatbot-window');
+        const supportForm = document.getElementById('chatbot-support-form');
+        const supportRequestForm = document.getElementById('supportRequestForm');
+        const supportFormStatus = document.getElementById('supportFormStatus');
+        // Show support form when bot suggests human support (example: you can trigger this from the bot response)
+        window.showSupportForm = function() {
+            chatbotWindow.querySelector('.chatbot-input-container').style.display = 'none';
+            supportForm.style.display = 'block';
+        };
+        // Hide support form and show chatbot input
+        window.hideSupportForm = function() {
+            supportForm.style.display = 'none';
+            chatbotWindow.querySelector('.chatbot-input-container').style.display = 'block';
+        };
+        if (supportRequestForm) {
+            supportRequestForm.onsubmit = function(e) {
+                e.preventDefault();
+                supportFormStatus.textContent = 'Sending...';
+                fetch('/api/chatbot/support-request/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById('supportName').value,
+                        email: document.getElementById('supportEmail').value,
+                        subject: document.getElementById('supportSubject').value,
+                        message: document.getElementById('supportMessage').value
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        supportFormStatus.style.color = '#4CAF50';
+                        supportFormStatus.textContent = data.message;
+                        supportRequestForm.reset();
+                    } else {
+                        supportFormStatus.style.color = '#E74C3C';
+                        supportFormStatus.textContent = data.message || 'Failed to send request.';
+                    }
+                })
+                .catch(() => {
+                    supportFormStatus.style.color = '#E74C3C';
+                    supportFormStatus.textContent = 'Failed to send request.';
+                });
+            };
+        }
     });
     </script>
     

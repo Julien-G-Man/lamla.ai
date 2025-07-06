@@ -1428,3 +1428,55 @@ def chatbot_history(request):
             'status': 'error',
             'message': 'Failed to get chat history'
         }, status=500)
+
+@csrf_exempt
+def chatbot_support_request(request):
+    """Handle support requests from the chatbot and send emails to admin and user."""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            name = data.get('name', '').strip()
+            email = data.get('email', '').strip()
+            subject_matter = data.get('subject', '').strip()
+            message = data.get('message', '').strip()
+
+            if not (name and email and subject_matter and message):
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'All fields (name, email, subject, message) are required.'
+                }, status=400)
+
+            # Email to admin
+            admin_subject = f"[LAMLA SUPPORT REQUEST] {subject_matter}"
+            admin_message = f"Support request from Lamla Bot:\n\nName: {name}\nEmail: {email}\nSubject: {subject_matter}\nMessage:\n{message}"
+            send_email(
+                subject=admin_subject,
+                message=admin_message,
+                recipient_list=[getattr(settings, 'ADMIN_EMAIL', 'contact.lamla1@gmail.com')],
+                from_email='contact.lamla1@gmail.com',
+            )
+
+            # Confirmation email to user
+            user_subject = "Your LAMLA AI Support Request Received"
+            user_message = f"Hi {name},\n\nThank you for reaching out to LAMLA AI support. We have received your request and will respond as soon as possible.\n\nSubject: {subject_matter}\nMessage: {message}\n\nBest regards,\nThe LAMLA AI Team"
+            send_email(
+                subject=user_subject,
+                message=user_message,
+                recipient_list=[email],
+                from_email='contact.lamla1@gmail.com',
+            )
+
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Your support request has been sent. We will respond as soon as possible.'
+            })
+        except Exception as e:
+            logger.error(f"Error in chatbot_support_request: {e}")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'An error occurred while sending your support request.'
+            }, status=500)
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Invalid request method'
+    }, status=405)

@@ -156,7 +156,7 @@
         --primary-color: #FFD600;
         --secondary-color: #222;
         --background-white: #fff;
-        --light-yellow: #FFFBE6;
+        --light-yellow: #FFFDF4;
         --enactus-light-grey: #ECF0F1;
         --enactus-border-light: #ECECEC;
         --enactus-shadow-light: rgba(0, 0, 0, 0.08);
@@ -203,6 +203,7 @@
         padding: 24px 18px;
         margin-bottom: 32px;
         text-align: center;
+        border: 1.5px solid #fff;
     }
     .results-title {
         color: var(--secondary-color);
@@ -216,7 +217,7 @@
         font-size: 1.3em;
     }
     .results-desc {
-        color: var(--primary-color);
+        color: var(--secondary-color);
         font-size: 1.05rem;
         margin-bottom: 0;
     }
@@ -224,7 +225,7 @@
         margin-bottom: 30px;
     }
     .question-type-title {
-        color: var(--primary-color);
+        color: var(--secondary-color);
         font-size: 1.2rem;
         font-weight: 700;
         margin-bottom: 18px;
@@ -294,7 +295,7 @@
     }
     .question-answer {
         margin-top: 10px;
-        color: var(--primary-color);
+        color: var(--secondary-color);
         font-size: 0.98rem;
         font-weight: 500;
     }
@@ -354,7 +355,7 @@
         margin-bottom: 8px;
     }
     .feedback-desc {
-        color: var(--primary-color);
+        color: var(--secondary-color);
         font-size: 1rem;
         margin-bottom: 25px;
     }
@@ -379,7 +380,7 @@
         transform: scale(1.1);
     }
     .rating-text {
-        color: var(--primary-color);
+        color: var(--secondary-color);
         font-size: 0.95rem;
         margin: 0;
     }
@@ -737,6 +738,18 @@
         border-radius: 0 8px 8px 0;
         transition: width 0.5s;
         float: right;
+    }
+    /* Remove yellow text styles */
+    .results-summary-card, .results-summary-card * {
+        color: var(--secondary-color) !important;
+    }
+    /* Remove yellow from performance and info text */
+    .results-title, .results-desc, .score-value, .results-summary-card b, .results-summary-card span {
+        color: var(--secondary-color) !important;
+    }
+    /* Remove yellow from any inline styles */
+    [style*="color:var(--primary-color)"] {
+        color: var(--secondary-color) !important;
     }
 </style>
 

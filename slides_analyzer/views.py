@@ -23,8 +23,6 @@ from allauth.account.views import LoginView as AllauthLoginView
 import json
 import requests
 from django.contrib import messages
-from django.core.mail import send_mail
-from django.db import IntegrityError
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.utils import timezone
@@ -33,6 +31,7 @@ from django.db import models
 import csv
 from django.http import HttpResponse
 from django.contrib.admin.views.decorators import staff_member_required
+from .email_backend import send_email
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -97,20 +96,20 @@ The LAMLA AI Team 🧠
 https://lamla-ai.onrender.com
 ---
 You can unsubscribe anytime by replying to this email with "unsubscribe".
-For support, contact us at: contact.lamla1@gmail.com
+For support, contact us at: {getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')}
 """
-        
-        send_mail(
+        from_email = getattr(settings, 'WELCOME_EMAIL_SENDER', 'juliengmanana@gmail.com')
+        logger = logging.getLogger(__name__)
+        logger.info(f"Sending newsletter welcome email to: {email} from: {from_email}")
+        send_email(
             subject=subject,
             message=message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[email],
+            from_email=from_email,
             fail_silently=False,
         )
-        
         logger.info(f"Welcome email sent successfully to {email}")
         return True
-        
     except Exception as e:
         logger.error(f"Failed to send welcome email to {email}: {e}")
         return False
@@ -355,15 +354,13 @@ def generate_questions(request):
         except Exception as e:
             logger.error(f"Error generating questions: {str(e)}")
             return JsonResponse({
-                'error': 'Failed to generate questions',
-                'details': str(e)
+                'error': 'Failed to generate questions'
             }, status=500)
 
     except Exception as e:
         logger.error(f"Error in generate_questions: {str(e)}")
         return JsonResponse({
-            'error': 'An error occurred while generating questions',
-            'details': str(e)
+            'error': 'An error occurred while generating questions'
         }, status=500)
 
 @login_required
@@ -458,11 +455,11 @@ def home(request):
                 
                 # Send email notification to admin
                 try:
-                    send_mail(
+                    send_email(
                         subject='New Newsletter Subscription',
-                        message=f'A new student has subscribed to the newsletter:\n\nEmail: {email}\nDate: {subscription.created_at.strftime("%Y-%m-%d %H:%M:%S")}',
-                        from_email=settings.DEFAULT_FROM_EMAIL,
-                        recipient_list=[settings.ADMIN_EMAIL] if hasattr(settings, 'ADMIN_EMAIL') else ['contact.lamla1@gmail.com'],
+                        message=f'A new user has subscribed to the newsletter:\n\nEmail: {email}\nDate: {subscription.created_at.strftime("%Y-%m-%d %H:%M:%S")}',
+                        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com'),
+                        recipient_list=[getattr(settings, 'ADMIN_EMAIL', 'contact.lamla1@gmail.com')],
                         fail_silently=True,
                     )
                 except Exception as e:
@@ -651,11 +648,11 @@ def about(request):
             
             # Send email notification (optional)
             try:
-                send_mail(
-                    f'LAMLAAI Contact Form Submission: {subject}',
-                    f'Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}\n\nThank you for contacting LAMLA AI! We will get back to you soon.\n\nBest regards,\nThe LAMLA AI Team\nhttps://lamla-ai.onrender.com',
-                    'contact.lamla1@gmail.com',  # From email
-                    [settings.DEFAULT_FROM_EMAIL],  # To email (admin)
+                send_email(
+                    subject=f'LAMLAAI Contact Form Submission: {subject}',
+                    message=f'Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}\n\nThank you for contacting LAMLA AI! We will get back to you soon.\n\nBest regards,\nThe LAMLA AI Team\nhttps://lamla-ai.onrender.com',
+                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com'),
+                    recipient_list=[getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')],
                     fail_silently=True,
                 )
             except Exception as e:
@@ -862,11 +859,11 @@ def contact(request):
             
             # Send email notification (optional)
             try:
-                send_mail(
-                    f'LAMLAAI Contact Form Submission: {subject}',
-                    f'Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}\n\nThank you for contacting LAMLA AI! We will get back to you soon.\n\nBest regards,\nThe LAMLA AI Team\nhttps://lamla-ai.onrender.com',
-                    'contact.lamla1@gmail.com',  # From email
-                    [settings.DEFAULT_FROM_EMAIL],  # To email (admin)
+                send_email(
+                    subject=f'LAMLAAI Contact Form Submission: {subject}',
+                    message=f'Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}\n\nThank you for contacting LAMLA AI! We will get back to you soon.\n\nBest regards,\nThe LAMLA AI Team\nhttps://lamla-ai.onrender.com',
+                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com'),
+                    recipient_list=[getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')],
                     fail_silently=True,
                 )
             except Exception as e:
@@ -946,18 +943,16 @@ def dashboard(request):
     return render(request, 'slides_analyzer/dashboard.html', context)
 
 @csrf_exempt
-@login_required
 def subscribe_newsletter(request):
     """Handle newsletter subscription via AJAX"""
     if request.method == 'POST':
         try:
-            email = request.user.email
+            email = request.POST.get('email', '').strip()
             if not email:
                 return JsonResponse({
                     'success': False,
-                    'message': 'Email address not found in your profile'
+                    'message': 'Email address is required'
                 }, status=400)
-            
             # Check if already subscribed
             existing_subscription = Subscription.objects.filter(email=email).first()
             if existing_subscription:
@@ -970,32 +965,29 @@ def subscribe_newsletter(request):
                     # Reactivate subscription
                     existing_subscription.is_active = True
                     existing_subscription.save()
+                    send_newsletter_welcome_email(email)
                     return JsonResponse({
                         'success': True,
                         'message': 'Newsletter subscription reactivated successfully!'
                     })
-            
             # Create new subscription
             subscription = Subscription.objects.create(
                 email=email,
                 is_active=True
             )
-            
-            # Send welcome email
             send_newsletter_welcome_email(email)
-            
             return JsonResponse({
                 'success': True,
                 'message': 'Successfully subscribed to our newsletter!'
             })
-            
         except Exception as e:
+            import logging
+            logger = logging.getLogger(__name__)
             logger.error(f"Newsletter subscription error: {e}")
             return JsonResponse({
                 'success': False,
-                'message': 'An error occurred while subscribing. Please try again.'
+                'message': 'An error occurred while subscribing. Please try again later or contact support at contact.lamla1@gmail.com.'
             }, status=500)
-    
     return JsonResponse({
         'success': False,
         'message': 'Invalid request method'

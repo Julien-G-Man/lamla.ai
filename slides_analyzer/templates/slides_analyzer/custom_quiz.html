@@ -629,51 +629,6 @@
                 margin-left: 0;
             }
         }
-        /* Hamburger Menu (Always visible) */
-        .hamburger {
-            display: flex !important;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 45px;
-            height: 45px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 3000;
-            margin-left: auto;
-            padding: 0;
-        }
-        .hamburger span {
-            width: 28px;
-            height: 3.5px;
-            margin: 4px 0;
-            background: var(--primary-color);
-            border-radius: 2px;
-            transition: all 0.3s cubic-bezier(.77,0,.18,1);
-            position: relative;
-        }
-        .hamburger.open span {
-            background: var(--secondary-color);
-        }
-        .hamburger.open span:nth-child(1) {
-            transform: translateY(11.5px) rotate(45deg);
-        }
-        .hamburger.open span:nth-child(2) {
-            opacity: 0;
-            transform: scaleX(0);
-        }
-        .hamburger.open span:nth-child(3) {
-            transform: translateY(-11.5px) rotate(-45deg);
-        }
-        @media (max-width: 900px) {
-            .hamburger {
-                position: fixed !important;
-                top: 18px !important;
-                right: 24px !important;
-                z-index: 5001 !important;
-            }
-        }
     </style>
     <div class="page-wrapper">
         <div class="container">

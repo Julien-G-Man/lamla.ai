@@ -186,18 +186,20 @@
         }
         .options-row {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: center;
+            align-items: flex-end;
             margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 20px;
+            flex-wrap: nowrap;
+            gap: 32px;
         }
         .option-group {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-grow: 1;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            width: 220px;
             min-width: 180px;
+            max-width: 240px;
         }
         .option-group span {
             font-size: 1.05rem;

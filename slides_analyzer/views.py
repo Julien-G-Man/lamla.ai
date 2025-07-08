@@ -98,7 +98,7 @@ https://lamla-ai.onrender.com
 You can unsubscribe anytime by replying to this email with "unsubscribe".
 For support, contact us at: {getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')}
 """
-        from_email = getattr(settings, 'WELCOME_EMAIL_SENDER', 'juliengmanana@gmail.com')
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')
         logger = logging.getLogger(__name__)
         logger.info(f"Sending newsletter welcome email to: {email} from: {from_email}")
         send_email(
@@ -113,6 +113,36 @@ For support, contact us at: {getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.la
     except Exception as e:
         logger.error(f"Failed to send welcome email to {email}: {e}")
         return False
+
+def send_newsletter_notification_to_admin(email, subscription_date):
+    """Send a notification email to the admin about a new newsletter subscription."""
+    try:
+        subject = "Newsletter Subscription from Lamla AI"
+        message = f"""
+A new user has subscribed to the newsletter:
+
+Email: {email}
+Date Subscribed: {subscription_date.strftime("%Y-%m-%d %H:%M:%S")}
+
+Please review and manage subscriptions.
+
+Best regards,
+The LAMLA AI Team
+https://lamla-ai.onrender.com
+"""
+        from_email = getattr(settings, 'WELCOME_EMAIL_SENDER', 'juliengmanana@gmail.com')
+        logger = logging.getLogger(__name__)
+        logger.info(f"Sending newsletter notification email to admin from: {from_email}")
+        send_email(
+            subject=subject,
+            message=message,
+            recipient_list=[getattr(settings, 'ADMIN_EMAIL', 'contact.lamla1@gmail.com')],
+            from_email=from_email,
+            fail_silently=False,
+        )
+        logger.info(f"Newsletter notification email sent successfully to admin")
+    except Exception as e:
+        logger.error(f"Failed to send newsletter notification email to admin: {e}")
 
 def validate_file_upload(file):
     """Validate uploaded file size and type"""
@@ -966,17 +996,30 @@ def subscribe_newsletter(request):
                     # Reactivate subscription
                     existing_subscription.is_active = True
                     existing_subscription.save()
+                    
+                    # Step 1: juliengmanana@gmail.com notifies contact.lamla1@gmail.com
+                    send_newsletter_notification_to_admin(email, existing_subscription.created_at)
+                    
+                    # Step 2: contact.lamla1@gmail.com sends welcome email to subscriber
                     send_newsletter_welcome_email(email)
+                    
                     return JsonResponse({
                         'success': True,
                         'message': 'Newsletter subscription reactivated successfully!'
                     })
+            
             # Create new subscription
             subscription = Subscription.objects.create(
                 email=email,
                 is_active=True
             )
+            
+            # Step 1: juliengmanana@gmail.com notifies contact.lamla1@gmail.com
+            send_newsletter_notification_to_admin(email, subscription.created_at)
+            
+            # Step 2: contact.lamla1@gmail.com sends welcome email to subscriber
             send_newsletter_welcome_email(email)
+            
             return JsonResponse({
                 'success': True,
                 'message': 'Successfully subscribed to our newsletter!'

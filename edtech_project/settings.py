@@ -182,7 +182,7 @@ ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
 # Site domain configuration
 SITE_DOMAIN = os.getenv('SITE_DOMAIN', 'lamla-ai.onrender.com')
 
-# Email Configuration for Form Notifications
+# Email Configuration
 EMAIL_BACKEND = 'slides_analyzer.email_backend.CustomEmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587

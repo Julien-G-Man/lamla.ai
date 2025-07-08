@@ -654,6 +654,7 @@ def about(request):
                     from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com'),
                     recipient_list=[getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')],
                     fail_silently=True,
+                    reply_to=[email],
                 )
             except Exception as e:
                 logger.warning(f"Failed to send contact notification email: {e}")
@@ -864,6 +865,7 @@ def contact(request):
                     from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com'),
                     recipient_list=[getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')],
                     fail_silently=True,
+                    reply_to=[email],
                 )
             except Exception as e:
                 logger.warning(f"Failed to send contact form email: {e}")

@@ -18,7 +18,8 @@ class CustomEmailBackend(SMTPEmailBackend):
         Override send_messages to modify the from_email based on email type.
         """
         for message in email_messages:
-            message.from_email = 'juliengmanana@gmail.com'
+            # Use the correct from_email based on subject
+            message.from_email = self._get_from_email_for_message(message)
         return super().send_messages(email_messages)
     
     def _get_from_email_for_message(self, message):

@@ -117,7 +117,7 @@ For support, contact us at: {getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.la
 def send_newsletter_notification_to_admin(email, subscription_date):
     """Send a notification email to the admin about a new newsletter subscription."""
     try:
-        subject = "Newsletter Subscription from Lamla AI"
+        subject = "Newsletter Subscription"
         message = f"""
 A new user has subscribed to the newsletter:
 

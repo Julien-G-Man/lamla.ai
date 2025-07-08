@@ -17,23 +17,34 @@ class CustomEmailBackend(SMTPEmailBackend):
         """
         Override send_messages to use different SMTP configurations based on email type.
         """
+        logger = logging.getLogger(__name__)
         for message in email_messages:
-            # Determine which SMTP to use based on email type
-            smtp_config = self._get_smtp_config_for_message(message)
-            
-            # Create a new backend with the appropriate SMTP settings
-            backend = SMTPEmailBackend(
-                host=smtp_config['host'],
-                port=smtp_config['port'],
-                username=smtp_config['username'],
-                password=smtp_config['password'],
-                use_tls=smtp_config['use_tls'],
-                fail_silently=message.fail_silently
-            )
-            
-            # Send the message using the appropriate backend
-            backend.send_messages([message])
-            backend.close()
+            try:
+                # Determine which SMTP to use based on email type
+                smtp_config = self._get_smtp_config_for_message(message)
+                
+                logger.info(f"Using SMTP config for subject '{message.subject}': {smtp_config['username']}")
+                
+                # Create a new backend with the appropriate SMTP settings
+                backend = SMTPEmailBackend(
+                    host=smtp_config['host'],
+                    port=smtp_config['port'],
+                    username=smtp_config['username'],
+                    password=smtp_config['password'],
+                    use_tls=smtp_config['use_tls'],
+                    fail_silently=getattr(message, 'fail_silently', False)
+                )
+                
+                # Send the message using the appropriate backend
+                backend.send_messages([message])
+                backend.close()
+                
+                logger.info(f"Email sent successfully via {smtp_config['username']}")
+                
+            except Exception as e:
+                logger.error(f"Failed to send email with subject '{message.subject}': {e}")
+                if not getattr(message, 'fail_silently', False):
+                    raise
     
     def _get_smtp_config_for_message(self, message):
         """
@@ -128,6 +139,8 @@ def send_email(subject, message, recipient_list, from_email=None, html_message=N
     try:
         if from_email is None:
             from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')
+        
+        # Create the email message
         if html_message:
             email = EmailMultiAlternatives(
                 subject=subject,
@@ -145,8 +158,14 @@ def send_email(subject, message, recipient_list, from_email=None, html_message=N
                 to=recipient_list,
                 **kwargs
             )
-        email.send(fail_silently=fail_silently)
-        logger.info(f"Email sent to {recipient_list} (subject: {subject})")
+        
+        # Use the custom backend to send the email
+        from django.core.mail import get_connection
+        connection = get_connection()
+        connection.send_messages([email])
+        connection.close()
+        
+        logger.info(f"Email sent to {recipient_list} (subject: {subject}) from {from_email}")
         return True
     except Exception as e:
         logger.error(f"Failed to send email to {recipient_list}: {e}")

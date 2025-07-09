@@ -54,7 +54,7 @@ class QuestionGenerator:
                 "messages": [
                     {"role": "user", "content": prompt}
                 ],
-                "max_tokens": 1000,
+                "max_tokens": 5000,
                 "temperature": 0.7
             }
             response = requests.post(self.azure_openai_endpoint, headers=headers, json=payload, timeout=60)

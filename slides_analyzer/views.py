@@ -344,9 +344,9 @@ def generate_questions(request):
                 return JsonResponse({
                     'error': 'Number of questions must be positive'
                 }, status=400)
-            if num_mcq > 10 or num_short > 10:
+            if num_mcq > 50 or num_short > 20:
                 return JsonResponse({
-                    'error': 'Maximum 10 questions of each type allowed'
+                    'error': 'Maximum 50 MCQ and 20 short-answer questions allowed'
                 }, status=400)
         except ValueError:
             return JsonResponse({

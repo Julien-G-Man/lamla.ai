@@ -1,276 +1,204 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Extracted Text</title>
-    <style>
-        html { scroll-behavior: smooth; }
-        body {
-            background: #f8f9fa;
-            color: #222;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.5;
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    html { scroll-behavior: smooth; }
+    body {
+        background: #f8f9fa;
+        color: #222;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        line-height: 1.5;
+    }
+
+    /* Main Content Area */
+    .main-content {
+        padding: 40px 20px;
+        text-align: center;
+        flex-grow: 1;
+    }
+
+    /* Page Title */
+    .page-title {
+        font-size: 2.8rem;
+        font-weight: bold;
+        color: #222;
+        margin-bottom: 40px;
+    }
+    .page-title .highlight {
+        color: #FFD600;
+    }
+
+    /* Text Container */
+    .text-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        padding: 40px;
+        text-align: left;
+    }
+
+    /* Section Title */
+    .section-title {
+        font-size: 1.6rem;
+        font-weight: bold;
+        color: #FFD600;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Extracted Text Display */
+    .extracted-text {
+        white-space: pre-wrap;
+        background-color: #f5f5f5;
+        padding: 20px;
+        border-radius: 8px;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.6;
+        color: #333;
+        border: 1px solid #ddd;
+        overflow-x: auto;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+    /* Button Styles */
+    .btn {
+        background: #FFD600;
+        color: #222;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 30px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        margin: 10px;
+    }
+    .btn:hover {
+        background: #e6c200;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 214, 0, 0.3);
+    }
+    .btn:active {
+        transform: translateY(0);
+    }
+    .btn-secondary {
+        background: #6c757d;
+        color: #fff;
+    }
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    /* Back Button */
+    .back-btn {
+        background: #222;
+        color: #FFD600;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: background 0.2s;
+        margin-bottom: 20px;
+    }
+    .back-btn:hover {
+        background: #333;
+    }
+
+    /* Error Message */
+    .error-message {
+        color: #721c24;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 20px 0;
+        font-weight: 600;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .main-content {
+            padding: 20px 15px;
         }
-        .navbar {
-            background: #fff;
-            color: #222;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 0 40px;
-            height: 70px;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-            box-sizing: border-box;
-        }
-        .navbar .logo {
+        .page-title {
             font-size: 2.2rem;
-            font-weight: 700;
-            color: #FFD600;
-            letter-spacing: 0.5px;
-            flex-shrink: 0;
-            margin-left: 15px;
-            display: flex;
-            align-items: center;
-            text-decoration: none;
+            margin-bottom: 30px;
         }
-        .navbar .logo img {
-            height: 45px;
-            margin-right: 8px;
+        .text-container {
+            padding: 25px 20px;
         }
-        .navbar .logo .ai {
-            color: #FFD600;
+        .extracted-text {
+            font-size: 13px;
+            padding: 15px;
         }
-        .hamburger {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 35px;
-            height: 35px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 3000;
-            padding: 0;
-            margin: 0;
+    }
+
+    @media (max-width: 480px) {
+        .page-title {
+            font-size: 1.8rem;
         }
-        .hamburger span {
-            display: block;
-            width: 20px;
-            height: 2px;
-            margin: 3px 0;
-            background: #FFD600;
-            border-radius: 1px;
-            transition: 0.3s ease;
+        .text-container {
+            padding: 20px 15px;
         }
-        .hamburger.open span:nth-child(1) {
-            transform: translateY(5px) rotate(45deg);
+        .section-title {
+            font-size: 1.4rem;
         }
-        .hamburger.open span:nth-child(2) {
-            opacity: 0;
-            transform: scaleX(0);
+        .extracted-text {
+            font-size: 12px;
+            padding: 12px;
         }
-        .hamburger.open span:nth-child(3) {
-            transform: translateY(-5px) rotate(-45deg);
-        }
-        .nav-links {
-            display: flex;
-            gap: 25px;
-            align-items: center;
-            z-index: 3000;
-            margin-left: auto;
-            flex-shrink: 0;
-        }
-        .nav-links a {
-            color: #222;
-            text-decoration: none;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: color 0.2s;
-            padding: 6px 0;
-            white-space: nowrap;
-        }
-        .nav-links a:hover {
-            color: #FFD600;
-        }
-        @media (max-width: 900px) {
-            .nav-links {
-                display: block;
-                position: fixed;
-                top: 0;
-                right: -360px;
-                width: 300px;
-                height: 100vh;
-                background: #fff;
-                box-shadow: -4px 0 24px rgba(0,0,0,0.10);
-                padding: 90px 30px 30px 30px;
-                transition: right 0.35s cubic-bezier(.77,0,.18,1);
-                border-radius: 0 0 0 24px;
-                flex-direction: column;
-                gap: 18px;
-                margin-left: 0;
-                z-index: 4000;
-            }
-            .nav-links.open {
-                right: 0;
-            }
-            .nav-links a {
-                display: block;
-                padding: 16px 0;
-                font-size: 1.15rem;
-                border-bottom: 1px solid #eee;
-                color: #222;
-                transition: color 0.2s, background 0.2s;
-            }
-            .nav-links a:last-child {
-                border-bottom: none;
-            }
-        }
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 0 20px;
-                height: 64px;
-            }
-            .navbar .logo {
-                font-size: 1.8rem;
-                margin-left: 15px;
-            }
-            .navbar .logo img {
-                height: 35px;
-            }
-            .hamburger {
-                width: 30px;
-                height: 30px;
-            }
-            .hamburger span {
-                width: 18px;
-                height: 2px;
-                margin: 2px 0;
-            }
-            .hamburger.open span:nth-child(1) {
-                transform: translateY(4px) rotate(45deg);
-            }
-            .hamburger.open span:nth-child(2) {
-                opacity: 0;
-                transform: scaleX(0);
-            }
-            .hamburger.open span:nth-child(3) {
-                transform: translateY(-4px) rotate(-45deg);
-            }
-        }
-        @media (max-width: 480px) {
-            .navbar {
-                padding: 0 15px;
-                height: 60px;
-            }
-            .navbar .logo {
-                font-size: 1.6rem;
-                margin-left: 12px;
-            }
-            .navbar .logo img {
-                height: 30px;
-            }
-            .hamburger {
-                width: 28px;
-                height: 28px;
-            }
-            .hamburger span {
-                width: 16px;
-                height: 2px;
-                margin: 2px 0;
-            }
-            .hamburger.open span:nth-child(1) {
-                transform: translateY(4px) rotate(45deg);
-            }
-            .hamburger.open span:nth-child(2) {
-                opacity: 0;
-                transform: scaleX(0);
-            }
-            .hamburger.open span:nth-child(3) {
-                transform: translateY(-4px) rotate(-45deg);
-            }
-        }
-        pre {
-            background: #f5f5f5;
-            color: #222;
-            padding: 20px;
-            border-radius: 5px;
-            margin: 20px 0;
-        }
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: #FFD600;
-            text-decoration: none;
-        }
-        .back-link:hover {
-            text-decoration: underline;
-            color: #222;
-        }
-    </style>
-</head>
-<body>
-    <div class="navbar">
-        <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <a href="/" style="display:flex;align-items:center;text-decoration:none;" class="logo">
-            <img src="{% static 'slides_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" style="height:40px;">
-            <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
-        </a>
-        <div class="nav-links" id="navLinks">
-            <a href="/">Home</a>
-            {% if user_authenticated %}
-                <a href="{% url 'dashboard' %}">Dashboard</a>
-            {% endif %}
-            <a href="/about/">About</a>
-            <a href="/custom-quiz/">Quiz</a>
-            <a href="/flashcards/">Flashcards</a>
-            <a href="#">Concepts</a>
-            <a href="/exam-analyzer/">Exam Analyzer</a>
-            <a href="#">History</a>
-            {% if user_authenticated %}
-                <a href="{% url 'custom_logout' %}">Logout</a>
-            {% else %}
-                <a href="/accounts/login/">Login</a>
-            {% endif %}
-        </div>
+    }
+</style>
+
+<div class="page-title">
+    <span class="highlight">Extracted</span> Text
+</div>
+
+<div class="text-container">
+    <div class="section-title">
+        <i class="fas fa-file-text"></i>
+        Extracted Content
     </div>
-    <script>
-        // Hamburger menu toggle with slide-out effect (unified with home/about)
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('navLinks');
-        if (hamburger && navLinks) {
-            hamburger.onclick = function() {
-                const expanded = this.getAttribute('aria-expanded') === 'true';
-                navLinks.classList.toggle('open');
-                this.classList.toggle('open');
-                this.setAttribute('aria-expanded', !expanded);
-            };
-            // Close menu when clicking on links (mobile only)
-            navLinks.querySelectorAll('a').forEach(function(link) {
-                link.onclick = function() {
-                    navLinks.classList.remove('open');
-                    hamburger.classList.remove('open');
-                    hamburger.setAttribute('aria-expanded', 'false');
-                }
-            });
-        }
-    </script>
-    <h1>Extracted Text</h1>
-    <pre>{{ text }}</pre>
-    <form method="post" action="{% url 'generate_questions' %}">
-        {% csrf_token %}
-        <input type="hidden" name="extracted_text" value="{{ text }}">
-        <button type="submit">Generate Questions</button>
-    </form>
-    <a href="/upload/">Upload another file</a>
-</body>
-</html> 
+    
+    <a href="/upload/" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Upload
+    </a>
+    
+    {% if extracted_text %}
+        <div class="extracted-text">
+            {{ extracted_text|safe }}
+        </div>
+    {% else %}
+        <div class="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            No text was extracted. Please try again with a different file.
+        </div>
+    {% endif %}
+    
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="/upload/" class="btn">
+            <i class="fas fa-upload"></i> Upload Another File
+        </a>
+        {% if extracted_text %}
+            <a href="/flashcards/" class="btn btn-secondary">
+                <i class="fas fa-clone"></i> Create Flashcards
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

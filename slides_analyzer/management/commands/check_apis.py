@@ -11,6 +11,27 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('Checking API configurations...'))
         
+        # Check Azure OpenAI API
+        if hasattr(settings, 'AZURE_OPENAI_API_KEY') and settings.AZURE_OPENAI_API_KEY and hasattr(settings, 'AZURE_OPENAI_ENDPOINT') and settings.AZURE_OPENAI_ENDPOINT:
+            self.stdout.write('✓ Azure OpenAI API key and endpoint are configured')
+            try:
+                import openai
+                client = openai.AzureOpenAI(
+                    api_key=settings.AZURE_OPENAI_API_KEY,
+                    api_version="2024-02-15-preview",
+                    azure_endpoint=settings.AZURE_OPENAI_ENDPOINT.split('/openai/')[0]
+                )
+                response = client.chat.completions.create(
+                    model="gpt-4o-mini-deployment",
+                    messages=[{"role": "user", "content": "Hello"}],
+                    max_tokens=10
+                )
+                self.stdout.write(self.style.SUCCESS('✓ Azure OpenAI API is working'))
+            except Exception as e:
+                self.stdout.write(self.style.ERROR(f'✗ Azure OpenAI API error: {e}'))
+        else:
+            self.stdout.write(self.style.WARNING('⚠ Azure OpenAI API key or endpoint not configured'))
+        
         # Check Gemini API
         if hasattr(settings, 'GEMINI_API_KEY') and settings.GEMINI_API_KEY:
             self.stdout.write('✓ Gemini API key is configured')

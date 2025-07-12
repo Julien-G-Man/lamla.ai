@@ -1,12 +1,7 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>About LAMLA AI</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+{% block content %}
     <style>
         /* Reusing global variables from the homepage */
         :root {
@@ -47,103 +42,44 @@
             -moz-osx-font-smoothing: grayscale;
         }
 
+        /* Main content wrapper for sidebar compatibility */
+        .main-content-wrapper {
+            transition: max-width 0.3s ease, margin-left 0.3s ease;
+            max-width: 100%;
+            margin-left: 0;
+        }
+
+        /* When sidebar is open */
+        .sidebar-open .main-content-wrapper {
+            max-width: calc(100% - 280px);
+            margin-left: 280px;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .sidebar-open .main-content-wrapper {
+                max-width: 100%;
+                margin-left: 0;
+            }
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
 
-        /* Navbar - Copied directly from homepage for consistency */
-        .navbar {
-            background: var(--background-white);
-            color: var(--secondary-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 40px;
-            height: 70px; /* Adjusted height to match homepage */
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            box-shadow: 0 2px 10px var(--shadow-light);
-            box-sizing: border-box;
-        }
-
-        .navbar .logo {
-            font-size: 2.2rem; /* Adjusted font-size to match homepage */
-            font-weight: 700;
-            color: var(--primary-color);
-            letter-spacing: 0.5px;
-            flex-shrink: 0;
-            margin-right: 60px; /* Adjusted margin-right to match homepage */
-            display: flex; /* Added flex for logo image */
-            align-items: center; /* Added align-items for logo image */
-            text-decoration: none; /* Ensure logo link has no underline */
-        }
-
-        .navbar .logo img {
-            height: 45px; /* Adjusted height to match homepage */
-            margin-right: 8px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 25px; /* Adjusted gap to match homepage */
-            align-items: center;
-            z-index: 3000;
-            margin-left: auto;
-            flex-shrink: 0;
-        }
-
-        .nav-links a {
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-size: 1.05rem; /* Adjusted font-size to match homepage */
-            font-weight: 500;
-            transition: color 0.3s ease, transform 0.2s ease; /* Added transform transition */
-            padding: 8px 0; /* Adjusted padding to match homepage */
-            white-space: nowrap;
-        }
-
-        .nav-links a:hover {
-            color: var(--primary-color);
-            transform: translateY(-2px); /* Added transform on hover */
-        }
-
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 45px; /* Adjusted width to match homepage */
-            height: 45px; /* Adjusted height to match homepage */
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 3000;
-            margin-left: auto;
-            padding: 0;
-        }
-
-        .hamburger span {
-            display: block;
-            width: 30px; /* Adjusted width to match homepage */
-            height: 3px; /* Adjusted height to match homepage */
-            margin: 5px 0; /* Adjusted margin to match homepage */
-            background: var(--primary-color);
-            border-radius: 2px;
-            transition: 0.3s ease;
-        }
-
         /* About Hero Section */
         .about-hero {
             background: var(--secondary-color); /* Dark background for hero */
             color: var(--background-white);
-            padding: 120px 20px 60px 20px; /* Adjusted padding */
+            padding: 120px 0 60px 0; /* Remove horizontal padding to reach corners */
             text-align: center;
             position: relative; /* For potential background elements later */
             overflow: hidden; /* For any clipped background elements */
+            margin-left: calc(-50vw + 50%); /* Extend to left edge of viewport */
+            margin-right: calc(-50vw + 50%); /* Extend to right edge of viewport */
+            width: 100vw; /* Full viewport width */
         }
 
         .about-hero .about-logo {
@@ -161,7 +97,6 @@
         .about-hero-title .highlight {
             color: var(--background-white); /* White for "About" part */
         }
-
 
         .about-hero-desc {
             font-size: 1.35rem; /* Slightly larger, consistent with homepage */
@@ -183,6 +118,9 @@
             margin-top: -30px; /* Overlap with hero slightly for visual flow */
             position: relative;
             z-index: 10; /* Ensure it's above other elements */
+            margin-left: calc(-50vw + 50%); /* Extend to left edge of viewport */
+            margin-right: calc(-50vw + 50%); /* Extend to right edge of viewport */
+            width: 100vw; /* Full viewport width */
         }
 
         .about-tabs {
@@ -197,116 +135,104 @@
             z-index: 999; /* Ensure tabs are on top when sticky */
             padding: 0 20px; /* Add horizontal padding for tabs */
         }
-        /* Style for sticky effect (optional, subtle shadow when sticky) */
-        .about-tabs.sticky {
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
 
         .about-tab {
-            color: var(--text-dark); /* Darker text */
+        color: var(--text-muted); /* Default tab color */
             background: none;
             border: none;
-            font-size: 1.05rem; /* Consistent font size */
-            font-weight: 600; /* Bolder font weight */
-            padding: 18px 30px 14px 30px; /* Adjusted padding */
+        font-size: 1.1rem;
+        font-weight: 500;
+        padding: 20px 30px 15px 30px; /* Adjusted padding */
             cursor: pointer;
             outline: none;
             border-bottom: 3px solid transparent;
-            transition: color 0.3s ease, border-bottom 0.3s ease; /* Smoother transition */
-            white-space: nowrap; /* Prevent text wrapping inside tab */
+        transition: color 0.3s ease, border-bottom 0.3s ease;
+        position: relative; /* For potential hover effects */
         }
 
         .about-tab.active {
-            color: var(--primary-color);
+        color: var(--primary-color); /* Active tab accent color */
             border-bottom: 3px solid var(--primary-color);
-            background: var(--background-white); /* Ensure background remains white */
+        background: var(--background-white);
         }
 
         .about-tab:not(.active):hover {
-            color: var(--primary-color);
+        color: var(--primary-color); /* Hover color for inactive tabs */
         }
 
+    /* Tab Content Area */
         .about-tab-content {
-            max-width: 900px; /* Wider content area */
-            margin: 40px auto 0 auto; /* Adjusted margin */
             background: var(--background-white);
-            border-radius: 16px; /* Consistent border radius */
-            box-shadow: none; /* No individual shadow as container has it */
-            padding: 40px 32px; /* Adjusted padding */
-            min-height: 250px; /* Slightly taller minimum height */
+        border-radius: 0 0 20px 20px; /* Retain rounded bottom */
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05); /* Lighter shadow for content */
+        padding: 50px 40px; /* Increased padding for larger content */
+        margin-bottom: 20px;
             position: relative;
             overflow: hidden;
+        transition: all 0.4s cubic-bezier(.77,0,.18,1);
             opacity: 1;
-            transform: translateX(0); /* Reset transform for default state */
-            box-sizing: border-box; /* Include padding in dimensions */
+        z-index: 1;
         }
-        /* No animation needed here if handled by JS, or create specific classes */
+
         .about-tab-content.slide-in {
-            animation: slideIn 0.5s cubic-bezier(.25, .8, .25, 1); /* Smoother animation */
+        animation: slideIn 0.4s cubic-bezier(.77,0,.18,1);
         }
+
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); } /* Slide up from bottom */
-            to { opacity: 1; transform: translateY(0); }
-        }
+        from { opacity: 0; transform: translateX(40px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
 
-        .about-tab-content h2 {
-            color: var(--enactus-heading-color); /* Darker heading color */
-            font-size: 1.8rem; /* Larger heading */
-            font-weight: 700;
-            margin-bottom: 15px;
-            margin-top: 0;
-            display: flex;
-            align-items: center;
-            gap: 12px; /* Increased gap for emoji */
-        }
+    /* About Content Sections */
+    .about-section {
+        max-width: 1000px; /* Increased max-width */
+        margin: 0 auto;
+        text-align: left;
+    }
 
-        .about-tab-content ul {
-            padding-left: 1.5em; /* More padding for list */
-            margin: 0 0 15px 0;
-            list-style: none; /* Remove default bullet */
-        }
-        .about-tab-content ul li {
-            position: relative;
-            margin-bottom: 12px;
-            padding-left: 25px; /* Space for custom bullet */
-            font-size: 1.1rem; /* Slightly larger list items */
-            color: var(--text-dark);
-        }
-        .about-tab-content ul li::before {
-            content: '•'; /* Custom bullet point */
-            color: var(--primary-color); /* Yellow bullet */
-            font-size: 1.5em;
-            position: absolute;
-            left: 0;
-            top: 0;
-            line-height: 1;
-        }
+    .about-section h2 {
+        color: var(--enactus-heading-color);
+        font-size: 2.5rem; /* Increased font size */
+        font-weight: 700;
+        margin-bottom: 30px; /* Increased margin */
+        text-align: center;
+    }
 
-        .about-tab-content strong {
-            color: var(--secondary-color); /* Darker strong text for emphasis */
+    .about-section h3 {
+        color: var(--primary-color);
+        font-size: 1.8rem; /* Increased font size */
             font-weight: 600;
-        }
-        .about-tab-content .emoji {
-            font-size: 2rem; /* Larger emoji */
-            margin-right: 0; /* Handled by gap on h2 */
-            line-height: 1;
-        }
-        .about-tab-content p {
-            margin: 0 0 15px 0; /* Consistent paragraph spacing */
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: var(--text-dark);
+        margin: 35px 0 20px 0; /* Increased margins */
+    }
+
+    .about-section p {
+        color: var(--enactus-dark-text);
+        font-size: 1.2rem; /* Increased font size */
+        line-height: 1.8;
+        margin-bottom: 25px; /* Increased margin */
+    }
+
+    .about-section ul {
+        color: var(--enactus-dark-text);
+        font-size: 1.2rem; /* Increased font size */
+        line-height: 1.8;
+        margin-bottom: 25px; /* Increased margin */
+        padding-left: 25px; /* Increased padding */
+    }
+
+    .about-section li {
+        margin-bottom: 12px; /* Increased margin */
         }
 
         /* Join Section */
         .about-join-section {
-            max-width: 900px;
+        max-width: 1000px; /* Increased max-width */
             margin: 60px auto 60px auto; /* More vertical spacing */
             background: var(--background-white); /* White background */
             color: var(--enactus-dark-text);
             border-radius: 20px; /* Consistent border radius */
             box-shadow: 0 8px 30px rgba(0,0,0,0.1); /* Stronger shadow */
-            padding: 50px 32px; /* More padding */
+        padding: 60px 40px; /* Increased padding */
             text-align: center;
             box-sizing: border-box;
         }
@@ -353,13 +279,13 @@
 
         /* Contact Form Section */
         .about-contact-section {
-            max-width: 900px;
+        max-width: 1000px; /* Increased max-width */
             margin: 60px auto 0 auto; /* Remove bottom margin */
             background: var(--background-white);
             color: var(--enactus-dark-text);
             border-radius: 20px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-            padding: 50px 32px 0 32px; /* Remove bottom padding */
+        padding: 60px 40px 0 40px; /* Increased padding */
             text-align: center;
             box-sizing: border-box;
         }
@@ -383,7 +309,7 @@
 
         /* Contact Form - Matching subscription form style */
         .contact-form {
-            max-width: 600px;
+        max-width: 700px; /* Increased max-width */
             margin: 0 auto;
             text-align: left;
         }
@@ -499,7 +425,7 @@
         .about-founder-section {
             text-align: center;
             margin: 60px auto 40px auto;
-            max-width: 400px;
+        max-width: 450px; /* Increased max-width */
         }
 
         .about-founder-heading {
@@ -518,7 +444,7 @@
             text-align: center;
             position: relative;
             border: none;
-            max-width: 400px;
+        max-width: 450px; /* Increased max-width */
             margin: 0 auto 60px auto;
         }
         .about-founder-card-top {
@@ -600,239 +526,41 @@
             transform: translateY(-2px);
         }
 
-        @media (max-width: 500px) {
-            .about-founder-section {
-                max-width: 98vw;
-            }
-            .about-founder-card {
-                max-width: 98vw;
-            }
-            .about-founder-card-top {
-                height: 90px;
-            }
-            .about-founder-photo {
-                width: 110px;
-                height: 110px;
-                top: 40px;
-            }
-            .about-founder-content {
-                padding-top: 70px;
-            }
-        }
-
-        /* Bottom section and footer styles - Copied directly from homepage for consistency */
-        .bottom-section {
-            background: var(--secondary-color);
-            color: #f0f0f0;
-            padding: 60px 20px 30px 20px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 80px;
-            border-top: 2px solid var(--secondary-color); /* Removed the default gray border */
-        }
-
-        .bottom-col {
-            min-width: 250px;
-            max-width: 350px;
-            text-align: left;
-        }
-
-        .bottom-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 18px;
-        }
-
-        .bottom-list, .bottom-contact {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .bottom-list li, .bottom-contact li {
-            margin-bottom: 10px;
-            font-size: 1.05rem;
-        }
-
-        .bottom-list a, .bottom-contact span, .bottom-contact a {
-            color: #f0f0f0;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .bottom-list a:hover {
-            color: var(--primary-color);
-        }
-
-        .bottom-socials {
-            display: flex;
-            gap: 18px;
-            margin-top: 15px;
-        }
-
-        .bottom-social-icon {
-            width: 40px;
-            height: 40px;
-            background: #555;
-            color: #999;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: not-allowed;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            opacity: 0.6;
-        }
-        .bottom-social-icon:hover {
-            opacity: 0.8;
-            transform: none;
-        }
-        .bottom-social-icon i {
-            font-size: 1.1rem;
-        }
-
-        /* FOOTER */
-        .footer-section {
-            background: var(--secondary-color);
-            color: white;
-            padding: 40px 0 20px 0;
-            margin-top: 60px;
-        }
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 40px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-        }
-        .footer-col h3 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-        }
-        .footer-col ul {
-            list-style: none;
-            padding: 0;
-        }
-        .footer-col ul li {
-            margin-bottom: 10px;
-        }
-        .footer-col ul li a {
-            color: #ccc;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        .footer-col ul li a:hover {
-            color: var(--primary-color);
-        }
-        .footer-bottom {
-            text-align: center;
-            padding: 20px 0;
-            border-top: 1px solid #eee;
-            color: #666;
-        }
-        .legal-links {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .legal-links a {
-            color: #999;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-        .legal-links a:hover {
-            color: var(--primary-color);
-        }
-        
-        /* Social Media Icons Styling */
-        .social-icons {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        .social-icon {
-            width: 40px;
-            height: 40px;
-            background: #555;
-            color: #999;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        .social-icon:hover {
-            opacity: 0.8;
-            transform: none;
-        }
-        .social-icon i {
-            font-size: 1.2em;
-        }
-        .social-icon.instagram {
-            color: #fff;
-            background: linear-gradient(45deg, #f9ce34 0%, #ee2a7b 50%, #6228d7 100%);
-            cursor: pointer;
-            opacity: 1;
-        }
-        
+    /* Responsive Design */
         @media (max-width: 768px) {
-            .footer-content {
-                padding: 0 20px;
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 1200px) {
-            .navbar {
-                padding: 0 30px;
-            }
-            .about-hero-title {
-                font-size: 2.8rem;
-            }
-            .about-hero-desc {
-                font-size: 1.25rem;
-            }
-        }
-
-        @media (max-width: 992px) {
             .about-hero {
-                padding: 100px 20px 50px 20px;
+            padding: 100px 15px 50px 15px;
             }
             .about-hero-title {
                 font-size: 2.5rem;
             }
             .about-hero-desc {
-                font-size: 1.15rem;
-            }
-            .about-tabs-container {
-                margin-top: -20px;
+            font-size: 1.2rem;
+        }
+        .about-tabs {
+            flex-direction: column;
+            position: relative;
+            top: auto;
             }
             .about-tab {
+            padding: 15px 20px;
                 font-size: 1rem;
-                padding: 16px 25px 12px 25px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .about-tab.active {
+            border-bottom: 2px solid var(--primary-color);
             }
             .about-tab-content {
-                padding: 30px 25px;
+            padding: 30px 20px;
+        }
+        .about-section h2 {
+            font-size: 1.8rem;
+        }
+        .about-section h3 {
+                font-size: 1.4rem;
             }
-            .about-tab-content h2 {
-                font-size: 1.6rem;
-            }
-            .about-tab-content p, .about-tab-content ul li {
+        .about-section p,
+        .about-section ul {
                 font-size: 1rem;
             }
             .about-join-section {
@@ -854,132 +582,6 @@
             }
             .about-founder-name {
                 font-size: 1.4rem;
-            }
-            .bottom-section {
-                gap: 60px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 0 20px;
-                height: 64px;
-            }
-            .navbar .logo {
-                font-size: 1.8rem;
-                margin-right: 0;
-            }
-            .navbar .logo img {
-                height: 35px;
-            }
-            .hamburger {
-                display: flex;
-                margin-left: auto;
-            }
-            .nav-links {
-                display: block;
-                position: fixed;
-                top: 0;
-                right: -360px;
-                width: 300px;
-                height: 100vh;
-                background: var(--background-white);
-                box-shadow: -4px 0 24px rgba(0,0,0,0.10);
-                padding: 90px 30px 30px 30px;
-                transition: right 0.35s cubic-bezier(.77,0,.18,1);
-                border-radius: 0 0 0 24px;
-                z-index: 2000;
-            }
-            .nav-links.open {
-                right: 0;
-            }
-            .nav-links a {
-                display: block;
-                padding: 15px 0;
-                font-size: 1.1rem;
-                border-bottom: 1px solid var(--border-color);
-            }
-            .nav-links a:last-child {
-                border-bottom: none;
-            }
-            .hamburger.open span:nth-child(1) {
-                transform: rotate(45deg) translate(5px, 5px);
-            }
-            .hamburger.open span:nth-child(2) {
-                opacity: 0;
-            }
-            .hamburger.open span:nth-child(3) {
-                transform: rotate(-45deg) translate(7px, -6px);
-            }
-
-            /* Ensure proper spacing for fixed navbar */
-            body {
-                padding-top: 64px;
-            }
-
-            .about-hero {
-                padding: 80px 20px 50px 20px;
-                margin-top: 0;
-            }
-            .about-hero-title {
-                font-size: 2.5rem;
-            }
-            .about-hero-desc {
-                font-size: 1.15rem;
-            }
-            .about-tabs-container {
-                margin-top: -20px;
-            }
-            .about-tab {
-                font-size: 1rem;
-                padding: 16px 25px 12px 25px;
-            }
-            .about-tab-content {
-                padding: 30px 25px;
-            }
-            .about-tab-content h2 {
-                font-size: 1.6rem;
-            }
-            .about-tab-content p, .about-tab-content ul li {
-                font-size: 1rem;
-            }
-            .about-join-section {
-                padding: 40px 25px;
-                margin: 50px auto;
-            }
-            .about-join-section h2 {
-                font-size: 2.2rem;
-            }
-            .about-join-section p {
-                font-size: 1.1rem;
-            }
-            .get-started-btn {
-                padding: 16px 35px;
-                font-size: 1.1rem;
-            }
-            .about-founder-card {
-                margin: 50px auto 60px auto;
-            }
-            .about-founder-name {
-                font-size: 1.4rem;
-            }
-            .bottom-section {
-                gap: 60px;
-            }
-
-            /* Contact form mobile improvements */
-            .about-contact-section {
-                padding: 40px 25px 0 25px;
-                margin: 50px auto 0 auto;
-            }
-            .about-contact-section h2 {
-                font-size: 2.2rem;
-            }
-            .about-contact-section p {
-                font-size: 1.1rem;
-            }
-            .contact-form {
-                max-width: 100%;
             }
             .contact-form-row {
                 flex-direction: column;
@@ -996,65 +598,28 @@
                 padding: 16px 0;
                 font-size: 1.1rem;
             }
+    }
 
-            .bottom-section {
-                flex-direction: column;
-                align-items: center;
-                gap: 30px;
-                padding: 30px 15px 15px 15px;
-            }
-            .bottom-col {
-                text-align: center;
-                min-width: unset;
-                width: 100%;
-                max-width: 280px;
-            }
-            .bottom-socials {
-                justify-content: center;
-            }
-            .footer {
-                padding: 20px 0 10px 0;
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (max-width: 500px) {
-            .navbar {
-                padding: 0 15px;
-                height: 60px;
-            }
-            .navbar .logo {
-                font-size: 1.5rem;
-            }
-            .navbar .logo img {
-                height: 30px;
-            }
-            
-            .about-hero {
-                padding: 80px 15px 40px 15px;
-            }
+    @media (max-width: 480px) {
             .about-hero-title {
                 font-size: 2rem;
-                line-height: 1.2;
             }
             .about-hero-desc {
-                font-size: 1rem;
+            font-size: 1.1rem;
             }
-            
             .about-tab {
-                font-size: 0.95rem;
-                padding: 14px 20px 10px 20px;
+            padding: 12px 15px;
+            font-size: 0.9rem;
             }
             .about-tab-content {
-                padding: 25px 20px;
+            padding: 25px 15px;
             }
-            .about-tab-content h2 {
-                font-size: 1.4rem;
+        .about-section h2 {
+            font-size: 1.6rem;
             }
-            .about-tab-content p, .about-tab-content ul li {
-                font-size: 0.95rem;
+        .about-section h3 {
+            font-size: 1.3rem;
             }
-            
             .about-join-section {
                 padding: 30px 20px;
                 margin: 40px auto;
@@ -1069,7 +634,6 @@
                 padding: 14px 30px;
                 font-size: 1rem;
             }
-            
             .about-founder-heading {
                 font-size: 1.8rem;
                 margin-bottom: 20px;
@@ -1105,10 +669,8 @@
                 margin: 15px 0 15px 0;
             }
             .about-founder-socials a {
-                font-size: 1.4rem;
+            font-size: 1.3rem;
             }
-
-            /* Contact form mobile improvements */
             .about-contact-section {
                 padding: 30px 20px 0 20px;
                 margin: 40px auto 0 auto;
@@ -1128,440 +690,16 @@
             }
             .contact-btn {
                 padding: 14px 0;
-                font-size: 1rem;
-            }
-
-            .bottom-section {
-                flex-direction: column;
-                align-items: center;
-                gap: 30px;
-                padding: 30px 15px 15px 15px;
-            }
-            .bottom-col {
-                text-align: center;
-                min-width: unset;
-                width: 100%;
-                max-width: 280px;
-            }
-            .bottom-socials {
-                justify-content: center;
-            }
-            .footer {
-                padding: 20px 0 10px 0;
-                font-size: 0.9rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .navbar {
-                padding: 0 12px;
-                height: 55px;
-            }
-            .navbar .logo {
-                font-size: 1.4rem;
-            }
-            .navbar .logo img {
-                height: 28px;
-            }
-            
-            .about-hero {
-                padding: 70px 12px 35px 12px;
-            }
-            .about-hero-title {
-                font-size: 1.8rem;
-                line-height: 1.2;
-            }
-            .about-hero-desc {
                 font-size: 0.95rem;
             }
-            
-            .about-tab {
-                font-size: 0.9rem;
-                padding: 12px 18px 8px 18px;
-            }
-            .about-tab-content {
-                padding: 20px 15px;
-            }
-            .about-tab-content h2 {
-                font-size: 1.3rem;
-            }
-            .about-tab-content p, .about-tab-content ul li {
-                font-size: 0.9rem;
-            }
-            
-            .about-join-section {
-                padding: 25px 15px;
-                margin: 35px auto;
-            }
-            .about-join-section h2 {
-                font-size: 1.6rem;
-            }
-            .about-join-section p {
-                font-size: 0.95rem;
-            }
-            .get-started-btn {
-                padding: 12px 25px;
-                font-size: 0.95rem;
-            }
-            
-            .about-founder-heading {
-                font-size: 1.6rem;
-                margin-bottom: 18px;
-            }
-            .about-founder-card {
-                margin: 25px auto 40px auto;
-                max-width: 320px;
-            }
-            .about-founder-photo {
-                width: 90px;
-                height: 90px;
-                top: 25px;
-                border-width: 4px;
-            }
-            .about-founder-content {
-                padding-top: 55px;
-            }
-            .about-founder-name {
-                font-size: 1.1rem;
-            }
-            .about-founder-role {
-                font-size: 0.95rem;
-            }
-            .about-founder-desc {
-                font-size: 0.9rem;
-                padding: 0 12px 12px 12px;
-            }
-            .about-founder-socials {
-                gap: 12px;
-                margin: 12px 0 12px 0;
-            }
-            .about-founder-socials a {
-                font-size: 1.3rem;
-            }
-
-            /* Contact form mobile improvements */
-            .about-contact-section {
-                padding: 25px 15px 0 15px;
-                margin: 35px auto 0 auto;
-            }
-            .about-contact-section h2 {
-                font-size: 1.6rem;
-            }
-            .about-contact-section p {
-                font-size: 0.95rem;
-            }
-            .contact-form-group {
-                margin-bottom: 10px;
-            }
-            .contact-input, .contact-textarea {
-                padding: 8px 10px;
-                font-size: 0.9rem;
-            }
-            .contact-btn {
-                padding: 12px 0;
-                font-size: 0.95rem;
-            }
-
-            .bottom-section {
-                padding: 25px 12px 12px 12px;
-                gap: 25px;
-            }
-            .bottom-col {
-                max-width: 260px;
-            }
-            .footer {
-                padding: 18px 0 8px 0;
-                font-size: 0.85rem;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            .navbar {
-                padding: 0 10px;
-                height: 50px;
-            }
-            .navbar .logo {
-                font-size: 1.3rem;
-            }
-            .navbar .logo img {
-                height: 25px;
-            }
-            
-            .about-hero {
-                padding: 60px 10px 30px 10px;
-            }
-            .about-hero-title {
-                font-size: 1.6rem;
-            }
-            .about-hero-desc {
-                font-size: 0.9rem;
-            }
-            
-            .about-tab {
-                font-size: 0.85rem;
-                padding: 10px 15px 6px 15px;
-            }
-            .about-tab-content {
-                padding: 18px 12px;
-            }
-            .about-tab-content h2 {
-                font-size: 1.2rem;
-            }
-            .about-tab-content p, .about-tab-content ul li {
-                font-size: 0.85rem;
-            }
-            
-            .about-join-section {
-                padding: 20px 12px;
-                margin: 30px auto;
-            }
-            .about-join-section h2 {
-                font-size: 1.4rem;
-            }
-            .about-join-section p {
-                font-size: 0.9rem;
-            }
-            .get-started-btn {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-            
-            .about-founder-heading {
-                font-size: 1.4rem;
-                margin-bottom: 15px;
-            }
-            .about-founder-card {
-                margin: 20px auto 35px auto;
-                max-width: 300px;
-            }
-            .about-founder-photo {
-                width: 80px;
-                height: 80px;
-                top: 20px;
-                border-width: 3px;
-            }
-            .about-founder-content {
-                padding-top: 50px;
-            }
-            .about-founder-name {
-                font-size: 1rem;
-            }
-            .about-founder-role {
-                font-size: 0.9rem;
-            }
-            .about-founder-desc {
-                font-size: 0.85rem;
-                padding: 0 10px 10px 10px;
-            }
-            .about-founder-socials {
-                gap: 10px;
-                margin: 10px 0 10px 0;
-            }
-            .about-founder-socials a {
-                font-size: 1.2rem;
-            }
-
-            /* Contact form mobile improvements */
-            .about-contact-section {
-                padding: 20px 12px 0 12px;
-                margin: 30px auto 0 auto;
-            }
-            .about-contact-section h2 {
-                font-size: 1.4rem;
-            }
-            .about-contact-section p {
-                font-size: 0.9rem;
-            }
-            .contact-form-group {
-                margin-bottom: 8px;
-            }
-            .contact-input, .contact-textarea {
-                padding: 6px 8px;
-                font-size: 0.85rem;
-            }
-            .contact-btn {
-                padding: 10px 0;
-                font-size: 0.9rem;
-            }
-
-            .bottom-section {
-                padding: 20px 10px 10px 10px;
-                gap: 20px;
-            }
-            .bottom-col {
-                max-width: 240px;
-            }
-            .footer {
-                padding: 15px 0 6px 0;
-                font-size: 0.8rem;
-            }
-        }
-
-        /* Sidebar styles - Hidden by default, only show on large screens */
-        .sidebar {
-            display: none;
-        }
-        
-        .main-content {
-            margin-left: 0;
-        }
-        
-        /* Sidebar styles for large screens */
-        @media (min-width: 1024px) {
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 230px;
-                height: 100vh;
-                background: var(--primary-yellow-light);
-                box-shadow: 2px 0 16px var(--shadow-light);
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 30px 0 0 0;
-                z-index: 1100;
-                transform: translateX(0);
-                transition: transform 0.35s cubic-bezier(.77,0,.18,1);
-            }
-            .sidebar.closed {
-                transform: translateX(-100%);
-            }
-            .sidebar .sidebar-logo {
-                display: flex;
-                align-items: center;
-                padding: 0 32px 30px 32px;
-                margin-bottom: 10px;
-                text-decoration: none;
-            }
-            .sidebar .sidebar-logo img {
-                height: 40px;
-                margin-right: 10px;
-            }
-            .sidebar .sidebar-links {
-                display: flex;
-                flex-direction: column;
-                width: 100%;
-                gap: 6px;
-                padding: 0 32px;
-            }
-            .sidebar .sidebar-links a {
-                color: var(--secondary-color);
-                text-decoration: none;
-                font-size: 1.08rem;
-                font-weight: 500;
-                padding: 12px 0 12px 0;
-                border-radius: 8px;
-                transition: background 0.2s, color 0.2s;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            .sidebar .sidebar-links a:hover {
-                background: var(--background-light);
-                color: var(--primary-color);
-            }
-            .sidebar .sidebar-links .active {
-                color: var(--primary-color);
-                font-weight: 700;
-            }
-            .main-content {
-                margin-left: 230px;
-                transition: margin-left 0.35s cubic-bezier(.77,0,.18,1);
-            }
-            .sidebar.closed ~ .main-content {
-                margin-left: 0;
-            }
-            .navbar {
-                z-index: 1200;
-            }
-            .navbar .nav-links {
-                display: none !important;
-            }
-        }
-        @media (max-width: 1023px) {
-            .sidebar {
-                display: none !important;
-            }
-            .main-content {
-                margin-left: 0;
-            }
-        }
-        .hamburger {
-            display: flex !important;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 45px;
-            height: 45px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 3000;
-            margin-left: auto;
-            padding: 0;
         }
     </style>
-</head>
-<body>
-    <header class="navbar">
-        <a href="/" class="logo">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
-            <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
-        </a>
-        <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="navLinks" aria-expanded="false">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-            <a href="/"> <i class="fas fa-home"></i> Home</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            {% endif %}
-            <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
-            <a href="/custom-quiz/"> <i class="fas fa-question-circle"></i> Quiz</a>
-            <a href="/flashcards/"> <i class="fas fa-clone"></i> Flashcards</a>
-            <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
-            <a href="/exam-analyzer/"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
-            <a href="#"> <i class="fas fa-history"></i> History</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
-            {% else %}
-                <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
-            {% endif %}
-        </nav>
-    </header>
-    <div class="sidebar" id="sidebar">
-        <a href="/" class="sidebar-logo">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
-            <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
-        </a>
-        <div class="sidebar-links">
-            <a href="/"> <i class="fas fa-home"></i> Home</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'dashboard' %}"> <i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            {% endif %}
-            <a href="/about/"> <i class="fas fa-info-circle"></i> About</a>
-            <a href="/custom-quiz/"> <i class="fas fa-question-circle"></i> Quiz</a>
-            <a href="/flashcards/"> <i class="fas fa-clone"></i> Flashcards</a>
-            <a href="#"> <i class="fas fa-lightbulb"></i> Concepts</a>
-            <a href="/exam-analyzer/"> <i class="fas fa-chart-bar"></i> Exam Analyzer</a>
-            <a href="#"> <i class="fas fa-history"></i> History</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'custom_logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
-            {% else %}
-                <a href="/accounts/login/"> <i class="fas fa-sign-in-alt"></i> Login</a>
-            {% endif %}
-        </div>
-    </div>
-    <div class="main-content" id="mainContent">
-        {% if messages %}
-          {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-          {% endfor %}
-        {% endif %}
-        <section class="about-hero">
+
+<!-- Main Content Wrapper -->
+<div class="main-content-wrapper">
+    <!-- About Hero Section -->
+    <section class="about-hero">
+        <div class="container">
             <h1 class="about-hero-title">
                 About <span class="highlight">Lamla-AI</span>
             </h1>
@@ -1570,15 +708,19 @@
                 Lamla replaces guesswork with guided, personalized study by combining AI-generated quizzes, real-time feedback, and performance insights.<br>
                 <b>Study Smarter. Perform Better.</b>
             </p>
-        </section>
+        </div>
+    </section>
 
-        <section class="about-tabs-container">
+<!-- About Tabs Container -->
+<div class="about-tabs-container">
             <div class="about-tabs" id="aboutTabs">
                 <button class="about-tab active" data-tab="mission">Mission</button>
                 <button class="about-tab" data-tab="vision">Vision</button>
                 <button class="about-tab" data-tab="values">Values</button>
                 <button class="about-tab" data-tab="offers">What We Offer</button>
             </div>
+
+    <!-- Mission Tab Content -->
             <div class="about-tab-content" id="mission-tab-content">
                 <h2><span class="emoji">🎯</span> Our Mission</h2>
                 <p>To empower students to learn deeply, track their understanding, and focus on what matters most—across their academic journey, from early prep to final revision.</p>
@@ -1589,6 +731,8 @@
                     <li>✅ Prepare with intention, not panic</li>
                 </ul>
             </div>
+
+    <!-- Vision Tab Content -->
             <div class="about-tab-content" id="vision-tab-content" style="display:none;">
                 <h2><span class="emoji">🚀</span> Our Vision</h2>
                 <p>To redefine academic readiness—starting from Africa, for the world—by making purposeful, AI-powered study accessible to every student.</p>
@@ -1598,6 +742,8 @@
                     <li>Scale globally, starting with high-syllabus, paper-based exam systems</li>
                 </ul>
             </div>
+
+    <!-- Values Tab Content -->
             <div class="about-tab-content" id="values-tab-content" style="display:none;">
                 <h2><span class="emoji">🧭</span> Our Values</h2>
                 <ul>
@@ -1607,6 +753,8 @@
                     <li>Integrity – Lamla is not a cramming or cheat tool</li>
                 </ul>
             </div>
+
+    <!-- Offers Tab Content -->
             <div class="about-tab-content" id="offers-tab-content" style="display:none;">
                 <h2><span class="emoji">💡</span> What Lamla-AI Offers</h2>
                 <ul>
@@ -1617,7 +765,7 @@
                 </ul>
                 <p>Lamla-AI is not a shortcut or a cheat—it's a smart compass for students who want to prepare better, not later.</p>
             </div>
-        </section>
+</div>
 
         <section class="about-join-section">
             <h2>🤝 Join the Journey</h2>
@@ -1665,7 +813,7 @@
                 {% endfor %}
             {% endif %}
             
-            <form class="contact-form" method="post" action="" id="contactForm">
+    <form class="contact-form" method="post" action="{% url 'about' %}" id="contactForm">
                 {% csrf_token %}
                 <div class="contact-form-row">
                     <div class="contact-form-group">
@@ -1681,110 +829,13 @@
                 <div class="contact-form-group">
                     <textarea class="contact-textarea" name="message" placeholder="Your Message" required aria-label="Your Message" rows="5"></textarea>
                 </div>
-                <button type="submit" class="contact-btn">Submit Form</button>
-            </form>
-        </section>
-    </div>
+                <button type="submit" class="contact-btn">Submit Form        </button>
+    </form>
+</section>
+</div> <!-- End of main-content-wrapper -->
 
-    <!-- Footer -->
-    <footer class="footer-section">
-        <div class="footer-content">
-            <div class="footer-col">
-                <h3>Contact Us</h3>
-                <ul>
-                    <li><i class="fas fa-envelope"></i> <a href="mailto:contact.lamla1@gmail.com">support@lamla.ai</a></li>
-                    <li><i class="fas fa-phone"></i> +233 50 934 1251</li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/about/">About</a></li>
-                    <li><a href="/custom-quiz/">Quiz</a></li>
-                    <li><a href="/flashcards/">Flashcards</a></li>
-                    <li><a href="#">Concepts</a></li>
-                    <li><a href="/exam-analyzer/">Exam Analyzer</a></li>
-                    <li><a href="#">History</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Social Media</h3>
-                <div class="social-icons">
-                    <a href="https://www.facebook.com/share/16pmyhCiUM/" class="social-icon" title="Facebook" target="_blank">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://x.com/lamla_io" class="social-icon" title="X (formerly Twitter)" target="_blank">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a href="https://instagram.com/lamla.io" class="social-icon" title="Instagram" target="_blank">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://linkedin.com/company/lamla-ai" class="social-icon" title="LinkedIn" target="_blank">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>Copyright &copy; 2025 All rights reserved | Lamla AI.</p>
-            <div class="legal-links">
-                <a href="/privacy-policy/">Privacy Policy</a>
-                <a href="/terms-of-service/">Terms of Service</a>
-                <a href="/cookie-policy/">Cookie Policy</a>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Hamburger menu toggle with slide-out effect
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('navLinks');
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        function isLargeScreen() {
-            return window.innerWidth >= 1024;
-        }
-        hamburger.onclick = function() {
-            if (isLargeScreen()) {
-                // Toggle sidebar on large screens
-                sidebar.classList.toggle('closed');
-                // Adjust main content margin
-                if (sidebar.classList.contains('closed')) {
-                    mainContent.style.marginLeft = '0';
-                } else {
-                    mainContent.style.marginLeft = '230px';
-                }
-            } else {
-                // Mobile nav as before
-                const expanded = this.getAttribute('aria-expanded') === 'true';
-                navLinks.classList.toggle('open');
-                this.classList.toggle('open');
-                this.setAttribute('aria-expanded', !expanded);
-            }
-        };
-        // Close menu when clicking on links (mobile only)
-        document.querySelectorAll('#navLinks a').forEach(function(link) {
-            link.onclick = function() {
-                navLinks.classList.remove('open');
-                hamburger.classList.remove('open');
-                hamburger.setAttribute('aria-expanded', 'false');
-            }
-        });
-        window.addEventListener('resize', function() {
-            if (isLargeScreen()) {
-                navLinks.classList.remove('open');
-                hamburger.classList.remove('open');
-                hamburger.setAttribute('aria-expanded', 'false');
-                sidebar.classList.remove('closed');
-                mainContent.style.marginLeft = '230px';
-            } else {
-                sidebar.classList.remove('closed');
-                mainContent.style.marginLeft = '0';
-            }
-        });
-        
-        // About page tab logic
+<script>
+    // Tab switching functionality
         const tabs = document.querySelectorAll('.about-tab');
         const tabContents = {
             'mission': document.getElementById('mission-tab-content'),
@@ -1872,36 +923,81 @@
             });
         });
 
-        // Contact form submission handler
-        function handleContactSubmit() {
-            const form = document.querySelector('.contact-form');
-            const formData = new FormData(form);
-            
-            // Get form values
-            const name = form.querySelector('input[type="text"]').value;
-            const email = form.querySelector('input[type="email"]').value;
-            const subject = form.querySelectorAll('input[type="text"]')[1].value;
-            const message = form.querySelector('textarea').value;
-            
-            // Simple validation
-            if (!name || !email || !subject || !message) {
-                alert('Please fill in all fields.');
-                return;
-            }
-            
-            // Email validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                alert('Please enter a valid email address.');
-                return;
-            }
-            
-            // Show success message (for now, just an alert)
-            alert('Thank you for your message! We\'ll get back to you soon.');
-            
-            // Reset form
-            form.reset();
+            // Contact form submission handler
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('contactForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // Get form values for client-side validation
+                const name = form.querySelector('input[name="name"]').value.trim();
+                const email = form.querySelector('input[name="email"]').value.trim();
+                const subject = form.querySelector('input[name="subject"]').value.trim();
+                const message = form.querySelector('textarea[name="message"]').value.trim();
+                
+                // Client-side validation
+                if (!name || !email || !subject || !message) {
+                    e.preventDefault();
+                    alert('Please fill in all fields.');
+                    return false;
+                }
+                
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    e.preventDefault();
+                    alert('Please enter a valid email address.');
+                    return false;
+                }
+                
+                // If validation passes, let the form submit normally
+                // The Django backend will handle the actual submission
+            });
         }
+
+        // Sidebar toggle functionality
+        const hamburgerBtn = document.querySelector('.hamburger-btn');
+        const body = document.body;
+        
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', function() {
+                body.classList.toggle('sidebar-open');
+            });
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                if (!e.target.closest('.sidebar') && !e.target.closest('.hamburger-btn')) {
+                    body.classList.remove('sidebar-open');
+                }
+            }
+        });
+
+        // Handle touch events for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const swipeDistance = touchEndX - touchStartX;
+            
+            if (swipeDistance > swipeThreshold && touchStartX < 50) {
+                // Swipe right from left edge - open sidebar
+                body.classList.add('sidebar-open');
+            } else if (swipeDistance < -swipeThreshold && body.classList.contains('sidebar-open')) {
+                // Swipe left when sidebar is open - close sidebar
+                body.classList.remove('sidebar-open');
+            }
+        }
+    });
     </script>
-</body>
-</html>
+{% endblock %}

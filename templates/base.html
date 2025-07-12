@@ -8,149 +8,229 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'slide_analyzer/css/main.css' %}">
-    <link rel="apple-touch-icon" href="{% static 'apple-touch-icon.png' %}">
     <style>
         :root {
-            --primary-color: #FFD600; /* Yellow */
-            --secondary-color: #222; /* Black */
-            --background-light: #f8f9fa;
+            --primary-color: #FFD600;
+            --secondary-color: #222;
             --background-white: #fff;
-            --text-muted: #555;
-            --text-dark: #333;
-            --shadow-light: rgba(0,0,0,0.07);
-            --shadow-medium: rgba(0,0,0,0.15);
-            --border-color: #eee;
-            --enactus-yellow: #FDC72B;
-            --enactus-light-yellow-bg: #FFFBF0;
-            --enactus-dark-text: #4a4a4a;
-            --enactus-heading-color: #333;
-            --enactus-blue: #3E8EFF;
-            --enactus-placeholder: #a0a0a0;
+            --sidebar-width: 230px;
+            --navbar-height: 64px;
+            --shadow-navbar: 0 2px 10px rgba(0,0,0,0.07), 0 1.5px 0.5px rgba(0,0,0,0.04);
+            --shadow-sidebar: 2px 0 16px rgba(0,0,0,0.08);
         }
-        html { scroll-behavior: smooth; }
-        
-        /* Background Decorative Shapes */
-        .background-shapes {
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--background-white);
+        }
+        .navbar {
+            width: 100%;
+            height: var(--navbar-height);
+            background: var(--background-white);
+            box-shadow: var(--shadow-navbar);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px 0 8px;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            overflow: hidden;
+            z-index: 2000;
         }
-        
-        .shape {
-            position: absolute;
-            background: var(--primary-color);
-            opacity: 0.1;
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 0;
+        }
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        .navbar .logo img {
+            width: 32px;
+            height: 32px;
+        }
+        .navbar .logo span {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #222;
+            letter-spacing: 0.5px;
+        }
+        .navbar-profile {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .navbar-profile-pic {
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            animation: float 6s ease-in-out infinite;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.10);
         }
-        
-        .shape-1 {
-            width: 80px;
-            height: 80px;
-            top: 10%;
-            left: 5%;
-            animation-delay: 0s;
+        .sidebar {
+            position: fixed;
+            top: var(--navbar-height);
+            left: 0;
+            width: var(--sidebar-width);
+            height: calc(100vh - var(--navbar-height));
+            background: var(--background-white);
+            z-index: 1500;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(-100%);
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 2px 0 16px rgba(0,0,0,0.08);
+            border: none;
         }
-        
-        .shape-2 {
-            width: 120px;
-            height: 120px;
-            top: 20%;
-            right: 10%;
-            animation-delay: 1s;
+        .sidebar.open {
+            transform: translateX(0);
         }
-        
-        .shape-3 {
-            width: 60px;
-            height: 60px;
-            top: 60%;
-            left: 15%;
-            animation-delay: 2s;
+        .sidebar-header {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 16px 0 0 32px;
         }
-        
-        .shape-4 {
-            width: 100px;
-            height: 100px;
-            top: 40%;
-            right: 20%;
-            animation-delay: 3s;
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            margin-bottom: 32px;
         }
-        
-        .shape-5 {
-            width: 70px;
-            height: 70px;
-            top: 80%;
-            left: 25%;
-            animation-delay: 4s;
+        .sidebar-logo img {
+            width: 36px;
+            height: 36px;
+            margin-right: 14px;
         }
-        
-        .shape-6 {
-            width: 90px;
-            height: 90px;
-            top: 15%;
-            left: 60%;
-            animation-delay: 5s;
+        .sidebar-hamburger {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 38px;
+            height: 38px;
+            margin-bottom: 32px;
         }
-        
-        .shape-7 {
-            width: 50px;
-            height: 50px;
-            top: 70%;
-            right: 15%;
-            animation-delay: 6s;
+        .sidebar-hamburger span {
+            display: block;
+            width: 24px;
+            height: 3px;
+            margin: 3px 0;
+            background: var(--primary-color);
+            border-radius: 2px;
+            transition: 0.3s;
         }
-        
-        .shape-8 {
-            width: 110px;
-            height: 110px;
-            top: 85%;
-            right: 5%;
-            animation-delay: 7s;
+        .sidebar-hamburger.open span:nth-child(1) {
+            transform: translateY(5px) rotate(45deg);
         }
-        
-        .shape-9 {
-            width: 75px;
-            height: 75px;
-            top: 30%;
-            left: 80%;
-            animation-delay: 8s;
+        .sidebar-hamburger.open span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
         }
-        
-        .shape-10 {
-            width: 85px;
-            height: 85px;
-            top: 50%;
-            left: 45%;
-            animation-delay: 9s;
+        .sidebar-hamburger.open span:nth-child(3) {
+            transform: translateY(-5px) rotate(-45deg);
         }
-        
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0px) rotate(0deg);
+        .sidebar-content {
+            width: 100%;
+            padding: 0 0 0 32px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-links {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            width: 100%;
+        }
+        .sidebar-link {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 1.08rem;
+            font-weight: 400;
+            padding: 10px 0 10px 0;
+            border-radius: 0;
+            transition: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar-link:hover {
+            background: none;
+            color: var(--secondary-color);
+        }
+        .sidebar-link.active {
+            color: var(--secondary-color);
+            font-weight: 400;
+        }
+        .main-content {
+            margin: 0 auto;
+            padding-top: var(--navbar-height);
+            max-width: 1200px;
+            min-height: 100vh;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .sidebar.open ~ .main-content {
+            max-width: calc(1200px - var(--sidebar-width));
+            margin-left: var(--sidebar-width);
+        }
+
+        @media (max-width: 1023px) {
+            .navbar {
+                padding: 0 16px;
             }
-            50% {
-                transform: translateY(-20px) rotate(180deg);
+            .navbar-hamburger {
+                display: flex !important;
+            }
+            .sidebar {
+                width: 80vw;
+                min-width: 220px;
+                max-width: 350px;
+            }
+            /* Mobile behavior: sidebar overlays content */
+            .sidebar.open ~ .main-content {
+                max-width: 1200px;
+                margin-left: 0;
+                transform: translateX(0);
             }
         }
-        
-        /* Responsive adjustments for shapes */
-        @media (max-width: 768px) {
-            .shape {
-                opacity: 0.05;
+        @media (max-width: 600px) {
+            .navbar-hamburger {
+                display: flex !important;
+                width: 32px;
+                height: 32px;
             }
-            .shape-1, .shape-2, .shape-3, .shape-4, .shape-5,
-            .shape-6, .shape-7, .shape-8, .shape-9, .shape-10 {
-                width: 60px;
-                height: 60px;
+            .navbar-hamburger span {
+                width: 20px;
+                height: 2px;
+                margin: 2px 0;
+            }
+            .sidebar {
+                width: 95vw;
+                min-width: 0;
+                max-width: 100vw;
+            }
+            .main-content {
+                padding-top: 56px;
+            }
+            /* Ensure mobile overlay behavior */
+            .sidebar.open ~ .main-content {
+                max-width: 1200px;
+                margin-left: 0;
+                transform: translateX(0);
             }
         }
-        
-        /* Chatbot Styles */
         .chatbot-container {
             position: fixed;
             bottom: 20px;
@@ -158,7 +238,6 @@
             z-index: 10000;
             font-family: 'Poppins', sans-serif;
         }
-        
         .chatbot-toggle {
             background: var(--primary-color);
             color: var(--secondary-color);
@@ -175,16 +254,13 @@
             transition: all 0.3s ease;
             min-width: 160px;
         }
-        
         .chatbot-toggle:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 25px rgba(255, 214, 0, 0.4);
         }
-        
         .chatbot-toggle i {
             font-size: 18px;
         }
-        
         .chatbot-window {
             position: absolute;
             bottom: 80px;
@@ -199,877 +275,223 @@
             overflow: hidden;
             border: 2px solid var(--primary-color);
         }
-        
         .chatbot-window.open {
             display: flex;
         }
-        
         .chatbot-header {
-            background: linear-gradient(135deg, var(--primary-color), #FFE55C);
-            padding: 20px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: var(--primary-color);
             color: var(--secondary-color);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
         }
-        
         .chatbot-header-content {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
-        
         .chatbot-avatar {
             width: 40px;
             height: 40px;
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--secondary-color);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            color: var(--primary-color);
+            font-size: 1.2rem;
         }
-        
         .chatbot-info h3 {
             margin: 0;
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 600;
         }
-        
         .chatbot-info p {
             margin: 0;
-            font-size: 12px;
-            opacity: 0.8;
+            font-size: 0.8rem;
+            color: rgba(0,0,0,0.7);
         }
-        
         .chatbot-close {
             background: none;
             border: none;
-            color: var(--secondary-color);
-            font-size: 18px;
             cursor: pointer;
-            padding: 5px;
-            border-radius: 50%;
-            transition: background 0.2s ease;
+            font-size: 1.2rem;
+            color: var(--secondary-color);
+            transition: color 0.2s;
         }
-        
         .chatbot-close:hover {
-            background: rgba(255, 255, 255, 0.2);
+            color: #000;
         }
-        
         .chatbot-messages {
-            flex: 1;
-            padding: 20px;
+            flex-grow: 1;
+            padding: 15px 20px;
             overflow-y: auto;
+            background: #f9f9f9;
             display: flex;
             flex-direction: column;
-            gap: 15px;
         }
-        
         .chatbot-message {
             display: flex;
-            gap: 10px;
-            animation: fadeInUp 0.3s ease;
+            margin-bottom: 15px;
+            max-width: 80%;
         }
-        
         .chatbot-message.user {
             flex-direction: row-reverse;
+            align-self: flex-end;
         }
-        
+        .chatbot-message.bot {
+            flex-direction: row;
+            align-self: flex-start;
+        }
         .chatbot-message-avatar {
-            width: 32px;
-            height: 32px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-        
-        .chatbot-message.user .chatbot-message-avatar {
+            font-size: 1.1rem;
+            margin: 0 0 0 10px;
             background: var(--primary-color);
             color: var(--secondary-color);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
         }
-        
+        .chatbot-message.user .chatbot-message-avatar {
+            background: var(--secondary-color);
+            color: #fff;
+            margin: 0 0 0 10px;
+        }
         .chatbot-message.bot .chatbot-message-avatar {
-            background: #f0f0f0;
-            color: #666;
+            background: #fff;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            margin: 0 10px 0 0;
         }
-        
         .chatbot-message-content {
-            max-width: 70%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            font-size: 14px;
-            line-height: 1.4;
-            white-space: pre-wrap;
-            word-wrap: break-word;
+            padding: 10px 15px;
+            border-radius: 15px;
+            position: relative;
+            background: #fff;
+            color: var(--secondary-color);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
         }
-        
-        .chatbot-message-content ul {
-            margin: 8px 0;
-            padding-left: 20px;
-        }
-        
-        .chatbot-message-content li {
-            margin: 4px 0;
-        }
-        
-        .chatbot-message-content strong {
-            font-weight: 600;
-        }
-        
         .chatbot-message.user .chatbot-message-content {
             background: var(--primary-color);
             color: var(--secondary-color);
-            border-bottom-right-radius: 4px;
         }
-        
         .chatbot-message.bot .chatbot-message-content {
-            background: #f8f9fa;
-            color: var(--text-dark);
-            border-bottom-left-radius: 4px;
+            background: #fff;
+            color: var(--secondary-color);
         }
-        
+        .chatbot-message.user .chatbot-message-content::before {
+            left: -5px;
+        }
+        .chatbot-message.bot .chatbot-message-content::before {
+            right: -5px;
+        }
         .chatbot-suggestions {
-            padding: 15px 20px;
-            border-top: 1px solid #eee;
+            padding: 10px 20px;
+            background: #f0f0f0;
+            border-top: 1px solid #ddd;
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
+            overflow-x: auto;
+            max-height: 100px;
         }
-        
         .chatbot-suggestion {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 20px;
-            padding: 8px 12px;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: var(--text-dark);
-        }
-        
-        .chatbot-suggestion:hover {
             background: var(--primary-color);
             color: var(--secondary-color);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            border: 1px solid var(--primary-color);
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .chatbot-suggestion:hover {
+            background: #fff;
+            color: var(--primary-color);
             border-color: var(--primary-color);
         }
-        
         .chatbot-input-container {
             padding: 15px 20px;
-            border-top: 1px solid #eee;
-        }
-        
-        .chatbot-input-wrapper {
+            border-top: 1px solid #ddd;
             display: flex;
-            gap: 10px;
             align-items: center;
+            gap: 10px;
+            background: #f9f9f9;
         }
-        
-        .chatbot-input {
-            flex: 1;
-            border: 1px solid #e9ecef;
+        .chatbot-input-wrapper {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 1px solid #ddd;
             border-radius: 25px;
-            padding: 12px 16px;
-            font-size: 14px;
+            padding: 5px 10px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .chatbot-input {
+            flex-grow: 1;
+            border: none;
             outline: none;
-            transition: border-color 0.2s ease;
+            padding: 10px 15px;
+            font-size: 1rem;
+            color: var(--secondary-color);
         }
-        
-        .chatbot-input:focus {
-            border-color: var(--primary-color);
-        }
-        
         .chatbot-send {
             background: var(--primary-color);
             color: var(--secondary-color);
             border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            border-radius: 25px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(255, 214, 0, 0.3);
+            transition: background 0.2s, transform 0.2s;
         }
-        
         .chatbot-send:hover {
+            background: #ffc107;
             transform: scale(1.05);
         }
-        
-        .chatbot-send:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
+        .chatbot-send:active {
+            transform: scale(0.95);
         }
-        
         .chatbot-typing {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 0;
-            color: #666;
-            font-size: 12px;
+            gap: 5px;
+            margin-top: 10px;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
         }
-        
         .typing-indicator {
             display: flex;
-            gap: 4px;
+            gap: 3px;
         }
-        
         .typing-indicator span {
-            width: 6px;
-            height: 6px;
-            background: #999;
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--secondary-color);
             border-radius: 50%;
-            animation: typing 1.4s infinite ease-in-out;
+            animation: typing-animation 1.4s infinite ease-in-out;
         }
-        
         .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
         .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-        
-        @keyframes typing {
-            0%, 80%, 100% {
-                transform: scale(0.8);
-                opacity: 0.5;
-            }
-            40% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Mobile Responsive */
-        @media (max-width: 480px) {
-            .chatbot-container {
-                bottom: 10px;
-                right: 10px;
-            }
-            
-            .chatbot-toggle {
-                padding: 12px 16px;
-                font-size: 13px;
-                min-width: 140px;
-            }
-            
-            .chatbot-toggle-text {
-                display: none;
-            }
-            
-            .chatbot-window {
-                width: calc(100vw - 20px);
-                height: 60vh;
-                bottom: 70px;
-                right: 0;
-            }
-            
-            .chatbot-message-content {
-                max-width: 85%;
-            }
-        }
-        
-        body {
-            background: var(--background-light);
-            color: var(--enactus-dark-text);
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        .navbar {
-            background: var(--background-white);
-            color: var(--secondary-color);
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 0 40px;
-            height: 70px;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            box-shadow: 0 2px 10px var(--shadow-light);
-            box-sizing: border-box;
-        }
-        .navbar .logo {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            letter-spacing: 0.5px;
-            flex-shrink: 0;
-            margin-left: 15px;
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-        }
-        .navbar .logo img {
-            height: 45px;
-            margin-right: 8px;
-        }
-        .hamburger {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 35px;
-            height: 35px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 3000;
-            padding: 0;
-            margin: 0;
-        }
-        .hamburger span {
-            display: block;
-            width: 20px;
-            height: 2px;
-            margin: 3px 0;
-            background: var(--primary-color);
-            border-radius: 1px;
-            transition: 0.3s ease;
-        }
-        .hamburger.open span:nth-child(1) {
-            transform: translateY(5px) rotate(45deg);
-        }
-        .hamburger.open span:nth-child(2) {
-            opacity: 0;
-            transform: scaleX(0);
-        }
-        .hamburger.open span:nth-child(3) {
-            transform: translateY(-5px) rotate(-45deg);
-        }
-        
-        /* Footer Styles */
-        .footer-section {
-            background: var(--secondary-color);
-            color: white;
-            padding: 40px 0 20px 0;
-            margin-top: 60px;
-        }
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 40px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 40px;
-        }
-        .footer-col h3 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-        }
-        .footer-col ul {
-            list-style: none;
-            padding: 0;
-        }
-        .footer-col ul li {
-            margin-bottom: 10px;
-        }
-        .footer-col ul li a {
-            color: #ccc;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        .footer-col ul li a:hover {
-            color: var(--primary-color);
-        }
-        .footer-bottom {
-            text-align: center;
-            padding: 20px 0;
-            border-top: 1px solid #444;
-            color: #ccc;
-        }
-        .legal-links {
-            margin-top: 15px;
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .legal-links a {
-            color: #999;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-        .legal-links a:hover {
-            color: var(--primary-color);
-        }
-        .feedback-btn {
-            background: var(--primary-color);
-            color: var(--secondary-color);
-            border: none;
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-        .feedback-btn:hover {
-            background: var(--secondary-color);
-            color: var(--primary-color);
-            transform: translateY(-2px);
-        }
-        
-
-        
-        /* Social Media Icons Styling */
-        .social-icons {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
-        .social-icon {
-            width: 40px;
-            height: 40px;
-            background: none;
-            color: inherit;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        .social-icon:hover {
-            opacity: 0.8;
-            transform: none;
-        }
-        .social-icon i { color: #fff !important; }
-        .social-icon:hover i { filter: brightness(1.2); }
-        
-        /* Sidebar styles - Hidden by default, only show on large screens */
-        .sidebar {
-            display: none;
-        }
-        
-        .main-content {
-            margin-left: 0;
-        }
-        
-        /* Sidebar styles for large screens */
-        @media (min-width: 1024px) {
-            .sidebar {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 230px;
-                height: 100vh;
-                background: var(--background-white);
-                box-shadow: 2px 0 16px var(--shadow-light);
-                display: flex;
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 30px 0 0 0;
-                z-index: 1100;
-                transform: translateX(0);
-                transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            }
-            .sidebar.closed {
-                transform: translateX(-100%);
-            }
-            .sidebar .sidebar-logo {
-                display: flex;
-                align-items: center;
-                padding: 0 32px 30px 70px;
-                margin-bottom: 10px;
-                text-decoration: none;
-            }
-            .sidebar .sidebar-logo img {
-                height: 80px;
-                margin-right: 30px;
-            }
-            .sidebar .sidebar-links {
-                display: flex;
-                flex-direction: column;
-                width: 100%;
-                gap: 6px;
-                padding: 0 32px;
-            }
-            .sidebar .sidebar-links a {
-                color: var(--secondary-color);
-                text-decoration: none;
-                font-size: 1.08rem;
-                font-weight: 500;
-                padding: 12px 0 12px 0;
-                border-radius: 8px;
-                transition: background 0.2s, color 0.2s;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            .sidebar .sidebar-links a:hover {
-                background: var(--background-light);
-                color: var(--primary-color);
-            }
-            .sidebar .sidebar-links .active {
-                color: var(--primary-color);
-                font-weight: 700;
-            }
-            .main-content {
-                margin-left: 230px;
-                transition: margin-left 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            }
-            .sidebar.closed ~ .main-content {
-                margin-left: 0;
-            }
-            .navbar {
-                z-index: 1200;
-            }
-            .navbar .nav-links {
-                display: none !important;
-            }
-        }
-        
-        /* Ensure sidebar is hidden on smaller screens */
-        @media (max-width: 1023px) {
-            .sidebar {
-                display: block !important;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 230px;
-                height: 100vh;
-                background: var(--background-white);
-                box-shadow: 2px 0 16px rgba(0,0,0,0.08);
-                z-index: 3000;
-                transform: translateX(-100%);
-                transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0 !important;
-            }
-            .hamburger {
-                position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 4000;
-            }
-            .hamburger.open {
-                position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 4000;
-            }
-            /* Sidebar hamburger button styles */
-            .sidebar-hamburger {
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                width: 35px;
-                height: 35px;
-                background: none;
-                border: none;
-                cursor: pointer;
-                z-index: 4000;
-                padding: 0;
-                margin: 0;
-                display: none;
-            }
-            .sidebar-hamburger span {
-                display: block;
-                width: 20px;
-                height: 2px;
-                margin: 3px 0;
-                background: var(--primary-color);
-                border-radius: 1px;
-                transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            }
-            .sidebar-hamburger.open span:nth-child(1) {
-                transform: translateY(5px) rotate(45deg);
-            }
-            .sidebar-hamburger.open span:nth-child(2) {
-                opacity: 0;
-                transform: scaleX(0);
-            }
-            .sidebar-hamburger.open span:nth-child(3) {
-                transform: translateY(-5px) rotate(-45deg);
-            }
-            /* Show sidebar hamburger when sidebar is open */
-            .sidebar.open .sidebar-hamburger {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-            }
-            /* Mobile sidebar logo positioning */
-            .sidebar .sidebar-logo {
-                padding: 20px 32px 30px 50px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 0 20px;
-                height: 64px;
-            }
-            .navbar .logo {
-                font-size: 1.8rem;
-                margin-left: 15px;
-            }
-            .navbar .logo img {
-                height: 35px;
-            }
-            .hamburger {
-                width: 30px;
-                height: 30px;
-                position: fixed;
-                top: 17px;
-                left: 17px;
-                z-index: 4000;
-            }
-            .hamburger span {
-                width: 18px;
-                height: 2px;
-                margin: 2px 0;
-            }
-            .hamburger.open span:nth-child(1) {
-                transform: translateY(4px) rotate(45deg);
-            }
-            .hamburger.open span:nth-child(2) {
-                opacity: 0;
-                transform: scaleX(0);
-            }
-            .hamburger.open span:nth-child(3) {
-                transform: translateY(-4px) rotate(-45deg);
-            }
-            .sidebar-hamburger {
-                width: 30px;
-                height: 30px;
-                top: 20px;
-                left: 1px;
-            }
-            .sidebar-hamburger span {
-                width: 18px;
-                height: 2px;
-                margin: 2px 0;
-                transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            }
-            .sidebar-hamburger.open span:nth-child(1) {
-                transform: translateY(4px) rotate(45deg);
-            }
-            .sidebar-hamburger.open span:nth-child(2) {
-                opacity: 0;
-                transform: scaleX(0);
-            }
-            .sidebar-hamburger.open span:nth-child(3) {
-                transform: translateY(-4px) rotate(-45deg);
-            }
-            .footer-content {
-                padding: 0 20px;
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-            
-            /* Ensure main content has proper top margin for fixed navbar */
-            .main-content {
-                margin-top: 80px !important;
-                padding-top: 20px;
-            }
-            /* Mobile sidebar logo positioning for 768px */
-            .sidebar .sidebar-logo {
-                padding: 20px 32px 30px 50px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .navbar {
-                padding: 0 15px;
-                height: 60px;
-            }
-            .navbar .logo {
-                font-size: 1.6rem;
-                margin-left: 12px;
-            }
-            .navbar .logo img {
-                height: 30px;
-            }
-            .hamburger {
-                width: 28px;
-                height: 28px;
-                position: fixed;
-                top: 16px;
-                left: 16px;
-                z-index: 4000;
-            }
-            .hamburger span {
-                width: 16px;
-                height: 2px;
-                margin: 2px 0;
-            }
-            .hamburger.open span:nth-child(1) {
-                transform: translateY(4px) rotate(45deg);
-            }
-            .hamburger.open span:nth-child(2) {
-                opacity: 0;
-                transform: scaleX(0);
-            }
-            .hamburger.open span:nth-child(3) {
-                transform: translateY(-4px) rotate(-45deg);
-            }
-            .sidebar-hamburger {
-                width: 28px;
-                height: 28px;
-                top: 7px;
-                left: 7px;
-            }
-            .sidebar-hamburger span {
-                width: 16px;
-                height: 2px;
-                margin: 2px 0;
-                transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            }
-            .sidebar-hamburger.open span:nth-child(1) {
-                transform: translateY(4px) rotate(45deg);
-            }
-            .sidebar-hamburger.open span:nth-child(2) {
-                opacity: 0;
-                transform: scaleX(0);
-            }
-            .sidebar-hamburger.open span:nth-child(3) {
-                transform: translateY(-4px) rotate(-45deg);
-            }
-            .footer-content {
-                padding: 0 15px;
-            }
-            .legal-links {
-                flex-direction: column;
-                gap: 10px;
-            }
-            .footer {
-                padding: 20px 0;
-            }
-            .footer-content {
-                font-size: 0.9rem;
-            }
-            .footer-links a {
-                font-size: 0.85rem;
-                padding: 5px 8px;
-            }
-            .social-icons a {
-                font-size: 1.2rem;
-                width: 35px;
-                height: 35px;
-            }
-            /* Mobile sidebar logo positioning for 480px */
-            .sidebar .sidebar-logo {
-                padding: 20px 32px 30px 45px;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            .navbar {
-                padding: 0 12px;
-                height: 55px;
-            }
-            .navbar .logo {
-                font-size: 1.4rem;
-                margin-left: 10px;
-            }
-            .navbar .logo img {
-                height: 28px;
-            }
-            .hamburger {
-                width: 26px;
-                height: 26px;
-                position: fixed;
-                top: 15px;
-                left: 15px;
-                z-index: 4000;
-            }
-            .hamburger span {
-                width: 15px;
-                height: 2px;
-                margin: 2px 0;
-            }
-            .hamburger.open span:nth-child(1) {
-                transform: translateY(2px) rotate(45deg);
-            }
-            .hamburger.open span:nth-child(2) {
-                opacity: 0;
-                transform: scaleX(0);
-            }
-            .hamburger.open span:nth-child(3) {
-                transform: translateY(-2px) rotate(-45deg);
-            }
-            .sidebar-hamburger {
-                width: 26px;
-                height: 26px;
-                top: 6px;
-                left: 6px;
-            }
-            .sidebar-hamburger span {
-                width: 15px;
-                height: 2px;
-                margin: 2px 0;
-                transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            }
-            .sidebar-hamburger.open span:nth-child(1) {
-                transform: translateY(3px) rotate(45deg);
-            }
-            .sidebar-hamburger.open span:nth-child(2) {
-                opacity: 0;
-                transform: scaleX(0);
-            }
-            .sidebar-hamburger.open span:nth-child(3) {
-                transform: translateY(-3px) rotate(-45deg);
-            }
-            .footer-content {
-                padding: 0 12px;
-                font-size: 0.85rem;
-            }
-            .footer-links a {
-                font-size: 0.8rem;
-                padding: 4px 6px;
-            }
-            .social-icons a {
-                font-size: 1.1rem;
-                width: 32px;
-                height: 32px;
-            }
-            .footer {
-                padding: 18px 0;
-            }
-            /* Mobile sidebar logo positioning for 360px */
-            .sidebar .sidebar-logo {
-                padding: 20px 32px 30px 40px;
-            }
-        }
-        @media (max-width: 900px) {
-            .navbar {
-                padding: 0 50px 0 20px !important;
-            }
-            .navbar .logo {
-                margin-right: 0;
-            }
+        .typing-indicator span:nth-child(3) { animation-delay: 0s; }
+        @keyframes typing-animation {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.7; }
+            40% { transform: translateY(-4px); opacity: 1; }
         }
     </style>
     <!-- Place this at the end of <head> for maximum specificity -->
@@ -1105,29 +527,25 @@
         <div class="shape shape-10"></div>
     </div>
     
-    <header class="navbar" role="banner">
-        <button class="hamburger" id="hamburger" aria-label="Open navigation menu" aria-controls="sidebar" aria-expanded="false">
+    <header class="navbar">
+        <div class="navbar-left">
+            <button class="navbar-hamburger" id="navbar-hamburger" aria-label="Open sidebar" style="margin-left:0;margin-right:0;">
             <span></span>
             <span></span>
             <span></span>
         </button>
-        <a href="{% url 'home' %}" class="logo" style="display:flex;align-items:center;gap:10px;">
-            <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo" style="width:32px;height:32px;">
-            <span style="font-size:1.3rem;font-weight:700;color:#222;letter-spacing:0.5px;">Lamla.<span style="color:#FFD600;">AI</span></span>
-        </a>
-    </header>
-    <aside class="sidebar" id="sidebar" role="navigation" aria-label="Sidebar Navigation" style="background: var(--primary-yellow-light);">
-        <!-- Sidebar hamburger close button (visible when sidebar is open on mobile) -->
-        <button class="sidebar-hamburger" id="sidebar-hamburger" aria-label="Close navigation menu" style="display: none;">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-        <a href="{% url 'home' %}" class="sidebar-logo">
+            <a href="{% url 'home' %}" class="logo" style="margin-left:0;">
             <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
-        </a>
+                <span>Lamla.<span style="color:#FFD600;">AI</span></span>
+            </a>
+        </div>
+        <div class="navbar-profile">
+            <img src="{% static 'slide_analyzer/images/student.jpeg' %}" alt="Profile" class="navbar-profile-pic">
+        </div>
+    </header>
+    <aside class="sidebar" id="sidebar">
         <div class="sidebar-content">
-            <nav class="sidebar-links" style="display:flex;flex-direction:column;gap:2px;">
+            <nav class="sidebar-links">
                 <a href="{% url 'home' %}" class="sidebar-link"><i class="fas fa-home"></i> Home</a>
                 {% if user.is_authenticated %}
                     <a href="{% url 'dashboard' %}" class="sidebar-link"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
@@ -1230,278 +648,76 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Display Django messages as toast notifications
-        {% if messages %}
-            {% for message in messages %}
-                (function() {
-                    var toast = document.createElement('div');
-                    toast.className = 'toast-message toast-{{ message.tags|default:'info' }}';
-                    toast.textContent = {{ message|stringformat:'s'|escapejs }};
-                    toast.style.cssText = 'background:#222;color:#fff;padding:16px 24px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);margin-bottom:12px;font-size:1.05rem;min-width:220px;max-width:350px;word-break:break-word;opacity:0.97;transition:opacity 0.3s;';
-                    if (toast.className.includes('success')) toast.style.background = '#4CAF50';
-                    if (toast.className.includes('error')) toast.style.background = '#E74C3C';
-                    if (toast.className.includes('warning')) toast.style.background = '#FFD600';
-                    if (toast.className.includes('info')) toast.style.background = '#3498DB';
-                    document.getElementById('toast-container').appendChild(toast);
-                    setTimeout(function() {
-                        toast.style.opacity = '0';
-                        setTimeout(function() { toast.remove(); }, 400);
-                    }, 3500);
-                })();
-            {% endfor %}
-        {% endif %}
-
-        // Hamburger menu toggle for mobile
-        const hamburger = document.getElementById('hamburger');
+        // Hamburger menu functionality
+        const navbarHamburger = document.getElementById('navbar-hamburger');
         const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        const sidebarHamburger = document.getElementById('sidebar-hamburger');
-        hamburger.onclick = function() {
-            if (window.innerWidth <= 1023) {
-                document.body.classList.toggle('sidebar-open');
-                sidebar.classList.toggle('open');
-                // Show/hide sidebar hamburger
-                if (sidebar.classList.contains('open')) {
-                    sidebarHamburger.style.display = 'flex';
-                    sidebarHamburger.classList.add('open');
-                } else {
-                    sidebarHamburger.style.display = 'none';
-                    sidebarHamburger.classList.remove('open');
-                }
-                // Optionally, add overlay or prevent background scroll
-            } else {
-                sidebar.classList.toggle('closed');
-                if (sidebar.classList.contains('closed')) {
-                    mainContent.style.marginLeft = '0';
-                } else {
-                    mainContent.style.marginLeft = '230px';
-                }
-            }
-        };
-        // Sidebar hamburger button functionality
-        sidebarHamburger.onclick = function() {
-            if (window.innerWidth <= 1023) {
-                document.body.classList.remove('sidebar-open');
-                sidebar.classList.remove('open');
-                // Remove the open class from the button immediately to start the X animation
-                sidebarHamburger.classList.remove('open');
-                // Hide the button after the sidebar animation completes
-                setTimeout(function() {
-                    sidebarHamburger.style.display = 'none';
-                }, 400); // Match the sidebar transition duration
-                hamburger.classList.remove('open');
-            }
-        };
-        // Close sidebar when clicking a link (mobile only)
-        document.querySelectorAll('#sidebar a').forEach(function(link) {
-            link.onclick = function() {
-                if (window.innerWidth <= 1023) {
-                    document.body.classList.remove('sidebar-open');
-                    sidebar.classList.remove('open');
-                    // Remove the open class from the button immediately to start the X animation
-                    sidebarHamburger.classList.remove('open');
-                    // Hide the button after the sidebar animation completes
-                    setTimeout(function() {
-                        sidebarHamburger.style.display = 'none';
-                    }, 400); // Match the sidebar transition duration
-                    hamburger.classList.remove('open');
-                }
-            }
-        });
-
-        // Support request form logic
-        const chatbotWindow = document.getElementById('chatbot-window');
-        const supportForm = document.getElementById('chatbot-support-form');
-        const supportRequestForm = document.getElementById('supportRequestForm');
-        const supportFormStatus = document.getElementById('supportFormStatus');
-        // Show support form when bot suggests human support (example: you can trigger this from the bot response)
-        window.showSupportForm = function() {
-            chatbotWindow.querySelector('.chatbot-input-container').style.display = 'none';
-            supportForm.style.display = 'block';
-        };
-        // Hide support form and show chatbot input
-        window.hideSupportForm = function() {
-            supportForm.style.display = 'none';
-            chatbotWindow.querySelector('.chatbot-input-container').style.display = 'block';
-        };
-        if (supportRequestForm) {
-            supportRequestForm.onsubmit = function(e) {
-                e.preventDefault();
-                supportFormStatus.textContent = 'Sending...';
-                fetch('/api/chatbot/support-request/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        name: document.getElementById('supportName').value,
-                        email: document.getElementById('supportEmail').value,
-                        subject: document.getElementById('supportSubject').value,
-                        message: document.getElementById('supportMessage').value
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        supportFormStatus.style.color = '#4CAF50';
-                        supportFormStatus.textContent = data.message;
-                        supportRequestForm.reset();
-                    } else {
-                        supportFormStatus.style.color = '#E74C3C';
-                        supportFormStatus.textContent = data.message || 'Failed to send request.';
-                    }
-                })
-                .catch(() => {
-                    supportFormStatus.style.color = '#E74C3C';
-                    supportFormStatus.textContent = 'Failed to send request.';
-                });
-            };
-        }
-    });
-    </script>
-    
-    <!-- Footer -->
-    <footer class="footer-section">
-        <div class="footer-content">
-            <div class="footer-col">
-                <h3>Contact Us</h3>
-                <ul>
-                    <li><i class="fas fa-envelope"></i> <a href="mailto:contact.lamla1@gmail.com">support@lamla.ai</a></li>
-                    <li><i class="fas fa-phone"></i> +233 50 934 1251</li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="{% url 'home' %}">Home</a></li>
-                    <li><a href="{% url 'about' %}">About</a></li>
-                    <li><a href="{% url 'custom_quiz' %}">Quiz</a></li>
-                    <li><a href="{% url 'flashcards' %}">Flashcards</a></li>
-                    <li><a href="#">Concepts</a></li>
-                    <li><a href="{% url 'exam_analyzer' %}">Exam Analyzer</a></li>
-                    <li><a href="#">History</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Social Media</h3>
-                <div class="social-icons">
-                    <a href="https://www.facebook.com/share/16pmyhCiUM/" class="social-icon" title="Facebook" target="_blank">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://x.com/lamla_io" class="social-icon" title="X (formerly Twitter)" target="_blank">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a href="https://instagram.com/lamla.io" class="social-icon" title="Instagram" target="_blank">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://linkedin.com/company/lamla-ai" class="social-icon" title="LinkedIn" target="_blank">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>Copyright &copy; 2025 All rights reserved | Lamla AI.</p>
-            <div class="legal-links">
-                <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
-                <a href="{% url 'terms_of_service' %}">Terms of Service</a>
-                <a href="{% url 'cookie_policy' %}">Cookie Policy</a>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Hamburger menu toggle with slide-out effect (from home.html)
-        const hamburger = document.getElementById('hamburger');
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        function isLargeScreen() {
-            return window.innerWidth >= 1024;
-        }
-        hamburger.onclick = function() {
-            if (isLargeScreen()) {
-                // Toggle sidebar on large screens
-                sidebar.classList.toggle('closed');
-                // Adjust main content margin
-                if (sidebar.classList.contains('closed')) {
-                    mainContent.style.marginLeft = '0';
-                } else {
-                    mainContent.style.marginLeft = '230px';
-                }
-            } else {
-                // Mobile nav - toggle sidebar for mobile
-                const expanded = this.getAttribute('aria-expanded') === 'true';
-                sidebar.classList.toggle('open');
-                this.classList.toggle('open');
-                this.setAttribute('aria-expanded', !expanded);
-            }
-        };
-        // Close menu when clicking on links (mobile only)
-        document.querySelectorAll('#sidebar a').forEach(function(link) {
-            link.onclick = function() {
-                sidebar.classList.remove('open');
-                hamburger.classList.remove('open');
-                hamburger.setAttribute('aria-expanded', 'false');
-            }
-        });
-        window.addEventListener('resize', function() {
-            if (isLargeScreen()) {
-                hamburger.classList.remove('open');
-                hamburger.setAttribute('aria-expanded', 'false');
-                sidebar.classList.remove('closed');
-                mainContent.style.marginLeft = '230px';
-            } else {
-                sidebar.classList.remove('closed');
-                mainContent.style.marginLeft = '0';
-            }
-        });
-
-        // Share functionality
-        function shareApp() {
-            const url = window.location.origin;
-            const title = 'Lamla AI - AI-Powered Learning Assistant';
-            const text = 'Check out Lamla AI - an amazing AI-powered learning assistant that generates quizzes and flashcards from your study materials!';
+        
+        if (navbarHamburger && sidebar) {
+            console.log('Hamburger and sidebar elements found');
             
-            if (navigator.share) {
-                navigator.share({
-                    title: title,
-                    text: text,
-                    url: url
-                }).catch(console.error);
-            } else {
-                // Fallback for browsers that don't support Web Share API
-                copyToClipboard(url);
-                alert('Link copied to clipboard! Share it with your friends.');
-            }
-        }
-
-        function shareOnWhatsApp() {
-            const url = encodeURIComponent(window.location.origin);
-            const text = encodeURIComponent('Check out Lamla AI - an amazing AI-powered learning assistant!');
-            window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
-        }
-
-        function shareOnTwitter() {
-            const url = encodeURIComponent(window.location.origin);
-            const text = encodeURIComponent('Check out Lamla AI - an amazing AI-powered learning assistant! 🚀');
-            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-        }
-
-        function copyToClipboard(text) {
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(text);
-            } else {
-                // Fallback for older browsers
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-            }
+            // Add multiple event listeners for better mobile support
+            navbarHamburger.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Hamburger clicked');
+                if (sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                    navbarHamburger.classList.remove('open');
+                    console.log('Sidebar closed');
+                } else {
+                    sidebar.classList.add('open');
+                    navbarHamburger.classList.add('open');
+                    console.log('Sidebar opened');
+                }
+            });
+            
+            // Add touch event for mobile
+            navbarHamburger.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                console.log('Hamburger touched');
+                if (sidebar.classList.contains('open')) {
+                    sidebar.classList.remove('open');
+                    navbarHamburger.classList.remove('open');
+                    console.log('Sidebar closed (touch)');
+                    } else {
+                    sidebar.classList.add('open');
+                    navbarHamburger.classList.add('open');
+                    console.log('Sidebar opened (touch)');
+                }
+            });
+            
+            // Add visual feedback for debugging
+            navbarHamburger.style.border = '1px solid transparent';
+            navbarHamburger.addEventListener('mouseenter', function() {
+                this.style.border = '1px solid #FFD600';
+            });
+            navbarHamburger.addEventListener('mouseleave', function() {
+                this.style.border = '1px solid transparent';
+            });
+            
+            // Optional: close sidebar when clicking outside
+            document.addEventListener('click', function(e) {
+                if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== navbarHamburger) {
+                sidebar.classList.remove('open');
+                    navbarHamburger.classList.remove('open');
+                }
+            });
         }
         
-
+        // Chatbot functionality
+        const chatbotToggle = document.getElementById('chatbot-toggle');
+        const chatbotWindow = document.getElementById('chatbot-window');
+        const chatbotClose = document.getElementById('chatbot-close');
+        const chatbotInput = document.getElementById('chatbot-input');
+        const chatbotSend = document.getElementById('chatbot-send');
+        const chatbotMessages = document.getElementById('chatbot-messages');
+        const chatbotSuggestions = document.getElementById('chatbot-suggestions');
+        const chatbotTyping = document.getElementById('chatbot-typing');
         
-        // Helper function to get CSRF token
+        let isTyping = false;
+        let sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
+        
+        // Get CSRF token
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -1515,75 +731,39 @@
                 }
             }
             return cookieValue;
-        }
-        
-        // Chatbot functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const chatbotToggle = document.getElementById('chatbot-toggle');
-            const chatbotWindow = document.getElementById('chatbot-window');
-            const chatbotClose = document.getElementById('chatbot-close');
-            const chatbotInput = document.getElementById('chatbot-input');
-            const chatbotSend = document.getElementById('chatbot-send');
-            const chatbotMessages = document.getElementById('chatbot-messages');
-            const chatbotSuggestions = document.getElementById('chatbot-suggestions');
-            const chatbotTyping = document.getElementById('chatbot-typing');
-            
-            let sessionId = generateSessionId();
-            let isTyping = false;
-            
-            // Generate session ID for anonymous users
-            function generateSessionId() {
-                return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             }
             
             // Toggle chatbot window
+        if (chatbotToggle) {
             chatbotToggle.addEventListener('click', function() {
                 chatbotWindow.classList.toggle('open');
                 if (chatbotWindow.classList.contains('open')) {
-                    loadChatHistory();
                     loadSuggestions();
+                    addWelcomeMessage();
                 }
             });
+        }
             
             // Close chatbot window
+        if (chatbotClose) {
             chatbotClose.addEventListener('click', function() {
                 chatbotWindow.classList.remove('open');
             });
+        }
             
             // Send message on Enter key
+        if (chatbotInput) {
             chatbotInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     sendMessage();
                 }
             });
+        }
             
             // Send message on button click
+        if (chatbotSend) {
             chatbotSend.addEventListener('click', sendMessage);
-            
-            // Load chat history
-            function loadChatHistory() {
-                fetch(`/api/chatbot/history/?session_id=${sessionId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            chatbotMessages.innerHTML = '';
-                            if (data.history.length === 0) {
-                                addWelcomeMessage();
-                            } else {
-                                data.history.forEach(msg => {
-                                    addMessage(msg.content, msg.message_type);
-                                });
-                                // Hide suggestions if there's conversation history
-                                chatbotSuggestions.style.display = 'none';
-                            }
-                            scrollToBottom();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading chat history:', error);
-                        addWelcomeMessage();
-                    });
             }
             
             // Load suggestions
@@ -1715,7 +895,218 @@ What would you like to know today?`;
                     chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
                 }, 100);
             }
+        
+        // Display Django messages as toast notifications
+        {% if messages %}
+            {% for message in messages %}
+                (function() {
+                    var toast = document.createElement('div');
+                    toast.className = 'toast-message toast-{{ message.tags|default:'info' }}';
+                    toast.textContent = {{ message|stringformat:'s'|escapejs }};
+                    toast.style.cssText = 'background:#222;color:#fff;padding:16px 24px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);margin-bottom:12px;font-size:1.05rem;min-width:220px;max-width:350px;word-break:break-word;opacity:0.97;transition:opacity 0.3s;';
+                    if (toast.className.includes('success')) toast.style.background = '#4CAF50';
+                    if (toast.className.includes('error')) toast.style.background = '#E74C3C';
+                    if (toast.className.includes('warning')) toast.style.background = '#FFD600';
+                    if (toast.className.includes('info')) toast.style.background = '#3498DB';
+                    document.getElementById('toast-container').appendChild(toast);
+                    setTimeout(function() {
+                        toast.style.opacity = '0';
+                        setTimeout(function() { toast.remove(); }, 400);
+                    }, 3500);
+                })();
+            {% endfor %}
+        {% endif %}
+
+        // Support request form logic
+        const supportForm = document.getElementById('chatbot-support-form');
+        const supportRequestForm = document.getElementById('supportRequestForm');
+        const supportFormStatus = document.getElementById('supportFormStatus');
+        // Show support form when bot suggests human support (example: you can trigger this from the bot response)
+        window.showSupportForm = function() {
+            chatbotWindow.querySelector('.chatbot-input-container').style.display = 'none';
+            supportForm.style.display = 'block';
+        };
+        // Hide support form and show chatbot input
+        window.hideSupportForm = function() {
+            supportForm.style.display = 'none';
+            chatbotWindow.querySelector('.chatbot-input-container').style.display = 'block';
+        };
+        if (supportRequestForm) {
+            supportRequestForm.onsubmit = function(e) {
+                e.preventDefault();
+                supportFormStatus.textContent = 'Sending...';
+                fetch('/api/chatbot/support-request/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: document.getElementById('supportName').value,
+                        email: document.getElementById('supportEmail').value,
+                        subject: document.getElementById('supportSubject').value,
+                        message: document.getElementById('supportMessage').value
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        supportFormStatus.style.color = '#4CAF50';
+                        supportFormStatus.textContent = data.message;
+                        supportRequestForm.reset();
+                    } else {
+                        supportFormStatus.style.color = '#E74C3C';
+                        supportFormStatus.textContent = data.message || 'Failed to send request.';
+                    }
+                })
+                .catch(() => {
+                    supportFormStatus.style.color = '#E74C3C';
+                    supportFormStatus.textContent = 'Failed to send request.';
+                });
+            };
+            }
         });
     </script>
+    
+    <!-- Footer -->
+    <footer class="footer-section">
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:contact.lamla1@gmail.com">support@lamla.ai</a></li>
+                    <li><i class="fas fa-phone"></i> +233 50 934 1251</li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li><a href="{% url 'about' %}">About</a></li>
+                    <li><a href="{% url 'custom_quiz' %}">Quiz</a></li>
+                    <li><a href="{% url 'flashcards' %}">Flashcards</a></li>
+                    <li><a href="#">Concepts</a></li>
+                    <li><a href="{% url 'exam_analyzer' %}">Exam Analyzer</a></li>
+                    <li><a href="#">History</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Social Media</h3>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/share/16pmyhCiUM/" class="social-icon" title="Facebook" target="_blank">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://x.com/lamla_io" class="social-icon" title="X (formerly Twitter)" target="_blank">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://instagram.com/lamla.io" class="social-icon" title="Instagram" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://linkedin.com/company/lamla-ai" class="social-icon" title="LinkedIn" target="_blank">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>Copyright &copy; 2025 All rights reserved | Lamla AI.</p>
+            <div class="legal-links">
+                <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+                <a href="{% url 'terms_of_service' %}">Terms of Service</a>
+                <a href="{% url 'cookie_policy' %}">Cookie Policy</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Share functionality
+        function shareApp() {
+            const url = window.location.origin;
+            const title = 'Lamla AI - AI-Powered Learning Assistant';
+            const text = 'Check out Lamla AI - an amazing AI-powered learning assistant that generates quizzes and flashcards from your study materials!';
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: text,
+                    url: url
+                }).catch(console.error);
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                copyToClipboard(url);
+                alert('Link copied to clipboard! Share it with your friends.');
+            }
+        }
+
+        function shareOnWhatsApp() {
+            const url = encodeURIComponent(window.location.origin);
+            const text = encodeURIComponent('Check out Lamla AI - an amazing AI-powered learning assistant!');
+            window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
+        }
+
+        function shareOnTwitter() {
+            const url = encodeURIComponent(window.location.origin);
+            const text = encodeURIComponent('Check out Lamla AI - an amazing AI-powered learning assistant! 🚀');
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text);
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+            }
+        }
+    </script>
+    <style>
+        .navbar-hamburger {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 38px;
+            height: 38px;
+            margin-left: 0;
+            margin-right: 0;
+            z-index: 2101;
+            position: relative;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .navbar-hamburger span {
+            display: block;
+            width: 24px;
+            height: 3px;
+            margin: 3px 0;
+            background: var(--primary-color);
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+        .navbar-hamburger.open span:nth-child(1) {
+            transform: translateY(6px) rotate(45deg);
+        }
+        .navbar-hamburger.open span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+        .navbar-hamburger.open span:nth-child(3) {
+            transform: translateY(-6px) rotate(-45deg);
+        }
+        .sidebar {
+            z-index: 1500;
+            background: var(--background-white);
+        }
+        .navbar {
+            z-index: 2000;
+            background: var(--background-white);
+        }
+    </style>
+
 </body>
 </html> 

@@ -16,13 +16,22 @@ class QuestionGenerator:
         self.gemini_model = getattr(settings, 'GEMINI_MODEL', 'gemini-1.5-pro')
         self.hf_token = getattr(settings, 'HUGGING_FACE_API_TOKEN', None)
         
+        # Log API configuration status
+        logger.info(f"Azure OpenAI API Key: {'✓ Set' if self.azure_openai_api_key else '✗ Not set'}")
+        logger.info(f"Azure OpenAI Endpoint: {'✓ Set' if self.azure_openai_endpoint else '✗ Not set'}")
+        logger.info(f"Gemini API Key: {'✓ Set' if self.gemini_api_key else '✗ Not set'}")
+        logger.info(f"Hugging Face Token: {'✓ Set' if self.hf_token else '✗ Not set'}")
+        
         # Prefer Azure OpenAI, then Gemini, then Hugging Face
         if self.azure_openai_api_key and self.azure_openai_endpoint:
             self.primary_api = 'azure_openai'
+            logger.info("Primary API set to: Azure OpenAI")
         elif self.gemini_api_key:
             self.primary_api = 'gemini'
+            logger.info("Primary API set to: Gemini")
         elif self.hf_token:
             self.primary_api = 'huggingface'
+            logger.info("Primary API set to: Hugging Face")
         else:
             self.primary_api = None
             logger.warning("No API keys configured for question generation")
@@ -46,6 +55,8 @@ class QuestionGenerator:
     def _call_azure_openai_api(self, prompt: str) -> str:
         """Call Azure OpenAI API (chat/completions endpoint)"""
         try:
+            # Use the full endpoint URL as provided (it should include the deployment name)
+            # The endpoint should already be in the correct format for Azure OpenAI
             headers = {
                 'Content-Type': 'application/json',
                 'api-key': self.azure_openai_api_key
@@ -57,6 +68,8 @@ class QuestionGenerator:
                 "max_tokens": 5000,
                 "temperature": 0.7
             }
+            
+            logger.info(f"Calling Azure OpenAI with endpoint: {self.azure_openai_endpoint}")
             response = requests.post(self.azure_openai_endpoint, headers=headers, json=payload, timeout=60)
             response.raise_for_status()
             result = response.json()
@@ -247,22 +260,32 @@ class QuestionGenerator:
         # Try different APIs in order of preference
         apis_to_try = []
         
-        # Add Ollama if available
+        # Add Azure OpenAI first (highest priority)
+        if self.azure_openai_api_key and self.azure_openai_endpoint:
+            apis_to_try.append(('azure_openai', self._call_azure_openai_api))
+            logger.info("Added Azure OpenAI to API list (priority 1)")
+        
+        # Add Ollama if available (second priority)
         try:
             import requests
             response = requests.get('http://localhost:11434/api/tags', timeout=5)
             if response.status_code == 200:
                 apis_to_try.append(('ollama', self._call_ollama))
+                logger.info("Added Ollama to API list (priority 2)")
         except Exception as e:
             pass
         
-        # Add other APIs based on available keys
-        if self.azure_openai_api_key and self.azure_openai_endpoint:
-            apis_to_try.append(('azure_openai', self._call_azure_openai_api))
+        # Add Gemini (third priority)
         if self.gemini_api_key:
             apis_to_try.append(('gemini', self._call_gemini_api))
+            logger.info("Added Gemini to API list (priority 3)")
+        
+        # Add Hugging Face (fourth priority)
         if self.hf_token:
             apis_to_try.append(('huggingface', self._call_huggingface_api))
+            logger.info("Added Hugging Face to API list (priority 4)")
+        
+        logger.info(f"APIs to try: {[api[0] for api in apis_to_try]}")
         
         # Try each API
         for api_name, api_func in apis_to_try:

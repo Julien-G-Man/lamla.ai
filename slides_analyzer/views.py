@@ -677,17 +677,22 @@ def about(request):
             messages.success(request, "Thank you for your message! We'll get back to you soon.")
             
             # Send email notification (optional)
+            email_sent = False
             try:
                 send_email(
                     subject=f'LAMLAAI Contact Form Submission: {subject}',
                     message=f'Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}\n\nThank you for contacting LAMLA AI! We will get back to you soon.\n\nBest regards,\nThe LAMLA AI Team\nhttps://lamla-ai.onrender.com',
                     from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com'),
-                    recipient_list=[getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')],
-                    fail_silently=True,
+                    recipient_list=[getattr(settings, 'ADMIN_EMAIL', 'juliengmanana@gmail.com')],
+                    fail_silently=False,  # Changed to False to see actual errors
                     reply_to=[email],
                 )
+                email_sent = True
+                logger.info(f"Contact form email sent successfully for {email}")
             except Exception as e:
-                logger.warning(f"Failed to send contact notification email: {e}")
+                logger.error(f"Failed to send contact notification email: {e}")
+                # Still show success message to user, but log the email failure
+                messages.warning(request, "Your message was saved, but we couldn't send a confirmation email. We'll still get back to you!")
                 
         except DjangoValidationError:
             messages.error(request, "Please enter a valid email address.")

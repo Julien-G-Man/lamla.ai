@@ -90,6 +90,18 @@ class CustomEmailBackend(SMTPEmailBackend):
                 'use_tls': True
             }
         
+        # Contact form submissions - use contact.lamla1@gmail.com SMTP
+        elif any(keyword in subject for keyword in [
+            'contact form', 'lamlaai contact', 'contact submission'
+        ]):
+            return {
+                'host': 'smtp.gmail.com',
+                'port': 587,
+                'username': getattr(settings, 'AUTH_EMAIL_HOST_USER', 'contact.lamla1@gmail.com'),
+                'password': getattr(settings, 'AUTH_EMAIL_HOST_PASSWORD', ''),
+                'use_tls': True
+            }
+        
         # Default to contact.lamla1@gmail.com SMTP for security-related emails
         else:
             return {

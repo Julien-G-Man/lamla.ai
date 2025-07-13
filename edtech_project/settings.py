@@ -189,32 +189,23 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 # Default email settings (for backward compatibility)
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'contact.lamla1@gmail.com')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'your_app_password_here')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')
-ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'contact.lamla1@gmail.com')
+EMAIL_HOST_USER = os.getenv('WELCOME_EMAIL_HOST_USER', 'juliengmanana@gmail.com')
+EMAIL_HOST_PASSWORD = os.getenv('WELCOME_EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = 'juliengmanana@gmail.com'
+ADMIN_EMAIL = 'juliengmanana@gmail.com'
 
 # Separate SMTP configurations for different email types
-# Auth emails (confirmations, password resets) - contact.lamla1@gmail.com
-AUTH_EMAIL_HOST_USER = os.getenv('AUTH_EMAIL_HOST_USER', 'contact.lamla1@gmail.com')
-AUTH_EMAIL_HOST_PASSWORD = os.getenv('AUTH_EMAIL_HOST_PASSWORD', 'your_contact_app_password_here')
+# Auth emails (confirmations, password resets) - use juliengmanana@gmail.com
+AUTH_EMAIL_HOST_USER = os.getenv('WELCOME_EMAIL_HOST_USER', 'juliengmanana@gmail.com')
+AUTH_EMAIL_HOST_PASSWORD = os.getenv('WELCOME_EMAIL_HOST_PASSWORD', '')
 
 # Welcome and general emails - juliengmanana@gmail.com
 WELCOME_EMAIL_HOST_USER = os.getenv('WELCOME_EMAIL_HOST_USER', 'juliengmanana@gmail.com')
-WELCOME_EMAIL_HOST_PASSWORD = os.getenv('WELCOME_EMAIL_HOST_PASSWORD', 'your_julien_app_password_here')
+WELCOME_EMAIL_HOST_PASSWORD = os.getenv('WELCOME_EMAIL_HOST_PASSWORD', '')
 
 # Email sender configuration
 SECURITY_EMAIL_SENDER = 'contact.lamla1@gmail.com'  # For confirmations and password resets
 WELCOME_EMAIL_SENDER = 'juliengmanana@gmail.com'    # For welcome emails and notifications
-
-# Note: To send from juliengmanana@gmail.com, you need to:
-# 1. Set up "Send mail as" in Gmail for contact.lamla1@gmail.com
-# 2. Add juliengmanana@gmail.com as an alias
-# 3. Or use a different approach with multiple SMTP configurations
-
-# For development, you can use console backend instead:
-if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Security settings
 if not DEBUG:

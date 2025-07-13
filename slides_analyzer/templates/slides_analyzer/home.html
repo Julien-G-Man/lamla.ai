@@ -642,172 +642,379 @@
 @media (max-width: 768px) {
     .home-container {
         padding: 0 15px;
+        margin-top: 20px;
     }
     
     .hero {
         flex-direction: column;
         text-align: center;
-        padding: 60px 0;
+        padding: 40px 20px;
         min-height: auto;
+        margin-bottom: 40px;
+        border-radius: 15px;
     }
     
     .hero-content {
-        margin-bottom: 40px;
+        margin-bottom: 30px;
+        max-width: 100%;
     }
     
     .hero-title {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
+        line-height: 1.2;
+        margin-bottom: 20px;
     }
     
     .hero-desc {
-        font-size: 1.1rem;
+        font-size: 1rem;
+        margin-bottom: 30px;
+        line-height: 1.5;
     }
     
     .hero-illustration {
         margin-left: 0;
+        order: -1;
+        margin-bottom: 20px;
     }
     
     .hero-img {
-        max-width: 350px;
+        max-width: 280px;
+        width: 100%;
+        height: auto;
     }
     
     .hero-btns {
         flex-direction: column;
         align-items: center;
+        gap: 15px;
+        width: 100%;
     }
     
     .hero-btn {
         width: 100%;
-        max-width: 300px;
+        max-width: 280px;
         justify-content: center;
+        padding: 14px 24px;
+        font-size: 1rem;
     }
     
     /* Mobile shape adjustments */
     .hero .shape-1 {
-        width: 60px;
-        height: 60px;
-        top: 15%;
+        width: 50px;
+        height: 50px;
+        top: 10%;
         left: 5%;
     }
     
     .hero .shape-2 {
-        width: 40px;
-        height: 40px;
-        top: 70%;
-        right: 10%;
+        width: 35px;
+        height: 35px;
+        top: 75%;
+        right: 8%;
     }
     
     .hero .shape-3 {
-        width: 30px;
-        height: 30px;
-        bottom: 15%;
-        left: 15%;
+        width: 25px;
+        height: 25px;
+        bottom: 10%;
+        left: 10%;
     }
     
     .features-section .shape-4 {
-        width: 80px;
-        height: 80px;
-        top: 5%;
+        width: 60px;
+        height: 60px;
+        top: 3%;
         right: 2%;
     }
     
     .features-section .shape-5 {
-        width: 60px;
-        height: 60px;
-        bottom: 5%;
+        width: 50px;
+        height: 50px;
+        bottom: 3%;
         left: 2%;
     }
     
     .features-section {
-        padding: 60px 0;
+        padding: 40px 20px;
+        margin-bottom: 40px;
+        border-radius: 15px;
+    }
+    
+    .section-header {
+        margin-bottom: 40px;
     }
     
     .section-header h2 {
-        font-size: 2rem;
+        font-size: 1.8rem;
+        margin-bottom: 12px;
     }
     
     .section-header p {
-        font-size: 1.1rem;
+        font-size: 1rem;
+        padding: 0 10px;
     }
     
     .features-grid {
         grid-template-columns: 1fr;
         gap: 20px;
-        padding: 0 15px;
+        padding: 0;
     }
     
     .feature-card {
-        padding: 30px 20px;
+        padding: 25px 20px;
+        max-width: 100%;
+    }
+    
+    .feature-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+    
+    .feature-title {
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+    }
+    
+    .feature-desc {
+        font-size: 0.95rem;
+        line-height: 1.5;
     }
     
     .newsletter-section {
-        padding: 40px 0;
+        padding: 40px 20px;
+        margin-bottom: 40px;
+        border-radius: 15px;
+    }
+    
+    .newsletter-content {
+        padding: 0;
     }
     
     .newsletter-title {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
+        margin-bottom: 12px;
+    }
+    
+    .newsletter-desc {
+        font-size: 1rem;
+        margin-bottom: 30px;
     }
     
     .newsletter-form {
         flex-direction: column;
         gap: 12px;
+        max-width: 100%;
     }
     
     .newsletter-input,
     .newsletter-btn {
         width: 100%;
+        padding: 14px 16px;
+        font-size: 1rem;
+    }
+    
+    .testimonials-section {
+        padding: 40px 20px;
+        border-radius: 15px;
+    }
+    
+    .testimonial-content {
+        padding: 0;
     }
     
     .testimonial-quote {
-        font-size: 1.2rem;
-        padding: 0 20px;
+        font-size: 1.1rem;
+        padding: 0 15px;
+        margin-bottom: 20px;
+    }
+    
+    .testimonial-quote::before,
+    .testimonial-quote::after {
+        font-size: 2rem;
+        top: -5px;
+    }
+    
+    .testimonial-user {
+        margin-bottom: 30px;
+        font-size: 0.95rem;
     }
     
     .testimonial-logo-row {
-        gap: 15px;
+        gap: 12px;
+        justify-content: center;
     }
     
     .testimonial-logo {
-        padding: 8px 16px;
-        font-size: 0.9rem;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        border-radius: 8px;
     }
 }
 
 @media (max-width: 480px) {
-            .hero-title {
-        font-size: 2rem;
-            }
+    .home-container {
+        padding: 0 10px;
+        margin-top: 15px;
+    }
     
-            .hero-desc {
-                font-size: 1rem;
-            }
+    .hero {
+        padding: 30px 15px;
+        margin-bottom: 30px;
+    }
     
-            .hero-img {
-        max-width: 280px;
+    .hero-title {
+        font-size: 1.8rem;
+        line-height: 1.3;
+    }
+    
+    .hero-desc {
+        font-size: 0.95rem;
+        margin-bottom: 25px;
+    }
+    
+    .hero-img {
+        max-width: 240px;
+    }
+    
+    .hero-btn {
+        max-width: 250px;
+        padding: 12px 20px;
+        font-size: 0.95rem;
+    }
+    
+    .features-section {
+        padding: 30px 15px;
+        margin-bottom: 30px;
     }
     
     .section-header h2 {
-                font-size: 1.8rem;
-            }
-
-            .newsletter-title {
         font-size: 1.6rem;
-            }
-
-            .testimonial-quote {
-                font-size: 1.1rem;
-                padding: 0 15px;
+    }
+    
+    .section-header p {
+        font-size: 0.95rem;
+    }
+    
+    .feature-card {
+        padding: 20px 15px;
+    }
+    
+    .feature-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+    }
+    
+    .feature-title {
+        font-size: 1.1rem;
+    }
+    
+    .feature-desc {
+        font-size: 0.9rem;
+    }
+    
+    .newsletter-section {
+        padding: 30px 15px;
+        margin-bottom: 30px;
+    }
+    
+    .newsletter-title {
+        font-size: 1.4rem;
+    }
+    
+    .newsletter-desc {
+        font-size: 0.95rem;
+        margin-bottom: 25px;
+    }
+    
+    .newsletter-input,
+    .newsletter-btn {
+        padding: 12px 14px;
+        font-size: 0.95rem;
+    }
+    
+    .testimonials-section {
+        padding: 30px 15px;
+    }
+    
+    .testimonial-quote {
+        font-size: 1rem;
+        padding: 0 10px;
+    }
+    
+    .testimonial-quote::before,
+    .testimonial-quote::after {
+        font-size: 1.8rem;
+    }
+    
+    .testimonial-user {
+        font-size: 0.9rem;
+        margin-bottom: 25px;
     }
     
     .testimonial-logo-row {
-                gap: 10px;
+        gap: 8px;
     }
     
     .testimonial-logo {
-        padding: 6px 12px;
+        padding: 6px 10px;
         font-size: 0.8rem;
-            }
-        }
+    }
+}
+
+@media (max-width: 360px) {
+    .home-container {
+        padding: 0 8px;
+    }
+    
+    .hero {
+        padding: 25px 12px;
+    }
+    
+    .hero-title {
+        font-size: 1.6rem;
+    }
+    
+    .hero-desc {
+        font-size: 0.9rem;
+    }
+    
+    .hero-img {
+        max-width: 200px;
+    }
+    
+    .hero-btn {
+        max-width: 220px;
+        padding: 10px 16px;
+        font-size: 0.9rem;
+    }
+    
+    .features-section,
+    .newsletter-section,
+    .testimonials-section {
+        padding: 25px 12px;
+        margin-bottom: 25px;
+    }
+    
+    .section-header h2 {
+        font-size: 1.4rem;
+    }
+    
+    .feature-card {
+        padding: 18px 12px;
+    }
+    
+    .newsletter-title {
+        font-size: 1.3rem;
+    }
+    
+    .testimonial-quote {
+        font-size: 0.95rem;
+    }
+}
     </style>
 
     <script>

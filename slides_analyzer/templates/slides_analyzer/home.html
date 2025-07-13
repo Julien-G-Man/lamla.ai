@@ -23,9 +23,10 @@
                 <a href="#features" class="hero-btn secondary">Explore Features</a>
             </div>
         </div>
-        <div class="hero-illustration">
+        <div class="hero-illustration desktop-position">
             <img src="{% static 'slide_analyzer/images/student.jpeg' %}" alt="Study Illustration" class="hero-img">
         </div>
+
     </section>
 
     <!-- Features Section -->
@@ -275,10 +276,23 @@
     color: white;
 }
 
-.hero-illustration {
-    flex-shrink: 0;
-    margin-left: 40px;
-    z-index: 2;
+        .hero-illustration {
+            flex-shrink: 0;
+            margin-left: 40px;
+            z-index: 2;
+            position: relative;
+        }
+        
+        /* Mobile/Desktop visibility classes */
+        .mobile-only {
+            display: none;
+        }
+        
+        .hero-illustration.desktop-position {
+            display: block;
+            flex-shrink: 0;
+            margin-left: 40px;
+            z-index: 2;
             position: relative;
         }
 
@@ -673,8 +687,20 @@
     
     .hero-illustration {
         margin-left: 0;
-        order: -1;
+        order: 2;
         margin-bottom: 20px;
+    }
+    
+    .hero-content {
+        order: 1;
+    }
+    
+    /* Mobile layout: show desktop image after content */
+    .desktop-position {
+        display: block;
+        margin: 30px 0 0 0;
+        text-align: center;
+        order: 3;
     }
     
     .hero-img {

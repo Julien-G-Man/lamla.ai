@@ -61,6 +61,20 @@
         </div>
     </div>
 
+    <!-- Toolbar -->
+    <div class="users-toolbar" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="subscriberSearch" placeholder="Search subscribers..." style="padding: 8px 12px; border-radius: 6px; border: 1px solid #e9ecef; font-size: 1rem;">
+            <select id="subscriberStatusFilter" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #e9ecef; font-size: 1rem;">
+                <option value="">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <a href="{% url 'download_subscribers_csv' %}" class="download-btn"><i class="fas fa-download"></i> Download CSV</a>
+        </div>
+    </div>
     <!-- Subscribers Table -->
     <div class="subscribers-table-container">
         <div class="table-header">
@@ -72,7 +86,6 @@
                 </span>
             </div>
         </div>
-        
         <div class="table-wrapper">
             <table class="subscribers-table" id="subscribersTable">
                 <thead>
@@ -85,7 +98,7 @@
                 </thead>
                 <tbody id="subscribersTableBody">
                     {% for subscriber in subscribers %}
-                    <tr>
+                    <tr data-subscriber-id="{{ subscriber.id }}">
                         <td>{{ subscriber.email }}</td>
                         <td>{{ subscriber.created_at|date:"M d, Y H:i" }}</td>
                         <td>
@@ -94,7 +107,7 @@
                             </span>
                         </td>
                         <td>
-                            <button class="action-btn" onclick="toggleSubscriptionStatus('{{ subscriber.id }}', '{{ subscriber.is_active }}')">
+                            <button class="action-btn toggle-status-btn" data-active="{{ subscriber.is_active }}">
                                 {% if subscriber.is_active %}
                                     <i class="fas fa-pause"></i> Deactivate
                                 {% else %}
@@ -123,6 +136,7 @@ let lastSubscriberCount = {{ total_subscribers }};
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
     updateLastUpdated();
+    applySubscriberFilters(); // Apply initial filters
 });
 
 function toggleAutoRefresh() {
@@ -186,6 +200,7 @@ function refreshSubscriberList() {
             }
             
             updateLastUpdated();
+            applySubscriberFilters(); // Re-apply filters after refresh
         } else {
             console.error('Failed to refresh subscriber list:', data.error);
         }
@@ -209,7 +224,7 @@ function updateSubscriberTable(subscribers) {
     }
     
     tbody.innerHTML = subscribers.map(subscriber => `
-        <tr>
+        <tr data-subscriber-id="${subscriber.id}">
             <td>${subscriber.email}</td>
             <td>${subscriber.created_at}</td>
             <td>
@@ -218,7 +233,7 @@ function updateSubscriberTable(subscribers) {
                 </span>
             </td>
             <td>
-                <button class="action-btn" onclick="toggleSubscriptionStatus('${subscriber.id}', '${subscriber.is_active}')">
+                <button class="action-btn toggle-status-btn" data-active="${subscriber.is_active}">
                     ${subscriber.is_active ? 
                         '<i class="fas fa-pause"></i> Deactivate' : 
                         '<i class="fas fa-play"></i> Activate'
@@ -258,35 +273,51 @@ function showNewSubscriberNotification(count) {
     }, 3000);
 }
 
-function toggleSubscriptionStatus(subscriberId, currentStatus) {
-    const newStatus = currentStatus === 'True' ? false : true;
-    
-    fetch('/subscribers/toggle-status/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken'),
-            'X-Requested-With': 'XMLHttpRequest',
-        },
-        body: JSON.stringify({
-            subscriber_id: subscriberId,
-            is_active: newStatus
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Refresh the list to show updated status
-            refreshSubscriberList();
-        } else {
-            alert('Error updating subscription status: ' + data.error);
+function applySubscriberFilters() {
+    const searchValue = document.getElementById('subscriberSearch').value.toLowerCase();
+    const statusValue = document.getElementById('subscriberStatusFilter').value;
+    const rows = document.querySelectorAll('#subscribersTableBody tr');
+    rows.forEach(row => {
+        const email = row.children[0]?.textContent.toLowerCase() || '';
+        const status = row.children[2]?.textContent.trim();
+        let show = true;
+        if (searchValue && !email.includes(searchValue)) {
+            show = false;
         }
-    })
-    .catch(error => {
-        console.error('Error toggling subscription status:', error);
-        alert('Error updating subscription status');
+        if (statusValue && status !== statusValue) {
+            show = false;
+        }
+        row.style.display = show ? '' : 'none';
     });
 }
+
+document.getElementById('subscriberSearch').addEventListener('input', applySubscriberFilters);
+document.getElementById('subscriberStatusFilter').addEventListener('change', applySubscriberFilters);
+
+document.querySelectorAll('.toggle-status-btn').forEach(btn => {
+    btn.onclick = function() {
+        const row = btn.closest('tr');
+        const subscriberId = row.getAttribute('data-subscriber-id');
+        const isActive = btn.getAttribute('data-active') === 'True' || btn.getAttribute('data-active') === 'true';
+        fetch('/subscribers/toggle-status/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({subscriber_id: subscriberId, is_active: !isActive})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                refreshSubscriberList();
+            } else {
+                alert('Status update failed: ' + data.error);
+            }
+        });
+    };
+});
 
 function getCookie(name) {
     let cookieValue = null;

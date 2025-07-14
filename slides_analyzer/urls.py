@@ -31,9 +31,16 @@ urlpatterns = [
     
     # Subscriber Dashboard (Admin only)
     path('subscribers/', views.view_subscribers, name='view_subscribers'),
+    path('users/', views.view_users, name='view_users'),
     path('subscribers/download/', views.download_subscribers_csv, name='download_subscribers_csv'),
     path('subscribers/data/', views.get_subscribers_data, name='get_subscribers_data'),
     path('subscribers/toggle-status/', views.toggle_subscription_status, name='toggle_subscription_status'),
+    path('users/download/', views.download_users_csv, name='download_users_csv'),
+    path('users/data/', views.get_users_data, name='get_users_data'),
+    path('users/delete/', views.delete_user, name='delete_user'),
+    path('users/restore/', views.restore_user, name='restore_user'),
+    path('users/deleted/', views.view_deleted_users, name='view_deleted_users'),
+    path('users/deleted/data/', views.get_deleted_users_data, name='get_deleted_users_data'),
     
     # Chatbot URLs
     path('api/chatbot/support-request/', views.chatbot_support_request, name='chatbot_support_request'),

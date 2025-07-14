@@ -20,6 +20,7 @@ class UserProfile(models.Model):
     bio = models.TextField(max_length=500, blank=True, help_text="Tell us about yourself")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_deleted = models.BooleanField(default=False, help_text="Soft-delete flag for user/admin")
 
     def __str__(self):
         return f"{self.user.username}'s Profile"

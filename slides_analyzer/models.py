@@ -29,7 +29,7 @@ class UserProfile(models.Model):
         """Return the profile picture URL or default image"""
         if self.profile_picture:
             return self.profile_picture.url
-        return '/static/slide_analyzer/images/student.jpeg'
+        return '/static/slide_analyzer/images/profile_default.png'
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

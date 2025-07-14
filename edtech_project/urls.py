@@ -33,5 +33,6 @@ urlpatterns = [
     path('', include('slides_analyzer.urls')),
 ]
 
-if settings.DEBUG:
+if settings.DEBUG or (hasattr(settings, 'MEDIA_URL') and hasattr(settings, 'MEDIA_ROOT') and not hasattr(settings, 'DEFAULT_FILE_STORAGE')):
+    # Serve media files in development and in production if not using cloud storage
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

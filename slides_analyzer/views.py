@@ -97,9 +97,9 @@ The LAMLA AI Team 🧠
 https://lamla-ai.onrender.com
 ---
 You can unsubscribe anytime by replying to this email with "unsubscribe".
-For support, contact us at: {getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')}
+For support, contact us at: {getattr(settings, 'DEFAULT_FROM_EMAIL', 'lamlaaiteam@gmail.com')}
 """
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'lamlaaiteam@gmail.com')
         logger = logging.getLogger(__name__)
         logger.info(f"Sending newsletter welcome email to: {email} from: {from_email}")
         send_email(
@@ -137,7 +137,7 @@ https://lamla-ai.onrender.com
         send_email(
             subject=subject,
             message=message,
-            recipient_list=[getattr(settings, 'ADMIN_EMAIL', 'contact.lamla1@gmail.com')],
+            recipient_list=[getattr(settings, 'ADMIN_EMAIL', 'lamlaaiteam@gmail.com')],
             from_email=from_email,
             fail_silently=False,
         )
@@ -489,8 +489,8 @@ def home(request):
                     send_email(
                         subject='New Newsletter Subscription',
                         message=f'A new user has subscribed to the newsletter:\n\nEmail: {email}\nDate: {subscription.created_at.strftime("%Y-%m-%d %H:%M:%S")}',
-                        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com'),
-                        recipient_list=[getattr(settings, 'ADMIN_EMAIL', 'contact.lamla1@gmail.com')],
+                        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'lamlaaiteam@gmail.com'),
+                        recipient_list=[getattr(settings, 'ADMIN_EMAIL', 'lamlaaiteam@gmail.com')],
                         fail_silently=True,
                     )
                 except Exception as e:
@@ -675,26 +675,44 @@ def about(request):
                 
                 logger.info(f"Quiz feedback submitted via contact form: ID={feedback.id}, User={'Authenticated' if user else 'Anonymous'}")
             
-            messages.success(request, "Thank you for your message! We'll get back to you soon.")
-            
-            # Send email notification (optional)
-            email_sent = False
+            # Send email notification to admin (from contact.lamla1@gmail.com)
+            admin_email_sent = False
             try:
                 send_email(
                     subject=f'LAMLAAI Contact Form Submission: {subject}',
                     message=f'Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}\n\nThank you for contacting LAMLA AI! We will get back to you soon.\n\nBest regards,\nThe LAMLA AI Team\nhttps://lamla-ai.onrender.com',
-                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com'),
-                    recipient_list=[getattr(settings, 'ADMIN_EMAIL', 'juliengmanana@gmail.com')],
-                    fail_silently=False,  # Changed to False to see actual errors
+                    from_email='lamlaaiteam@gmail.com',
+                    recipient_list=['juliengmanana@gmail.com'],
+                    fail_silently=False,
                     reply_to=[email],
                 )
-                email_sent = True
-                logger.info(f"Contact form email sent successfully for {email}")
+                admin_email_sent = True
+                logger.info(f"Contact form email sent to admin for {email}")
             except Exception as e:
-                logger.error(f"Failed to send contact notification email: {e}")
-                # Still show success message to user, but log the email failure
-                messages.warning(request, "Your message was saved, but we couldn't send a confirmation email. We'll still get back to you!")
-                
+                logger.error(f"Failed to send contact notification email to admin: {e}")
+                messages.warning(request, "Your message was saved, but we couldn't notify the admin by email. We'll still get back to you!")
+            
+            # Send confirmation/response to user (from contact.lamla1@gmail.com)
+            user_email_sent = False
+            try:
+                send_email(
+                    subject="Thank you for contacting LAMLA AI!",
+                    message=f"Hi {name},\n\nThank you for reaching out to LAMLA AI. We have received your message and will respond as soon as possible.\n\nSubject: {subject}\nMessage: {message}\n\nBest regards,\nThe LAMLA AI Team\nhttps://lamla-ai.onrender.com",
+                    from_email='lamlaaiteam@gmail.com',
+                    recipient_list=[email],
+                    fail_silently=False,
+                    reply_to=['juliengmanana@gmail.com'],
+                )
+                user_email_sent = True
+                logger.info(f"Confirmation email sent to user {email}")
+            except Exception as e:
+                logger.error(f"Failed to send confirmation email to user: {e}")
+                messages.warning(request, "We couldn't send a confirmation email to your address, but your message was received.")
+            
+            if admin_email_sent and user_email_sent:
+                messages.success(request, "Thank you for your message! We'll get back to you soon.")
+            return redirect('about')
+            
         except DjangoValidationError:
             messages.error(request, "Please enter a valid email address.")
         except Exception as e:
@@ -898,8 +916,8 @@ def contact(request):
                 send_email(
                     subject=f'LAMLAAI Contact Form Submission: {subject}',
                     message=f'Name: {name}\nEmail: {email}\nSubject: {subject}\nMessage: {message}\n\nThank you for contacting LAMLA AI! We will get back to you soon.\n\nBest regards,\nThe LAMLA AI Team\nhttps://lamla-ai.onrender.com',
-                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com'),
-                    recipient_list=[getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')],
+                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'lamlaaiteam@gmail.com'),
+                    recipient_list=[getattr(settings, 'DEFAULT_FROM_EMAIL', 'lamlaaiteam@gmail.com')],
                     fail_silently=True,
                     reply_to=[email],
                 )
@@ -1003,10 +1021,10 @@ def subscribe_newsletter(request):
                     existing_subscription.is_active = True
                     existing_subscription.save()
                     
-                    # Step 1: juliengmanana@gmail.com notifies contact.lamla1@gmail.com
+                    # Step 1: juliengmanana@gmail.com notifies lamlaaiteam@gmail.com
                     send_newsletter_notification_to_admin(email, existing_subscription.created_at)
                     
-                    # Step 2: contact.lamla1@gmail.com sends welcome email to subscriber
+                    # Step 2: lamlaaiteam@gmail.com sends welcome email to subscriber
                     send_newsletter_welcome_email(email)
                     
                     return JsonResponse({
@@ -1020,10 +1038,10 @@ def subscribe_newsletter(request):
                 is_active=True
             )
             
-            # Step 1: juliengmanana@gmail.com notifies contact.lamla1@gmail.com
+            # Step 1: juliengmanana@gmail.com notifies lamlaaiteam@gmail.com
             send_newsletter_notification_to_admin(email, subscription.created_at)
             
-            # Step 2: contact.lamla1@gmail.com sends welcome email to subscriber
+            # Step 2: lamlaaiteam@gmail.com sends welcome email to subscriber
             send_newsletter_welcome_email(email)
             
             return JsonResponse({
@@ -1036,7 +1054,7 @@ def subscribe_newsletter(request):
             logger.error(f"Newsletter subscription error: {e}")
             return JsonResponse({
                 'success': False,
-                'message': 'An error occurred while subscribing. Please try again later or contact support at contact.lamla1@gmail.com.'
+                'message': 'An error occurred while subscribing. Please try again later or contact support at lamlaaiteam@gmail.com.'
             }, status=500)
     return JsonResponse({
         'success': False,
@@ -1562,7 +1580,7 @@ def chatbot_message(request):
             if chatbot_service:
                 bot_response = chatbot_service.generate_response(user_message, conversation_history)
             else:
-                bot_response = "I'm sorry, I'm having trouble connecting right now. Please try again later or contact support@lamla.ai for assistance."
+                bot_response = "I'm sorry, I'm having trouble connecting right now. Please try again later or contact support@lamlaaiteam@gmail.com for assistance."
             
             # Save bot response
             ChatMessage.objects.create(
@@ -1685,8 +1703,8 @@ def chatbot_support_request(request):
             send_email(
                 subject=admin_subject,
                 message=admin_message,
-                recipient_list=[getattr(settings, 'ADMIN_EMAIL', 'contact.lamla1@gmail.com')],
-                from_email='contact.lamla1@gmail.com',
+                recipient_list=[getattr(settings, 'ADMIN_EMAIL', 'lamlaaiteam@gmail.com')],
+                from_email='lamlaaiteam@gmail.com',
             )
 
             # Confirmation email to user
@@ -1696,7 +1714,7 @@ def chatbot_support_request(request):
                 subject=user_subject,
                 message=user_message,
                 recipient_list=[email],
-                from_email='contact.lamla1@gmail.com',
+                from_email='lamlaaiteam@gmail.com',
             )
 
             return JsonResponse({

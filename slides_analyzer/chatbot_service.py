@@ -84,7 +84,7 @@ Key Information about Lamla AI:
 - Helps students upload study materials and generate quizzes/flashcards
 - Designed for high school and university students
 - Motto: "Study Smarter. Perform Better."
-- Contact: support@lamla.ai
+- Contact: lamlaaiteam@gmail.com
 
 IMPORTANT RESPONSE GUIDELINES:
 1. Be warm, friendly, and encouraging in your tone
@@ -178,7 +178,7 @@ Would you like me to explain any specific feature in detail?"""
             return """Need help? I'm here for you! 💪
 
 Contact Information:
-    • Email: support@lamla.ai
+    • Email: lamlaaiteam@gmail.com
     • Our support team is always happy to help
     • Response time: Usually within 24 hours
 

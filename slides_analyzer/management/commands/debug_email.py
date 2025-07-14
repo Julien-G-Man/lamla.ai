@@ -15,7 +15,7 @@ class Command(BaseCommand):
         self.stdout.write("🔍 Debugging Email SMTP Connection...")
         
         # Test 1: Auth email credentials
-        self.stdout.write("\n1. Testing AUTH email credentials (contact.lamla1@gmail.com):")
+        self.stdout.write("\n1. Testing AUTH email credentials (lamlaaiteam@gmail.com):")
         auth_user = getattr(settings, 'AUTH_EMAIL_HOST_USER', None)
         auth_pass = getattr(settings, 'AUTH_EMAIL_HOST_PASSWORD', None)
         

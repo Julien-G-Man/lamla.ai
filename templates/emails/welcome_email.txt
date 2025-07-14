@@ -22,7 +22,7 @@ Pro Tip: Upload your first study material to see LAMLA AI in action. Our AI will
 ---
 LAMLA AI - Transforming Education with AI
 
-Contact Support: contact.lamla1@gmail.com
+Contact Support: lamlaaiteam@gmail.com
 About Us: https://{{ site_domain }}/about
 
 This email was sent to {{ user.email }} from juliengmanana@gmail.com

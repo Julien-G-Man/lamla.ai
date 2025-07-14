@@ -13,7 +13,13 @@ class Command(BaseCommand):
             '--to',
             type=str,
             default='contact.lamla1@gmail.com',
-            help='Email address to send test email to'
+            help='Recipient email address'
+        )
+        parser.add_argument(
+            '--from',
+            type=str,
+            default='lamlaaiteam@gmail.com',
+            help='Sender email address'
         )
 
     def handle(self, *args, **options):
@@ -29,7 +35,7 @@ class Command(BaseCommand):
                 subject='Test Email from LAMLA AI',
                 message='This is a test email to verify email functionality is working.',
                 recipient_list=[test_email],
-                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com'),
+                from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'lamlaaiteam@gmail.com'),
                 fail_silently=False
             )
             

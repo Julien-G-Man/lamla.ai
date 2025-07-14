@@ -30,7 +30,7 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.getenv("SECRET_KEY", "super-secret-key")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -195,16 +195,16 @@ DEFAULT_FROM_EMAIL = 'juliengmanana@gmail.com'
 ADMIN_EMAIL = 'juliengmanana@gmail.com'
 
 # Separate SMTP configurations for different email types
-# Auth emails (confirmations, password resets) - use juliengmanana@gmail.com
-AUTH_EMAIL_HOST_USER = os.getenv('WELCOME_EMAIL_HOST_USER', 'juliengmanana@gmail.com')
-AUTH_EMAIL_HOST_PASSWORD = os.getenv('WELCOME_EMAIL_HOST_PASSWORD', '')
+# Auth emails (confirmations, password resets) - use lamlaaiteam@gmail.com
+AUTH_EMAIL_HOST_USER = os.getenv('AUTH_EMAIL_HOST_USER', 'lamlaaiteam@gmail.com')
+AUTH_EMAIL_HOST_PASSWORD = os.getenv('AUTH_EMAIL_HOST_PASSWORD', '')
 
 # Welcome and general emails - juliengmanana@gmail.com
 WELCOME_EMAIL_HOST_USER = os.getenv('WELCOME_EMAIL_HOST_USER', 'juliengmanana@gmail.com')
 WELCOME_EMAIL_HOST_PASSWORD = os.getenv('WELCOME_EMAIL_HOST_PASSWORD', '')
 
 # Email sender configuration
-SECURITY_EMAIL_SENDER = 'contact.lamla1@gmail.com'  # For confirmations and password resets
+SECURITY_EMAIL_SENDER = 'lamlaaiteam@gmail.com'  # For confirmations and password resets
 WELCOME_EMAIL_SENDER = 'juliengmanana@gmail.com'    # For welcome emails and notifications
 
 # Security settings

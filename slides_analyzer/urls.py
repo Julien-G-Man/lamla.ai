@@ -39,6 +39,7 @@ urlpatterns = [
     path('users/data/', views.get_users_data, name='get_users_data'),
     path('users/delete/', views.delete_user, name='delete_user'),
     path('users/restore/', views.restore_user, name='restore_user'),
+    path('users/toggle-status/', views.toggle_user_status, name='toggle_user_status'),
     path('users/deleted/', views.view_deleted_users, name='view_deleted_users'),
     path('users/deleted/data/', views.get_deleted_users_data, name='get_deleted_users_data'),
     

@@ -1425,6 +1425,56 @@ def toggle_subscription_status(request):
         'error': 'Invalid request method'
     }, status=405)
 
+@csrf_exempt
+@staff_member_required
+def toggle_user_status(request):
+    """API endpoint to toggle user active status"""
+    if request.method == 'POST':
+        try:
+            import json
+            data = json.loads(request.body.decode('utf-8'))
+            user_id = data.get('user_id')
+            is_active = data.get('is_active')
+            if user_id is None or is_active is None:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'User ID and is_active are required'
+                }, status=400)
+            # Convert is_active to boolean if it's a string
+            if isinstance(is_active, str):
+                is_active = is_active.lower() == 'true'
+            try:
+                from django.contrib.auth.models import User
+                user = User.objects.get(id=user_id)
+                user.is_active = is_active
+                user.save()
+                return JsonResponse({
+                    'success': True,
+                    'message': f'User {user.username} {"activated" if is_active else "deactivated"} successfully',
+                    'is_active': user.is_active
+                })
+            except User.DoesNotExist:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'User not found'
+                }, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid JSON data'
+            }, status=400)
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error(f"Error toggling user status: {e}")
+            return JsonResponse({
+                'success': False,
+                'error': 'Failed to update user status'
+            }, status=500)
+    return JsonResponse({
+        'success': False,
+        'error': 'Invalid request method'
+    }, status=405)
+
 @staff_member_required
 @require_POST
 def delete_user(request):

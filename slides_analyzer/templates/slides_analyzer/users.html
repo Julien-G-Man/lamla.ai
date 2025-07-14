@@ -114,9 +114,9 @@
                         <td>{{ user.email }}</td>
                         <td>{{ user.role }}</td>
                         <td>
-                            <span class="status-badge {% if user.is_active %}active{% else %}inactive{% endif %}">
-                                {{ user.status }}
-                            </span>
+                            <button class="status-toggle-btn status-badge {% if user.is_active %}active{% else %}inactive{% endif %}" data-active="{{ user.is_active|yesno:'true,false' }}">
+                                {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                            </button>
                         </td>
                         <td>{{ user.date_joined|date:"M d, Y H:i" }}</td>
                         <td>
@@ -298,6 +298,42 @@ function getCookie(name) {
     }
     return cookieValue;
 }
+function attachStatusToggleHandlers() {
+    document.querySelectorAll('.status-toggle-btn').forEach(btn => {
+        btn.onclick = function() {
+            const row = btn.closest('tr');
+            const userId = row.getAttribute('data-user-id');
+            const isActive = btn.getAttribute('data-active') === 'true';
+            fetch('/users/toggle-status/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({user_id: userId, is_active: !isActive})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update button appearance and text
+                    btn.setAttribute('data-active', (!isActive).toString());
+                    if (!isActive) {
+                        btn.classList.remove('inactive');
+                        btn.classList.add('active');
+                        btn.innerHTML = 'Active';
+                    } else {
+                        btn.classList.remove('active');
+                        btn.classList.add('inactive');
+                        btn.innerHTML = 'Inactive';
+                    }
+                } else {
+                    alert('Status update failed: ' + (data.error || data.message));
+                }
+            });
+        };
+    });
+}
 function updateUsersTable(users) {
     const tbody = document.getElementById('usersTableBody');
     if (users.length === 0) {
@@ -310,9 +346,9 @@ function updateUsersTable(users) {
             <td>${user.email}</td>
             <td>${user.role}</td>
             <td>
-                <span class="status-badge ${user.is_active ? 'active' : 'inactive'}">
-                    ${user.status}
-                </span>
+                <button class="status-toggle-btn status-badge ${user.is_active ? 'active' : 'inactive'}" data-active="${user.is_active}">
+                    ${user.is_active ? 'Active' : 'Inactive'}
+                </button>
             </td>
             <td>${user.date_joined}</td>
             <td>
@@ -327,6 +363,7 @@ function updateUsersTable(users) {
         </tr>
     `).join('');
     attachDeleteHandlers();
+    attachStatusToggleHandlers();
 }
 function updateUsersStatistics(stats) {
     document.getElementById('totalUsers').textContent = stats.total_users;
@@ -746,6 +783,26 @@ document.getElementById('statusFilter').addEventListener('change', applyUserFilt
 }
 .auto-refresh-toggle.off {
     background: #6c757d;
+}
+.status-toggle-btn.status-badge.active {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 16px;
+    transition: background 0.2s, color 0.2s;
+}
+.status-toggle-btn.status-badge.inactive {
+    background: rgba(255, 214, 0, 0.1);
+    color: var(--primary-color);
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 16px;
+    transition: background 0.2s, color 0.2s;
 }
 </style>
 {% endblock %} 

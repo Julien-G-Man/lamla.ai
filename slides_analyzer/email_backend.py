@@ -9,7 +9,7 @@ class CustomEmailBackend(SMTPEmailBackend):
     """
     Custom email backend that sends different types of emails from different SMTP accounts.
     
-    - Email confirmations and password resets: contact.lamla1@gmail.com SMTP
+    - Email confirmations and password resets: lamlaaiteam@gmail.com SMTP
     - Welcome emails and general notifications: juliengmanana@gmail.com SMTP
     """
     
@@ -52,7 +52,7 @@ class CustomEmailBackend(SMTPEmailBackend):
         """
         subject = message.subject.lower() if message.subject else ""
         
-        # Email confirmations and password resets - use contact.lamla1@gmail.com SMTP
+        # Email confirmations and password resets - use lamlaaiteam@gmail.com SMTP
         if any(keyword in subject for keyword in [
             'confirm', 'verification', 'verify', 'password reset', 
             'password change', 'reset password', 'change password', 'reset request'
@@ -60,7 +60,7 @@ class CustomEmailBackend(SMTPEmailBackend):
             return {
                 'host': 'smtp.gmail.com',
                 'port': 587,
-                'username': getattr(settings, 'AUTH_EMAIL_HOST_USER', 'contact.lamla1@gmail.com'),
+                'username': getattr(settings, 'AUTH_EMAIL_HOST_USER', 'lamlaaiteam@gmail.com'),
                 'password': getattr(settings, 'AUTH_EMAIL_HOST_PASSWORD', ''),
                 'use_tls': True
             }
@@ -90,24 +90,24 @@ class CustomEmailBackend(SMTPEmailBackend):
                 'use_tls': True
             }
         
-        # Contact form submissions - use contact.lamla1@gmail.com SMTP
+        # Contact form submissions - use lamlaaiteam@gmail.com SMTP
         elif any(keyword in subject for keyword in [
             'contact form', 'lamlaai contact', 'contact submission'
         ]):
             return {
                 'host': 'smtp.gmail.com',
                 'port': 587,
-                'username': getattr(settings, 'AUTH_EMAIL_HOST_USER', 'contact.lamla1@gmail.com'),
+                'username': getattr(settings, 'AUTH_EMAIL_HOST_USER', 'lamlaaiteam@gmail.com'),
                 'password': getattr(settings, 'AUTH_EMAIL_HOST_PASSWORD', ''),
                 'use_tls': True
             }
         
-        # Default to contact.lamla1@gmail.com SMTP for security-related emails
+        # Default to lamlaaiteam@gmail.com SMTP for security-related emails
         else:
             return {
                 'host': 'smtp.gmail.com',
                 'port': 587,
-                'username': getattr(settings, 'AUTH_EMAIL_HOST_USER', 'contact.lamla1@gmail.com'),
+                'username': getattr(settings, 'AUTH_EMAIL_HOST_USER', 'lamlaaiteam@gmail.com'),
                 'password': getattr(settings, 'AUTH_EMAIL_HOST_PASSWORD', ''),
                 'use_tls': True
             }
@@ -118,12 +118,12 @@ class CustomEmailBackend(SMTPEmailBackend):
         """
         subject = message.subject.lower() if message.subject else ""
         
-        # Email confirmations and password resets - MUST come from contact.lamla1@gmail.com
+        # Email confirmations and password resets - MUST come from lamlaaiteam@gmail.com
         if any(keyword in subject for keyword in [
             'confirm', 'verification', 'verify', 'password reset', 
             'password change', 'reset password', 'change password', 'reset request'
         ]):
-            return 'contact.lamla1@gmail.com'
+            return 'lamlaaiteam@gmail.com'
         
         # Welcome emails and general notifications - come from juliengmanana@gmail.com
         elif any(keyword in subject for keyword in [
@@ -138,9 +138,9 @@ class CustomEmailBackend(SMTPEmailBackend):
         ]) and 'welcome' not in subject:
             return 'juliengmanana@gmail.com'
         
-        # Default to contact.lamla1@gmail.com for security-related emails
+        # Default to lamlaaiteam@gmail.com for security-related emails
         else:
-            return 'contact.lamla1@gmail.com'
+            return 'lamlaaiteam@gmail.com'
 
 
 def send_email(subject, message, recipient_list, from_email=None, html_message=None, fail_silently=False, **kwargs):
@@ -150,7 +150,7 @@ def send_email(subject, message, recipient_list, from_email=None, html_message=N
     logger = logging.getLogger(__name__)
     try:
         if from_email is None:
-            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'contact.lamla1@gmail.com')
+            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'lamlaaiteam@gmail.com')
         
         # Create the email message
         if html_message:

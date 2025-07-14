@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="welcome-illustration">
-            <img src="{{ profile.profile_picture_url }}" alt="Student" class="student-image">
+            <a href="{% url 'user_profile' %}"><img src="{{ profile.profile_picture_url }}" alt="Student" class="student-image" style="cursor:pointer;"></a>
         </div>
     </div>
 

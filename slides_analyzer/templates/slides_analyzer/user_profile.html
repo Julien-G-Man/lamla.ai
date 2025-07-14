@@ -91,6 +91,9 @@
                                 <i class="fas fa-undo"></i>
                                 Reset
                             </button>
+                            <a href="/accounts/password/change/" class="btn-secondary" style="margin-left:10px;">
+                                <i class="fas fa-key"></i> Change Password
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -182,7 +185,15 @@
                                 <p>Generate custom questions</p>
                             </div>
                         </a>
-                        
+                        <a href="http://127.0.0.1:8000/accounts/password/reset/" class="action-item">
+                            <div class="action-icon">
+                                <i class="fas fa-sync-alt"></i>
+                            </div>
+                            <div class="action-content">
+                                <h4>Reset Password</h4>
+                                <p>Send a password reset link to your email</p>
+                            </div>
+                        </a>
                         <a href="{% url 'custom_logout' %}" class="action-item logout">
                             <div class="action-icon">
                                 <i class="fas fa-sign-out-alt"></i>

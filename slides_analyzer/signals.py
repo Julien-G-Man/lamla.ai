@@ -82,7 +82,7 @@ def send_notification_email(user_email, subject, template_name, context, from_em
             'confirm', 'verification', 'verify', 'password reset', 
             'password change', 'reset password', 'change password'
         ]):
-            from_email = 'contact.lamla1@gmail.com'
+            from_email = 'lamlaaiteam@gmail.com'
         
         # Welcome and general notifications
         elif any(keyword in subject_lower for keyword in [
@@ -91,9 +91,9 @@ def send_notification_email(user_email, subject, template_name, context, from_em
         ]):
             from_email = 'juliengmanana@gmail.com'
         
-        # Default to contact.lamla1@gmail.com
+        # Default to lamlaaiteam@gmail.com
         else:
-            from_email = 'contact.lamla1@gmail.com'
+            from_email = 'lamlaaiteam@gmail.com'
     
     # Render email templates
     html_message = render_to_string(f'emails/{template_name}.html', context)

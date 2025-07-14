@@ -11,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write("🧪 Simple Email Test")
         
-        # Test with contact.lamla1@gmail.com credentials
+        # Test with lamlaaiteam@gmail.com credentials
         username = getattr(settings, 'AUTH_EMAIL_HOST_USER', None)
         password = getattr(settings, 'AUTH_EMAIL_HOST_PASSWORD', None)
         

@@ -9,7 +9,7 @@ import os
 from django.conf import settings
 import logging
 from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST
 from .models import Question, Quiz, Feedback, Subscription, Contact, UserProfile, ChatMessage, ChatbotKnowledge
 from .question_generator import QuestionGenerator
 from .flashcard_generator import FlashcardGenerator
@@ -32,6 +32,7 @@ import csv
 from django.http import HttpResponse
 from django.contrib.admin.views.decorators import staff_member_required
 from .email_backend import send_email
+from django.contrib.auth.models import User
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -1042,6 +1043,26 @@ def subscribe_newsletter(request):
         'message': 'Invalid request method'
     }, status=405)
 
+@staff_member_required
+def download_subscribers_csv(request):
+    """Download all subscribers as a CSV file"""
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="lamla_ai_newsletter_subscribers.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Email', 'Date Subscribed', 'Status', 'Subscription Date'])
+
+    for subscriber in Subscription.objects.all().order_by('-created_at'):
+        status = 'Active' if subscriber.is_active else 'Inactive'
+        writer.writerow([
+            subscriber.email,
+            subscriber.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            status,
+            subscriber.created_at.strftime('%Y-%m-%d')
+        ])
+
+    return response
+
 @login_required
 def user_profile(request):
     """User profile view for viewing and editing profile information"""
@@ -1219,23 +1240,58 @@ def view_subscribers(request):
     return render(request, 'slides_analyzer/subscribers.html', context)
 
 @staff_member_required
-def download_subscribers_csv(request):
-    """Download all subscribers as a CSV file"""
+def view_users(request):
+    """Admin view to see all registered users"""
+    users = User.objects.all().order_by('-date_joined')
+    # Only show users who are not soft-deleted
+    filtered_users = [u for u in users if not hasattr(u, 'profile') or not u.profile.is_deleted]
+    total_users = len(filtered_users)
+    active_users = len([u for u in filtered_users if u.is_active])
+
+    # Prepare user data for the table
+    user_data = []
+    for user in filtered_users:
+        full_name = user.get_full_name() or user.username
+        role = 'Admin' if user.is_staff or user.is_superuser else 'User'
+        two_fa = 'Enabled'  # Placeholder
+        user_data.append({
+            'id': user.id,
+            'full_name': full_name,
+            'email': user.email,
+            'role': role,
+            'status': 'Active' if user.is_active else 'Inactive',
+            'date_joined': user.date_joined,
+            'two_fa': two_fa,
+            'is_active': user.is_active,
+            'username': user.username,
+        })
+
+    context = {
+        'users': user_data,
+        'total_users': total_users,
+        'active_users': active_users,
+        'inactive_users': total_users - active_users,
+    }
+    return render(request, 'slides_analyzer/users.html', context)
+
+@staff_member_required
+def download_users_csv(request):
+    """Download all users as a CSV file"""
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="lamla_ai_newsletter_subscribers.csv"'
-    
+    response['Content-Disposition'] = 'attachment; filename="lamla_ai_users.csv"'
+
     writer = csv.writer(response)
-    writer.writerow(['Email', 'Date Subscribed', 'Status', 'Subscription Date'])
-    
-    for subscriber in Subscription.objects.all().order_by('-created_at'):
-        status = 'Active' if subscriber.is_active else 'Inactive'
+    writer.writerow(['Username', 'Email', 'Date Joined', 'Status'])
+
+    for user in User.objects.all().order_by('-date_joined'):
+        status = 'Active' if user.is_active else 'Inactive'
         writer.writerow([
-            subscriber.email,
-            subscriber.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-            status,
-            subscriber.created_at.strftime('%Y-%m-%d')
+            user.username,
+            user.email,
+            user.date_joined.strftime('%Y-%m-%d %H:%M:%S'),
+            status
         ])
-    
+
     return response
 
 @staff_member_required
@@ -1273,6 +1329,51 @@ def get_subscribers_data(request):
         return JsonResponse({
             'success': False,
             'error': 'Failed to get subscriber data'
+        }, status=500)
+
+@staff_member_required
+def get_users_data(request):
+    """API endpoint to get user data for auto-refresh"""
+    try:
+        users = User.objects.all().order_by('-date_joined')
+        filtered_users = [u for u in users if not hasattr(u, 'profile') or not u.profile.is_deleted]
+        total_users = len(filtered_users)
+        active_users = len([u for u in filtered_users if u.is_active])
+
+        # Format users for JSON response
+        users_data = []
+        for user in filtered_users:
+            full_name = user.get_full_name() or user.username
+            role = 'Admin' if user.is_staff or user.is_superuser else 'User'
+            two_fa = 'Enabled'  # Placeholder
+            users_data.append({
+                'id': user.id,
+                'full_name': full_name,
+                'email': user.email,
+                'role': role,
+                'status': 'Active' if user.is_active else 'Inactive',
+                'date_joined': user.date_joined.strftime('%b %d, %Y %H:%M'),
+                'two_fa': two_fa,
+                'is_active': user.is_active,
+                'username': user.username,
+            })
+
+        stats = {
+            'total_users': total_users,
+            'active_users': active_users,
+            'inactive_users': total_users - active_users,
+        }
+
+        return JsonResponse({
+            'success': True,
+            'users': users_data,
+            'stats': stats
+        })
+    except Exception as e:
+        logger.error(f"Error getting users data: {e}")
+        return JsonResponse({
+            'success': False,
+            'error': 'Failed to get user data'
         }, status=500)
 
 @csrf_exempt
@@ -1323,6 +1424,38 @@ def toggle_subscription_status(request):
         'success': False,
         'error': 'Invalid request method'
     }, status=405)
+
+@staff_member_required
+@require_POST
+def delete_user(request):
+    """Soft-delete a user/admin by setting is_deleted=True on their profile."""
+    import json
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        user_id = data.get('user_id')
+        user = User.objects.get(id=user_id)
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        profile.is_deleted = True
+        profile.save()
+        return JsonResponse({'success': True, 'message': f'User {user.username} deleted.','user_id': user_id})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=400)
+
+@staff_member_required
+@require_POST
+def restore_user(request):
+    """Restore a soft-deleted user/admin by setting is_deleted=False on their profile."""
+    import json
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        user_id = data.get('user_id')
+        user = User.objects.get(id=user_id)
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        profile.is_deleted = False
+        profile.save()
+        return JsonResponse({'success': True, 'message': f'User {user.username} restored.','user_id': user_id})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=400)
 
 DATABASES = {
     'default': dj_database_url.config(default='sqlite:///db.sqlite3')
@@ -1530,3 +1663,57 @@ def chatbot_support_request(request):
         'status': 'error',
         'message': 'Invalid request method'
     }, status=405)
+
+@staff_member_required
+def view_deleted_users(request):
+    """Admin view to see all soft-deleted users/admins"""
+    users = User.objects.all().order_by('-date_joined')
+    deleted_users = [u for u in users if hasattr(u, 'profile') and u.profile.is_deleted]
+    total_deleted = len(deleted_users)
+    user_data = []
+    for user in deleted_users:
+        full_name = user.get_full_name() or user.username
+        role = 'Admin' if user.is_staff or user.is_superuser else 'User'
+        two_fa = 'Enabled'  # Placeholder
+        user_data.append({
+            'id': user.id,
+            'full_name': full_name,
+            'email': user.email,
+            'role': role,
+            'status': 'Active' if user.is_active else 'Inactive',
+            'date_joined': user.date_joined,
+            'two_fa': two_fa,
+            'is_active': user.is_active,
+            'username': user.username,
+        })
+    context = {
+        'users': user_data,
+        'total_deleted': total_deleted,
+    }
+    return render(request, 'slides_analyzer/deleted_users.html', context)
+
+@staff_member_required
+def get_deleted_users_data(request):
+    """API endpoint to get deleted user data for auto-refresh"""
+    try:
+        users = User.objects.all().order_by('-date_joined')
+        deleted_users = [u for u in users if hasattr(u, 'profile') and u.profile.is_deleted]
+        user_data = []
+        for user in deleted_users:
+            full_name = user.get_full_name() or user.username
+            role = 'Admin' if user.is_staff or user.is_superuser else 'User'
+            two_fa = 'Enabled'  # Placeholder
+            user_data.append({
+                'id': user.id,
+                'full_name': full_name,
+                'email': user.email,
+                'role': role,
+                'status': 'Active' if user.is_active else 'Inactive',
+                'date_joined': user.date_joined.strftime('%b %d, %Y %H:%M'),
+                'two_fa': two_fa,
+                'is_active': user.is_active,
+                'username': user.username,
+            })
+        return JsonResponse({'success': True, 'users': user_data})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)

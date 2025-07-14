@@ -1,0 +1,751 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Manage Users - Lamla AI{% endblock %}
+
+{% block content %}
+<div class="subscribers-container">
+    <!-- Header Section -->
+    <div class="subscribers-header">
+        <div class="header-content">
+            <h1 class="header-title">
+                <span class="username-highlight">Manage</span> 
+                <span class="hello-yellow ">Users</span>
+            </h1>
+            <p class="header-subtitle">View and manage all registered users</p>
+        </div>
+        <div class="header-actions">
+            <button id="refreshUsersBtn" class="refresh-btn" onclick="refreshUserList()">
+                <i class="fas fa-sync-alt"></i>
+                Refresh
+            </button>
+            <button id="autoRefreshUsersToggle" class="auto-refresh-toggle" onclick="toggleUsersAutoRefresh()">
+                <i class="fas fa-pause"></i>
+                Auto-refresh: OFF
+            </button>
+            <a href="{% url 'download_users_csv' %}" class="download-btn">
+                <i class="fas fa-download"></i>
+                Download CSV
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3 id="totalUsers">{{ total_users }}</h3>
+                <p>Total Users</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon active">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <div class="stat-content">
+                <h3 id="activeUsers">{{ active_users }}</h3>
+                <p>Active Users</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon inactive">
+                <i class="fas fa-user-times"></i>
+            </div>
+            <div class="stat-content">
+                <h3 id="inactiveUsers">{{ inactive_users }}</h3>
+                <p>Inactive Users</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="users-toolbar" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <input type="text" id="userSearch" placeholder="Search users..." style="padding: 8px 12px; border-radius: 6px; border: 1px solid #e9ecef; font-size: 1rem;">
+            <select id="roleFilter" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #e9ecef; font-size: 1rem;">
+                <option value="">All Roles</option>
+                <option value="User">User</option>
+                <option value="Admin">Admin</option>
+            </select>
+            <select id="statusFilter" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #e9ecef; font-size: 1rem;">
+                <option value="">All Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+        </div>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="download-btn" onclick="window.location.href='{% url 'download_users_csv' %}'"><i class="fas fa-download"></i> Export</button>
+            <button class="download-btn" style="background: #007bff; color: #fff;"><i class="fas fa-user-plus"></i> Add User</button>
+            <a href="{% url 'view_deleted_users' %}" class="download-btn" style="background: #dc3545; color: #fff;"><i class="fas fa-user-times"></i> Deleted Users</a>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="subscribers-table-container">
+        <div class="table-header">
+            <h2>Recent Users</h2>
+            <div class="auto-refresh-status">
+                <span id="lastUsersUpdated">Last updated: Just now</span>
+                <span id="autoUsersRefreshStatus" class="auto-refresh-indicator">
+                    <i class="fas fa-hand-paper"></i> Manual refresh mode
+                </span>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <table class="subscribers-table" id="usersTable">
+                <thead>
+                    <tr>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Joined Date</th>
+                        <th>2FA</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    {% for user in users %}
+                    <tr data-user-id="{{ user.id }}">
+                        <td>{{ user.full_name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>
+                            <span class="status-badge {% if user.is_active %}active{% else %}inactive{% endif %}">
+                                {{ user.status }}
+                            </span>
+                        </td>
+                        <td>{{ user.date_joined|date:"M d, Y H:i" }}</td>
+                        <td>
+                            <span class="status-badge active" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">{{ user.two_fa }}</span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                                <button class="action-btn view-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="no-data">No users found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+let autoUsersRefreshInterval = null;
+let autoUsersRefreshEnabled = false;
+let lastUserCount = {{ total_users }};
+
+function updateLastUsersUpdated() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    document.getElementById('lastUsersUpdated').textContent = `Last updated: ${timeString}`;
+}
+function toggleUsersAutoRefresh() {
+    const toggleBtn = document.getElementById('autoRefreshUsersToggle');
+    const statusSpan = document.getElementById('autoUsersRefreshStatus');
+    if (autoUsersRefreshEnabled) {
+        stopUsersAutoRefresh();
+        toggleBtn.innerHTML = '<i class="fas fa-pause"></i> Auto-refresh: OFF';
+        toggleBtn.className = 'auto-refresh-toggle off';
+        statusSpan.innerHTML = '<i class="fas fa-hand-paper"></i> Manual refresh mode';
+        autoUsersRefreshEnabled = false;
+    } else {
+        startUsersAutoRefresh();
+        toggleBtn.innerHTML = '<i class="fas fa-play"></i> Auto-refresh: ON';
+        toggleBtn.className = 'auto-refresh-toggle on';
+        statusSpan.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i> Auto-refreshing every 30s';
+        autoUsersRefreshEnabled = true;
+    }
+}
+function startUsersAutoRefresh() {
+    autoUsersRefreshInterval = setInterval(refreshUserList, 30000);
+}
+function stopUsersAutoRefresh() {
+    if (autoUsersRefreshInterval) {
+        clearInterval(autoUsersRefreshInterval);
+        autoUsersRefreshInterval = null;
+    }
+}
+function refreshUserList() {
+    const refreshBtn = document.getElementById('refreshUsersBtn');
+    const originalText = refreshBtn.innerHTML;
+    refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+    refreshBtn.disabled = true;
+    fetch('/users/data/', {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            updateUsersTable(data.users);
+            updateUsersStatistics(data.stats);
+            if (data.stats.total_users > lastUserCount) {
+                showNewUserNotification(data.stats.total_users - lastUserCount);
+                lastUserCount = data.stats.total_users;
+            }
+            updateLastUsersUpdated();
+        } else {
+            console.error('Failed to refresh user list:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error refreshing user list:', error);
+    })
+    .finally(() => {
+        refreshBtn.innerHTML = originalText;
+        refreshBtn.disabled = false;
+    });
+}
+function attachDeleteHandlers() {
+    document.querySelectorAll('.action-btn.view-btn').forEach(btn => {
+        btn.onclick = function() {
+            const row = btn.closest('tr');
+            const userId = row.getAttribute('data-user-id');
+            if (!userId) {
+                console.error('Delete: No userId found for row', row);
+                alert('Delete failed: No user ID found.');
+                return;
+            }
+            fetch('/users/delete/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({user_id: userId})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    row.style.display = 'none';
+                    showUndoToast(userId, row);
+                } else {
+                    console.error('Delete failed:', data.message);
+                    alert('Delete failed: ' + data.message);
+                }
+            })
+            .catch(err => {
+                console.error('Delete AJAX error:', err);
+                alert('Delete failed: AJAX error.');
+            });
+        };
+    });
+    document.querySelectorAll('.action-btn.edit-btn').forEach(btn => {
+        btn.onclick = function() {
+            const row = btn.closest('tr');
+            const userId = row.getAttribute('data-user-id');
+            if (!userId) {
+                console.error('Edit: No userId found for row', row);
+                alert('Edit failed: No user ID found.');
+                return;
+            }
+            window.open(`/admin/auth/user/${userId}/change/`, '_blank');
+        };
+    });
+}
+function showUndoToast(userId, row) {
+    const toast = document.createElement('div');
+    toast.className = 'new-subscriber-notification';
+    toast.innerHTML = `<i class='fas fa-undo'></i> User deleted. <button style='margin-left:10px;' class='undo-btn'>Undo</button>`;
+    document.body.appendChild(toast);
+    toast.querySelector('.undo-btn').onclick = function() {
+        fetch('/users/restore/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify({user_id: userId})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                row.style.display = '';
+                toast.remove();
+            } else {
+                alert('Restore failed: ' + data.message);
+            }
+        });
+    };
+    setTimeout(() => { toast.remove(); }, 7000);
+}
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+function updateUsersTable(users) {
+    const tbody = document.getElementById('usersTableBody');
+    if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="no-data">No users found</td></tr>';
+        return;
+    }
+    tbody.innerHTML = users.map(user => `
+        <tr data-user-id="${user.id}">
+            <td>${user.full_name}</td>
+            <td>${user.email}</td>
+            <td>${user.role}</td>
+            <td>
+                <span class="status-badge ${user.is_active ? 'active' : 'inactive'}">
+                    ${user.status}
+                </span>
+            </td>
+            <td>${user.date_joined}</td>
+            <td>
+                <span class="status-badge active" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">${user.two_fa}</span>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
+                    <button class="action-btn view-btn" title="Delete"><i class="fas fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+    attachDeleteHandlers();
+}
+function updateUsersStatistics(stats) {
+    document.getElementById('totalUsers').textContent = stats.total_users;
+    document.getElementById('activeUsers').textContent = stats.active_users;
+    document.getElementById('inactiveUsers').textContent = stats.inactive_users;
+}
+function showNewUserNotification(count) {
+    const notification = document.createElement('div');
+    notification.className = 'new-subscriber-notification';
+    notification.innerHTML = `
+        <i class="fas fa-user-plus"></i>
+        <span>${count} new user${count > 1 ? 's' : ''} added!</span>
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+function applyUserFilters() {
+    const searchValue = document.getElementById('userSearch').value.toLowerCase();
+    const roleValue = document.getElementById('roleFilter').value;
+    const statusValue = document.getElementById('statusFilter').value;
+    const rows = document.querySelectorAll('#usersTableBody tr');
+    rows.forEach(row => {
+        const fullName = row.children[0]?.textContent.toLowerCase() || '';
+        const email = row.children[1]?.textContent.toLowerCase() || '';
+        const role = row.children[2]?.textContent.trim();
+        const status = row.children[3]?.textContent.trim();
+        let show = true;
+        if (searchValue && !(fullName.includes(searchValue) || email.includes(searchValue))) {
+            show = false;
+        }
+        if (roleValue && role !== roleValue) {
+            show = false;
+        }
+        if (statusValue && status !== statusValue) {
+            show = false;
+        }
+        row.style.display = show ? '' : 'none';
+    });
+}
+document.getElementById('userSearch').addEventListener('input', applyUserFilters);
+document.getElementById('roleFilter').addEventListener('change', applyUserFilters);
+document.getElementById('statusFilter').addEventListener('change', applyUserFilters);
+</script>
+
+<style>
+/* --- Begin copied styles from subscribers.html for perfect match --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+:root {
+    --primary-color: #FFD600;
+    --secondary-color: #222;
+    --text-color: #333;
+    --text-muted: #666;
+    --background-color: #f8f9fa;
+    --card-background: #ffffff;
+    --border-color: #e9ecef;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+}
+.subscribers-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: 'Poppins', sans-serif;
+}
+.subscribers-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding: 30px;
+    background: linear-gradient(135deg, var(--card-background), #f8f9fa);
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+.header-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+    line-height: 1.2;
+}
+.hello-yellow {
+    color: var(--primary-color);
+}
+.username-highlight {
+    color: var(--secondary-color);
+}
+.header-subtitle {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin: 0;
+}
+.download-btn {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    border: none;
+    border-radius: 12px;
+    padding: 15px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 214, 0, 0.3);
+}
+.download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
+    color: var(--secondary-color);
+    text-decoration: none;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+.stat-card {
+    background: var(--card-background);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+}
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+.stat-card.active {
+    border-left: 4px solid var(--success-color);
+}
+.stat-card.inactive {
+    border-left: 4px solid var(--warning-color);
+}
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    background: var(--primary-color);
+}
+.stat-card.active .stat-icon {
+    background: var(--success-color);
+}
+.stat-card.inactive .stat-icon {
+    background: var(--warning-color);
+}
+.stat-content h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+    color: var(--text-color);
+}
+.stat-content p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.subscribers-table-container {
+    background: var(--card-background);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 30px;
+    border-bottom: 1px solid var(--border-color);
+    background: #f8f9fa;
+}
+.table-header h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.subscriber-count {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.table-responsive {
+    overflow-x: auto;
+}
+.subscribers-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.subscribers-table th {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-color);
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+.subscribers-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
+    vertical-align: middle;
+}
+.subscribers-table tr:hover {
+    background: #f8f9fa;
+}
+.active-row {
+    background: rgba(40, 167, 69, 0.02);
+}
+.inactive-row {
+    background: rgba(255, 193, 7, 0.02);
+}
+.email-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.email-info i {
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+.date-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.date {
+    font-weight: 500;
+    color: var(--text-color);
+}
+.time {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+.status-badge.active {
+    background: rgba(40, 167, 69, 0.1);
+    color: var(--success-color);
+}
+.status-badge.inactive {
+    background: rgba(255, 193, 7, 0.1);
+    color: var(--warning-color);
+}
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+.action-btn {
+    width: 35px;
+    height: 35px;
+    border: none;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+.view-btn {
+    background: rgba(23, 162, 184, 0.1);
+    color: var(--info-color);
+}
+.view-btn:hover {
+    background: var(--info-color);
+    color: white;
+}
+.edit-btn {
+    background: rgba(255, 214, 0, 0.1);
+    color: var(--primary-color);
+}
+.edit-btn:hover {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+}
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+.empty-icon {
+    font-size: 4rem;
+    color: var(--border-color);
+    margin-bottom: 20px;
+}
+.empty-state h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+.empty-state p {
+    margin: 0;
+    font-size: 1rem;
+}
+@media (max-width: 768px) {
+    .subscribers-container {
+        padding: 20px 15px;
+    }
+    .subscribers-header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    .header-title {
+        font-size: 2rem;
+    }
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    .table-header {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    .subscribers-table th,
+    .subscribers-table td {
+        padding: 12px 15px;
+        font-size: 0.85rem;
+    }
+    .action-buttons {
+        flex-direction: column;
+        gap: 5px;
+    }
+    .action-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+}
+@media (max-width: 480px) {
+    .subscribers-table {
+        font-size: 0.8rem;
+    }
+    .email-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    .date-info {
+        font-size: 0.8rem;
+    }
+}
+.auto-refresh-status {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 0.9em;
+    color: #666;
+}
+.auto-refresh-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #28a745;
+}
+.refresh-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+}
+.refresh-btn:hover {
+    background: #0056b3;
+}
+.refresh-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+.auto-refresh-toggle {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9em;
+    transition: background-color 0.3s;
+}
+.auto-refresh-toggle.on {
+    background: #28a745;
+}
+.auto-refresh-toggle.off {
+    background: #6c757d;
+}
+</style>
+{% endblock %} 

@@ -46,6 +46,7 @@ class ChatbotService:
 
     def clean_markdown(self, text):
         """Remove markdown symbols and fix indentation for lists."""
+        import re
         # Remove bold, italics, headings
         text = re.sub(r'\*\*(.*?)\*\*', r'\1', text)
         text = re.sub(r'__(.*?)__', r'\1', text)
@@ -53,10 +54,13 @@ class ChatbotService:
         text = re.sub(r'`([^`]*)`', r'\1', text)
         # Remove extra asterisks and underscores
         text = text.replace('*', '').replace('_', '')
-        # Fix numbered list indentation
+        # Fix numbered list indentation (4 spaces)
         text = re.sub(r'^(\d+)\.\s*', r'    \1. ', text, flags=re.MULTILINE)
-        # Fix bullet list indentation
+        # Fix bullet list indentation (4 spaces)
         text = re.sub(r'^[-•]\s*', '    • ', text, flags=re.MULTILINE)
+        # Indent sub-lists (detect lines that start with whitespace and a bullet/number)
+        text = re.sub(r'^(\s+)(\d+\.\s+)', lambda m: '    ' * (len(m.group(1)) // 4 + 1) + m.group(2), text, flags=re.MULTILINE)
+        text = re.sub(r'^(\s+)[•-]\s+', lambda m: '    ' * (len(m.group(1)) // 4 + 1) + '• ', text, flags=re.MULTILINE)
         # Remove extra spaces at line start
         text = re.sub(r'^\s+', '', text, flags=re.MULTILINE)
         # Remove multiple blank lines

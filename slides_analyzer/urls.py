@@ -15,6 +15,7 @@ urlpatterns = [
     path('flashcards/', views.flashcards, name='flashcards'),
     path('test-token/', views.test_token, name='test_token'),
     path('test-flashcard/', views.test_flashcard_generator, name='test_flashcard_generator'),
+    path('test-chatbot/', views.test_chatbot, name='test_chatbot'),
     path('about/', views.about, name='about'),
     path('ajax/extract-text/', views.ajax_extract_text, name='ajax_extract_text'),
     path('ajax/submit-feedback/', views.submit_feedback, name='submit_feedback'),

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #FFD600;
+            color: #222;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .test-button:hover {
+            background: #e6c200;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f8f9fa;
+            border-left: 4px solid #FFD600;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Chatbot Test Page</h1>
+        <p>This page tests the chatbot functionality to ensure it's working properly.</p>
+        
+        <h2>Test Results:</h2>
+        <div id="test-results"></div>
+        
+        <h2>Manual Tests:</h2>
+        <button class="test-button" onclick="testSuggestions()">Test Suggestions API</button>
+        <button class="test-button" onclick="testMessage()">Test Message API</button>
+        <button class="test-button" onclick="checkChatbotVisibility()">Check Chatbot Visibility</button>
+        
+        <div id="manual-results"></div>
+    </div>
+
+    <script>
+        function addResult(message, type = 'info') {
+            const results = document.getElementById('test-results');
+            const div = document.createElement('div');
+            div.className = 'result';
+            div.style.borderLeftColor = type === 'error' ? '#dc3545' : type === 'success' ? '#28a745' : '#FFD600';
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            results.appendChild(div);
+        }
+
+        function addManualResult(message, type = 'info') {
+            const results = document.getElementById('manual-results');
+            const div = document.createElement('div');
+            div.className = 'result';
+            div.style.borderLeftColor = type === 'error' ? '#dc3545' : type === 'success' ? '#28a745' : '#FFD600';
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            results.appendChild(div);
+        }
+
+        // Test suggestions API
+        async function testSuggestions() {
+            try {
+                const response = await fetch('/api/chatbot/suggestions/');
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.suggestions) {
+                    addManualResult(`✅ Suggestions API working! Found ${data.suggestions.length} suggestions.`, 'success');
+                    console.log('Suggestions:', data.suggestions);
+                } else {
+                    addManualResult(`❌ Suggestions API failed: ${data.message || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                addManualResult(`❌ Suggestions API error: ${error.message}`, 'error');
+            }
+        }
+
+        // Test message API
+        async function testMessage() {
+            try {
+                const response = await fetch('/api/chatbot/message/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        message: 'Hello, this is a test message',
+                        session_id: 'test_session_' + Date.now()
+                    })
+                });
+                const data = await response.json();
+                
+                if (data.status === 'success' && data.response) {
+                    addManualResult(`✅ Message API working! Response: "${data.response.substring(0, 50)}..."`, 'success');
+                    console.log('Full response:', data.response);
+                } else {
+                    addManualResult(`❌ Message API failed: ${data.message || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                addManualResult(`❌ Message API error: ${error.message}`, 'error');
+            }
+        }
+
+        // Check chatbot visibility
+        function checkChatbotVisibility() {
+            const chatbotContainer = document.getElementById('chatbot-container');
+            const chatbotToggle = document.getElementById('chatbot-toggle');
+            
+            if (chatbotContainer) {
+                const rect = chatbotContainer.getBoundingClientRect();
+                const isVisible = rect.width > 0 && rect.height > 0;
+                addManualResult(`✅ Chatbot container found. Visible: ${isVisible}. Position: ${rect.top},${rect.left}`, 'success');
+            } else {
+                addManualResult(`❌ Chatbot container not found!`, 'error');
+            }
+            
+            if (chatbotToggle) {
+                addManualResult(`✅ Chatbot toggle button found.`, 'success');
+            } else {
+                addManualResult(`❌ Chatbot toggle button not found!`, 'error');
+            }
+        }
+
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Run initial tests
+        window.addEventListener('load', function() {
+            addResult('Page loaded successfully');
+            checkChatbotVisibility();
+        });
+    </script>
+</body>
+</html> 

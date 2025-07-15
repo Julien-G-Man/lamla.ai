@@ -412,3 +412,13 @@ class QuestionGenerator:
         if current_short:
             questions["short_questions"].append(current_short)
         return questions 
+
+# Create a global instance and function for backward compatibility
+question_generator = QuestionGenerator()
+
+def generate_questions_from_text(text: str, num_mcq: int = 3, num_short: int = 2) -> Dict[str, List[Dict]]:
+    """
+    Generate questions from text using the QuestionGenerator instance.
+    This function provides backward compatibility for existing code.
+    """
+    return question_generator.generate_questions(text, num_mcq, num_short) 

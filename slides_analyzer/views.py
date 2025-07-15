@@ -227,7 +227,10 @@ def test_token(request):
     return HttpResponse('test_token stub')
 
 def test_flashcard_generator(request):
-    return HttpResponse('test_flashcard_generator stub')
+    return render(request, 'slides_analyzer/test_flashcard_generator.html')
+
+def test_chatbot(request):
+    return render(request, 'test_chatbot.html')
 
 def about(request):
     return render(request, 'slides_analyzer/about.html')
@@ -524,13 +527,189 @@ def get_deleted_users_data(request):
     return JsonResponse({'result': 'get_deleted_users_data stub'})
 
 def chatbot_support_request(request):
-    return JsonResponse({'result': 'chatbot_support_request stub'})
+    """Handle support request from chatbot"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            name = data.get('name', '').strip()
+            email = data.get('email', '').strip()
+            subject = data.get('subject', '').strip()
+            message = data.get('message', '').strip()
+            
+            # Validate required fields
+            if not all([name, email, subject, message]):
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'All fields are required.'
+                })
+            
+            # Save to Contact model
+            Contact.objects.create(
+                name=name,
+                email=email,
+                subject=subject,
+                message=message
+            )
+            
+            # Send notification to admin
+            admin_subject = f"Chatbot Support Request: {subject}"
+            admin_body = f"Name: {name}\nEmail: {email}\nSubject: {subject}\n\nMessage:\n{message}"
+            admin_recipient = getattr(settings, 'WELCOME_EMAIL_HOST_USER', 'juliengmanana@gmail.com')
+            
+            try:
+                send_email(
+                    subject=admin_subject,
+                    message=admin_body,
+                    recipient_list=[admin_recipient],
+                    from_email='lamlaaiteam@gmail.com',
+                )
+            except Exception as e:
+                logger.error(f"Chatbot support request admin email error: {e}")
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'Your support request has been sent successfully! We will get back to you soon.'
+            })
+            
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid request data.'
+            })
+        except Exception as e:
+            logger.error(f"Chatbot support request error: {e}")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'An error occurred while sending your request.'
+            })
+    
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Invalid request method.'
+    })
 
 def chatbot_message(request):
-    return JsonResponse({'result': 'chatbot_message stub'})
+    """Handle chatbot message and generate response"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            message = data.get('message', '').strip()
+            session_id = data.get('session_id', '')
+            
+            if not message:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Message is required.'
+                })
+            
+            # Save user message to database
+            user = request.user if request.user.is_authenticated else None
+            ChatMessage.objects.create(
+                user=user,
+                session_id=session_id,
+                message_type='user',
+                content=message
+            )
+            
+            # Get conversation history for context
+            conversation_history = []
+            if session_id:
+                recent_messages = ChatMessage.objects.filter(
+                    session_id=session_id
+                ).order_by('-created_at')[:12]  # Last 12 messages
+                conversation_history = [
+                    {
+                        'message_type': msg.message_type,
+                        'content': msg.content
+                    }
+                    for msg in reversed(recent_messages)  # Reverse to get chronological order
+                ]
+            
+            # Generate response using chatbot service
+            response = chatbot_service.generate_response(message, conversation_history)
+            
+            # Save bot response to database
+            ChatMessage.objects.create(
+                user=user,
+                session_id=session_id,
+                message_type='bot',
+                content=response
+            )
+            
+            return JsonResponse({
+                'status': 'success',
+                'response': response
+            })
+            
+        except json.JSONDecodeError:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Invalid request data.'
+            })
+        except Exception as e:
+            logger.error(f"Chatbot message error: {e}")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'An error occurred while processing your message.'
+            })
+    
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Invalid request method.'
+    })
 
 def chatbot_suggestions(request):
-    return JsonResponse({'result': 'chatbot_suggestions stub'})
+    """Get suggested questions for the chatbot"""
+    try:
+        suggestions = chatbot_service.get_suggested_questions()
+        return JsonResponse({
+            'status': 'success',
+            'suggestions': suggestions
+        })
+    except Exception as e:
+        logger.error(f"Chatbot suggestions error: {e}")
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Failed to load suggestions.'
+        })
 
 def chatbot_history(request):
-    return JsonResponse({'result': 'chatbot_history stub'})
+    """Get chat history for a session"""
+    if request.method == 'GET':
+        session_id = request.GET.get('session_id', '')
+        if not session_id:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Session ID is required.'
+            })
+        
+        try:
+            messages = ChatMessage.objects.filter(
+                session_id=session_id
+            ).order_by('created_at')
+            
+            history = [
+                {
+                    'message_type': msg.message_type,
+                    'content': msg.content,
+                    'created_at': msg.created_at.isoformat()
+                }
+                for msg in messages
+            ]
+            
+            return JsonResponse({
+                'status': 'success',
+                'history': history
+            })
+            
+        except Exception as e:
+            logger.error(f"Chatbot history error: {e}")
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Failed to load chat history.'
+            })
+    
+    return JsonResponse({
+        'status': 'error',
+        'message': 'Invalid request method.'
+    })

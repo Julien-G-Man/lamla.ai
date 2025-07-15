@@ -15,7 +15,7 @@ def send_welcome_email(sender, instance, created, **kwargs):
     """
     if created and instance.email:
         # Send welcome email from juliengmanana@gmail.com
-        subject = "Welcome to LAMLA AI! 🎉"
+        subject = "[Lamla AI] Welcome to LAMLA AI! 🎉"
         
         # Create welcome email content
         context = {
@@ -45,7 +45,7 @@ def send_welcome_email_after_confirmation(request, email_address, **kwargs):
     """
     user = email_address.user
     if user and user.email:
-        subject = "Welcome to LAMLA AI! 🎉"
+        subject = "[Lamla AI] Welcome to LAMLA AI! 🎉"
         context = {
             'user': user,
             'site_name': 'LAMLA AI',

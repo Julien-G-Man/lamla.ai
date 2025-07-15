@@ -3,6 +3,8 @@ from django.core.mail import EmailMessage, EmailMultiAlternatives
 from django.conf import settings
 import os
 import logging
+import smtplib
+import ssl
 
 
 class CustomEmailBackend(SMTPEmailBackend):
@@ -25,19 +27,8 @@ class CustomEmailBackend(SMTPEmailBackend):
                 
                 logger.info(f"Using SMTP config for subject '{message.subject}': {smtp_config['username']}")
                 
-                # Create a new backend with the appropriate SMTP settings
-                backend = SMTPEmailBackend(
-                    host=smtp_config['host'],
-                    port=smtp_config['port'],
-                    username=smtp_config['username'],
-                    password=smtp_config['password'],
-                    use_tls=smtp_config['use_tls'],
-                    fail_silently=getattr(message, 'fail_silently', False)
-                )
-                
-                # Send the message using the appropriate backend
-                backend.send_messages([message])
-                backend.close()
+                # Send using direct SMTP connection
+                self._send_with_smtp_config(message, smtp_config)
                 
                 logger.info(f"Email sent successfully via {smtp_config['username']}")
                 
@@ -46,24 +37,76 @@ class CustomEmailBackend(SMTPEmailBackend):
                 if not getattr(message, 'fail_silently', False):
                     raise
     
+    def _send_with_smtp_config(self, message, smtp_config):
+        """
+        Send email using the specified SMTP configuration.
+        """
+        logger = logging.getLogger(__name__)
+        logger.info(f"Attempting to send email with username: {smtp_config['username']}")
+        logger.info(f"Password length: {len(smtp_config['password'])} characters")
+        
+        # Convert EmailMultiAlternatives to EmailMessage to avoid get_all() compatibility issue
+        if hasattr(message, 'alternatives') and message.alternatives:
+            # Create a new EmailMessage with the HTML content
+            html_content = message.alternatives[0][0]
+            email_message = EmailMessage(
+                subject=message.subject,
+                body=html_content,
+                from_email=message.from_email,
+                to=message.to,
+                headers=message.extra_headers
+            )
+            email_message.content_subtype = "html"
+        else:
+            # Use the original message if no alternatives
+            email_message = message
+        
+        if smtp_config.get('use_ssl', False):
+            # Use SSL connection
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL(smtp_config['host'], smtp_config['port'], context=context) as server:
+                server.login(smtp_config['username'], smtp_config['password'])
+                server.sendmail(
+                    email_message.from_email,
+                    email_message.to,
+                    email_message.message().as_string()
+                )
+        else:
+            # Use TLS connection
+            with smtplib.SMTP(smtp_config['host'], smtp_config['port']) as server:
+                server.starttls()
+                server.login(smtp_config['username'], smtp_config['password'])
+                server.sendmail(
+                    email_message.from_email,
+                    email_message.to,
+                    email_message.message().as_string()
+                )
+    
     def _get_smtp_config_for_message(self, message):
         """
         Determine the appropriate SMTP configuration based on the message content.
         """
         subject = message.subject.lower() if message.subject else ""
         
+        # Add debug logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Determining SMTP config for subject: '{subject}'")
+        
         # Email confirmations and password resets - use lamlaaiteam@gmail.com SMTP
         if any(keyword in subject for keyword in [
             'confirm', 'verification', 'verify', 'password reset', 
             'password change', 'reset password', 'change password', 'reset request'
         ]):
-            return {
+            config = {
                 'host': 'smtp.gmail.com',
-                'port': 587,
+                'port': 465,
                 'username': getattr(settings, 'AUTH_EMAIL_HOST_USER', 'lamlaaiteam@gmail.com'),
                 'password': getattr(settings, 'AUTH_EMAIL_HOST_PASSWORD', ''),
-                'use_tls': True
+                'use_tls': False,
+                'use_ssl': True
             }
+            logger.info(f"Using AUTH config: {config['username']}")
+            return config
         
         # Welcome emails and general notifications - use juliengmanana@gmail.com SMTP
         elif any(keyword in subject for keyword in [
@@ -72,10 +115,11 @@ class CustomEmailBackend(SMTPEmailBackend):
         ]) and 'newsletter' not in subject and 'subscription' not in subject:
             return {
                 'host': 'smtp.gmail.com',
-                'port': 587,
+                'port': 465,
                 'username': getattr(settings, 'WELCOME_EMAIL_HOST_USER', 'juliengmanana@gmail.com'),
                 'password': getattr(settings, 'WELCOME_EMAIL_HOST_PASSWORD', ''),
-                'use_tls': True
+                'use_tls': False,
+                'use_ssl': True
             }
         
         # Newsletter subscription notifications - use juliengmanana@gmail.com SMTP
@@ -84,10 +128,11 @@ class CustomEmailBackend(SMTPEmailBackend):
         ]) and 'welcome' not in subject:
             return {
                 'host': 'smtp.gmail.com',
-                'port': 587,
+                'port': 465,
                 'username': getattr(settings, 'WELCOME_EMAIL_HOST_USER', 'juliengmanana@gmail.com'),
                 'password': getattr(settings, 'WELCOME_EMAIL_HOST_PASSWORD', ''),
-                'use_tls': True
+                'use_tls': False,
+                'use_ssl': True
             }
         
         # Contact form submissions - use lamlaaiteam@gmail.com SMTP
@@ -96,20 +141,22 @@ class CustomEmailBackend(SMTPEmailBackend):
         ]):
             return {
                 'host': 'smtp.gmail.com',
-                'port': 587,
+                'port': 465,
                 'username': getattr(settings, 'AUTH_EMAIL_HOST_USER', 'lamlaaiteam@gmail.com'),
                 'password': getattr(settings, 'AUTH_EMAIL_HOST_PASSWORD', ''),
-                'use_tls': True
+                'use_tls': False,
+                'use_ssl': True
             }
         
         # Default to lamlaaiteam@gmail.com SMTP for security-related emails
         else:
             return {
                 'host': 'smtp.gmail.com',
-                'port': 587,
+                'port': 465,
                 'username': getattr(settings, 'AUTH_EMAIL_HOST_USER', 'lamlaaiteam@gmail.com'),
                 'password': getattr(settings, 'AUTH_EMAIL_HOST_PASSWORD', ''),
-                'use_tls': True
+                'use_tls': False,
+                'use_ssl': True
             }
     
     def _get_from_email_for_message(self, message):
@@ -171,9 +218,9 @@ def send_email(subject, message, recipient_list, from_email=None, html_message=N
                 **kwargs
             )
         
-        # Use the custom backend to send the email
+        # Use the custom backend explicitly
         from django.core.mail import get_connection
-        connection = get_connection()
+        connection = get_connection(backend='slides_analyzer.email_backend.CustomEmailBackend')
         connection.send_messages([email])
         connection.close()
         

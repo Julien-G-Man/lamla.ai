@@ -418,4 +418,14 @@ class FlashcardGenerator:
 
         except Exception as e:
             logger.error(f"Error generating process flashcards: {e}")
-            return {"error": f"Failed to generate process flashcards: {str(e)}"} 
+            return {"error": f"Failed to generate process flashcards: {str(e)}"}
+
+# Create a global instance and function for backward compatibility
+flashcard_generator = FlashcardGenerator()
+
+def generate_flashcards_from_text(text: str, num_flashcards: int = 10):
+    """
+    Generate flashcards from text using the FlashcardGenerator instance.
+    This function provides backward compatibility for existing code.
+    """
+    return flashcard_generator.generate_flashcards(text, num_flashcards) 

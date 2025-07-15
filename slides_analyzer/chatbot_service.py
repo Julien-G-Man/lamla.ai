@@ -225,4 +225,7 @@ What would you like to know about today?"""
             "How do I manage my profile?",
             "How does the feedback system work?",
             "How can I get help and support?"
-        ] 
+        ]
+
+# Create a global instance of the chatbot service
+chatbot_service = ChatbotService() 

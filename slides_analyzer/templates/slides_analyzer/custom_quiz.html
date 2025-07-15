@@ -634,7 +634,7 @@
         <div class="container">
             <h1 class="main-page-title">&#129504; Generate Custom Quiz</h1>
             <p class="main-page-description">Upload your study materials or paste content to create custom quiz questions.</p>
-            <form id="quizForm" method="post" enctype="multipart/form-data" action="{% url 'custom_quiz' %}">
+            <form id="quizForm" method="post" enctype="multipart/form-data" action="{% url 'generate_questions' %}">
                 {% csrf_token %}
                 <div style="margin-bottom:22px;">
                     <label for="subjectSelect" style="font-weight:600;color:var(--primary-color);font-size:1.1rem;display:flex;align-items:center;gap:8px;">

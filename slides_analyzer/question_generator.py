@@ -251,11 +251,11 @@ class QuestionGenerator:
             "short_questions": short_questions
         }
 
-    def generate_questions(self, text: str, num_mcq: int = 3, num_short: int = 2) -> Dict[str, List[Dict]]:
+    def generate_questions(self, text: str, num_mcq: int = 3, num_short: int = 2, subject: str = None) -> Dict[str, List[Dict]]:
         """
         Generate questions from the provided text, with multiple fallback options.
         """
-        prompt = self._create_prompt(text, num_mcq, num_short)
+        prompt = self._create_prompt(text, num_mcq, num_short, subject=subject)
         
         # Try different APIs in order of preference
         apis_to_try = []
@@ -416,9 +416,9 @@ class QuestionGenerator:
 # Create a global instance and function for backward compatibility
 question_generator = QuestionGenerator()
 
-def generate_questions_from_text(text: str, num_mcq: int = 3, num_short: int = 2) -> Dict[str, List[Dict]]:
+def generate_questions_from_text(text: str, num_mcq: int = 3, num_short: int = 2, subject: str = None) -> Dict[str, List[Dict]]:
     """
     Generate questions from text using the QuestionGenerator instance.
     This function provides backward compatibility for existing code.
     """
-    return question_generator.generate_questions(text, num_mcq, num_short) 
+    return question_generator.generate_questions(text, num_mcq, num_short, subject=subject) 

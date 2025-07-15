@@ -108,20 +108,25 @@ def generate_questions(request):
             error_message = 'Please provide at least 30 characters of study material.'
         else:
             try:
-                quiz_results = generate_questions_from_text(study_text, num_mcq, num_short)
+                quiz_results = generate_questions_from_text(study_text, num_mcq, num_short, subject=subject)
                 if not quiz_results or (not quiz_results.get('mcq_questions') and not quiz_results.get('short_questions')):
                     error_message = 'No questions could be generated. Please try with different or more detailed content.'
             except Exception as e:
                 logger.error(f"Quiz generation error: {e}")
                 error_message = f"Quiz generation failed: {str(e)}"
-        return render(request, 'slides_analyzer/custom_quiz.html', {
-            'quiz_results': quiz_results,
-            'error_message': error_message,
-            'subject': subject,
-            'num_mcq': num_mcq,
-            'num_short': num_short,
-            'study_text': study_text,
-        })
+        if error_message:
+            return render(request, 'slides_analyzer/custom_quiz.html', {
+                'quiz_results': quiz_results,
+                'error_message': error_message,
+                'subject': subject,
+                'num_mcq': num_mcq,
+                'num_short': num_short,
+                'study_text': study_text,
+            })
+        # Store questions in session and redirect to quiz page
+        request.session['quiz_questions'] = quiz_results
+        request.session['quiz_time'] = int(request.POST.get('quiz_time', 10))
+        return redirect('quiz')
     else:
         return render(request, 'slides_analyzer/custom_quiz.html')
 
@@ -132,10 +137,88 @@ def exam_analyzer(request):
     return render(request, 'slides_analyzer/exam_analyzer.html')
 
 def quiz(request):
-    return render(request, 'slides_analyzer/quiz.html')
+    quiz_questions = request.session.get('quiz_questions')
+    quiz_time = request.session.get('quiz_time', 10)
+    if not quiz_questions:
+        messages.error(request, 'No quiz has been generated. Please create a quiz first.')
+        return redirect('custom_quiz')
+    return render(request, 'slides_analyzer/quiz.html', {
+        'questions': quiz_questions,
+        'quiz_time': quiz_time,
+    })
 
 def quiz_results(request):
-    return render(request, 'slides_analyzer/quiz_results.html')
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body.decode('utf-8'))
+            user_answers = data.get('user_answers', {})
+            quiz_questions = request.session.get('quiz_questions', {})
+            mcq = quiz_questions.get('mcq_questions', [])
+            short = quiz_questions.get('short_questions', [])
+            all_questions = mcq + short
+            results = {
+                'total': len(all_questions),
+                'correct': 0,
+                'details': []
+            }
+            # Split user answers for MCQ and short
+            user_mcq_answers = {}
+            user_short_answers = {}
+            for idx in range(len(mcq)):
+                ans = user_answers.get(str(idx)) or user_answers.get(idx)
+                user_mcq_answers[idx] = ans
+            for idx in range(len(mcq), len(all_questions)):
+                ans = user_answers.get(str(idx)) or user_answers.get(idx)
+                user_short_answers[idx - len(mcq)] = ans
+            # Grade MCQs
+            for idx, q in enumerate(mcq):
+                user_ans = user_mcq_answers.get(idx, '').strip().upper() if user_mcq_answers.get(idx) else ''
+                correct_ans = q.get('answer', '').strip().upper()
+                correct = user_ans == correct_ans
+                results['details'].append({
+                    'question': q.get('question'),
+                    'user_answer': user_ans,
+                    'correct_answer': correct_ans,
+                    'is_correct': correct
+                })
+                if correct:
+                    results['correct'] += 1
+            # Store short answers (no grading)
+            for idx, q in enumerate(short):
+                user_ans = user_short_answers.get(idx, '')
+                results['details'].append({
+                    'question': q.get('question'),
+                    'user_answer': user_ans,
+                    'correct_answer': q.get('answer'),
+                    'is_correct': None
+                })
+            # Store for results page
+            request.session['quiz_results'] = results
+            request.session['quiz_user_answers'] = user_answers
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    else:
+        results = request.session.get('quiz_results')
+        quiz_questions = request.session.get('quiz_questions', {})
+        user_answers = request.session.get('quiz_user_answers', {})
+        mcq_questions = quiz_questions.get('mcq_questions', [])
+        short_questions = quiz_questions.get('short_questions', [])
+        total = results['total'] if results else 0
+        score = results['correct'] if results else 0
+        score_percent = (score / total * 100) if total else 0
+        wrong_percent = (100 - score_percent) if total else 0
+        context = {
+            'score': score,
+            'total': total,
+            'score_percent': score_percent,
+            'wrong_percent': wrong_percent,
+            'mcq_questions': mcq_questions,
+            'short_questions': short_questions,
+            'user_answers': user_answers,
+            'results': results
+        }
+        return render(request, 'slides_analyzer/quiz_results.html', context)
 
 def flashcards(request):
     return render(request, 'slides_analyzer/flashcards.html')

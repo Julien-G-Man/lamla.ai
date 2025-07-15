@@ -59,6 +59,8 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         # Render email templates
         subject = render_to_string(f'{template_prefix}_subject.txt', context)
         subject = ''.join(subject.splitlines()).strip()
+        if not subject.startswith('[Lamla AI]'):
+            subject = f'[Lamla AI] {subject}'
         
         html_message = render_to_string(f'{template_prefix}_message.html', context)
         plain_message = render_to_string(f'{template_prefix}_message.txt', context)
@@ -122,7 +124,56 @@ def about(request):
     return render(request, 'slides_analyzer/about.html')
 
 def ajax_extract_text(request):
-    return JsonResponse({'result': 'ajax_extract_text stub'})
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+    if 'slide_file' not in request.FILES:
+        return JsonResponse({'error': 'No file uploaded'}, status=400)
+
+    file = request.FILES['slide_file']
+    filename = file.name.lower()
+    file_ext = os.path.splitext(filename)[1]
+    max_size = 10 * 1024 * 1024  # 10MB
+    if file.size > max_size:
+        return JsonResponse({'error': 'File too large (max 10MB)'}, status=400)
+
+    try:
+        if file_ext == '.pdf':
+            # PDF extraction
+            pdf_reader = PyPDF2.PdfReader(file)
+            text = ''
+            for page in pdf_reader.pages:
+                text += page.extract_text() or ''
+        elif file_ext == '.docx':
+            # DOCX extraction
+            doc = docx.Document(file)
+            text = '\n'.join([para.text for para in doc.paragraphs])
+        elif file_ext == '.pptx':
+            # PPTX extraction
+            from pptx import Presentation
+            prs = Presentation(file)
+            text = ''
+            for slide in prs.slides:
+                for shape in slide.shapes:
+                    if hasattr(shape, "text"):
+                        text += shape.text + '\n'
+        elif file_ext == '.txt':
+            # TXT extraction
+            text = file.read().decode('utf-8', errors='ignore')
+        else:
+            return JsonResponse({'error': 'Unsupported file type. Please upload PDF, DOCX, PPTX, or TXT.'}, status=400)
+
+        # Clean up text
+        text = text.strip()
+        if not text:
+            return JsonResponse({'error': 'No text could be extracted from the file.'}, status=400)
+        # Optionally limit length for performance
+        if len(text) > 20000:
+            text = text[:20000] + '\n... [truncated]'
+        return JsonResponse({'text': text})
+    except Exception as e:
+        logger.error(f"Text extraction error: {e}")
+        return JsonResponse({'error': f'Failed to extract text: {str(e)}'}, status=500)
 
 def submit_feedback(request):
     return JsonResponse({'result': 'submit_feedback stub'})
@@ -147,8 +198,113 @@ def terms_of_service(request):
 def cookie_policy(request):
     return render(request, 'slides_analyzer/cookie_policy.html')
 
+# Remove @csrf_exempt for production
+# Add logging for submissions and errors
+import logging
+logger = logging.getLogger(__name__)
+
 def contact(request):
-            return render(request, 'slides_analyzer/contact.html')
+    print("CONTACT VIEW CALLED")  # Debug: confirm view is called
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        subject = request.POST.get('subject', '').strip()
+        message = request.POST.get('message', '').strip()
+        errors = []
+
+        # Validate fields
+        if not name:
+            errors.append('Name is required.')
+        if not email:
+            errors.append('Email is required.')
+        else:
+            try:
+                validate_email(email)
+            except DjangoValidationError:
+                errors.append('Please enter a valid email address.')
+        if not subject:
+            errors.append('Subject is required.')
+        if not message:
+            errors.append('Message is required.')
+
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+            return render(request, 'slides_analyzer/contact.html', {
+                'name': name,
+                'email': email,
+                'subject': subject,
+                'message': message,
+            })
+
+        # Save to Contact model with error handling
+        try:
+            Contact.objects.create(
+                name=name,
+                email=email,
+                subject=subject,
+                message=message
+            )
+            logger.info(f"Contact form submitted by {name} <{email}>: {subject}")
+        except Exception as e:
+            logger.error(f"Contact form DB save error: {e}")
+            messages.error(request, 'There was an error saving your message. Please try again later.')
+            return render(request, 'slides_analyzer/contact.html', {
+                'name': name,
+                'email': email,
+                'subject': subject,
+                'message': message,
+            })
+        
+        # 1. Send notification to admin (Julien)
+        admin_subject = f"Contact Form: {subject}"
+        admin_body = f"Name: {name}\nEmail: {email}\nSubject: {subject}\n\nMessage:\n{message}"
+        admin_recipient = getattr(settings, 'WELCOME_EMAIL_HOST_USER', 'juliengmanana@gmail.com')
+        try:
+            send_email(
+                subject=admin_subject,
+                message=admin_body,
+                recipient_list=[admin_recipient],
+                from_email='lamlaaiteam@gmail.com',
+            )
+            logger.info(f"Contact notification sent to admin: {admin_recipient}")
+        except Exception as e:
+            logger.error(f"Contact form admin email error: {e}")
+            messages.error(request, 'There was an error sending your message to our team. Please try again later.')
+            return render(request, 'slides_analyzer/contact.html', {
+                'name': name,
+                'email': email,
+                'subject': subject,
+                'message': message,
+            })
+
+        # 2. Send auto-response to user
+        user_subject = "We received your message at Lamla AI!"
+        user_body = (
+            f"Hi {name},\n\n"
+            "Thank you for contacting Lamla AI! Your message has been received and our team will get back to you as soon as possible.\n\n"
+            "Here is a copy of your message:\n"
+            f"Subject: {subject}\n"
+            f"Message: {message}\n\n"
+            "If you have any further questions, feel free to reply to this email.\n\n"
+            "Best regards,\nThe Lamla AI Team"
+        )
+        try:
+            send_email(
+                subject=user_subject,
+                message=user_body,
+                recipient_list=[email],
+                from_email='lamlaaiteam@gmail.com',
+            )
+            logger.info(f"Auto-response sent to user: {email}")
+        except Exception as e:
+            logger.error(f"Contact form auto-response error: {e}")
+            # Don't block user on auto-response failure
+
+        messages.success(request, 'Your message has been sent! We will get back to you soon.')
+        return redirect('contact')
+    else:
+        return render(request, 'slides_analyzer/contact.html')
         
 def feedback_analytics(request):
     return render(request, 'slides_analyzer/feedback_analytics.html')
@@ -163,16 +319,85 @@ def download_subscribers_csv(request):
     return HttpResponse('download_subscribers_csv stub')
 
 def get_subscribers_data(request):
-    return JsonResponse({'result': 'get_subscribers_data stub'})
+    """
+    Return JSON data for all newsletter subscribers, including stats.
+    """
+    if not request.user.is_staff:
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+    from .models import Subscription
+    subs = Subscription.objects.all().order_by('-created_at')
+    data = []
+    active_count = 0
+    inactive_count = 0
+    for sub in subs:
+        data.append({
+            'id': sub.id,
+            'email': sub.email,
+            'created_at': sub.created_at.strftime('%Y-%m-%d %H:%M'),
+            'is_active': sub.is_active,
+        })
+        if sub.is_active:
+            active_count += 1
+        else:
+            inactive_count += 1
+    stats = {
+        'total_subscribers': subs.count(),
+        'active_subscribers': active_count,
+        'inactive_subscribers': inactive_count,
+    }
+    return JsonResponse({'success': True, 'subscribers': data, 'stats': stats})
+
+
+def get_users_data(request):
+    """
+    Return JSON data for all users, including stats.
+    """
+    if not request.user.is_staff:
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+    from django.contrib.auth.models import User
+    users = User.objects.all().order_by('-date_joined')
+    data = []
+    active_count = 0
+    inactive_count = 0
+    for user in users:
+        # Try to get profile, handle if missing
+        try:
+            profile = user.profile
+            is_deleted = profile.is_deleted
+        except Exception:
+            is_deleted = False
+        if is_deleted:
+            continue  # Skip deleted users
+        full_name = f"{user.first_name} {user.last_name}".strip() or user.username
+        role = 'Admin' if user.is_staff or user.is_superuser else 'User'
+        is_active = user.is_active
+        if is_active:
+            active_count += 1
+        else:
+            inactive_count += 1
+        # 2FA placeholder (customize if you have 2FA field)
+        two_fa = 'Enabled' if hasattr(user, 'two_fa_enabled') and user.two_fa_enabled else 'Disabled'
+        data.append({
+            'id': user.id,
+            'full_name': full_name,
+            'email': user.email,
+            'role': role,
+            'is_active': is_active,
+            'date_joined': user.date_joined.strftime('%Y-%m-%d %H:%M'),
+            'two_fa': two_fa,
+        })
+    stats = {
+        'total_users': len(data),
+        'active_users': active_count,
+        'inactive_users': inactive_count,
+    }
+    return JsonResponse({'success': True, 'users': data, 'stats': stats})
 
 def toggle_subscription_status(request):
     return JsonResponse({'result': 'toggle_subscription_status stub'})
 
 def download_users_csv(request):
     return HttpResponse('download_users_csv stub')
-
-def get_users_data(request):
-    return JsonResponse({'result': 'get_users_data stub'})
 
 def delete_user(request):
     return JsonResponse({'result': 'delete_user stub'})

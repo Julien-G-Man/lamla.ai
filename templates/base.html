@@ -78,7 +78,7 @@
             width: var(--sidebar-width);
             height: calc(100vh - var(--navbar-height));
             background: var(--background-white);
-            z-index: 1500;
+            z-index: 2500;
             display: flex;
             flex-direction: column;
             transform: translateX(-100%);
@@ -197,6 +197,17 @@
                 width: 80vw;
                 min-width: 220px;
                 max-width: 350px;
+                top: var(--navbar-height);
+                left: 0;
+                height: calc(100vh - var(--navbar-height));
+                display: flex;
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            #sidebar-overlay.active {
+                display: block;
             }
             /* Mobile behavior: sidebar overlays content */
             .sidebar.open ~ .main-content {
@@ -641,6 +652,7 @@
             </nav>
         </div>
     </aside>
+    <div id="sidebar-overlay" style="display:none;"></div>
     <div class="main-content" id="mainContent">
         {% block content %}{% endblock %}
     </div>
@@ -724,55 +736,53 @@
         // Hamburger menu functionality
         const navbarHamburger = document.getElementById('navbar-hamburger');
         const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
         
         if (navbarHamburger && sidebar) {
-            console.log('Hamburger and sidebar elements found');
-            
-            // Add multiple event listeners for better mobile support
             navbarHamburger.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('Hamburger clicked');
                 if (sidebar.classList.contains('open')) {
                     sidebar.classList.remove('open');
                     navbarHamburger.classList.remove('open');
-                    console.log('Sidebar closed');
+                    sidebarOverlay.classList.remove('active');
+                    sidebarOverlay.style.display = 'none';
                 } else {
                     sidebar.classList.add('open');
                     navbarHamburger.classList.add('open');
-                    console.log('Sidebar opened');
+                    sidebarOverlay.classList.add('active');
+                    sidebarOverlay.style.display = 'block';
                 }
             });
-            
             // Add touch event for mobile
             navbarHamburger.addEventListener('touchstart', function(e) {
                 e.preventDefault();
-                console.log('Hamburger touched');
                 if (sidebar.classList.contains('open')) {
                     sidebar.classList.remove('open');
                     navbarHamburger.classList.remove('open');
-                    console.log('Sidebar closed (touch)');
-                    } else {
+                    sidebarOverlay.classList.remove('active');
+                    sidebarOverlay.style.display = 'none';
+                } else {
                     sidebar.classList.add('open');
                     navbarHamburger.classList.add('open');
-                    console.log('Sidebar opened (touch)');
+                    sidebarOverlay.classList.add('active');
+                    sidebarOverlay.style.display = 'block';
                 }
             });
-            
-            // Add visual feedback for debugging
-            navbarHamburger.style.border = '1px solid transparent';
-            navbarHamburger.addEventListener('mouseenter', function() {
-                this.style.border = '1px solid #FFD600';
+            // Close sidebar when clicking overlay
+            sidebarOverlay.addEventListener('click', function() {
+                sidebar.classList.remove('open');
+                navbarHamburger.classList.remove('open');
+                sidebarOverlay.classList.remove('active');
+                sidebarOverlay.style.display = 'none';
             });
-            navbarHamburger.addEventListener('mouseleave', function() {
-                this.style.border = '1px solid transparent';
-            });
-            
             // Optional: close sidebar when clicking outside
             document.addEventListener('click', function(e) {
                 if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== navbarHamburger) {
-                sidebar.classList.remove('open');
+                    sidebar.classList.remove('open');
                     navbarHamburger.classList.remove('open');
+                    sidebarOverlay.classList.remove('active');
+                    sidebarOverlay.style.display = 'none';
                 }
             });
         }

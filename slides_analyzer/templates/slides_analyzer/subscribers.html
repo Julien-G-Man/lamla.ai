@@ -97,30 +97,7 @@
                     </tr>
                 </thead>
                 <tbody id="subscribersTableBody">
-                    {% for subscriber in subscribers %}
-                    <tr data-subscriber-id="{{ subscriber.id }}">
-                        <td>{{ subscriber.email }}</td>
-                        <td>{{ subscriber.created_at|date:"M d, Y H:i" }}</td>
-                        <td>
-                            <span class="status-badge {% if subscriber.is_active %}active{% else %}inactive{% endif %}">
-                                {% if subscriber.is_active %}Active{% else %}Inactive{% endif %}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="action-btn toggle-status-btn" data-active="{{ subscriber.is_active }}">
-                                {% if subscriber.is_active %}
-                                    <i class="fas fa-pause"></i> Deactivate
-                                {% else %}
-                                    <i class="fas fa-play"></i> Activate
-                                {% endif %}
-                            </button>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="no-data">No subscribers found</td>
-                    </tr>
-                    {% endfor %}
+                    <!-- Table rows will be populated by JavaScript via AJAX -->
                 </tbody>
             </table>
         </div>
@@ -131,10 +108,10 @@
 <script>
 let autoRefreshInterval = null;
 let autoRefreshEnabled = false;
-let lastSubscriberCount = {{ total_subscribers }};
+let lastSubscriberCount = 0;
 
-// Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
+    refreshSubscriberList();
     updateLastUpdated();
     applySubscriberFilters(); // Apply initial filters
 });

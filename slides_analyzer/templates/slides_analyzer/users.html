@@ -108,32 +108,7 @@
                     </tr>
                 </thead>
                 <tbody id="usersTableBody">
-                    {% for user in users %}
-                    <tr data-user-id="{{ user.id }}">
-                        <td>{{ user.full_name }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.role }}</td>
-                        <td>
-                            <button class="status-toggle-btn status-badge {% if user.is_active %}active{% else %}inactive{% endif %}" data-active="{{ user.is_active|yesno:'true,false' }}">
-                                {% if user.is_active %}Active{% else %}Inactive{% endif %}
-                            </button>
-                        </td>
-                        <td>{{ user.date_joined|date:"M d, Y H:i" }}</td>
-                        <td>
-                            <span class="status-badge active" style="background: rgba(40, 167, 69, 0.1); color: #28a745;">{{ user.two_fa }}</span>
-                        </td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="action-btn edit-btn" title="Edit"><i class="fas fa-edit"></i></button>
-                                <button class="action-btn view-btn" title="Delete"><i class="fas fa-trash"></i></button>
-                            </div>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="7" class="no-data">No users found</td>
-                    </tr>
-                    {% endfor %}
+                    <!-- Table rows will be populated by JavaScript via AJAX -->
                 </tbody>
             </table>
         </div>
@@ -143,7 +118,13 @@
 <script>
 let autoUsersRefreshInterval = null;
 let autoUsersRefreshEnabled = false;
-let lastUserCount = {{ total_users }};
+let lastUserCount = 0;
+
+document.addEventListener('DOMContentLoaded', function() {
+    refreshUserList();
+    updateLastUsersUpdated();
+    // You may want to call applyUserFilters() here if needed
+});
 
 function updateLastUsersUpdated() {
     const now = new Date();

@@ -97,7 +97,33 @@ def upload_slides(request):
     return render(request, 'slides_analyzer/upload.html')
 
 def generate_questions(request):
-    return HttpResponse('generate_questions stub')
+    if request.method == 'POST':
+        study_text = request.POST.get('extractedText', '').strip()
+        num_mcq = int(request.POST.get('num_mcq', 5))
+        num_short = int(request.POST.get('num_short', 3))
+        subject = request.POST.get('subject', '')
+        error_message = None
+        quiz_results = None
+        if not study_text or len(study_text) < 30:
+            error_message = 'Please provide at least 30 characters of study material.'
+        else:
+            try:
+                quiz_results = generate_questions_from_text(study_text, num_mcq, num_short)
+                if not quiz_results or (not quiz_results.get('mcq_questions') and not quiz_results.get('short_questions')):
+                    error_message = 'No questions could be generated. Please try with different or more detailed content.'
+            except Exception as e:
+                logger.error(f"Quiz generation error: {e}")
+                error_message = f"Quiz generation failed: {str(e)}"
+        return render(request, 'slides_analyzer/custom_quiz.html', {
+            'quiz_results': quiz_results,
+            'error_message': error_message,
+            'subject': subject,
+            'num_mcq': num_mcq,
+            'num_short': num_short,
+            'study_text': study_text,
+        })
+    else:
+        return render(request, 'slides_analyzer/custom_quiz.html')
 
 def custom_quiz(request):
     return render(request, 'slides_analyzer/custom_quiz.html')

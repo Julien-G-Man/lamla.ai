@@ -5,7 +5,6 @@ from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.conf import settings
@@ -39,6 +38,7 @@ import pytesseract
 import re
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
+from django.template.loader import render_to_string
 
 # Custom allauth adapter to ensure correct email sender
 class CustomAccountAdapter(DefaultAccountAdapter):
@@ -127,8 +127,7 @@ def generate_questions(request):
         request.session['quiz_questions'] = quiz_results
         request.session['quiz_time'] = int(request.POST.get('quiz_time', 10))
         return redirect('quiz')
-    else:
-        return render(request, 'slides_analyzer/custom_quiz.html')
+    return render(request, 'slides_analyzer/custom_quiz.html')
 
 def custom_quiz(request):
     return render(request, 'slides_analyzer/custom_quiz.html')
@@ -370,14 +369,23 @@ def contact(request):
         
         # 1. Send notification to admin (Julien)
         admin_subject = f"Contact Form: {subject}"
-        admin_body = f"Name: {name}\nEmail: {email}\nSubject: {subject}\n\nMessage:\n{message}"
+        admin_html = render_to_string('emails/contact_notification.html', {
+            'name': name,
+            'email': email,
+            'subject': subject,
+            'message': message,
+        })
         admin_recipient = getattr(settings, 'WELCOME_EMAIL_HOST_USER', 'juliengmanana@gmail.com')
+        admin_from = 'lamlaaiteam@gmail.com'
+        if admin_from == 'lamlaaiteam@gmail.com' and not admin_subject.startswith('[Lamla AI]'):
+            admin_subject = f'[Lamla AI] {admin_subject}'
         try:
             send_email(
                 subject=admin_subject,
-                message=admin_body,
+                message=admin_html,  # fallback to HTML for plain text
                 recipient_list=[admin_recipient],
-                from_email='lamlaaiteam@gmail.com',
+                from_email=admin_from,
+                html_message=admin_html,
             )
             logger.info(f"Contact notification sent to admin: {admin_recipient}")
         except Exception as e:
@@ -392,21 +400,22 @@ def contact(request):
 
         # 2. Send auto-response to user
         user_subject = "We received your message at Lamla AI!"
-        user_body = (
-            f"Hi {name},\n\n"
-            "Thank you for contacting Lamla AI! Your message has been received and our team will get back to you as soon as possible.\n\n"
-            "Here is a copy of your message:\n"
-            f"Subject: {subject}\n"
-            f"Message: {message}\n\n"
-            "If you have any further questions, feel free to reply to this email.\n\n"
-            "Best regards,\nThe Lamla AI Team"
-        )
+        user_html = render_to_string('emails/contact_autoresponse.html', {
+            'name': name,
+            'email': email,
+            'subject': subject,
+            'message': message,
+        })
+        user_from = 'lamlaaiteam@gmail.com'
+        if user_from == 'lamlaaiteam@gmail.com' and not user_subject.startswith('[Lamla AI]'):
+            user_subject = f'[Lamla AI] {user_subject}'
         try:
             send_email(
                 subject=user_subject,
-                message=user_body,
+                message=user_html,  # fallback to HTML for plain text
                 recipient_list=[email],
-                from_email='lamlaaiteam@gmail.com',
+                from_email=user_from,
+                html_message=user_html,
             )
             logger.info(f"Auto-response sent to user: {email}")
         except Exception as e:
@@ -415,8 +424,7 @@ def contact(request):
 
         messages.success(request, 'Your message has been sent! We will get back to you soon.')
         return redirect('contact')
-    else:
-        return render(request, 'slides_analyzer/contact.html')
+    return render(request, 'slides_analyzer/contact.html')
         
 def feedback_analytics(request):
     return render(request, 'slides_analyzer/feedback_analytics.html')
@@ -452,7 +460,7 @@ def get_subscribers_data(request):
             active_count += 1
         else:
             inactive_count += 1
-    stats = {
+        stats = {
         'total_subscribers': subs.count(),
         'active_subscribers': active_count,
         'inactive_subscribers': inactive_count,
@@ -535,14 +543,14 @@ def chatbot_support_request(request):
             email = data.get('email', '').strip()
             subject = data.get('subject', '').strip()
             message = data.get('message', '').strip()
-            
+
             # Validate required fields
             if not all([name, email, subject, message]):
                 return JsonResponse({
                     'status': 'error',
                     'message': 'All fields are required.'
                 })
-            
+
             # Save to Contact model
             Contact.objects.create(
                 name=name,
@@ -550,12 +558,12 @@ def chatbot_support_request(request):
                 subject=subject,
                 message=message
             )
-            
+
             # Send notification to admin
             admin_subject = f"Chatbot Support Request: {subject}"
             admin_body = f"Name: {name}\nEmail: {email}\nSubject: {subject}\n\nMessage:\n{message}"
             admin_recipient = getattr(settings, 'WELCOME_EMAIL_HOST_USER', 'juliengmanana@gmail.com')
-            
+
             try:
                 send_email(
                     subject=admin_subject,
@@ -565,12 +573,12 @@ def chatbot_support_request(request):
                 )
             except Exception as e:
                 logger.error(f"Chatbot support request admin email error: {e}")
-            
+
             return JsonResponse({
                 'status': 'success',
                 'message': 'Your support request has been sent successfully! We will get back to you soon.'
             })
-            
+
         except json.JSONDecodeError:
             return JsonResponse({
                 'status': 'error',
@@ -582,7 +590,7 @@ def chatbot_support_request(request):
                 'status': 'error',
                 'message': 'An error occurred while sending your request.'
             })
-    
+
     return JsonResponse({
         'status': 'error',
         'message': 'Invalid request method.'
@@ -619,8 +627,8 @@ def chatbot_message(request):
                 ).order_by('-created_at')[:12]  # Last 12 messages
                 conversation_history = [
                     {
-                        'message_type': msg.message_type,
-                        'content': msg.content
+                    'message_type': msg.message_type,
+                    'content': msg.content
                     }
                     for msg in reversed(recent_messages)  # Reverse to get chronological order
                 ]
@@ -670,7 +678,7 @@ def chatbot_suggestions(request):
         logger.error(f"Chatbot suggestions error: {e}")
         return JsonResponse({
             'status': 'error',
-            'message': 'Failed to load suggestions.'
+            'message': 'An error occurred while fetching suggestions.'
         })
 
 def chatbot_history(request):
@@ -682,12 +690,10 @@ def chatbot_history(request):
                 'status': 'error',
                 'message': 'Session ID is required.'
             })
-        
         try:
             messages = ChatMessage.objects.filter(
                 session_id=session_id
             ).order_by('created_at')
-            
             history = [
                 {
                     'message_type': msg.message_type,
@@ -696,20 +702,20 @@ def chatbot_history(request):
                 }
                 for msg in messages
             ]
-            
             return JsonResponse({
                 'status': 'success',
                 'history': history
             })
-            
         except Exception as e:
             logger.error(f"Chatbot history error: {e}")
             return JsonResponse({
                 'status': 'error',
                 'message': 'Failed to load chat history.'
             })
-    
     return JsonResponse({
         'status': 'error',
         'message': 'Invalid request method.'
     })
+
+def faq(request):
+    return render(request, 'slides_analyzer/faq.html')

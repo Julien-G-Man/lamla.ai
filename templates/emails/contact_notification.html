@@ -1,10 +1,9 @@
-{% autoescape off %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Reset - Lamla AI</title>
+    <title>New Contact Message - Lamla AI</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -41,6 +40,22 @@
         .content {
             padding: 32px 30px 24px 30px;
         }
+        .info {
+            margin-bottom: 18px;
+        }
+        .info strong {
+            color: #FFD600;
+            font-weight: 600;
+        }
+        .message {
+            background-color: #FFFBE6;
+            border-left: 4px solid #FFD600;
+            padding: 18px;
+            border-radius: 0 8px 8px 0;
+            color: #222;
+            font-size: 1.05rem;
+            margin-bottom: 10px;
+        }
         .footer {
             background-color: #222;
             color: #FFD600;
@@ -54,24 +69,28 @@
         .social-links {
             margin: 16px 0 0 0;
         }
+        .social-links span {
+            color: #FFD600;
+            margin: 0 8px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Password Reset Request</h1>
-            <p>Reset your password for your Lamla AI account</p>
+            <h1>New Contact Message</h1>
+            <p>A user has submitted a message via the Lamla AI contact form.</p>
         </div>
         <div class="content">
-            <p>Hello {{ user.get_username }},</p>
-            <p>You're receiving this email because you requested a password reset for your user account at {{ site_name }}.</p>
-            <p>Please go to the following page and choose a new password:</p>
-            <p><a href="{{ password_reset_url }}" style="color: #FFD600;">{{ password_reset_url }}</a></p>
-            <p>Your username, in case you've forgotten: <strong>{{ user.get_username }}</strong></p>
-            <p>Thanks for using Lamla AI!</p>
+            <div class="info"><strong>Name:</strong> {{ name }}</div>
+            <div class="info"><strong>Email:</strong> {{ email }}</div>
+            <div class="info"><strong>Subject:</strong> {{ subject }}</div>
+            <div class="message"><strong>Message:</strong><br>{{ message|linebreaksbr }}</div>
         </div>
         <div class="footer">
             <p>Lamla AI<br>lamla-ai.onrender.com</p>
+            <p>&copy;2025 Lamla AI</p>
             <div class="social-links" style="margin: 16px 0 0 0;">
                 <a href="https://linkedin.com/company/lamla-ai" title="LinkedIn" target="_blank" style="margin: 0 8px; text-decoration: none; display: inline-block; vertical-align: middle;">
                     <svg width="24" height="24" fill="#FFD600" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 11.268h-3v-5.604c0-1.337-.026-3.063-1.868-3.063-1.868 0-2.154 1.459-2.154 2.968v5.699h-3v-10h2.881v1.367h.041c.401-.761 1.381-1.563 2.841-1.563 3.039 0 3.6 2.001 3.6 4.601v5.595z"/></svg>
@@ -92,5 +111,4 @@
         </div>
     </div>
 </body>
-</html>
-{% endautoescape %} 
+</html> 

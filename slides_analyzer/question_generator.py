@@ -16,6 +16,8 @@ class QuestionGenerator:
         self.gemini_model = getattr(settings, 'GEMINI_MODEL', 'gemini-1.5-pro')
         self.hf_token = getattr(settings, 'HUGGING_FACE_API_TOKEN', None)
         
+        print("[DEBUG] Azure OpenAI Key:", self.azure_openai_api_key)
+        print("[DEBUG] Azure OpenAI Endpoint:", self.azure_openai_endpoint)
         # Log API configuration status
         logger.info(f"Azure OpenAI API Key: {'✓ Set' if self.azure_openai_api_key else '✗ Not set'}")
         logger.info(f"Azure OpenAI Endpoint: {'✓ Set' if self.azure_openai_endpoint else '✗ Not set'}")
@@ -73,8 +75,10 @@ class QuestionGenerator:
             response = requests.post(self.azure_openai_endpoint, headers=headers, json=payload, timeout=60)
             response.raise_for_status()
             result = response.json()
+            print("[DEBUG] Azure response:", result)
             return result['choices'][0]['message']['content']
         except Exception as e:
+            print("[DEBUG] Azure OpenAI API error:", e)
             logger.error(f"Azure OpenAI API error: {e}")
             raise
 
@@ -285,11 +289,12 @@ class QuestionGenerator:
             apis_to_try.append(('huggingface', self._call_huggingface_api))
             logger.info("Added Hugging Face to API list (priority 4)")
         
-        logger.info(f"APIs to try: {[api[0] for api in apis_to_try]}")
+        print("[DEBUG] APIs to try:", [api[0] for api in apis_to_try])
         
         # Try each API
         for api_name, api_func in apis_to_try:
             try:
+                print("[DEBUG] Trying API:", api_name)
                 logger.info(f"Trying {api_name} API")
                 response = api_func(prompt)
                 if response and response.strip():

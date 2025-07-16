@@ -1,15 +1,93 @@
 {% autoescape off %}
-<p style="font-family: Poppins, Arial, sans-serif; color: #222;">
-    <strong>Sorry, we couldn't find an account associated with that email address.</strong>
-</p>
-<p style="font-family: Poppins, Arial, sans-serif; color: #222;">
-    If you don't have a LAMLA AI account yet, you can <a href="{{ signup_url }}" style="color: #FFD600; text-decoration: underline;">sign up here</a>.
-</p>
-<p style="font-family: Poppins, Arial, sans-serif; color: #222;">
-    If you believe this is a mistake, please double-check your email address or contact our support team.
-</p>
-<p style="font-family: Poppins, Arial, sans-serif; color: #222;">
-    <strong>Thanks for using LAMLA AI!</strong>
-    lamla-ai.onrender.com
-</p>
-{% endautoescape %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Not Found - Lamla AI</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #FFEE58 0%, #FFD600 100%);
+            padding: 32px 30px;
+            text-align: center;
+            color: #222;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 32px 30px 24px 30px;
+        }
+        .footer {
+            background-color: #222;
+            color: #FFD600;
+            padding: 24px 30px;
+            text-align: center;
+        }
+        .footer p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        .social-links {
+            margin: 16px 0 0 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Account Not Found</h1>
+            <p>We couldn't find an account associated with that email address.</p>
+        </div>
+        <div class="content">
+            <p>If you don't have a LAMLA AI account yet, you can <a href="{{ signup_url }}" style="color: #FFD600; text-decoration: underline;">sign up here</a>.</p>
+            <p>If you believe this is a mistake, please double-check your email address or contact our support team.</p>
+            <p><strong>Thanks for using LAMLA AI!</strong></p>
+        </div>
+        <div class="footer">
+            <p>Lamla AI<br>lamla-ai.onrender.com</p>
+            <div class="social-links" style="margin: 16px 0 0 0;">
+                <a href="https://linkedin.com/company/lamla-ai" title="LinkedIn" target="_blank" style="margin: 0 8px; text-decoration: none; display: inline-block; vertical-align: middle;">
+                    <svg width="24" height="24" fill="#FFD600" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 11.268h-3v-5.604c0-1.337-.026-3.063-1.868-3.063-1.868 0-2.154 1.459-2.154 2.968v5.699h-3v-10h2.881v1.367h.041c.401-.761 1.381-1.563 2.841-1.563 3.039 0 3.6 2.001 3.6 4.601v5.595z"/></svg>
+                </a>
+                <a href="https://x.com/lamla_io" title="X (formerly Twitter)" target="_blank" style="margin: 0 8px; text-decoration: none; display: inline-block; vertical-align: middle;">
+                    <svg width="24" height="24" fill="#FFD600" viewBox="0 0 24 24"><path d="M17.53 2.47A12 12 0 0 0 2.47 17.53 12 12 0 0 0 17.53 2.47zm-1.06 1.06A10 10 0 1 1 3.53 18.47 10 10 0 0 1 16.47 3.53zm-7.07 2.12l2.12 2.12 2.12-2.12 1.06 1.06-2.12 2.12 2.12 2.12-1.06 1.06-2.12-2.12-2.12 2.12-1.06-1.06 2.12-2.12-2.12-2.12z"/></svg>
+                </a>
+                <a href="https://www.facebook.com/share/16pmyhCiUM/" title="Facebook" target="_blank" style="margin: 0 8px; text-decoration: none; display: inline-block; vertical-align: middle;">
+                    <svg width="24" height="24" fill="#FFD600" viewBox="0 0 24 24"><path d="M22.675 0h-21.35c-.733 0-1.325.592-1.325 1.325v21.351c0 .732.592 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.672c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.797.143v3.24l-1.918.001c-1.504 0-1.797.715-1.797 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.592 1.323-1.324v-21.35c0-.733-.593-1.325-1.324-1.325z"/></svg>
+                </a>
+                <a href="https://instagram.com/lamla.io" title="Instagram" target="_blank" style="margin: 0 8px; text-decoration: none; display: inline-block; vertical-align: middle;">
+                    <svg width="24" height="24" fill="#FFD600" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.974.974 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.974.974-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.974-.974-1.246-2.242-1.308-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.974-.974 2.242-1.246 3.608-1.308 1.266-.058 1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.012-4.947.07-1.276.058-2.687.334-3.682 1.329-.995.995-1.271 2.406-1.329 3.682-.058 1.28-.07 1.688-.07 4.947s.012 3.667.07 4.947c.058 1.276.334 2.687 1.329 3.682.995.995 2.406 1.271 3.682 1.329 1.28.058 1.688.07 4.947.07s3.667-.012 4.947-.07c1.276-.058 2.687-.334 3.682-1.329.995-.995 1.271-2.406 1.329-3.682.058-1.28.07-1.688.07-4.947s-.012-3.667-.07-4.947c-.058-1.276-.334-2.687-1.329-3.682-.995-.995-2.406-1.271-3.682-1.329-1.28-.058-1.688-.07-4.947-.07zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zm0 10.162a3.999 3.999 0 1 1 0-7.998 3.999 3.999 0 0 1 0 7.998zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881zm0 0"/></svg>
+                </a>
+                <a href="mailto:lamlaaiteam@gmail.com" title="Email" style="margin: 0 8px; text-decoration: none; display: inline-block; vertical-align: middle;">
+                    <svg width="24" height="24" fill="#FFD600" viewBox="0 0 24 24"><path d="M12 13.065l-11.99-7.065v14.13c0 1.104.896 2 2 2h19.98c1.104 0 2-.896 2-2v-14.13l-11.99 7.065zm11.99-9.065c0-1.104-.896-2-2-2h-19.98c-1.104 0-2 .896-2 2v.217l12 7.083 12-7.083v-.217z"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+{% endautoescape %}

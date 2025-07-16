@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FAQ - Lamla AI{% endblock %}
+
+{% block content %}
+<div class="contact-container">
+    <div class="contact-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="hello-yellow">Frequently</span> <span class="username-highlight">Asked Questions</span>
+            </h1>
+            <p class="hero-subtitle">Find answers to common questions about Lamla AI, quizzes, flashcards, and more.</p>
+        </div>
+        <div class="hero-illustration">
+            <i class="fas fa-question-circle contact-hero-icon"></i>
+        </div>
+    </div>
+    <div class="contact-main">
+        <div class="contact-form-card" style="max-width:800px;margin:0 auto;">
+            <div class="card-header">
+                <h2><i class="fas fa-lightbulb"></i> Common Questions</h2>
+                <p>Click a question to see the answer</p>
+            </div>
+            <div class="card-content">
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <button class="faq-question">What is Lamla AI?</button>
+                        <div class="faq-answer">Lamla AI is a smart exam preparation assistant that helps you study with intention, not panic. It generates quizzes, flashcards, and provides feedback based on your study materials.</div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">How do I upload my study materials?</button>
+                        <div class="faq-answer">Go to the Dashboard or Upload page, select your file (PDF, DOCX, PPTX, or TXT), and Lamla AI will extract the content for quiz and flashcard generation.</div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">Is Lamla AI free to use?</button>
+                        <div class="faq-answer">Lamla AI offers a free tier with core features. Some advanced features may require a subscription in the future.</div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">How do I contact support?</button>
+                        <div class="faq-answer">You can use the <a href="{% url 'contact' %}" class="text-yellow">Contact</a> page to send us a message. We typically respond within 24 hours.</div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">Can I generate custom quizzes?</button>
+                        <div class="faq-answer">Yes! After uploading your material, you can specify the number and type of questions for your custom quiz.</div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">Is my data private?</button>
+                        <div class="faq-answer">Yes, your uploaded materials and generated content are private and only accessible to you.</div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">What if my question isn't listed?</button>
+                        <div class="faq-answer">If you can't find your answer here, please <a href="{% url 'contact' %}" class="text-yellow">contact us</a> and we'll be happy to help!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+// FAQ toggle logic
+const faqQuestions = document.querySelectorAll('.faq-question');
+faqQuestions.forEach(btn => {
+    btn.addEventListener('click', function() {
+        const answer = this.nextElementSibling;
+        answer.style.display = (answer.style.display === 'block') ? 'none' : 'block';
+        this.classList.toggle('open');
+    });
+});
+</script>
+<style>
+.faq-list { margin-top: 20px; }
+.faq-item { margin-bottom: 18px; }
+.faq-question {
+    background: #FFD600;
+    color: #222;
+    border: none;
+    padding: 14px 22px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: background 0.2s;
+    margin-bottom: 4px;
+}
+.faq-question.open, .faq-question:hover {
+    background: #222;
+    color: #FFD600;
+}
+.faq-answer {
+    display: none;
+    background: #333;
+    color: #fff;
+    padding: 16px 22px;
+    border-radius: 0 0 8px 8px;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    border-left: 4px solid #FFD600;
+}
+</style>
+{% endblock %} 

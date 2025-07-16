@@ -639,6 +639,7 @@
                     {% endif %}
                 {% endif %}
                 <a href="{% url 'about' %}" class="sidebar-link"><i class="fas fa-info-circle"></i> About</a>
+                <a href="{% url 'contact' %}" class="sidebar-link"><i class="fas fa-headset"></i> Contact</a>
                 <a href="{% url 'custom_quiz' %}" class="sidebar-link"><i class="fas fa-question-circle"></i> Quiz</a>
                 <a href="{% url 'flashcards' %}" class="sidebar-link"><i class="fas fa-clone"></i> Flashcards</a>
                 <a href="#" class="sidebar-link"><i class="fas fa-lightbulb"></i> Concepts</a>
@@ -762,7 +763,7 @@
                     navbarHamburger.classList.remove('open');
                     sidebarOverlay.classList.remove('active');
                     sidebarOverlay.style.display = 'none';
-                } else {
+                    } else {
                     sidebar.classList.add('open');
                     navbarHamburger.classList.add('open');
                     sidebarOverlay.classList.add('active');
@@ -779,7 +780,7 @@
             // Optional: close sidebar when clicking outside
             document.addEventListener('click', function(e) {
                 if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== navbarHamburger) {
-                    sidebar.classList.remove('open');
+                sidebar.classList.remove('open');
                     navbarHamburger.classList.remove('open');
                     sidebarOverlay.classList.remove('active');
                     sidebarOverlay.style.display = 'none';

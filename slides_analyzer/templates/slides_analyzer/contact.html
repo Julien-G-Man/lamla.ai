@@ -38,7 +38,7 @@
                         {% endfor %}
                     {% endif %}
 
-                    <form method="post" class="contact-form">
+                    <form method="post" class="contact-form" action="{% url 'contact' %}" id="contactForm">
                         {% csrf_token %}
                         
                         <div class="form-row">
@@ -85,7 +85,7 @@
                             </div>
                             <div class="method-content">
                                 <h4>Email Support</h4>
-                                <p>support@lamla-ai.com</p>
+                                <p>lamlaaiteam@gmail.com</p>
                                 <small>We typically respond within 24 hours</small>
                             </div>
                         </div>
@@ -97,7 +97,7 @@
                             <div class="method-content">
                                 <h4>Response Time</h4>
                                 <p>24-48 hours</p>
-                                <small>Monday to Friday, 9 AM - 6 PM EST</small>
+                                <small>Monday to Saturday, 9 AM - 6 PM UTC</small>
                             </div>
                         </div>
                         
@@ -108,7 +108,7 @@
                             <div class="method-content">
                                 <h4>FAQ Section</h4>
                                 <p>Find quick answers</p>
-                                <a href="#" class="text-yellow">View FAQ →</a>
+                                <a href="{% url 'faq' %}" class="text-yellow">View FAQ →</a>
                             </div>
                         </div>
                     </div>
@@ -134,7 +134,7 @@
             </div>
             
             <div class="social-grid">
-                <a href="#" class="social-card">
+                <a href="https://x.com/lamla_i" class="social-card">
                     <div class="social-icon">
                         <i class="fab fa-twitter"></i>
                     </div>
@@ -144,7 +144,7 @@
                     </div>
                 </a>
                 
-                <a href="#" class="social-card">
+                <a href="https://linkedin.com/company/lamla-ai" class="social-card">
                     <div class="social-icon">
                         <i class="fab fa-linkedin"></i>
                     </div>
@@ -154,22 +154,22 @@
                     </div>
                 </a>
                 
-                <a href="#" class="social-card">
+                <a href="https://instagram.com/lamla.io" class="social-card">
                     <div class="social-icon">
-                        <i class="fab fa-github"></i>
+                        <i class="fab fa-instagram"></i>
                     </div>
                     <div class="social-content">
-                        <h4>GitHub</h4>
-                        <p>Open source projects and code</p>
+                        <h4>Instagram</h4>
+                        <p>Stay Updated</p>
                     </div>
                 </a>
                 
-                <a href="#" class="social-card">
+                <a href="https://www.facebook.com/share/16pmyhCiUM/" class="social-card">
                     <div class="social-icon">
-                        <i class="fab fa-discord"></i>
+                        <i class="fab fa-facebook"></i>
                     </div>
                     <div class="social-content">
-                        <h4>Discord</h4>
+                        <h4>Facebook</h4>
                         <p>Join our community</p>
                     </div>
                 </a>
@@ -698,3 +698,45 @@
 }
 </style>
 {% endblock %} 
+<script>
+// Handle URL parameters for pre-filling contact form
+function handleUrlParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const subject = urlParams.get('subject');
+    if (subject) {
+        const subjectInput = document.querySelector('input[name="subject"]');
+        if (subjectInput) {
+            subjectInput.value = decodeURIComponent(subject);
+            subjectInput.style.background = '#fff3cd';
+            subjectInput.style.borderColor = '#ffc107';
+            setTimeout(() => {
+                subjectInput.style.background = '';
+                subjectInput.style.borderColor = '';
+            }, 2000);
+        }
+    }
+}
+document.addEventListener('DOMContentLoaded', handleUrlParameters);
+// Contact form submission handler
+const form = document.getElementById('contactForm');
+if (form) {
+    form.addEventListener('submit', function(e) {
+        const name = form.querySelector('input[name="name"]').value.trim();
+        const email = form.querySelector('input[name="email"]').value.trim();
+        const subject = form.querySelector('input[name="subject"]').value.trim();
+        const message = form.querySelector('textarea[name="message"]').value.trim();
+        if (!name || !email || !subject || !message) {
+            e.preventDefault();
+            alert('Please fill in all fields.');
+            return false;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            e.preventDefault();
+            alert('Please enter a valid email address.');
+            return false;
+        }
+        // If validation passes, let the form submit normally
+    });
+}
+</script> 

@@ -833,22 +833,22 @@
                             <label for="exam_file_1">Upload File 1</label>
                             <input type="file" name="exam_file_1" id="exam_file_1" accept=".pdf,.docx,.pptx,.txt" class="file-input">
                             <div class="file-info" id="file_info_1"></div>
-                        </div>
+                </div>
                         <div class="file-upload-slot">
                             <label for="exam_file_2">Upload File 2</label>
                             <input type="file" name="exam_file_2" id="exam_file_2" accept=".pdf,.docx,.pptx,.txt" class="file-input">
                             <div class="file-info" id="file_info_2"></div>
-                        </div>
+                    </div>
                         <div class="file-upload-slot">
                             <label for="exam_file_3">Upload File 3</label>
                             <input type="file" name="exam_file_3" id="exam_file_3" accept=".pdf,.docx,.pptx,.txt" class="file-input">
                             <div class="file-info" id="file_info_3"></div>
-                        </div>
+                </div>
                         <div class="file-upload-slot">
                             <label for="exam_file_4">Upload File 4</label>
                             <input type="file" name="exam_file_4" id="exam_file_4" accept=".pdf,.docx,.pptx,.txt" class="file-input">
                             <div class="file-info" id="file_info_4"></div>
-                        </div>
+                    </div>
                         <div class="file-upload-slot">
                             <label for="exam_file_5">Upload File 5</label>
                             <input type="file" name="exam_file_5" id="exam_file_5" accept=".pdf,.docx,.pptx,.txt" class="file-input">
@@ -882,11 +882,11 @@
                     {% if analysis_results.trends %}
                     <div class="trends-section">
                         <h4>📊 Identified Trends</h4>
-                        <ul>
+                                <ul>
                         {% for trend in analysis_results.trends %}
                             <li>{{ trend }}</li>
-                        {% endfor %}
-                        </ul>
+                                    {% endfor %}
+                                </ul>
                     </div>
                     {% endif %}
 

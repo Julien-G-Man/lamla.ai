@@ -8,35 +8,7 @@ from .email_backend import send_email
 from allauth.account.signals import email_confirmed
 
 
-@receiver(post_save, sender=User)
-def send_welcome_email(sender, instance, created, **kwargs):
-    """
-    Send welcome email when a new user is created.
-    """
-    if created and instance.email:
-        # Send welcome email from juliengmanana@gmail.com
-        subject = "[Lamla AI] Welcome to LAMLA AI! 🎉"
-        
-        # Create welcome email content
-        context = {
-            'user': instance,
-            'site_name': 'LAMLA AI',
-            'site_domain': getattr(settings, 'SITE_DOMAIN', 'lamla-ai.onrender.com'),
-        }
-        
-        # Render email templates
-        html_message = render_to_string('emails/welcome_email.html', context)
-        plain_message = render_to_string('emails/welcome_email.txt', context)
-        
-        # Send email using custom backend
-        send_email(
-            subject=subject,
-            message=plain_message,
-            recipient_list=[instance.email],
-            from_email='juliengmanana@gmail.com',
-            html_message=html_message
-        )
-
+# Removed post_save signal for welcome email at user creation
 
 @receiver(email_confirmed)
 def send_welcome_email_after_confirmation(request, email_address, **kwargs):
@@ -45,7 +17,7 @@ def send_welcome_email_after_confirmation(request, email_address, **kwargs):
     """
     user = email_address.user
     if user and user.email:
-        subject = "[Lamla AI] Welcome to LAMLA AI! 🎉"
+        subject = "Welcome to LAMLA AI! 🎉"
         context = {
             'user': user,
             'site_name': 'LAMLA AI',

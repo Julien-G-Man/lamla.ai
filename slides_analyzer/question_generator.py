@@ -16,8 +16,6 @@ class QuestionGenerator:
         self.gemini_model = getattr(settings, 'GEMINI_MODEL', 'gemini-1.5-pro')
         self.hf_token = getattr(settings, 'HUGGING_FACE_API_TOKEN', None)
         
-        print("[DEBUG] Azure OpenAI Key:", self.azure_openai_api_key)
-        print("[DEBUG] Azure OpenAI Endpoint:", self.azure_openai_endpoint)
         # Log API configuration status
         logger.info(f"Azure OpenAI API Key: {'✓ Set' if self.azure_openai_api_key else '✗ Not set'}")
         logger.info(f"Azure OpenAI Endpoint: {'✓ Set' if self.azure_openai_endpoint else '✗ Not set'}")

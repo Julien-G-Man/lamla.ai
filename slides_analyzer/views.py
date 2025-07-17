@@ -90,10 +90,13 @@ def home(request):
 def dashboard(request):
     context = {}
     if request.user.is_authenticated:
-        from .models import QuizSession
+        from .models import QuizSession, ExamAnalysis
         # Get the 5 most recent quiz sessions
         recent_quiz_sessions = QuizSession.objects.filter(user=request.user).order_by('-created_at')[:5]
+        # Get the 5 most recent exam analyses
+        recent_exam_analyses = ExamAnalysis.objects.filter(user=request.user).order_by('-created_at')[:5]
         context['recent_quiz_sessions'] = recent_quiz_sessions
+        context['recent_exam_analyses'] = recent_exam_analyses
     return render(request, 'slides_analyzer/dashboard.html', context)
 
 def user_profile(request):
@@ -237,13 +240,15 @@ def exam_analyzer(request):
                     }
                 )
                 analysis.documents_analyzed.set(uploaded_documents)
-            
-            return render(request, 'slides_analyzer/exam_analyzer.html', {
-                'analysis_results': {
+                return redirect('exam_analysis_results', analysis_id=analysis.id)
+            else:
+                # For anonymous users, store in session and redirect
+                request.session['anon_exam_analysis'] = {
                     'trends': analysis_results.get('trends', []),
-                    'predictions': analysis_results.get('predictions', [])
+                    'predictions': analysis_results.get('predictions', []),
+                    'context': context
                 }
-            })
+                return redirect('exam_analysis_results')
             
         except Exception as e:
             logger.error(f"Exam analyzer error: {e}")
@@ -252,6 +257,29 @@ def exam_analyzer(request):
             })
     
     return render(request, 'slides_analyzer/exam_analyzer.html')
+
+
+def exam_analysis_results(request, analysis_id=None):
+    analysis_data = None
+    if analysis_id:
+        # Authenticated user: fetch from DB
+        try:
+            analysis = ExamAnalysis.objects.get(id=analysis_id, user=request.user)
+            analysis_data = analysis.analysis_data
+        except ExamAnalysis.DoesNotExist:
+            return render(request, 'slides_analyzer/exam_analysis_results.html', {
+                'error_message': 'Analysis not found.'
+            })
+    else:
+        # Anonymous user: fetch from session
+        analysis_data = request.session.get('anon_exam_analysis')
+        if not analysis_data:
+            return render(request, 'slides_analyzer/exam_analysis_results.html', {
+                'error_message': 'No analysis results found.'
+            })
+    return render(request, 'slides_analyzer/exam_analysis_results.html', {
+        'analysis_results': analysis_data
+    })
 
 def perform_exam_analysis(text_content, subject, context=''):
     """Perform comprehensive AI analysis on exam content to provide detailed insights and strategic feedback."""

@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+    :root {
+        --primary-color: #FFD600;
+        --secondary-color: #222;
+        --background-white: #fff;
+        --light-yellow: #FFFDF4;
+        --enactus-light-grey: #ECF0F1;
+        --enactus-border-light: #ECECEC;
+        --enactus-shadow-light: rgba(0, 0, 0, 0.08);
+        --enactus-shadow-medium: rgba(0, 0, 0, 0.15);
+        --enactus-error-red: #E74C3C;
+        --enactus-success-green: #2ECC71;
+    }
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--enactus-light-grey);
+        color: var(--secondary-color);
+    }
+    .split-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: calc(100vh - 80px);
+        padding: 40px 20px;
+        width: 100%;
+        box-sizing: border-box;
+        transition: all 0.3s;
+    }
+    .analysis-panel {
+        background: var(--background-white);
+        border-radius: 15px;
+        box-shadow: 0 10px 25px var(--enactus-shadow-light);
+        padding: 40px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+        position: relative;
+        flex: 1 1 60%;
+        max-width: 60%;
+        min-width: 0;
+        transition: max-width 0.3s;
+    }
+    .chatbot-panel {
+        background: var(--background-white);
+        border-radius: 15px;
+        box-shadow: 0 10px 25px var(--enactus-shadow-light);
+        margin-top: 20px;
+        margin-bottom: 20px;
+        margin-left: 32px;
+        box-sizing: border-box;
+        position: relative;
+        flex: 1 1 40%;
+        max-width: 40%;
+        min-width: 320px;
+        display: flex;
+        flex-direction: column;
+        transition: max-width 0.3s;
+        animation: fadeIn 0.3s;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateX(40px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    .ai-disclaimer {
+        background: var(--light-yellow);
+        border-left: 5px solid var(--primary-color);
+        padding: 16px 18px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        font-size: 1rem;
+        color: #444;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .analysis-section {
+        margin-bottom: 32px;
+    }
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+    }
+    .trends-section, .predictions-section, .context-section {
+        margin-bottom: 24px;
+    }
+    ul {
+        padding-left: 22px;
+    }
+    .discuss-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--primary-color);
+        color: var(--secondary-color);
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        padding: 14px 28px;
+        font-size: 1.1rem;
+        margin: 32px auto 0 auto;
+        cursor: pointer;
+        box-shadow: 0 2px 8px var(--enactus-shadow-light);
+        transition: background 0.2s;
+    }
+    .discuss-btn:hover {
+        background: #ffe066;
+    }
+    .chatbot-header {
+        background: var(--primary-color);
+        color: var(--secondary-color);
+        font-weight: 700;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--enactus-border-light);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 15px 15px 0 0;
+    }
+    .chatbot-close {
+        background: none;
+        border: none;
+        font-size: 1.3rem;
+        color: var(--secondary-color);
+        cursor: pointer;
+    }
+    .chatbot-body {
+        padding: 18px;
+        min-height: 200px;
+        max-height: 350px;
+        overflow-y: auto;
+        font-size: 1rem;
+        flex: 1 1 auto;
+    }
+    .chatbot-context {
+        color: #888;
+        background: #fafafa;
+        border-radius: 6px;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+        font-size: 0.98rem;
+    }
+    .chatbot-input-row {
+        display: flex;
+        border-top: 1px solid var(--enactus-border-light);
+        background: #fafafa;
+        padding: 10px 12px;
+    }
+    .chatbot-input {
+        flex: 1;
+        border: 1px solid var(--enactus-border-light);
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 1rem;
+        margin-right: 8px;
+    }
+    .chatbot-send-btn {
+        background: var(--primary-color);
+        color: var(--secondary-color);
+        border: none;
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .chatbot-send-btn:hover {
+        background: #ffe066;
+    }
+    @media (max-width: 900px) {
+        .split-wrapper {
+            flex-direction: column;
+            padding: 20px 4vw;
+        }
+        .analysis-panel, .chatbot-panel {
+            max-width: 100%;
+            width: 100%;
+            margin-left: 0;
+        }
+        .chatbot-panel {
+            margin-top: 24px;
+        }
+    }
+</style>
+<div class="split-wrapper" id="splitWrapper">
+    <div class="analysis-panel" id="analysisPanel">
+        <h1 class="main-page-title">📑 Exam Analysis Results</h1>
+        {% if error_message %}
+            <div class="ai-disclaimer" style="color:var(--enactus-error-red);">
+                <i class="fas fa-exclamation-triangle"></i> {{ error_message }}
+            </div>
+        {% else %}
+            <div class="ai-disclaimer">
+                <i class="fas fa-robot"></i>
+                <strong>AI-Generated Analysis Disclaimer:</strong> This analysis is generated by artificial intelligence and may contain errors, inaccuracies, or incomplete information. Please use this as a supplementary tool and verify all insights with your course materials and instructors.
+            </div>
+            <div class="analysis-section">
+                <div class="section-title">Analysis Results</div>
+                {% if analysis_results.trends %}
+                <div class="trends-section">
+                    <h4>📊 Identified Trends</h4>
+                    <ul>
+                        {% for trend in analysis_results.trends %}
+                            <li>{{ trend }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if analysis_results.predictions %}
+                <div class="predictions-section">
+                    <h4>🔮 Predicted Focus Areas</h4>
+                    <ul>
+                        {% for prediction in analysis_results.predictions %}
+                            <li>{{ prediction }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if analysis_results.context %}
+                <div class="context-section">
+                    <h4>📝 User Context</h4>
+                    <div style="background:#f8f8f8;padding:10px 14px;border-radius:6px;">{{ analysis_results.context }}</div>
+                </div>
+                {% endif %}
+            </div>
+            <button class="discuss-btn" id="discussBtn">
+                <i class="fas fa-comments"></i> Discuss This Analysis
+            </button>
+        {% endif %}
+    </div>
+    <div class="chatbot-panel" id="chatbotPanel" style="display:none;">
+        <div class="chatbot-header">
+            <span>💬 Lamla AI Chatbot</span>
+            <button class="chatbot-close" id="closeChatbot">&times;</button>
+        </div>
+        <div class="chatbot-body" id="chatbotBody">
+            <div class="chatbot-context" id="chatbotContext">
+                <b>Analysis context:</b><br>
+                {{ analysis_results.trends|join:', ' }} {% if analysis_results.predictions %} | {{ analysis_results.predictions|join:', ' }}{% endif %} {% if analysis_results.context %} | {{ analysis_results.context }}{% endif %}
+            </div>
+        </div>
+        <div class="chatbot-input-row">
+            <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Type your question...">
+            <button class="chatbot-send-btn" id="sendChatbot">Send</button>
+        </div>
+    </div>
+</div>
+<script>
+    // Split view logic
+    const discussBtn = document.getElementById('discussBtn');
+    const chatbotPanel = document.getElementById('chatbotPanel');
+    const analysisPanel = document.getElementById('analysisPanel');
+    discussBtn && (discussBtn.onclick = function() {
+        chatbotPanel.style.display = 'flex';
+        discussBtn.style.display = 'none';
+    });
+    document.getElementById('closeChatbot').onclick = function() {
+        chatbotPanel.style.display = 'none';
+        discussBtn.style.display = 'flex';
+    };
+
+    // --- Chatbot AJAX logic ---
+    // Generate a unique session_id for this chat (for anonymous users)
+    function generateSessionId() {
+        return 'exam_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+    }
+    let sessionId = window.localStorage.getItem('lamla_exam_chatbot_session');
+    if (!sessionId) {
+        sessionId = generateSessionId();
+        window.localStorage.setItem('lamla_exam_chatbot_session', sessionId);
+    }
+    // Track if context has been sent
+    let contextSent = false;
+    // Get context string
+    function getAnalysisContext() {
+        const context = document.getElementById('chatbotContext');
+        return context ? context.innerText.trim() : '';
+    }
+    // Send message to backend
+    document.getElementById('sendChatbot').onclick = function() {
+        var input = document.getElementById('chatbotInput');
+        var body = document.getElementById('chatbotBody');
+        var userMsg = input.value.trim();
+        if (!userMsg) return;
+        // Show user message
+        var msgDiv = document.createElement('div');
+        msgDiv.style.margin = '10px 0';
+        msgDiv.style.color = '#222'; // Black for user
+        msgDiv.innerHTML = '<b>You:</b> ' + userMsg;
+        body.appendChild(msgDiv);
+        input.value = '';
+        body.scrollTop = body.scrollHeight;
+        // Show loading
+        var loadingDiv = document.createElement('div');
+        loadingDiv.id = 'aiLoading';
+        loadingDiv.style.margin = '10px 0 10px 20px';
+        loadingDiv.style.color = '#888';
+        loadingDiv.innerHTML = '<b>Lamla AI:</b> <i>Thinking...</i>';
+        body.appendChild(loadingDiv);
+        body.scrollTop = body.scrollHeight;
+        // Prepare message (prepend context if first message)
+        let messageToSend = userMsg;
+        if (!contextSent) {
+            const context = getAnalysisContext();
+            if (context) {
+                messageToSend = '[Exam Analysis Context]\n' + context + '\n\n' + userMsg;
+            }
+            contextSent = true;
+        }
+        // AJAX POST
+        fetch('/api/chatbot/message/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+                message: messageToSend,
+                session_id: sessionId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Remove loading
+            var loading = document.getElementById('aiLoading');
+            if (loading) loading.remove();
+            var aiDiv = document.createElement('div');
+            aiDiv.style.margin = '10px 0 10px 20px';
+            aiDiv.style.color = '#222'; // Black for AI
+            if (data.status === 'success') {
+                // Preserve indentation and line breaks for lists
+                aiDiv.innerHTML = '<b>Lamla AI:</b> <span style="white-space: pre-wrap; display: block; margin-top: 4px;">' + (data.response ? escapeHtml(data.response) : '<i>No response.</i>') + '</span>';
+            } else {
+                aiDiv.innerHTML = '<b>Lamla AI:</b> <i>Error: ' + (data.message || 'No response') + '</i>';
+            }
+            body.appendChild(aiDiv);
+            body.scrollTop = body.scrollHeight;
+        })
+        .catch(err => {
+            var loading = document.getElementById('aiLoading');
+            if (loading) loading.remove();
+            var aiDiv = document.createElement('div');
+            aiDiv.style.margin = '10px 0 10px 20px';
+            aiDiv.style.color = '#222'; // Black for AI error
+            aiDiv.innerHTML = '<b>Lamla AI:</b> <i>Error: Could not connect to server.</i>';
+            body.appendChild(aiDiv);
+            body.scrollTop = body.scrollHeight;
+        });
+    };
+    // CSRF helper
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    // Add escapeHtml helper to prevent XSS
+    function escapeHtml(text) {
+        var map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+</script>
+{% endblock %} 

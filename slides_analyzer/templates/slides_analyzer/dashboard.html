@@ -156,6 +156,21 @@
                         </div>
                         {% endfor %}
                         {% endif %}
+                        {% if recent_exam_analyses %}
+                        {% for analysis in recent_exam_analyses %}
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: linear-gradient(135deg, #222, #FFD600); color: #FFD600;">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Exam Analysis</h4>
+                                <p>Subject: {{ analysis.subject|default:'(No subject)' }}</p>
+                                <span class="activity-time">{{ analysis.created_at|timesince }} ago</span>
+                                <a href="{% url 'exam_analysis_results' analysis.id %}" class="btn-secondary" style="margin-top:8px;">View Analysis</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
                     </div>
                 {% else %}
                     <div class="empty-state">

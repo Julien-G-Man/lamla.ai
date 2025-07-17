@@ -22,44 +22,28 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .header {
-            background: linear-gradient(135deg, #FFEE58 0%, #FFD600 100%);
-            padding: 32px 30px;
+            background: linear-gradient(135deg, #FFD600 0%, #FFA000 100%);
+            padding: 40px 30px;
             text-align: center;
             color: #222;
         }
         .header h1 {
             margin: 0;
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
         }
         .header p {
             margin: 10px 0 0 0;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             opacity: 0.9;
         }
         .content {
-            padding: 32px 30px 24px 30px;
-        }
-        .info {
-            margin-bottom: 18px;
-        }
-        .info strong {
-            color: #FFD600;
-            font-weight: 600;
-        }
-        .message {
-            background-color: #FFFBE6;
-            border-left: 4px solid #FFD600;
-            padding: 18px;
-            border-radius: 0 8px 8px 0;
-            color: #222;
-            font-size: 1.05rem;
-            margin-bottom: 10px;
+            padding: 40px 30px;
         }
         .footer {
             background-color: #222;
             color: #FFD600;
-            padding: 24px 30px;
+            padding: 30px;
             text-align: center;
         }
         .footer p {
@@ -67,11 +51,12 @@
             font-size: 0.9rem;
         }
         .social-links {
-            margin: 16px 0 0 0;
+            margin: 20px 0;
         }
-        .social-links span {
+        .social-links a {
             color: #FFD600;
-            margin: 0 8px;
+            text-decoration: none;
+            margin: 0 10px;
             font-weight: 600;
         }
     </style>
@@ -83,15 +68,15 @@
             <p>A user has submitted a message via the Lamla AI contact form.</p>
         </div>
         <div class="content">
-            <div class="info"><strong>Name:</strong> {{ name }}</div>
-            <div class="info"><strong>Email:</strong> {{ email }}</div>
-            <div class="info"><strong>Subject:</strong> {{ subject }}</div>
-            <div class="message"><strong>Message:</strong><br>{{ message|linebreaksbr }}</div>
+            <div style="margin-bottom: 18px;"><strong style="color: #FFD600; font-weight: 600;">Name:</strong> {{ name }}</div>
+            <div style="margin-bottom: 18px;"><strong style="color: #FFD600; font-weight: 600;">Email:</strong> {{ email }}</div>
+            <div style="margin-bottom: 18px;"><strong style="color: #FFD600; font-weight: 600;">Subject:</strong> {{ subject }}</div>
+            <div style="background-color: #FFFBE6; border-left: 4px solid #FFD600; padding: 18px; border-radius: 0 8px 8px 0; color: #222; font-size: 1.05rem; margin-bottom: 10px;"><strong>Message:</strong><br>{{ message|linebreaksbr }}</div>
         </div>
         <div class="footer">
             <p>Lamla AI<br>lamla-ai.onrender.com</p>
             <p>&copy;2025 Lamla AI</p>
-            <div class="social-links" style="margin: 16px 0 0 0;">
+            <div class="social-links">
                 <a href="https://linkedin.com/company/lamla-ai" title="LinkedIn" target="_blank" style="margin: 0 8px; text-decoration: none; display: inline-block; vertical-align: middle;">
                     <svg width="24" height="24" fill="#FFD600" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 11.268h-3v-5.604c0-1.337-.026-3.063-1.868-3.063-1.868 0-2.154 1.459-2.154 2.968v5.699h-3v-10h2.881v1.367h.041c.401-.761 1.381-1.563 2.841-1.563 3.039 0 3.6 2.001 3.6 4.601v5.595z"/></svg>
                 </a>

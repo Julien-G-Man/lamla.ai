@@ -23,28 +23,43 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .header {
-            background: linear-gradient(135deg, #FFEE58 0%, #FFD600 100%);
-            padding: 32px 30px;
+            background: linear-gradient(135deg, #FFD600 0%, #FFA000 100%);
+            padding: 40px 30px;
             text-align: center;
             color: #222;
         }
         .header h1 {
             margin: 0;
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: 700;
         }
         .header p {
             margin: 10px 0 0 0;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             opacity: 0.9;
         }
         .content {
-            padding: 32px 30px 24px 30px;
+            padding: 40px 30px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #FFD600 0%, #FFA000 100%);
+            color: #222;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 20px 0;
+            transition: transform 0.2s ease;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
         }
         .footer {
             background-color: #222;
             color: #FFD600;
-            padding: 24px 30px;
+            padding: 30px;
             text-align: center;
         }
         .footer p {
@@ -52,7 +67,13 @@
             font-size: 0.9rem;
         }
         .social-links {
-            margin: 16px 0 0 0;
+            margin: 20px 0;
+        }
+        .social-links a {
+            color: #FFD600;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -63,13 +84,13 @@
             <p>We couldn't find an account associated with that email address.</p>
         </div>
         <div class="content">
-            <p>If you don't have a LAMLA AI account yet, you can <a href="{{ signup_url }}" style="color: #FFD600; text-decoration: underline;">sign up here</a>.</p>
+            <p>If you don't have a LAMLA AI account yet, you can <a href="{{ signup_url }}" class="cta-button" style="display:inline-block; margin: 12px 0;">Sign Up Here</a>.</p>
             <p>If you believe this is a mistake, please double-check your email address or contact our support team.</p>
             <p><strong>Thanks for using LAMLA AI!</strong></p>
         </div>
         <div class="footer">
-            <p>Lamla AI<br>lamla-ai.onrender.com</p>
-            <div class="social-links" style="margin: 16px 0 0 0;">
+            <p><strong>LAMLA AI</strong> - Transforming Education with AI</p>
+            <div class="social-links">
                 <a href="https://linkedin.com/company/lamla-ai" title="LinkedIn" target="_blank" style="margin: 0 8px; text-decoration: none; display: inline-block; vertical-align: middle;">
                     <svg width="24" height="24" fill="#FFD600" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 11.268h-3v-5.604c0-1.337-.026-3.063-1.868-3.063-1.868 0-2.154 1.459-2.154 2.968v5.699h-3v-10h2.881v1.367h.041c.401-.761 1.381-1.563 2.841-1.563 3.039 0 3.6 2.001 3.6 4.601v5.595z"/></svg>
                 </a>

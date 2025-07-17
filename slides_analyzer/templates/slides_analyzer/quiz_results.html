@@ -120,14 +120,17 @@
                 <p class="rating-text">Click to rate your experience</p>
             </div>
             
-            <div class="feedback-actions">
+            <div class="feedback-actions triple-action-row">
                 {% if not no_quiz_message %}
-                <a class="feedback-btn" href="/about/?subject=Quiz%20Feedback#get-in-touch">
-                    <i class="fas fa-comment"></i> Give us detailed feedback
+                <a class="feedback-btn action-btn" href="/about/?subject=Quiz%20Feedback#get-in-touch">
+                    <i class="fas fa-comment"></i> Feedback
                 </a>
-                <button class="share-btn" onclick="shareResults()">
-                    <i class="fas fa-share-alt"></i> Share Lamla AI 
+                <button class="share-btn action-btn" onclick="shareResults()">
+                    <i class="fas fa-share-alt"></i> Share Lamla AI
                 </button>
+                <a class="download-btn action-btn" href="{% url 'download_quiz_text' %}">
+                    <i class="fas fa-download"></i> Download Quiz
+                </a>
                 {% endif %}
             </div>
         </div>
@@ -753,6 +756,49 @@
     [style*="color:var(--primary-color)"] {
         color: var(--secondary-color) !important;
     }
+.triple-action-row {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 18px;
+    margin-bottom: 18px;
+}
+.action-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 180px;
+    padding: 10px 0;
+    font-size: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+    background: #fff;
+    border: 2px solid #FFD600;
+    color: #222;
+    transition: background 0.2s, color 0.2s;
+}
+.action-btn i {
+    margin-right: 6px;
+}
+.action-btn:hover {
+    background: #FFD600;
+    color: #222;
+    text-decoration: none;
+}
+@media (max-width: 600px) {
+    .triple-action-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .action-btn {
+        max-width: 100%;
+        width: 100%;
+    }
+}
 </style>
 
 <script>

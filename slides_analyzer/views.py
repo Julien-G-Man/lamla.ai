@@ -91,12 +91,16 @@ def dashboard(request):
     context = {}
     if request.user.is_authenticated:
         from .models import QuizSession, ExamAnalysis
-        # Get the 5 most recent quiz sessions
-        recent_quiz_sessions = QuizSession.objects.filter(user=request.user).order_by('-created_at')[:5]
-        # Get the 5 most recent exam analyses
-        recent_exam_analyses = ExamAnalysis.objects.filter(user=request.user).order_by('-created_at')[:5]
-        context['recent_quiz_sessions'] = recent_quiz_sessions
-        context['recent_exam_analyses'] = recent_exam_analyses
+        quiz_sessions = list(QuizSession.objects.filter(user=request.user))
+        exam_analyses = list(ExamAnalysis.objects.filter(user=request.user))
+        all_activities = [
+            {'type': 'quiz', 'obj': q, 'created_at': q.created_at} for q in quiz_sessions
+        ] + [
+            {'type': 'exam_analysis', 'obj': a, 'created_at': a.created_at} for a in exam_analyses
+        ]
+        all_activities.sort(key=lambda x: x['created_at'], reverse=True)
+        recent_activities = all_activities[:2]
+        context['recent_activities'] = recent_activities
     return render(request, 'slides_analyzer/dashboard.html', context)
 
 def user_profile(request):
@@ -988,6 +992,31 @@ def chatbot_history(request):
 
 def faq(request):
     return render(request, 'slides_analyzer/faq.html')
+
+def history(request):
+    if not request.user.is_authenticated:
+        return redirect('account_login')
+    from .models import QuizSession, ExamAnalysis
+    activity_type = request.GET.get('type', '').strip()
+    subject_query = request.GET.get('subject', '').strip()
+    quiz_sessions = list(QuizSession.objects.filter(user=request.user))
+    exam_analyses = list(ExamAnalysis.objects.filter(user=request.user))
+    all_activities = [
+        {'type': 'quiz', 'obj': q, 'created_at': q.created_at} for q in quiz_sessions
+    ] + [
+        {'type': 'exam_analysis', 'obj': a, 'created_at': a.created_at} for a in exam_analyses
+    ]
+    # Apply filters
+    if activity_type in ['quiz', 'exam_analysis']:
+        all_activities = [a for a in all_activities if a['type'] == activity_type]
+    if subject_query:
+        all_activities = [a for a in all_activities if subject_query.lower() in (a['obj'].subject or '').lower()]
+    all_activities.sort(key=lambda x: x['created_at'], reverse=True)
+    return render(request, 'slides_analyzer/history.html', {
+        'all_activities': all_activities,
+        'current_type': activity_type,
+        'current_subject': subject_query
+    })
 
 def download_quiz_text(request):
     """Download the most recent quiz as a text file."""

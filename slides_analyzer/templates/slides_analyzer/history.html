@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    .history-wrapper {
+        max-width: 800px;
+        margin: 40px auto 0 auto;
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        padding: 40px 30px;
+    }
+    .history-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 24px;
+        text-align: center;
+    }
+    .activity-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 18px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .activity-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        background: #FFD60022;
+        color: #FFD600;
+    }
+    .activity-content {
+        flex: 1;
+    }
+    .activity-type {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #FFD600;
+        margin-bottom: 2px;
+    }
+    .activity-subject {
+        font-size: 1.1rem;
+        color: #222;
+        font-weight: 500;
+    }
+    .activity-date {
+        font-size: 0.98rem;
+        color: #888;
+        margin-top: 2px;
+    }
+    .activity-link {
+        background: #FFD600;
+        color: #222;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-weight: 600;
+        text-decoration: none;
+        font-size: 1rem;
+        margin-left: 12px;
+        transition: background 0.2s;
+    }
+    .activity-link:hover {
+        background: #ffe066;
+    }
+    @media (max-width: 600px) {
+        .history-wrapper { padding: 18px 4vw; }
+        .activity-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+    }
+</style>
+<div class="history-wrapper">
+    <div class="history-title">Your Activity History</div>
+    <form method="get" style="margin-bottom: 28px; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; justify-content: center;">
+        <label style="font-weight:600;">Type:
+            <select name="type" style="margin-left:8px; padding:6px 12px; border-radius:6px; border:1px solid #eee;">
+                <option value="" {% if not current_type %}selected{% endif %}>All</option>
+                <option value="quiz" {% if current_type == 'quiz' %}selected{% endif %}>Quiz</option>
+                <option value="exam_analysis" {% if current_type == 'exam_analysis' %}selected{% endif %}>Exam Analysis</option>
+            </select>
+        </label>
+        <label style="font-weight:600;">Subject:
+            <input type="text" name="subject" value="{{ current_subject }}" placeholder="Search subject..." style="margin-left:8px; padding:6px 12px; border-radius:6px; border:1px solid #eee; min-width:160px;">
+        </label>
+        <button type="submit" style="background:#FFD600;color:#222;padding:8px 18px;border:none;border-radius:8px;font-weight:600;">Filter</button>
+        {% if current_type or current_subject %}
+        <a href="{% url 'history' %}" style="margin-left:10px;color:#888;font-size:0.98rem;text-decoration:underline;">Clear</a>
+        {% endif %}
+    </form>
+    {% if all_activities %}
+    <ul class="activity-list">
+        {% for activity in all_activities %}
+        <li class="activity-item">
+            <div class="activity-icon">
+                {% if activity.type == 'quiz' %}
+                    <i class="fas fa-question-circle"></i>
+                {% elif activity.type == 'exam_analysis' %}
+                    <i class="fas fa-chart-line"></i>
+                {% endif %}
+            </div>
+            <div class="activity-content">
+                <div class="activity-type">
+                    {% if activity.type == 'quiz' %}Quiz Completed{% elif activity.type == 'exam_analysis' %}Exam Analysis{% endif %}
+                </div>
+                <div class="activity-subject">
+                    Subject: {{ activity.obj.subject|default:'(No subject)' }}
+                </div>
+                <div class="activity-date">
+                    {{ activity.created_at|date:'M d, Y H:i' }}
+                </div>
+            </div>
+            {% if activity.type == 'quiz' %}
+                <a href="{% url 'quiz_results' %}" class="activity-link">View Quiz</a>
+            {% elif activity.type == 'exam_analysis' %}
+                <a href="{% url 'exam_analysis_results' activity.obj.id %}" class="activity-link">View Analysis</a>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div style="text-align:center;color:#888;font-size:1.1rem;">No activities found.</div>
+    {% endif %}
+</div>
+{% endblock %} 

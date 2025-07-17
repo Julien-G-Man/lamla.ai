@@ -642,9 +642,10 @@
                 <a href="{% url 'contact' %}" class="sidebar-link"><i class="fas fa-headset"></i> Contact</a>
                 <a href="{% url 'custom_quiz' %}" class="sidebar-link"><i class="fas fa-question-circle"></i> Quiz</a>
                 <a href="{% url 'flashcards' %}" class="sidebar-link"><i class="fas fa-clone"></i> Flashcards</a>
-                <a href="#" class="sidebar-link"><i class="fas fa-lightbulb"></i> Concepts</a>
                 <a href="{% url 'exam_analyzer' %}" class="sidebar-link"><i class="fas fa-chart-bar"></i> Exam Analyzer</a>
-                <a href="#" class="sidebar-link"><i class="fas fa-history"></i> History</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'history' %}" class="sidebar-link"><i class="fas fa-history"></i> History</a>
+                {% endif %}
                 {% if user.is_authenticated %}
                     <a href="{% url 'custom_logout' %}" class="sidebar-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
                 {% else %}

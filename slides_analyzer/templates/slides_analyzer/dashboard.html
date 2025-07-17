@@ -111,66 +111,32 @@
         <div class="dashboard-card">
             <div class="card-header">
                 <h2><i class="fas fa-history"></i> Recent Activity</h2>
-                <a href="#" class="view-all">View All</a>
+                <a href="{% url 'history' %}" class="view-all">View All</a>
             </div>
             <div class="card-content">
-                {% if user_feedback or user_contacts or recent_quiz_sessions %}
+                {% if recent_activities %}
                     <div class="activity-list">
-                        {% for feedback in user_feedback %}
+                        {% for activity in recent_activities %}
                         <div class="activity-item">
-                            <div class="activity-icon feedback">
-                                <i class="fas fa-star"></i>
+                            <div class="activity-icon" style="background: {% if activity.type == 'quiz' %}linear-gradient(135deg, #FFD600, #FDC72B); color: #222;{% else %}linear-gradient(135deg, #222, #FFD600); color: #FFD600;{% endif %}">
+                                {% if activity.type == 'quiz' %}
+                                    <i class="fas fa-question-circle"></i>
+                                {% elif activity.type == 'exam_analysis' %}
+                                    <i class="fas fa-chart-line"></i>
+                                {% endif %}
                             </div>
                             <div class="activity-content">
-                                <h4>Feedback Submitted</h4>
-                                <p>{{ feedback.feedback_text|truncatechars:50 }}</p>
-                                <span class="activity-time">{{ feedback.created_at|timesince }} ago</span>
+                                <h4>{% if activity.type == 'quiz' %}Quiz Completed{% elif activity.type == 'exam_analysis' %}Exam Analysis{% endif %}</h4>
+                                <p>Subject: {{ activity.obj.subject|default:'(No subject)' }}</p>
+                                <span class="activity-time">{{ activity.created_at|timesince }} ago</span>
+                                {% if activity.type == 'quiz' %}
+                                    <a href="{% url 'quiz_results' %}" class="btn-secondary" style="margin-top:8px;">View Quiz</a>
+                                {% elif activity.type == 'exam_analysis' %}
+                                    <a href="{% url 'exam_analysis_results' activity.obj.id %}" class="btn-secondary" style="margin-top:8px;">View Analysis</a>
+                                {% endif %}
                             </div>
                         </div>
                         {% endfor %}
-                        
-                        {% for contact in user_contacts %}
-                        <div class="activity-item">
-                            <div class="activity-icon contact">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div class="activity-content">
-                                <h4>Contact Message</h4>
-                                <p>{{ contact.subject }}</p>
-                                <span class="activity-time">{{ contact.created_at|timesince }} ago</span>
-                            </div>
-                        </div>
-                        {% endfor %}
-
-                        {% if recent_quiz_sessions %}
-                        {% for session in recent_quiz_sessions %}
-                        <div class="activity-item">
-                            <div class="activity-icon" style="background: linear-gradient(135deg, #FFD600, #FDC72B); color: #222;">
-                                <i class="fas fa-question-circle"></i>
-                            </div>
-                            <div class="activity-content">
-                                <h4>Quiz Completed</h4>
-                                <p>Subject: {{ session.subject|default:'(No subject)' }}<br>Score: {{ session.score_display }}</p>
-                                <span class="activity-time">{{ session.created_at|timesince }} ago</span>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        {% endif %}
-                        {% if recent_exam_analyses %}
-                        {% for analysis in recent_exam_analyses %}
-                        <div class="activity-item">
-                            <div class="activity-icon" style="background: linear-gradient(135deg, #222, #FFD600); color: #FFD600;">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div class="activity-content">
-                                <h4>Exam Analysis</h4>
-                                <p>Subject: {{ analysis.subject|default:'(No subject)' }}</p>
-                                <span class="activity-time">{{ analysis.created_at|timesince }} ago</span>
-                                <a href="{% url 'exam_analysis_results' analysis.id %}" class="btn-secondary" style="margin-top:8px;">View Analysis</a>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        {% endif %}
                     </div>
                 {% else %}
                     <div class="empty-state">

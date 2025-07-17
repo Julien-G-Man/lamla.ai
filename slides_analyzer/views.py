@@ -39,6 +39,7 @@ import re
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.template.loader import render_to_string
+from django.contrib.auth import login
 
 # Custom allauth adapter to ensure correct email sender
 class CustomAccountAdapter(DefaultAccountAdapter):
@@ -83,6 +84,44 @@ class CustomAccountAdapter(DefaultAccountAdapter):
             html_message=html_message,
             fail_silently=False
         )
+
+    def save_user(self, request, user, form, commit=True):
+        user = super().save_user(request, user, form, commit)
+        # Ensure UserProfile is created
+        UserProfile.objects.get_or_create(user=user)
+        # Check for special signup flag
+        from_account_not_found = False
+        if request:
+            # Check GET and POST for the flag
+            if hasattr(request, 'GET') and request.GET.get('from_account_not_found') == '1':
+                from_account_not_found = True
+            elif hasattr(request, 'POST') and request.POST.get('from_account_not_found') == '1':
+                from_account_not_found = True
+            # Also check session (in case you want to persist the flag)
+            elif hasattr(request, 'session') and request.session.get('from_account_not_found') == '1':
+                from_account_not_found = True
+        if from_account_not_found:
+            # Send welcome email immediately and log in
+            from django.template.loader import render_to_string
+            from .email_backend import send_email
+            context = {
+                'user': user,
+                'site_name': 'LAMLA AI',
+                'site_domain': getattr(settings, 'SITE_DOMAIN', 'lamla-ai.onrender.com'),
+            }
+            subject = "Welcome to LAMLA AI! 🎉"
+            html_message = render_to_string('emails/welcome_email.html', context)
+            plain_message = render_to_string('emails/welcome_email.txt', context)
+            send_email(
+                subject=subject,
+                message=plain_message,
+                recipient_list=[user.email],
+                from_email=getattr(settings, 'WELCOME_EMAIL_SENDER', 'juliengmanana@gmail.com'),
+                html_message=html_message
+            )
+            if request:
+                login(request, user)
+        return user
 
 def home(request):
     return render(request, 'slides_analyzer/home.html')

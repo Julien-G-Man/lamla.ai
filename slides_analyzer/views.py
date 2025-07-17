@@ -112,13 +112,18 @@ class CustomAccountAdapter(DefaultAccountAdapter):
             subject = "Welcome to LAMLA AI! 🎉"
             html_message = render_to_string('emails/welcome_email.html', context)
             plain_message = render_to_string('emails/welcome_email.txt', context)
-            send_email(
-                subject=subject,
-                message=plain_message,
-                recipient_list=[user.email],
-                from_email=getattr(settings, 'WELCOME_EMAIL_SENDER', 'juliengmanana@gmail.com'),
-                html_message=html_message
-            )
+            try:
+                logger.info(f"Attempting to send welcome email to {user.email} (user: {user.username})")
+                send_email(
+                    subject=subject,
+                    message=plain_message,
+                    recipient_list=[user.email],
+                    from_email=getattr(settings, 'WELCOME_EMAIL_SENDER', 'juliengmanana@gmail.com'),
+                    html_message=html_message
+                )
+                logger.info(f"Welcome email sent to {user.email}")
+            except Exception as e:
+                logger.error(f"Failed to send welcome email to {user.email}: {e}")
             if request:
                 login(request, user)
         return user

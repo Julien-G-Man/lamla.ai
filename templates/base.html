@@ -949,7 +949,11 @@ What would you like to know today?`;
                 
                 const messageContent = document.createElement('div');
                 messageContent.className = 'chatbot-message-content';
-                messageContent.innerHTML = content;
+                if (type === 'bot') {
+                    messageContent.innerHTML = '<span style="white-space: pre-wrap; display: block; color: #222;">' + escapeHtml(content) + '</span>';
+                } else {
+                    messageContent.innerHTML = content;
+                }
                 
                 messageDiv.appendChild(avatar);
                 messageDiv.appendChild(messageContent);

@@ -44,6 +44,68 @@ def save_user_profile(sender, instance, **kwargs):
     if hasattr(instance, 'profile'):
         instance.profile.save()
 
+class QuizSession(models.Model):
+    """Model to track quiz sessions and results"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quiz_sessions')
+    subject = models.CharField(max_length=100, blank=True, help_text="Subject/topic of the quiz")
+    total_questions = models.IntegerField(default=0)
+    correct_answers = models.IntegerField(default=0)
+    score_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+    duration_minutes = models.IntegerField(default=0, help_text="Time taken in minutes")
+    questions_data = models.JSONField(default=dict, help_text="Stored quiz questions and answers")
+    user_answers = models.JSONField(default=dict, help_text="User's answers")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Quiz Session"
+        verbose_name_plural = "Quiz Sessions"
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.subject} ({self.created_at.strftime('%Y-%m-%d %H:%M')})"
+    
+    @property
+    def score_display(self):
+        """Return score as a formatted string"""
+        return f"{self.correct_answers}/{self.total_questions} ({self.score_percentage}%)"
+
+class ExamDocument(models.Model):
+    """Model to store uploaded exam documents for analysis"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='exam_documents')
+    title = models.CharField(max_length=255, help_text="Document title/name")
+    subject = models.CharField(max_length=100, help_text="Subject of the exam")
+    year = models.IntegerField(help_text="Year of the exam", null=True, blank=True)
+    document_file = models.FileField(
+        upload_to='exam_documents/',
+        help_text="Upload exam document (PDF, DOCX, TXT)"
+    )
+    extracted_text = models.TextField(blank=True, help_text="Extracted text from document")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-uploaded_at']
+        verbose_name = "Exam Document"
+        verbose_name_plural = "Exam Documents"
+    
+    def __str__(self):
+        return f"{self.title} - {self.subject} ({self.uploaded_at.strftime('%Y-%m-%d')})"
+
+class ExamAnalysis(models.Model):
+    """Model to store exam analysis results"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='exam_analyses')
+    subject = models.CharField(max_length=100, help_text="Subject being analyzed")
+    documents_analyzed = models.ManyToManyField(ExamDocument, related_name='analyses')
+    analysis_data = models.JSONField(default=dict, help_text="Analysis results including trends and predictions")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Exam Analysis"
+        verbose_name_plural = "Exam Analyses"
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.subject} Analysis ({self.created_at.strftime('%Y-%m-%d')})"
+
 class Quiz(models.Model):
     title = models.CharField(max_length=255)
     # Add other fields as needed, e.g., description, duration

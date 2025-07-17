@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Question, Quiz, Feedback, Subscription, Contact, UserProfile, ChatMessage, ChatbotKnowledge
+from .models import Question, Quiz, Feedback, Subscription, Contact, UserProfile, ChatMessage, ChatbotKnowledge, QuizSession, ExamDocument, ExamAnalysis
 
 # Register your models here.
 
@@ -104,3 +104,63 @@ class ChatbotKnowledgeAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+@admin.register(QuizSession)
+class QuizSessionAdmin(admin.ModelAdmin):
+    list_display = ['user', 'subject', 'score_percentage', 'total_questions', 'created_at']
+    list_filter = ['created_at', 'subject']
+    search_fields = ['user__username', 'user__email', 'subject']
+    readonly_fields = ['created_at']
+    fieldsets = (
+        ('Session Information', {
+            'fields': ('user', 'subject', 'score_percentage', 'total_questions', 'correct_answers', 'duration_minutes')
+        }),
+        ('Quiz Data', {
+            'fields': ('questions_data', 'user_answers'),
+            'classes': ('collapse',)
+        }),
+        ('Timestamps', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+
+@admin.register(ExamDocument)
+class ExamDocumentAdmin(admin.ModelAdmin):
+    list_display = ['user', 'title', 'subject', 'year', 'uploaded_at']
+    list_filter = ['uploaded_at', 'subject', 'year']
+    search_fields = ['user__username', 'title', 'subject']
+    readonly_fields = ['uploaded_at']
+    fieldsets = (
+        ('Document Information', {
+            'fields': ('user', 'document_file', 'title', 'subject', 'year')
+        }),
+        ('Content', {
+            'fields': ('extracted_text',),
+            'classes': ('collapse',)
+        }),
+        ('Timestamps', {
+            'fields': ('uploaded_at',),
+            'classes': ('collapse',)
+        }),
+    )
+
+@admin.register(ExamAnalysis)
+class ExamAnalysisAdmin(admin.ModelAdmin):
+    list_display = ['user', 'subject', 'documents_analyzed_count', 'created_at']
+    list_filter = ['created_at', 'subject']
+    search_fields = ['user__username', 'subject']
+    readonly_fields = ['created_at']
+    fieldsets = (
+        ('Analysis Information', {
+            'fields': ('user', 'subject', 'documents_analyzed', 'analysis_data')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def documents_analyzed_count(self, obj):
+        return obj.documents_analyzed.count()
+    documents_analyzed_count.short_description = "Documents Analyzed"

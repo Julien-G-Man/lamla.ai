@@ -50,6 +50,7 @@ urlpatterns = [
     path('api/chatbot/suggestions/', views.chatbot_suggestions, name='chatbot_suggestions'),
     path('api/chatbot/history/', views.chatbot_history, name='chatbot_history'),
     path('faq/', views.faq, name='faq'),
+    path('quiz-download/', views.download_quiz_text, name='download_quiz_text'),
 ] 
 
 def call_ollama(prompt, model='llama3'):

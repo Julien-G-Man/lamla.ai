@@ -167,6 +167,24 @@ class Command(BaseCommand):
                 'question': 'How does Lamla AI protect my data?',
                 'answer': 'Your privacy and data security are our top priorities! 🔒\n\n**Data Protection Measures:**\n• **Industry-Standard Security** - Enterprise-level protection\n• **Secure File Processing** - Your materials are handled safely\n• **Privacy Protection** - Personal data never shared with third parties\n• **Educational Use Only** - Data used solely for learning experiences\n• **Secure Uploads** - Protected file transfer and storage\n• **Access Controls** - Only you can access your data\n• **Regular Audits** - Continuous security monitoring\n\n**What We Protect:**\n• **Study Materials** - Your uploaded files and content\n• **Personal Information** - Name, email, profile data\n• **Study History** - Quiz results and progress\n• **Account Data** - Login credentials and preferences\n• **Feedback** - Your comments and suggestions\n\n**Privacy Commitments:**\n• **No Third-Party Sharing** - Your data stays with us\n• **Educational Purpose Only** - Used for learning enhancement\n• **User Control** - You control your data\n• **Transparency** - Clear privacy policy available\n• **Compliance** - Follow data protection regulations\n\n**Security Features:**\n• **Encrypted Storage** - Data protected at rest\n• **Secure Transmission** - Protected data transfer\n• **Access Authentication** - Secure login systems\n• **Regular Backups** - Data safety and recovery\n• **Monitoring** - Continuous security oversight\n\n**Your Rights:**\n• **Data Access** - View your stored information\n• **Data Deletion** - Remove your data when needed\n• **Privacy Inquiries** - Contact us with concerns\n• **Policy Review** - Read our privacy policy\n• **Control** - Manage your privacy settings\n\n**Contact for Privacy:**\n• Email: lamlaaiteam@gmail.com\n• Privacy Policy: Available on website\n• Questions: We\'re here to help\n\nYour privacy matters to us! 🛡️',
                 'keywords': 'privacy, data protection, security, confidentiality, personal data'
+            },
+            {
+                'category': 'newsletter',
+                'question': 'How does the newsletter subscription work?',
+                'answer': 'You can subscribe to the Lamla AI newsletter to receive updates, tips, and news about new features!\n\n**Newsletter Features:**\n• **Subscribe/Unsubscribe** – Manage your subscription from your dashboard\n• **Stay Updated** – Get the latest platform news and study tips\n• **Privacy** – Your email is kept private and secure\n\nCheck your dashboard to see your current subscription status and manage your preferences.',
+                'keywords': 'newsletter, subscribe, email updates, news, tips, subscription, unsubscribe'
+            },
+            {
+                'category': 'cookie_policy',
+                'question': 'What is Lamla AI\'s cookie policy?',
+                'answer': 'Lamla AI uses cookies and similar technologies to enhance your experience.\n\n**Cookie Policy Highlights:**\n• **Essential Cookies** – Required for platform functionality\n• **Analytics Cookies** – Help us understand usage and improve features\n• **Preference Cookies** – Remember your settings and preferences\n• **Third-Party Cookies** – Used by analytics and AI service providers\n\nYou can manage your cookie preferences in your browser or via the cookie settings link in the website footer. For full details, see our Cookie Policy page.',
+                'keywords': 'cookie policy, cookies, privacy, analytics, preferences, third-party, website cookies'
+            },
+            {
+                'category': 'terms_of_service',
+                'question': 'What are the Terms of Service for Lamla AI?',
+                'answer': 'By using Lamla AI, you agree to our Terms of Service.\n\n**Key Points:**\n• **Eligibility** – You must be at least 13 years old\n• **Account Security** – Keep your credentials safe\n• **Acceptable Use** – Use the platform lawfully and respectfully\n• **Content Ownership** – You own your uploaded content; we use it to provide services\n• **AI Content** – AI-generated content is for educational purposes only\n• **Privacy** – Governed by our Privacy Policy\n• **Service Changes** – Features may change or be updated\n• **Limitation of Liability** – We are not liable for indirect damages\n\nFor the full terms, visit our Terms of Service page.',
+                'keywords': 'terms of service, tos, rules, agreement, user rights, acceptable use, legal, policy'
             }
         ]
         

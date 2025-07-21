@@ -111,15 +111,12 @@
                 {% endif %}
             </div>
             <div class="activity-content">
-                <div class="activity-type">
-                    {% if activity.type == 'quiz' %}Quiz Completed{% elif activity.type == 'exam_analysis' %}Exam Analysis{% endif %}
-                </div>
-                <div class="activity-subject">
-                    Subject: {{ activity.obj.subject|default:'(No subject)' }}
-                </div>
-                <div class="activity-date">
-                    {{ activity.created_at|date:'M d, Y H:i' }}
-                </div>
+                <div class="activity-type">{{ activity.type|title }}</div>
+                <div class="activity-subject">Subject: <span style="font-weight:600;">{{ activity.subject }}</span></div>
+                {% if activity.file_name %}
+                    <div class="activity-file">Source file: <span style="color:#222;font-weight:600;">{{ activity.file_name }}</span></div>
+                {% endif %}
+                <div class="activity-date">{{ activity.created_at }}</div>
             </div>
             {% if activity.type == 'quiz' %}
                 <a href="{% url 'quiz_results' %}" class="activity-link">View Quiz</a>

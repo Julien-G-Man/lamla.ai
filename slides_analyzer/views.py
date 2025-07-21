@@ -137,13 +137,17 @@ def dashboard(request):
         from .models import QuizSession, ExamAnalysis
         quiz_sessions = list(QuizSession.objects.filter(user=request.user))
         exam_analyses = list(ExamAnalysis.objects.filter(user=request.user))
-        all_activities = [
-            {'type': 'quiz', 'obj': q, 'created_at': q.created_at} for q in quiz_sessions
-        ] + [
-            {'type': 'exam_analysis', 'obj': a, 'created_at': a.created_at} for a in exam_analyses
-        ]
+        all_activities = []
+        for q in quiz_sessions:
+            subject = q.subject or ''
+            file_name = ''
+            if q.questions_data and isinstance(q.questions_data, dict):
+                file_name = q.questions_data.get('uploaded_file_name', '')
+            all_activities.append({'type': 'quiz', 'obj': q, 'created_at': q.created_at, 'subject': subject, 'file_name': file_name})
+        for a in exam_analyses:
+            all_activities.append({'type': 'exam_analysis', 'obj': a, 'created_at': a.created_at, 'subject': a.subject or '', 'file_name': ''})
         all_activities.sort(key=lambda x: x['created_at'], reverse=True)
-        recent_activities = all_activities[:2]
+        recent_activities = all_activities[:4]
         context['recent_activities'] = recent_activities
     return render(request, 'slides_analyzer/dashboard.html', context)
 
@@ -1079,16 +1083,20 @@ def history(request):
     subject_query = request.GET.get('subject', '').strip()
     quiz_sessions = list(QuizSession.objects.filter(user=request.user))
     exam_analyses = list(ExamAnalysis.objects.filter(user=request.user))
-    all_activities = [
-        {'type': 'quiz', 'obj': q, 'created_at': q.created_at} for q in quiz_sessions
-    ] + [
-        {'type': 'exam_analysis', 'obj': a, 'created_at': a.created_at} for a in exam_analyses
-    ]
+    all_activities = []
+    for q in quiz_sessions:
+        subject = q.subject or ''
+        file_name = ''
+        if q.questions_data and isinstance(q.questions_data, dict):
+            file_name = q.questions_data.get('uploaded_file_name', '')
+        all_activities.append({'type': 'quiz', 'obj': q, 'created_at': q.created_at, 'subject': subject, 'file_name': file_name})
+    for a in exam_analyses:
+        all_activities.append({'type': 'exam_analysis', 'obj': a, 'created_at': a.created_at, 'subject': a.subject or '', 'file_name': ''})
     # Apply filters
     if activity_type in ['quiz', 'exam_analysis']:
         all_activities = [a for a in all_activities if a['type'] == activity_type]
     if subject_query:
-        all_activities = [a for a in all_activities if subject_query.lower() in (a['obj'].subject or '').lower()]
+        all_activities = [a for a in all_activities if subject_query.lower() in (a['subject'] or '').lower()]
     all_activities.sort(key=lambda x: x['created_at'], reverse=True)
     return render(request, 'slides_analyzer/history.html', {
         'all_activities': all_activities,
@@ -1100,6 +1108,7 @@ def download_quiz_text(request):
     """Download the most recent quiz as a text, PDF, or DOCX file."""
     quiz_questions = request.session.get('quiz_questions', {})
     results = request.session.get('quiz_results', {})
+    uploaded_file_name = request.session.get('uploaded_file_name', '')
     if not quiz_questions or not results:
         return HttpResponse('No quiz data found.', content_type='text/plain')
 
@@ -1110,6 +1119,8 @@ def download_quiz_text(request):
     lines.append('Lamla AI - Quiz')
     lines.append('-------------------------')
     lines.append(subject)
+    if uploaded_file_name:
+        lines.append(f'Source file: {uploaded_file_name}')
     lines.append('')
     # Multiple Choice Questions
     mcq = quiz_questions.get('mcq_questions', [])

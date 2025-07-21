@@ -114,31 +114,24 @@
                 <a href="{% url 'history' %}" class="view-all">View All</a>
             </div>
             <div class="card-content">
-                {% if recent_activities %}
-                    <div class="activity-list">
-                        {% for activity in recent_activities %}
-                        <div class="activity-item">
-                            <div class="activity-icon" style="background: {% if activity.type == 'quiz' %}linear-gradient(135deg, #FFD600, #FDC72B); color: #222;{% else %}linear-gradient(135deg, #222, #FFD600); color: #FFD600;{% endif %}">
-                                {% if activity.type == 'quiz' %}
-                                    <i class="fas fa-question-circle"></i>
-                                {% elif activity.type == 'exam_analysis' %}
-                                    <i class="fas fa-chart-line"></i>
-                                {% endif %}
+                <a id="recent-activity"></a>
+                {% for activity in recent_activities %}
+                    <div class="activity-item">
+                        <div class="activity-info">
+                            <div class="activity-type">
+                                {% if activity.type == 'quiz' %}Quiz Completed{% elif activity.type == 'exam_analysis' %}Exam Analysis{% endif %}
                             </div>
-                            <div class="activity-content">
-                                <h4>{% if activity.type == 'quiz' %}Quiz Completed{% elif activity.type == 'exam_analysis' %}Exam Analysis{% endif %}</h4>
-                                <p>Subject: {{ activity.obj.subject|default:'(No subject)' }}</p>
-                                <span class="activity-time">{{ activity.created_at|timesince }} ago</span>
-                                {% if activity.type == 'quiz' %}
-                                    <a href="{% url 'quiz_results' %}" class="btn-secondary" style="margin-top:8px;">View Quiz</a>
-                                {% elif activity.type == 'exam_analysis' %}
-                                    <a href="{% url 'exam_analysis_results' activity.obj.id %}" class="btn-secondary" style="margin-top:8px;">View Analysis</a>
-                                {% endif %}
-                            </div>
+                            <div class="activity-subject">Subject: <span style="font-weight:600;">{{ activity.subject }}</span></div>
+                            <div class="activity-time">{{ activity.created_at|timesince }} ago</div>
                         </div>
-                        {% endfor %}
+                        {% if activity.type == 'quiz' %}
+                            <a href="{% url 'quiz_results' %}" class="btn-yellow-right">View Quiz</a>
+                        {% elif activity.type == 'exam_analysis' %}
+                            <a href="{% url 'exam_analysis_results' activity.obj.id %}" class="btn-yellow-right">View Analysis</a>
+                        {% endif %}
                     </div>
-                {% else %}
+                {% endfor %}
+                {% if recent_activities %}
                     <div class="empty-state">
                         <i class="fas fa-inbox"></i>
                         <p>No recent activity</p>
@@ -427,12 +420,10 @@
     }
     .activity-item {
         display: flex;
-        align-items: flex-start;
-        gap: 15px;
-        padding: 15px;
-        border-radius: 12px;
-        background: var(--background-light);
-        transition: background 0.3s ease;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
     }
     .activity-item:hover {
         background: #f0f0f0;
@@ -742,6 +733,25 @@
         opacity: 0.8;
         font-size: 0.9rem;
         color: var(--background-white);
+    }
+    .btn-yellow-right {
+        background: #FFD600;
+        color: #222;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 20px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        float: right;
+        margin-left: 16px;
+        margin-top: 0;
+        transition: background 0.2s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .btn-yellow-right:hover {
+        background: #FDC72B;
+        color: #222;
     }
 </style>
 

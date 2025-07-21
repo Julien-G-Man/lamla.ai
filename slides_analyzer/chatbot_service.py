@@ -75,7 +75,6 @@ class ChatbotService:
 
             # Get Lamla AI knowledge base for context
             lamla_knowledge = self.get_lamla_knowledge_base()
-            
             # Create system prompt
             system_prompt = f"""You are Lamla AI, a friendly and helpful AI assistant for an educational platform. Your name is Lamla AI and you can answer questions about the platform and general topics.
 
@@ -107,27 +106,23 @@ You can also answer general questions and help with various topics. Always maint
 
             # Prepare conversation history
             messages = [{"role": "system", "content": system_prompt}]
-            
             if conversation_history:
                 for msg in conversation_history[-6:]:  # Keep last 6 messages for context
                     role = "user" if msg['message_type'] == 'user' else "assistant"
                     messages.append({"role": role, "content": msg['content']})
-            
             messages.append({"role": "user", "content": user_message})
 
-            # Generate response
+            # Use the correct Azure deployment name
+            model_name = getattr(settings, 'AZURE_OPENAI_DEPLOYMENT_NAME', 'gpt-4o-mini-deployment')
             response = self.client.chat.completions.create(
-                model="gpt-4" if "gpt-4" in str(self.client) else "gpt-3.5-turbo",
+                model=model_name,
                 messages=messages,
                 max_tokens=400,
                 temperature=0.7
             )
-            
             if not response.choices or not response.choices[0].message.content:
                 return self.clean_markdown(self._get_fallback_response(user_message))
-
             return self.clean_markdown(response.choices[0].message.content.strip())
-
         except Exception as e:
             logger.error(f"Error generating chatbot response: {e}")
             return self.clean_markdown(self._get_fallback_response(user_message))

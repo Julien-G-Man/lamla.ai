@@ -53,9 +53,22 @@
         <button class="test-button" onclick="checkChatbotVisibility()">Check Chatbot Visibility</button>
         
         <div id="manual-results"></div>
+        <!-- Add hidden CSRF token input for JS access -->
+        <input type="hidden" id="django-csrf-token" value="{{ csrf_token }}">
     </div>
 
     <script>
+        // Escape HTML to prevent XSS and fix ReferenceError
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\"/g, "&quot;")
+                .replace(/\'/g, "&#039;");
+        }
+
         function addResult(message, type = 'info') {
             const results = document.getElementById('test-results');
             const div = document.createElement('div');
@@ -94,11 +107,16 @@
         // Test message API
         async function testMessage() {
             try {
+                const csrfToken = getCSRFToken();
+                if (!csrfToken) {
+                    addManualResult('❌ CSRF token not found! POST requests will fail.', 'error');
+                    return;
+                }
                 const response = await fetch('/api/chatbot/message/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken')
+                        'X-CSRFToken': csrfToken
                     },
                     body: JSON.stringify({
                         message: 'Hello, this is a test message',
@@ -138,7 +156,15 @@
             }
         }
 
-        // Get CSRF token
+        // Get CSRF token from hidden input or cookie
+        function getCSRFToken() {
+            const input = document.getElementById('django-csrf-token');
+            if (input && input.value) return input.value;
+            // fallback to cookie
+            return getCookie('csrftoken');
+        }
+
+        // Get CSRF token from cookie
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {

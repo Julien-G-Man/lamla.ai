@@ -691,13 +691,15 @@
                 <div id="chatbot-messages" class="chatbot-messages"></div>
                 <!-- Chatbot Suggestions -->
                 <div id="chatbot-suggestions" class="chatbot-suggestions"></div>
-                <!-- Chatbot Input -->
-                <div class="chatbot-input-container">
-                    <div class="chatbot-input-wrapper">
-                        <input type="text" id="chatbot-input" class="chatbot-input" placeholder="Type your question here..." maxlength="500">
-                        <button id="chatbot-send" class="chatbot-send">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
+                <!-- Chatbot Input and Typing Indicator -->
+                <div class="chatbot-input-typing-wrapper">
+                    <div class="chatbot-input-container">
+                        <div class="chatbot-input-wrapper">
+                            <input type="text" id="chatbot-input" class="chatbot-input" placeholder="Type your question here..." maxlength="500">
+                            <button id="chatbot-send" class="chatbot-send">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="chatbot-typing" id="chatbot-typing" style="display: none;">
                         <div class="typing-indicator">
@@ -735,6 +737,16 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Escape HTML to prevent XSS and ReferenceError in chatbot
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\"/g, "&quot;")
+                .replace(/\'/g, "&#039;");
+        }
         // Hamburger menu functionality
         const navbarHamburger = document.getElementById('navbar-hamburger');
         const sidebar = document.getElementById('sidebar');
@@ -1228,6 +1240,42 @@ What would you like to know today?`;
             border-top: 1px solid #444444 !important;
             color: #cccccc !important;
         }
+    </style>
+    <style>
+    /* Force all social media icons to white everywhere */
+    a.social-icon > i,
+    .social-icon > i {
+        color: #fff !important;
+    }
+    .social-icon:hover > i {
+        filter: brightness(1.2);
+    }
+    .chatbot-input-typing-wrapper {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+    .chatbot-typing {
+        justify-content: center;
+        align-items: center;
+        width: auto;
+        min-width: 0;
+        max-width: 100%;
+        padding: 0 0 8px 0;
+        margin: 0 auto;
+        background: transparent;
+        color: var(--secondary-color);
+        font-size: 0.9rem;
+        z-index: 3;
+        pointer-events: none;
+    }
+    @media (max-width: 600px) {
+        .chatbot-typing {
+            font-size: 0.85rem !important;
+            padding: 0 0 6px 0 !important;
+        }
+    }
     </style>
 
 </body>

@@ -168,6 +168,10 @@ def generate_questions(request):
         difficulty = request.POST.get('difficulty', 'any')
         error_message = None
         quiz_results = None
+        # Store uploaded file name if available
+        uploaded_file_name = request.POST.get('uploaded_file_name', '')
+        if not uploaded_file_name and 'slide_file' in request.FILES:
+            uploaded_file_name = request.FILES['slide_file'].name
         if not study_text or len(study_text) < 30:
             error_message = 'Please provide at least 30 characters of study material.'
         else:
@@ -187,10 +191,12 @@ def generate_questions(request):
                 'num_short': num_short,
                 'difficulty': difficulty,
                 'study_text': study_text,
+                'uploaded_file_name': uploaded_file_name,
             })
-        # Store questions in session and redirect to quiz page
+        # Store questions and file name in session and redirect to quiz page
         request.session['quiz_questions'] = quiz_results
         request.session['quiz_time'] = int(request.POST.get('quiz_time', 10))
+        request.session['uploaded_file_name'] = uploaded_file_name
         return redirect('quiz')
     return render(request, 'slides_analyzer/custom_quiz.html')
 
@@ -490,15 +496,33 @@ def quiz_results(request):
                 })
                 if correct:
                     results['correct'] += 1
-            # Store short answers (no grading)
+            # Grade short answers using AI
+            from .question_generator import QuestionGenerator
+            generator = QuestionGenerator()
             for idx, q in enumerate(short):
                 user_ans = user_short_answers.get(idx, '')
+                expected_ans = q.get('answer', '')
+                # Use AI to check correctness
+                ai_prompt = f"""
+                Evaluate the following short answer for correctness. 
+                Question: {q.get('question')}
+                Expected answer: {expected_ans}
+                User answer: {user_ans}
+                Reply only with Yes if the user's answer is correct, or No if it is not. Do not explain.
+                """
+                try:
+                    ai_result = generator._call_azure_openai_api(ai_prompt)
+                    is_correct = ai_result.strip().lower().startswith('yes')
+                except Exception as e:
+                    is_correct = None
                 results['details'].append({
                     'question': q.get('question'),
                     'user_answer': user_ans,
-                    'correct_answer': q.get('answer'),
-                    'is_correct': None
+                    'correct_answer': expected_ans,
+                    'is_correct': is_correct
                 })
+                if is_correct:
+                    results['correct'] += 1
             # Store for results page
             request.session['quiz_results'] = results
             request.session['quiz_user_answers'] = user_answers
@@ -532,6 +556,7 @@ def quiz_results(request):
         score = results['correct'] if results else 0
         score_percent = (score / total * 100) if total else 0
         wrong_percent = (100 - score_percent) if total else 0
+        uploaded_file_name = request.session.get('uploaded_file_name', '')
         context = {
             'score': score,
             'total': total,
@@ -540,7 +565,8 @@ def quiz_results(request):
             'mcq_questions': mcq_questions,
             'short_questions': short_questions,
             'user_answers': user_answers,
-            'results': results
+            'results': results,
+            'uploaded_file_name': uploaded_file_name,
         }
         return render(request, 'slides_analyzer/quiz_results.html', context)
 
@@ -1071,7 +1097,7 @@ def history(request):
     })
 
 def download_quiz_text(request):
-    """Download the most recent quiz as a text file."""
+    """Download the most recent quiz as a text, PDF, or DOCX file."""
     quiz_questions = request.session.get('quiz_questions', {})
     results = request.session.get('quiz_results', {})
     if not quiz_questions or not results:
@@ -1106,6 +1132,40 @@ def download_quiz_text(request):
             lines.append(f"Q{idx+1}: {q.get('question')}")
             lines.append('')
     text_content = '\n'.join(lines)
-    response = HttpResponse(text_content, content_type='text/plain')
-    response['Content-Disposition'] = f'attachment; filename="{filename}.txt"'
-    return response
+
+    file_format = request.GET.get('format', 'txt').lower()
+    if file_format == 'pdf':
+        from io import BytesIO
+        from reportlab.lib.pagesizes import letter
+        from reportlab.pdfgen import canvas
+        buffer = BytesIO()
+        p = canvas.Canvas(buffer, pagesize=letter)
+        width, height = letter
+        y = height - 40
+        for line in lines:
+            p.drawString(40, y, line)
+            y -= 18
+            if y < 40:
+                p.showPage()
+                y = height - 40
+        p.save()
+        buffer.seek(0)
+        response = HttpResponse(buffer, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{filename}.pdf"'
+        return response
+    elif file_format == 'docx':
+        from io import BytesIO
+        from docx import Document
+        buffer = BytesIO()
+        doc = Document()
+        for line in lines:
+            doc.add_paragraph(line)
+        doc.save(buffer)
+        buffer.seek(0)
+        response = HttpResponse(buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        response['Content-Disposition'] = f'attachment; filename="{filename}.docx"'
+        return response
+    else:
+        response = HttpResponse(text_content, content_type='text/plain')
+        response['Content-Disposition'] = f'attachment; filename="{filename}.txt"'
+        return response

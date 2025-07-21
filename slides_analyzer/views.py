@@ -157,15 +157,22 @@ def generate_questions(request):
     if request.method == 'POST':
         study_text = request.POST.get('extractedText', '').strip()
         num_mcq = int(request.POST.get('num_mcq', 5))
-        num_short = int(request.POST.get('num_short', 3))
+        num_short_raw = request.POST.get('num_short', '')
+        try:
+            num_short = int(num_short_raw)
+            if num_short < 1:
+                num_short = 0
+        except (ValueError, TypeError):
+            num_short = 0
         subject = request.POST.get('subject', '')
+        difficulty = request.POST.get('difficulty', 'any')
         error_message = None
         quiz_results = None
         if not study_text or len(study_text) < 30:
             error_message = 'Please provide at least 30 characters of study material.'
         else:
             try:
-                quiz_results = generate_questions_from_text(study_text, num_mcq, num_short, subject=subject)
+                quiz_results = generate_questions_from_text(study_text, num_mcq, num_short, subject=subject, difficulty=difficulty)
                 if not quiz_results or (not quiz_results.get('mcq_questions') and not quiz_results.get('short_questions')):
                     error_message = 'No questions could be generated. Please try with different or more detailed content.'
             except Exception as e:
@@ -178,6 +185,7 @@ def generate_questions(request):
                 'subject': subject,
                 'num_mcq': num_mcq,
                 'num_short': num_short,
+                'difficulty': difficulty,
                 'study_text': study_text,
             })
         # Store questions in session and redirect to quiz page
@@ -716,7 +724,7 @@ def contact(request):
             })
 
         # 2. Send auto-response to user
-        user_subject = "We received your message at Lamla AI!"
+        user_subject = "We received your message!"
         user_html = render_to_string('emails/contact_autoresponse.html', {
             'name': name,
             'email': email,
@@ -1073,7 +1081,7 @@ def download_quiz_text(request):
     subject = quiz_questions.get('subject', 'Quiz')
     filename = subject.replace(' ', '_').replace('/', '_').replace('\\', '_') or 'Quiz_Results'
     lines = []
-    lines.append('Lamla AI - Quiz Results')
+    lines.append('Lamla AI - Quiz')
     lines.append('-------------------------')
     lines.append(subject)
     lines.append('')

@@ -36,9 +36,31 @@ class QuestionGenerator:
             self.primary_api = None
             logger.warning("No API keys configured for question generation")
 
-    def _create_prompt(self, text: str, num_mcq: int = 3, num_short: int = 2, subject: str = None) -> str:
+    def _create_prompt(self, text: str, num_mcq: int = 3, num_short: int = 2, subject: str = None, difficulty: str = None) -> str:
         subject_line = f"Subject/Topic: {subject}\n" if subject else ""
-        return f"""Task: Create {num_mcq} multiple-choice questions and {num_short} short-answer questions based on the following text.\n{subject_line}\nText:\n---\n{text}\n---\n\nInstructions:\nFor both multiple-choice and short-answer questions, split them evenly into two types:\n- The first half should be standard questions (clear, focused, test understanding, recall, or basic comprehension).\n- The second half should be challenging questions (require higher-order thinking: application, analysis, synthesis, or evaluation; more analytical and require reasoning or application of concepts).\nIf the number is odd, make the extra question standard.\n\n1. For multiple-choice questions:\n   - For standard questions:\n     - Create clear, focused questions that test understanding or recall\n     - Provide 4 options (A, B, C, D)\n     - Mark the correct answer\n     - For each question, provide a short explanation (1-2 sentences) of why the correct answer is right.\n   - For challenging questions:\n     - Create analytical questions that require higher-order thinking (application, analysis, synthesis, evaluation)\n     - Make distractors (incorrect options) plausible and non-trivial\n     - Provide 4 options (A, B, C, D)\n     - Mark the correct answer\n     - For each question, provide a short explanation (1-2 sentences) of why the correct answer is right and why the distractors are wrong.\n\n2. For short-answer questions:\n   - For standard questions:\n     - Create questions that need brief but thoughtful answers\n     - Focus on understanding or recall\n     - Include the expected answer\n     - For each question, provide a short explanation (1-2 sentences) of what makes a good answer.\n   - For challenging questions:\n     - Create open-ended questions that require explanation, analysis, or application of concepts\n     - Avoid questions that can be answered with a single word or simple fact\n     - Include the expected answer\n     - For each question, provide a short explanation (1-2 sentences) of what makes a good answer.\n\nFormat your response exactly like this:\nMCQ1: [Question]\nA) [Option A]\nB) [Option B]\nC) [Option C]\nD) [Option D]\nCorrect Answer: [Letter]\nExplanation: [Short explanation]\n\n[Repeat for other MCQs]\n\nShort Answer 1: [Question]\nExpected Answer: [Brief answer]\nExplanation: [Short explanation]\n\n[Repeat for other short answers]"""
+        difficulty_line = ""
+        if difficulty:
+            d = difficulty.lower()
+            if d == 'easy':
+                difficulty_line = ("\nDIFFICULTY: All questions must be EASY.\n"
+                    "- Level: High school.\n"
+                    "- Focus on basic understanding, recall, and single-step reasoning.\n"
+                    "- No advanced math, synthesis, or multi-step logic.\n"
+                    "- Suitable for typical high school exams.")
+            elif d == 'medium':
+                difficulty_line = ("\nDIFFICULTY: All questions must be MEDIUM.\n"
+                    "- Level: University undergraduate.\n"
+                    "- Require application, analysis, and multi-step reasoning.\n"
+                    "- May involve moderate synthesis or integration of concepts.\n"
+                    "- Suitable for standard university exams.")
+            elif d == 'hard':
+                difficulty_line = ("\nDIFFICULTY: All questions must be HARD.\n"
+                    "- Level: Top university (e.g., MIT, Stanford, Harvard, Indian Institutes of Technology (IITs)).\n"
+                    "- Extremely challenging, requiring deep conceptual understanding.\n"
+                    "- Advanced synthesis, multi-topic integration, and creative problem-solving.\n"
+                    "- Suitable for honors, Olympiad, or competitive exams at elite institutions.")
+            # If 'random' or blank, do not add a difficulty line
+        return f"""Task: Create {num_mcq} multiple-choice questions and {num_short} short-answer questions based on the following text.\n{subject_line}\nText:\n---\n{text}\n---\n\nInstructions:\nFor both multiple-choice and short-answer questions, split them evenly into two types:\n- The first half should be standard questions (clear, focused, test understanding, recall, or basic comprehension).\n- The second half should be challenging questions (require higher-order thinking: application, analysis, synthesis, or evaluation; more analytical and require reasoning or application of concepts).\nIf the number is odd, make the extra question standard.\n\n1. For multiple-choice questions:\n   - For standard questions:\n     - Create clear, focused questions that test understanding or recall\n     - Provide 4 options (A, B, C, D)\n     - Mark the correct answer\n     - For each question, provide a short explanation (1-2 sentences) of why the correct answer is right.\n   - For challenging questions:\n     - Create analytical questions that require higher-order thinking (application, analysis, synthesis, evaluation)\n     - Make distractors (incorrect options) plausible and non-trivial\n     - Provide 4 options (A, B, C, D)\n     - Mark the correct answer\n     - For each question, provide a short explanation (1-2 sentences) of why the correct answer is right and why the distractors are wrong.\n\n2. For short-answer questions:\n   - For standard questions:\n     - Create questions that need brief but thoughtful answers\n     - Focus on understanding or recall\n     - Include the expected answer\n     - For each question, provide a short explanation (1-2 sentences) of what makes a good answer.\n   - For challenging questions:\n     - Create open-ended questions that require explanation, analysis, or application of concepts\n     - Avoid questions that can be answered with a single word or simple fact\n     - Include the expected answer\n     - For each question, provide a short explanation (1-2 sentences) of what makes a good answer.\n{difficulty_line}\n\nFormat your response exactly like this:\nMCQ1: [Question]\nA) [Option A]\nB) [Option B]\nC) [Option C]\nD) [Option D]\nCorrect Answer: [Letter]\nExplanation: [Short explanation]\n\n[Repeat for other MCQs]\n\nShort Answer 1: [Question]\nExpected Answer: [Brief answer]\nExplanation: [Short explanation]\n\n[Repeat for other short answers]"""
 
     def _call_gemini_api(self, prompt: str) -> str:
         """Call Google Gemini API"""
@@ -253,11 +275,11 @@ class QuestionGenerator:
             "short_questions": short_questions
         }
 
-    def generate_questions(self, text: str, num_mcq: int = 3, num_short: int = 2, subject: str = None) -> Dict[str, List[Dict]]:
+    def generate_questions(self, text: str, num_mcq: int = 3, num_short: int = 2, subject: str = None, difficulty: str = None) -> Dict[str, List[Dict]]:
         """
         Generate questions from the provided text, with multiple fallback options.
         """
-        prompt = self._create_prompt(text, num_mcq, num_short, subject=subject)
+        prompt = self._create_prompt(text, num_mcq, num_short, subject=subject, difficulty=difficulty)
         
         # Try different APIs in order of preference
         apis_to_try = []
@@ -355,13 +377,25 @@ class QuestionGenerator:
         current_short = None
         for line in response.split('\n'):
             line = line.strip()
+            # Remove Markdown bold formatting (e.g., **MCQ1: ...**)
+            if line.startswith('**') and line.endswith('**'):
+                line = line[2:-2].strip()
+            elif line.startswith('**'):
+                line = line[2:].strip()
+            elif line.endswith('**'):
+                line = line[:-2].strip()
             if not line:
                 continue
             if line.startswith('MCQ'):
                 if current_mcq:
+                    # Strip asterisks from question text
+                    current_mcq["question"] = current_mcq["question"].strip('*').strip()
+                    current_mcq["options"] = [opt.strip('*').strip() for opt in current_mcq["options"]]
                     questions["mcq_questions"].append(current_mcq)
+                q_text = line.split(':', 1)[1].strip() if ':' in line else line
+                q_text = q_text.strip('*').strip()
                 current_mcq = {
-                    "question": line.split(':', 1)[1].strip() if ':' in line else line,
+                    "question": q_text,
                     "options": [],
                     "answer": None,
                     "explanation": None
@@ -369,6 +403,7 @@ class QuestionGenerator:
             elif line.startswith(('A)', 'B)', 'C)', 'D)', 'E)')):
                 if current_mcq:
                     option_text = line[3:].strip()
+                    option_text = option_text.strip('*').strip()
                     # If this is E) and is 'None of the above', mark it
                     if line[:2] == 'E)' and option_text.lower() == 'none of the above':
                         current_mcq["options"].append('None of the above')
@@ -384,9 +419,13 @@ class QuestionGenerator:
                     current_short["explanation"] = line.split(':', 1)[1].strip()
             elif line.startswith('Short Answer'):
                 if current_short:
+                    # Strip asterisks from question text
+                    current_short["question"] = current_short["question"].strip('*').strip()
                     questions["short_questions"].append(current_short)
+                q_text = line.split(':', 1)[1].strip() if ':' in line else line
+                q_text = q_text.strip('*').strip()
                 current_short = {
-                    "question": line.split(':', 1)[1].strip() if ':' in line else line,
+                    "question": q_text,
                     "answer": None,
                     "explanation": None
                 }
@@ -395,6 +434,8 @@ class QuestionGenerator:
                     current_short["answer"] = line.split(':', 1)[1].strip()
         # Add the last questions if they exist
         if current_mcq:
+            current_mcq["question"] = current_mcq["question"].strip('*').strip()
+            current_mcq["options"] = [opt.strip('*').strip() for opt in current_mcq["options"]]
             # Only add 'None of the above' as E if:
             # - The correct answer is E and none of the options (A-D) match the answer text (i.e., answer is not present among A-D),
             # - OR if the question or any option text contains 'none of the above' (case-insensitive)
@@ -413,15 +454,16 @@ class QuestionGenerator:
                 current_mcq["options"].append('None of the above')
             questions["mcq_questions"].append(current_mcq)
         if current_short:
+            current_short["question"] = current_short["question"].strip('*').strip()
             questions["short_questions"].append(current_short)
         return questions 
 
 # Create a global instance and function for backward compatibility
 question_generator = QuestionGenerator()
 
-def generate_questions_from_text(text: str, num_mcq: int = 3, num_short: int = 2, subject: str = None) -> Dict[str, List[Dict]]:
+def generate_questions_from_text(text: str, num_mcq: int = 3, num_short: int = 2, subject: str = None, difficulty: str = None) -> Dict[str, List[Dict]]:
     """
     Generate questions from text using the QuestionGenerator instance.
     This function provides backward compatibility for existing code.
     """
-    return question_generator.generate_questions(text, num_mcq, num_short, subject=subject) 
+    return question_generator.generate_questions(text, num_mcq, num_short, subject=subject, difficulty=difficulty) 

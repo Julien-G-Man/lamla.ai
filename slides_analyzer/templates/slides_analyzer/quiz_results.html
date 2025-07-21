@@ -14,8 +14,19 @@
                 <p class="results-desc">You can still provide feedback about your experience with Lamla AI!</p>
             </div>
         {% else %}
-            <div class="results-summary-card">
-                <h2 class="results-title">Your Score: <span class="score-value">{{ score }}/{{ total }}</span></h2>
+            <div class="quiz-results-container">
+                <h3 class="results-title">Quiz Results</h3>
+                {% if uploaded_file_name %}
+                    <div class="quiz-source-file" style="font-size:1.1rem;color:#555;margin-bottom:10px;">
+                        Source File: <span style="color:#222;font-weight:600;">{{ uploaded_file_name }}</span>
+                    </div>
+                {% endif %}
+                <div class="score-summary">
+                    Your Score: {{ score }}/{{ total }}
+                </div>
+                <div class="performance-summary">
+                    Your Performance: {{ score_percent|floatformat:1 }}% correct, {{ wrong_percent|floatformat:1 }}% incorrect
+                </div>
                 <div style="margin:18px 0 10px 0;">
                     <div style="font-weight:600;color:var(--primary-color);font-size:1.1rem;">Your Performance</div>
                     <div style="display:flex;align-items:center;gap:12px;margin-top:10px;">
@@ -128,9 +139,16 @@
                 <button class="share-btn action-btn" onclick="shareResults()">
                     <i class="fas fa-share-alt"></i> Share Lamla AI
                 </button>
-                <a class="download-btn action-btn" href="{% url 'download_quiz_text' %}">
-                    <i class="fas fa-download"></i> Download Quiz
-                </a>
+                <form id="downloadForm" method="get" action="{% url 'download_quiz_text' %}" style="display:inline;">
+                    <select name="format" id="downloadFormat" style="margin-right:8px;padding:6px 12px;border-radius:6px;border:1px solid #FFD600;">
+                        <option value="txt">TXT</option>
+                        <option value="pdf">PDF</option>
+                        <option value="docx">DOCX</option>
+                    </select>
+                    <button type="submit" class="download-btn action-btn">
+                        <i class="fas fa-download"></i> Download Quiz
+                    </button>
+                </form>
                 {% endif %}
             </div>
         </div>

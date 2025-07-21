@@ -990,6 +990,9 @@ def chatbot_message(request):
             
             # Generate response using chatbot service
             response = chatbot_service.generate_response(message, conversation_history)
+            if not response or not response.strip():
+                # Force fallback if response is empty
+                response = chatbot_service.clean_markdown(chatbot_service._get_fallback_response(message))
             
             # Save bot response to database
             ChatMessage.objects.create(
@@ -999,6 +1002,7 @@ def chatbot_message(request):
                 content=response
             )
             
+            print("Chatbot response:", response) # Added print statement
             return JsonResponse({
                 'status': 'success',
                 'response': response

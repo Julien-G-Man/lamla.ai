@@ -673,18 +673,27 @@
                         <span id="fileNameDisplay" class="file-name-display"></span>
                     </div>
                 </div>
-                <div class="options-row">
-                    <div class="option-group">
+                <div class="options-row" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 24px 32px; max-width: 500px; margin: 0 auto 30px auto;">
+                    <div class="option-group" style="grid-column: 1; grid-row: 1;">
                         <span>MCQ Questions</span>
                         <input type="number" name="num_mcq" id="numMcqInput" value="5" min="0" max="50" class="number-input">
                     </div>
-                    <div class="option-group">
+                    <div class="option-group" style="grid-column: 2; grid-row: 1;">
                         <span>Short Answer</span>
                         <input type="number" name="num_short" id="numShortInput" value="3" min="0" max="20" class="number-input">
                     </div>
-                    <div class="option-group">
+                    <div class="option-group" style="grid-column: 1; grid-row: 2;">
                         <span>Quiz Time (minutes)</span>
                         <input type="number" name="quiz_time" id="quizTimeInput" value="10" min="1" max="120" class="number-input">
+                    </div>
+                    <div class="option-group" style="grid-column: 2; grid-row: 2;">
+                        <span>Difficulty</span>
+                        <select name="difficulty" id="difficultySelect" class="number-input" style="width:120px;">
+                            <option value="random" selected>Random</option>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
                     </div>
                 </div>
                 <div class="actions-row">

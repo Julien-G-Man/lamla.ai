@@ -539,6 +539,7 @@ def quiz_results(request):
 
             # Save quiz session to database for authenticated users
             if request.user.is_authenticated:
+                from .models import QuizSession
                 total = results['total']
                 correct = results['correct']
                 score_percent = (correct / total * 100) if total else 0

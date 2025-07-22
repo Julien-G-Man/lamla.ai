@@ -206,6 +206,16 @@
             .sidebar.open {
                 transform: translateX(0);
             }
+            #sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1400;
+                display: none;
+            }
             #sidebar-overlay.active {
                 display: block;
             }
@@ -792,8 +802,8 @@
             });
             // Optional: close sidebar when clicking outside
             document.addEventListener('click', function(e) {
-                if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== navbarHamburger) {
-                sidebar.classList.remove('open');
+                if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== navbarHamburger && !navbarHamburger.contains(e.target)) {
+                    sidebar.classList.remove('open');
                     navbarHamburger.classList.remove('open');
                     sidebarOverlay.classList.remove('active');
                     sidebarOverlay.style.display = 'none';

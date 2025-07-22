@@ -551,16 +551,62 @@ def quiz_results(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
     else:
-        results = request.session.get('quiz_results')
-        quiz_questions = request.session.get('quiz_questions', {})
-        user_answers = request.session.get('quiz_user_answers', {})
+        quiz_id = request.GET.get('quiz_id')
+        if quiz_id:
+            from .models import QuizSession
+            try:
+                quiz_session = QuizSession.objects.get(id=quiz_id, user=request.user)
+                quiz_questions = quiz_session.questions_data or {}
+                user_answers = quiz_session.user_answers or {}
+                # Re-grade the quiz for display
+                mcq = quiz_questions.get('mcq_questions', [])
+                short = quiz_questions.get('short_questions', [])
+                all_questions = mcq + short
+                results = {
+                    'total': len(all_questions),
+                    'correct': 0,
+                    'details': []
+                }
+                # Grade MCQs
+                for idx, q in enumerate(mcq):
+                    user_ans = user_answers.get(str(idx)) or user_answers.get(idx, '')
+                    user_ans = user_ans.strip().upper() if user_ans else ''
+                    correct_ans = q.get('answer', '').strip().upper()
+                    correct = user_ans == correct_ans
+                    results['details'].append({
+                        'question': q.get('question'),
+                        'user_answer': user_ans,
+                        'correct_answer': correct_ans,
+                        'is_correct': correct
+                    })
+                    if correct:
+                        results['correct'] += 1
+                # Grade short answers (no AI regrading for history)
+                for idx, q in enumerate(short):
+                    user_ans = user_answers.get(str(idx + len(mcq))) or user_answers.get(idx + len(mcq), '')
+                    results['details'].append({
+                        'question': q.get('question'),
+                        'user_answer': user_ans,
+                        'correct_answer': q.get('answer'),
+                        'is_correct': None
+                    })
+                uploaded_file_name = quiz_questions.get('uploaded_file_name', '')
+            except QuizSession.DoesNotExist:
+                quiz_questions = {}
+                user_answers = {}
+                results = None
+                uploaded_file_name = ''
+        else:
+            results = request.session.get('quiz_results')
+            quiz_questions = request.session.get('quiz_questions', {})
+            user_answers = request.session.get('quiz_user_answers', {})
+            uploaded_file_name = request.session.get('uploaded_file_name', '')
         mcq_questions = quiz_questions.get('mcq_questions', [])
         short_questions = quiz_questions.get('short_questions', [])
         total = results['total'] if results else 0
         score = results['correct'] if results else 0
         score_percent = (score / total * 100) if total else 0
         wrong_percent = (100 - score_percent) if total else 0
-        uploaded_file_name = request.session.get('uploaded_file_name', '')
         context = {
             'score': score,
             'total': total,

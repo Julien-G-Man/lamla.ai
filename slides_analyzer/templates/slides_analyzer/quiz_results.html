@@ -136,19 +136,21 @@
                 <a class="feedback-btn action-btn" href="/about/?subject=Quiz%20Feedback#get-in-touch">
                     <i class="fas fa-comment"></i> Feedback
                 </a>
+                <div class="download-section">
+                    <form id="downloadForm" method="get" action="{% url 'download_quiz_text' %}" style="display:inline;">
+                        <button type="submit" class="download-btn action-btn" style="width: 140px;">
+                            <i class="fas fa-download"></i> Download Quiz
+                        </button>
+                        <select name="format" id="downloadFormat">
+                            <option value="txt">TXT</option>
+                            <option value="pdf">PDF</option>
+                            <option value="docx">DOCX</option>
+                        </select>
+                    </form>
+                </div>
                 <button class="share-btn action-btn" onclick="shareResults()">
                     <i class="fas fa-share-alt"></i> Share Lamla AI
                 </button>
-                <form id="downloadForm" method="get" action="{% url 'download_quiz_text' %}" style="display:inline;">
-                    <select name="format" id="downloadFormat" style="margin-right:8px;padding:6px 12px;border-radius:6px;border:1px solid #FFD600;">
-                        <option value="txt">TXT</option>
-                        <option value="pdf">PDF</option>
-                        <option value="docx">DOCX</option>
-                    </select>
-                    <button type="submit" class="download-btn action-btn">
-                        <i class="fas fa-download"></i> Download Quiz
-                    </button>
-                </form>
                 {% endif %}
             </div>
         </div>
@@ -807,13 +809,35 @@
     color: #222;
     text-decoration: none;
 }
+.results-action-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+.download-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 160px;
+}
+.download-section select {
+    margin-top: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #FFD600;
+    width: 120px;
+    text-align: center;
+}
 @media (max-width: 600px) {
-    .triple-action-row {
+    .results-action-row {
         flex-direction: column;
-        gap: 10px;
+        align-items: stretch;
+        gap: 12px;
     }
-    .action-btn {
-        max-width: 100%;
+    .download-section select {
         width: 100%;
     }
 }

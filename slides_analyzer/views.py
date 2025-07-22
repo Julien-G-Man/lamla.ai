@@ -13,7 +13,10 @@ from django.views.decorators.http import require_POST
 from django.db import transaction
 from django.utils import timezone
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Prefetch
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+from django.utils.decorators import method_decorator
 from allauth.account.views import LoginView as AllauthLoginView
 from allauth.account.adapter import DefaultAccountAdapter
 import json
@@ -128,15 +131,18 @@ class CustomAccountAdapter(DefaultAccountAdapter):
                 login(request, user)
         return user
 
+@cache_page(60 * 15)  # Cache for 15 minutes
 def home(request):
     return render(request, 'slides_analyzer/home.html')
 
+@login_required
 def dashboard(request):
     context = {}
     if request.user.is_authenticated:
         from .models import QuizSession, ExamAnalysis
-        quiz_sessions = list(QuizSession.objects.filter(user=request.user))
-        exam_analyses = list(ExamAnalysis.objects.filter(user=request.user))
+        # Optimized queries with select_related for foreign keys
+        quiz_sessions = list(QuizSession.objects.select_related('user').filter(user=request.user).order_by('-created_at')[:50])
+        exam_analyses = list(ExamAnalysis.objects.select_related('user').prefetch_related('documents_analyzed').filter(user=request.user).order_by('-created_at')[:50])
         all_activities = []
         for q in quiz_sessions:
             subject = q.subject or ''
@@ -1079,33 +1085,69 @@ def chatbot_history(request):
 def faq(request):
     return render(request, 'slides_analyzer/faq.html')
 
+@login_required
 def history(request):
-    if not request.user.is_authenticated:
-        return redirect('account_login')
     from .models import QuizSession, ExamAnalysis
+    
+    # Get filter parameters
     activity_type = request.GET.get('type', '').strip()
     subject_query = request.GET.get('subject', '').strip()
-    quiz_sessions = list(QuizSession.objects.filter(user=request.user))
-    exam_analyses = list(ExamAnalysis.objects.filter(user=request.user))
-    all_activities = []
-    for q in quiz_sessions:
-        subject = q.subject or ''
-        file_name = ''
-        if q.questions_data and isinstance(q.questions_data, dict):
-            file_name = q.questions_data.get('uploaded_file_name', '')
-        all_activities.append({'type': 'quiz', 'obj': q, 'created_at': q.created_at, 'subject': subject, 'file_name': file_name})
-    for a in exam_analyses:
-        all_activities.append({'type': 'exam_analysis', 'obj': a, 'created_at': a.created_at, 'subject': a.subject or '', 'file_name': ''})
-    # Apply filters
-    if activity_type in ['quiz', 'exam_analysis']:
-        all_activities = [a for a in all_activities if a['type'] == activity_type]
+    page = request.GET.get('page', 1)
+    
+    # Build optimized queries with filters
+    quiz_query = QuizSession.objects.select_related('user').filter(user=request.user)
+    analysis_query = ExamAnalysis.objects.select_related('user').prefetch_related('documents_analyzed').filter(user=request.user)
+    
+    # Apply subject filter at database level
     if subject_query:
-        all_activities = [a for a in all_activities if subject_query.lower() in (a['subject'] or '').lower()]
+        quiz_query = quiz_query.filter(subject__icontains=subject_query)
+        analysis_query = analysis_query.filter(subject__icontains=subject_query)
+    
+    # Get data based on activity type filter
+    all_activities = []
+    
+    if not activity_type or activity_type == 'quiz':
+        quiz_sessions = quiz_query.order_by('-created_at')[:100]  # Limit to 100 most recent
+        for q in quiz_sessions:
+            subject = q.subject or ''
+            file_name = ''
+            if q.questions_data and isinstance(q.questions_data, dict):
+                file_name = q.questions_data.get('uploaded_file_name', '')
+            all_activities.append({
+                'type': 'quiz', 
+                'obj': q, 
+                'created_at': q.created_at, 
+                'subject': subject, 
+                'file_name': file_name
+            })
+    
+    if not activity_type or activity_type == 'exam_analysis':
+        exam_analyses = analysis_query.order_by('-created_at')[:100]  # Limit to 100 most recent
+        for a in exam_analyses:
+            all_activities.append({
+                'type': 'exam_analysis', 
+                'obj': a, 
+                'created_at': a.created_at, 
+                'subject': a.subject or '', 
+                'file_name': ''
+            })
+    
+    # Sort combined results
     all_activities.sort(key=lambda x: x['created_at'], reverse=True)
+    
+    # Paginate results
+    paginator = Paginator(all_activities, 20)  # 20 items per page
+    try:
+        activities_page = paginator.page(page)
+    except:
+        activities_page = paginator.page(1)
+    
     return render(request, 'slides_analyzer/history.html', {
-        'all_activities': all_activities,
+        'all_activities': activities_page,
         'current_type': activity_type,
-        'current_subject': subject_query
+        'current_subject': subject_query,
+        'paginator': paginator,
+        'page_obj': activities_page
     })
 
 def download_quiz_text(request):

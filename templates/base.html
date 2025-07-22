@@ -265,6 +265,8 @@
                 box-shadow: 2px 0 16px rgba(0,0,0,0.15) !important;
                 display: flex !important;
                 flex-direction: column !important;
+                border-right: 1px solid #e0e0e0 !important;
+                overflow: visible !important;
             }
             
             .sidebar.open {
@@ -275,22 +277,49 @@
                 padding: 20px !important;
                 overflow-y: auto !important;
                 flex: 1 !important;
+                width: 100% !important;
+                background: #ffffff !important;
+                display: flex !important;
+                flex-direction: column !important;
             }
             
             .sidebar-links {
                 display: flex !important;
                 flex-direction: column !important;
                 gap: 8px !important;
+                width: 100% !important;
+                list-style: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
             
             .sidebar-link {
                 padding: 12px 0 !important;
                 font-size: 1rem !important;
-                color: #222 !important;
+                color: #222222 !important;
                 text-decoration: none !important;
                 display: flex !important;
                 align-items: center !important;
                 gap: 12px !important;
+                width: 100% !important;
+                background: transparent !important;
+                border: none !important;
+                font-weight: 400 !important;
+                line-height: 1.5 !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+            
+            .sidebar-link:hover {
+                color: #FFD600 !important;
+                background: rgba(255, 214, 0, 0.1) !important;
+            }
+            
+            .sidebar-link i {
+                color: #FFD600 !important;
+                font-size: 1.1rem !important;
+                width: 20px !important;
+                text-align: center !important;
             }
             
             #sidebar-overlay {

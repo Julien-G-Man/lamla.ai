@@ -34,7 +34,7 @@
             <div class="profile-container">
                 <div class="profile-ring"></div>
                 <a href="{% url 'user_profile' %}">
-                    <img src="{{ profile.profile_picture_url }}" alt="Student" class="student-image">
+                    <img src="{% static 'slide_analyzer/images/profile_default.png' %}" alt="Student" class="student-image">
                 </a>
                 <div class="status-indicator"></div>
             </div>

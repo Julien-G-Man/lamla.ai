@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import Question, Quiz, Feedback, Subscription, Contact, UserProfile, ChatMessage, ChatbotKnowledge, QuizSession, ExamDocument, ExamAnalysis
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -32,6 +34,34 @@ admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 
 # Register your models here.
+
+# Custom User Admin to show more user information
+class CustomUserAdmin(BaseUserAdmin):
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'last_login')
+    list_filter = ('is_staff', 'is_superuser', 'is_active', 'date_joined', 'last_login')
+    search_fields = ('username', 'first_name', 'last_name', 'email')
+    ordering = ('-date_joined',)
+    readonly_fields = ('date_joined', 'last_login')
+    
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'email')}),
+        ('Permissions', {
+            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
+        }),
+        ('Important dates', {'fields': ('last_login', 'date_joined')}),
+    )
+    
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2'),
+        }),
+    )
+
+# Unregister the default User admin and register our custom one
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
 
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
@@ -79,10 +109,12 @@ class ContactAdmin(admin.ModelAdmin):
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'created_at', 'updated_at']
-    list_filter = ['created_at', 'updated_at']
+    list_display = ['user', 'user_email', 'user_date_joined', 'created_at', 'updated_at']
+    list_filter = ['created_at', 'updated_at', 'user__date_joined', 'user__is_active']
     search_fields = ['user__username', 'user__email', 'user__first_name', 'user__last_name']
     readonly_fields = ['created_at', 'updated_at']
+    raw_id_fields = ['user']  # Makes it easier to select users in large databases
+    
     fieldsets = (
         ('User Information', {
             'fields': ('user',)
@@ -95,6 +127,16 @@ class UserProfileAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+    
+    def user_email(self, obj):
+        return obj.user.email
+    user_email.short_description = "Email"
+    user_email.admin_order_field = 'user__email'
+    
+    def user_date_joined(self, obj):
+        return obj.user.date_joined
+    user_date_joined.short_description = "Date Joined"
+    user_date_joined.admin_order_field = 'user__date_joined'
 
 @admin.register(ChatMessage)
 class ChatMessageAdmin(admin.ModelAdmin):

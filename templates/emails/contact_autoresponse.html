@@ -24,13 +24,26 @@
         .header {
             background: linear-gradient(135deg, #FFD600 0%, #FFA000 100%);
             padding: 40px 30px;
-            text-align: center;
+            text-align: left; /* KEY CHANGE: Align all content to the left */
             color: #222;
+            /* Removed overflow: hidden; as float is no longer used for the logo */
+        }
+        /* Style for the logo image within the header */
+        .header img {
+            /* Removed float: left; */
+            max-width: 100px; /* Logo size, adjust as needed */
+            height: auto;
+            border: 0;
+            display: block; /* Ensures it takes up its own line */
+            margin-bottom: 15px; /* KEY CHANGE: Space below the logo */
+            margin-left: 0; /* Ensure it's not trying to auto-center */
+            margin-right: auto; /* Allow auto-margin for horizontal centering if desired, but left-align is default for block */
         }
         .header h1 {
-            margin: 0;
-            font-size: 2.5rem;
+            margin: 0; /* Remove default h1 top margin to pull it close to logo's bottom margin */
+            font-size: 2.5rem; /* Reverted to original larger size, adjust if too big */
             font-weight: 700;
+            line-height: 1.2;
         }
         .header p {
             margin: 10px 0 0 0;
@@ -54,46 +67,49 @@
             margin: 20px 0;
         }
         .social-links a {
-            text-decoration: none; /* Removes underline from the link */
-            margin: 0 8px; /* Slightly adjusted margin for better spacing around icons */
-            display: inline-block; /* Essential for proper spacing and vertical alignment of images */
-            vertical-align: middle; /* Helps align images in the middle of the line */
+            text-decoration: none;
+            margin: 0 8px;
+            display: inline-block;
+            vertical-align: middle;
         }
         .social-links a img {
-            width: 24px; /* Explicit width */
-            height: 24px; /* Explicit height */
-            border: 0; /* Important: Removes any default borders that email clients might add to images inside links */
-            display: block; /* Helps prevent extra spacing issues beneath images in some email clients */
-            margin: 0 auto; /* Ensures the image itself is centered within its link if the link has more space */
+            width: 24px;
+            height: 24px;
+            border: 0;
+            display: block;
+            margin: 0 auto;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <a href="https://lamla-ai.onrender.com" title="Lamla AI" target="_blank">
+                <img src="https://i.ibb.co/hRq6LgYZ/lamla-logo.png" alt="Lamla AI Logo" width="100" height="auto" style="display: block; border: 0; margin-bottom: 15px; margin-left: 0;">
+            </a>
             <h1>Thank You for Contacting Lamla AI</h1>
-        </div>
+            </div>
         <div class="content">
             <div style="font-size: 1.2rem; color: #222; margin-bottom: 18px; font-weight: 600;">Hi {{ name }},</div>
             <p>We've received your message and our team will get back to you soon.</p>
-            <div style="background-color: #FFFBE6; border-left: 4px solid #FFD600; padding: 18px; border-radius: 0 8px 8px 0; color: #222; font-size: 1.05rem; margin-bottom: 10px;"><strong>Your Message:</strong><br>{{ message|linebreaksbr }}</div>
+            <div style="background-color: #FFFBEBE6; border-left: 4px solid #FFD600; padding: 18px; border-radius: 0 8px 8px 0; color: #222; font-size: 1.05rem; margin-bottom: 10px;"><strong>Your Message:</strong><br>{{ message|linebreaksbr }}</div>
             <p style="color:#FFD600; margin-top: 18px;">If you have any further questions, just reply to this email.</p>
             <p><strong>- The Lamla AI Team</strong></p>
         </div>
         <div class="footer">
             <p>This message was sent to {{ email }}</p>
             <p></p>
-            <p>lamla-ai.onrender.com</p>
+            <a href="https://lamla-ai.onrender.com" style="color: #FFD600; text-decoration: none;">lamla-ai.onrender.com</a>
             <p>&copy;2025 Lamla AI</p>
             <div class="social-links">
-                <a href="https://linkedin.com/company/lamla-ai" title="LinkedIn" target="_blank">
-                    <img src="https://i.ibb.co/07dqyKR/linkedin.png" alt="LinkedIn">
-                </a>
                 <a href="https://x.com/lamla_io" title="X (formerly Twitter)" target="_blank">
                     <img src="https://i.ibb.co/1tc406L8/twitter.png" alt="X (Twitter)">
                 </a>
                 <a href="https://www.facebook.com/share/16pmyhCiUM/" title="Facebook" target="_blank">
                     <img src="https://i.ibb.co/d4x7yJpZ/facebook.png" alt="Facebook">
+                </a>
+                <a href="https://linkedin.com/company/lamla-ai" title="LinkedIn" target="_blank">
+                    <img src="https://i.ibb.co/07dqyKR/linkedin.png" alt="LinkedIn">
                 </a>
                 <a href="https://instagram.com/lamla.io" title="Instagram" target="_blank">
                     <img src="https://i.ibb.co/HpLSTYSP/instagram.png" alt="Instagram">

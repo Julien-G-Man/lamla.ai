@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}My Profile - Lamla AI{% endblock %}
+{% block title %}Profile - Lamla AI{% endblock %}
 
 {% block content %}
 <div class="profile-container">
@@ -10,7 +10,7 @@
         <div class="profile-avatar-section">
             <div class="profile-avatar">
                 <div class="avatar-ring"></div>
-                <img src="{{ profile.profile_picture_url }}" alt="Profile" class="avatar-image" id="profileImage">
+                <img src="{% static 'slide_analyzer/images/profile_default.png' %}" alt="Profile" class="avatar-image" id="profileImage">
                 <div class="avatar-overlay" onclick="document.getElementById('profilePictureInput').click();">
                     <i class="fas fa-camera"></i>
                 </div>

@@ -135,6 +135,7 @@ def dashboard(request):
     context = {}
     if request.user.is_authenticated:
         from .models import QuizSession, ExamAnalysis
+        
         quiz_sessions = list(QuizSession.objects.filter(user=request.user))
         exam_analyses = list(ExamAnalysis.objects.filter(user=request.user))
         all_activities = []
@@ -152,7 +153,47 @@ def dashboard(request):
     return render(request, 'slides_analyzer/dashboard.html', context)
 
 def user_profile(request):
-    return render(request, 'slides_analyzer/user_profile.html')
+    if request.user.is_authenticated:
+        from .models import UserProfile
+        # Get or create user profile
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        if request.method == 'POST':
+            # Handle profile updates
+            updated = False
+            
+            if 'profile_picture' in request.FILES:
+                profile_pic = request.FILES['profile_picture']
+                # Validate file size (max 5MB)
+                if profile_pic.size > 5 * 1024 * 1024:
+                    messages.error(request, 'Profile picture must be less than 5MB.')
+                    return redirect('user_profile')
+                
+                # Validate file type
+                allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']
+                if profile_pic.content_type not in allowed_types:
+                    messages.error(request, 'Please upload a valid image file (JPG, PNG, or GIF).')
+                    return redirect('user_profile')
+                
+                profile.profile_picture = profile_pic
+                updated = True
+            
+            bio = request.POST.get('bio', '').strip()
+            if bio != profile.bio:
+                profile.bio = bio
+                updated = True
+            
+            if updated:
+                profile.save()
+                messages.success(request, 'Profile updated successfully!')
+            else:
+                messages.info(request, 'No changes were made to your profile.')
+            
+            return redirect('user_profile')
+            
+        return render(request, 'slides_analyzer/user_profile.html')
+    else:
+        return redirect('account_login')
 
 def upload_slides(request):
     return render(request, 'slides_analyzer/upload.html')

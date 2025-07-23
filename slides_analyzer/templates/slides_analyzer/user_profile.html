@@ -10,7 +10,7 @@
         <div class="profile-avatar-section">
             <div class="profile-avatar">
                 <div class="avatar-ring"></div>
-                <img src="{{ profile.profile_picture_url }}" alt="Profile" class="avatar-image" id="profileImage">
+                <img src="{{ user_profile.profile_picture_url }}" alt="Profile" class="avatar-image" id="profileImage">
                 <div class="avatar-overlay" onclick="document.getElementById('profilePictureInput').click();">
                     <i class="fas fa-camera"></i>
                 </div>
@@ -127,7 +127,7 @@
                                 <i class="fas fa-pen"></i>
                                 Bio
                             </label>
-                            <textarea id="bio" name="bio" rows="4" placeholder="Tell us about yourself...">{{ profile.bio }}</textarea>
+                            <textarea id="bio" name="bio" rows="4" placeholder="Tell us about yourself...">{{ user_profile.bio }}</textarea>
                             <small><i class="fas fa-lightbulb"></i> Share a bit about yourself (optional)</small>
                         </div>
                         

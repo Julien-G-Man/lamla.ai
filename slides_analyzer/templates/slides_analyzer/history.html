@@ -2,132 +2,709 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+
+    :root {
+        --primary-color: #FFD600;
+        --primary-dark: #E6C200;
+        --secondary-color: #222;
+        --background-white: #fff;
+        --background-light: #f8fafc;
+        --text-primary: #1a1a1a;
+        --text-secondary: #4a5568;
+        --text-muted: #718096;
+        --border-light: #e2e8f0;
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+        --gradient-primary: linear-gradient(135deg, #FFD600 0%, #FFC107 100%);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        color: var(--text-primary);
+        min-height: 100vh;
+    }
+
+    .history-page {
+        padding: 40px 20px;
+        margin-top: 72px;
+        min-height: calc(100vh - 72px);
+    }
+
     .history-wrapper {
-        max-width: 800px;
-        margin: 40px auto 0 auto;
-        background: #fff;
-        border-radius: 15px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-        padding: 40px 30px;
+        max-width: 900px;
+        margin: 0 auto;
+        background: var(--background-white);
+        border-radius: 24px;
+        box-shadow: var(--shadow-xl);
+        overflow: hidden;
+        position: relative;
     }
-    .history-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #222;
-        margin-bottom: 24px;
+
+    .history-wrapper::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: var(--gradient-primary);
+        z-index: 1;
+    }
+
+    .history-header {
+        padding: 48px 40px 32px;
         text-align: center;
+        background: linear-gradient(135deg, rgba(255, 214, 0, 0.05) 0%, rgba(255, 214, 0, 0.02) 100%);
+        position: relative;
+        overflow: hidden;
     }
+
+    .history-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FFD600' fill-opacity='0.03'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        z-index: 0;
+    }
+
+    .history-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 16px;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .history-title i {
+        color: var(--primary-color);
+        font-size: 2.2rem;
+    }
+
+    .history-subtitle {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+        margin-bottom: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .filter-section {
+        padding: 32px 40px;
+        background: var(--background-light);
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .filter-form {
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 160px;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filter-input, .filter-select {
+        padding: 12px 16px;
+        border: 2px solid var(--border-light);
+        border-radius: 12px;
+        background: var(--background-white);
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: var(--transition);
+        font-family: inherit;
+    }
+
+    .filter-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 12px center;
+        background-repeat: no-repeat;
+        background-size: 16px;
+        padding-right: 40px;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(255, 214, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 12px;
+        align-items: flex-end;
+        margin-top: 16px;
+    }
+
+    .filter-btn {
+        background: var(--gradient-primary);
+        color: var(--secondary-color);
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(255, 214, 0, 0.3);
+    }
+
+    .filter-btn:hover {
+        background: var(--secondary-color);
+        color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .clear-btn {
+        background: transparent;
+        color: var(--text-muted);
+        border: 2px solid var(--border-light);
+        border-radius: 12px;
+        padding: 10px 20px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .clear-btn:hover {
+        background: var(--primary-color);
+        color: var(--secondary-color);
+        border-color: var(--primary-color);
+        transform: translateY(-2px);
+    }
+
+    .activity-content {
+        padding: 40px;
+    }
+
     .activity-list {
         list-style: none;
         padding: 0;
         margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
     }
+
     .activity-item {
         display: flex;
         align-items: center;
-        gap: 18px;
-        padding: 18px 0;
-        border-bottom: 1px solid #f0f0f0;
+        gap: 20px;
+        padding: 24px;
+        background: var(--background-white);
+        border: 1px solid var(--border-light);
+        border-radius: 16px;
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
     }
+
+    .activity-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 214, 0, 0.05), transparent);
+        transition: left 0.6s;
+    }
+
+    .activity-item:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: rgba(255, 214, 0, 0.3);
+    }
+
+    .activity-item:hover::before {
+        left: 100%;
+    }
+
     .activity-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.5rem;
-        background: #FFD60022;
-        color: #FFD600;
+        color: white;
+        flex-shrink: 0;
+        position: relative;
+        overflow: hidden;
     }
-    .activity-content {
+
+    .activity-icon.quiz {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .activity-icon.exam_analysis {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .activity-icon::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.6s;
+    }
+
+    .activity-item:hover .activity-icon::before {
+        left: 100%;
+    }
+
+    .activity-details {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
     }
+
     .activity-type {
-        font-size: 1.05rem;
-        font-weight: 600;
-        color: #FFD600;
-        margin-bottom: 2px;
-    }
-    .activity-subject {
         font-size: 1.1rem;
-        color: #222;
-        font-weight: 500;
+        font-weight: 700;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
     }
+
+    .activity-subject {
+        font-size: 1.2rem;
+        color: var(--text-primary);
+        font-weight: 600;
+        line-height: 1.4;
+    }
+
+    .activity-subject span {
+        color: var(--primary-color);
+        font-weight: 700;
+    }
+
+    .activity-file {
+        font-size: 1rem;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .activity-file span {
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
     .activity-date {
-        font-size: 0.98rem;
-        color: #888;
-        margin-top: 2px;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
+
+    .activity-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-end;
+    }
+
     .activity-link {
-        background: #FFD600;
-        color: #222;
+        background: var(--gradient-primary);
+        color: var(--secondary-color);
         border: none;
-        border-radius: 8px;
-        padding: 8px 18px;
+        border-radius: 12px;
+        padding: 12px 20px;
         font-weight: 600;
         text-decoration: none;
-        font-size: 1rem;
-        margin-left: 12px;
-        transition: background 0.2s;
+        font-size: 0.95rem;
+        transition: var(--transition);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 15px rgba(255, 214, 0, 0.3);
+        white-space: nowrap;
     }
+
     .activity-link:hover {
-        background: #ffe066;
+        background: var(--secondary-color);
+        color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
-    @media (max-width: 600px) {
-        .history-wrapper { padding: 18px 4vw; }
-        .activity-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 40px;
+        color: var(--text-muted);
+    }
+
+    .empty-icon {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 24px;
+        background: var(--gradient-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: var(--secondary-color);
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .empty-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 12px;
+    }
+
+    .empty-description {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 32px;
+    }
+
+    .empty-action {
+        background: var(--gradient-primary);
+        color: var(--secondary-color);
+        border: none;
+        border-radius: 12px;
+        padding: 16px 32px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        box-shadow: 0 8px 25px rgba(255, 214, 0, 0.4);
+    }
+
+    .empty-action:hover {
+        background: var(--secondary-color);
+        color: var(--primary-color);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .activity-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(255, 214, 0, 0.1);
+        color: var(--primary-color);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid rgba(255, 214, 0, 0.3);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .history-page {
+            padding: 20px 16px;
+            margin-top: 64px;
+        }
+
+        .history-header {
+            padding: 32px 24px 24px;
+        }
+
+        .history-title {
+            font-size: 2rem;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .history-subtitle {
+            font-size: 1rem;
+        }
+
+        .filter-section {
+            padding: 24px;
+        }
+
+        .filter-form {
+            flex-direction: column;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .filter-group {
+            min-width: unset;
+        }
+
+        .filter-actions {
+            flex-direction: column;
+            align-items: stretch;
+            margin-top: 20px;
+        }
+
+        .activity-content {
+            padding: 24px;
+        }
+
+        .activity-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .activity-actions {
+            align-items: stretch;
+            width: 100%;
+        }
+
+        .activity-link {
+            justify-content: center;
+        }
+
+        .empty-state {
+            padding: 60px 24px;
+        }
+
+        .empty-icon {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .history-wrapper {
+            border-radius: 16px;
+            margin: 0 8px;
+        }
+
+        .history-header {
+            padding: 24px 20px 20px;
+        }
+
+        .history-title {
+            font-size: 1.8rem;
+        }
+
+        .filter-section {
+            padding: 20px;
+        }
+
+        .activity-content {
+            padding: 20px;
+        }
+
+        .activity-item {
+            padding: 16px;
+        }
+
+        .activity-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.3rem;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+        }
+
+        .empty-title {
+            font-size: 1.3rem;
+        }
+
+        .empty-description {
+            font-size: 1rem;
+        }
     }
 </style>
-<div class="history-wrapper">
-    <div class="history-title">Your Activity History</div>
-    <form method="get" style="margin-bottom: 28px; display: flex; gap: 18px; flex-wrap: wrap; align-items: center; justify-content: center;">
-        <label style="font-weight:600;">Type:
-            <select name="type" style="margin-left:8px; padding:6px 12px; border-radius:6px; border:1px solid #eee;">
-                <option value="" {% if not current_type %}selected{% endif %}>All</option>
-                <option value="quiz" {% if current_type == 'quiz' %}selected{% endif %}>Quiz</option>
-                <option value="exam_analysis" {% if current_type == 'exam_analysis' %}selected{% endif %}>Exam Analysis</option>
-            </select>
-        </label>
-        <label style="font-weight:600;">Subject:
-            <input type="text" name="subject" value="{{ current_subject }}" placeholder="Search subject..." style="margin-left:8px; padding:6px 12px; border-radius:6px; border:1px solid #eee; min-width:160px;">
-        </label>
-        <button type="submit" style="background:#FFD600;color:#222;padding:8px 18px;border:none;border-radius:8px;font-weight:600;">Filter</button>
-        {% if current_type or current_subject %}
-        <a href="{% url 'history' %}" style="margin-left:10px;color:#888;font-size:0.98rem;text-decoration:underline;">Clear</a>
-        {% endif %}
-    </form>
-    {% if all_activities %}
-    <ul class="activity-list">
-        {% for activity in all_activities %}
-        <li class="activity-item">
-            <div class="activity-icon">
-                {% if activity.type == 'quiz' %}
-                    <i class="fas fa-question-circle"></i>
-                {% elif activity.type == 'exam_analysis' %}
-                    <i class="fas fa-chart-line"></i>
-                {% endif %}
-            </div>
-            <div class="activity-content">
-                <div class="activity-type">{{ activity.type|title }}</div>
-                <div class="activity-subject">Subject: <span style="font-weight:600;">{{ activity.subject }}</span></div>
-                {% if activity.file_name %}
-                    <div class="activity-file">Source file: <span style="color:#222;font-weight:600;">{{ activity.file_name }}</span></div>
-                {% endif %}
-                <div class="activity-date">{{ activity.created_at }}</div>
-            </div>
-            {% if activity.type == 'quiz' %}
-                <a href="{% url 'quiz_results' %}" class="activity-link">View Quiz</a>
-            {% elif activity.type == 'exam_analysis' %}
-                <a href="{% url 'exam_analysis_results' activity.obj.id %}" class="activity-link">View Analysis</a>
+
+<div class="history-page">
+    <div class="history-wrapper">
+        <!-- Header Section -->
+        <div class="history-header">
+            <h1 class="history-title">
+                <i class="fas fa-history"></i>
+                Your Activity History
+            </h1>
+            <p class="history-subtitle">Track your learning journey and revisit past activities</p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <form method="get" class="filter-form">
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-filter"></i>
+                        Activity Type
+                    </label>
+                    <select name="type" class="filter-select">
+                        <option value="" {% if not current_type %}selected{% endif %}>All Activities</option>
+                        <option value="quiz" {% if current_type == 'quiz' %}selected{% endif %}>Quiz Sessions</option>
+                        <option value="exam_analysis" {% if current_type == 'exam_analysis' %}selected{% endif %}>Exam Analysis</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">
+                        <i class="fas fa-search"></i>
+                        Subject
+                    </label>
+                    <input type="text" name="subject" value="{{ current_subject }}" placeholder="Search by subject..." class="filter-input">
+                </div>
+
+                <div class="filter-actions">
+                    <button type="submit" class="filter-btn">
+                        <i class="fas fa-search"></i>
+                        Apply Filters
+                    </button>
+                    {% if current_type or current_subject %}
+                        <a href="{% url 'history' %}" class="clear-btn">
+                            <i class="fas fa-times"></i>
+                            Clear Filters
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+        <!-- Activity Content -->
+        <div class="activity-content">
+            {% if all_activities %}
+                <ul class="activity-list">
+                    {% for activity in all_activities %}
+                        <li class="activity-item">
+                            <div class="activity-badge">
+                                {{ activity.created_at|date:"M d" }}
+                            </div>
+                            
+                            <div class="activity-icon {{ activity.type }}">
+                                {% if activity.type == 'quiz' %}
+                                    <i class="fas fa-brain"></i>
+                                {% elif activity.type == 'exam_analysis' %}
+                                    <i class="fas fa-chart-line"></i>
+                                {% endif %}
+                            </div>
+
+                            <div class="activity-details">
+                                <div class="activity-type">
+                                    {% if activity.type == 'quiz' %}
+                                        <i class="fas fa-question-circle"></i>
+                                        Quiz Session
+                                    {% elif activity.type == 'exam_analysis' %}
+                                        <i class="fas fa-analytics"></i>
+                                        Exam Analysis
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="activity-subject">
+                                    Subject: <span>{{ activity.subject }}</span>
+                                </div>
+                                
+                                {% if activity.file_name %}
+                                    <div class="activity-file">
+                                        <i class="fas fa-file-alt"></i>
+                                        Source: <span>{{ activity.file_name }}</span>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="activity-date">
+                                    <i class="fas fa-clock"></i>
+                                    {{ activity.created_at|date:"F d, Y \a\t g:i A" }}
+                                </div>
+                            </div>
+
+                            <div class="activity-actions">
+                                {% if activity.type == 'quiz' %}
+                                    <a href="{% url 'quiz_results' %}" class="activity-link">
+                                        <i class="fas fa-eye"></i>
+                                        View Quiz Results
+                                    </a>
+                                {% elif activity.type == 'exam_analysis' %}
+                                    <a href="{% url 'exam_analysis_results' activity.obj.id %}" class="activity-link">
+                                        <i class="fas fa-chart-bar"></i>
+                                        View Analysis
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-history"></i>
+                    </div>
+                    <h3 class="empty-title">No Activities Found</h3>
+                    <p class="empty-description">
+                        {% if current_type or current_subject %}
+                            No activities match your current filters. Try adjusting your search criteria or clear the filters to see all activities.
+                        {% else %}
+                            You haven't started any learning activities yet. Create your first quiz or analyze an exam to get started!
+                        {% endif %}
+                    </p>
+                    {% if not current_type and not current_subject %}
+                        <a href="{% url 'custom_quiz' %}" class="empty-action">
+                            <i class="fas fa-plus"></i>
+                            Create Your First Quiz
+                        </a>
+                    {% endif %}
+                </div>
             {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <div style="text-align:center;color:#888;font-size:1.1rem;">No activities found.</div>
-    {% endif %}
+        </div>
+    </div>
 </div>
-{% endblock %} 
+{% endblock %}

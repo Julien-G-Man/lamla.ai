@@ -7,1056 +7,1448 @@
 <div class="home-container">
     <!-- Hero Section -->
     <section class="hero">
-        <div class="shape-1"></div>
-        <div class="shape-2"></div>
-        <div class="shape-3"></div>
+        <div class="hero-bg-elements">
+            <div class="floating-shape shape-1"></div>
+            <div class="floating-shape shape-2"></div>
+            <div class="floating-shape shape-3"></div>
+            <div class="gradient-orb orb-1"></div>
+            <div class="gradient-orb orb-2"></div>
+        </div>
+        
         <div class="hero-content">
-            <h1 class="hero-title">
-                <span class="hello-yellow">Level Up Your Exam Game with</span><br>
-                <span class="username-highlight">Lamla AI</span>
+            <div class="hero-badge" data-aos="fade-up">
+                <span class="badge-icon">🚀</span>
+                <span>AI-Powered Learning Platform</span>
+            </div>
+            
+            <h1 class="hero-title" data-aos="fade-up" data-aos-delay="100">
+                <span class="title-line">Level Up Your Exam Game with</span>
+                <span class="brand-highlight">Lamla AI</span>
+                <div class="title-underline"></div>
             </h1>
-            <p class="hero-desc">Lamla AI is a smart exam preparation assistant designed to help you study with intention, not panic. Upload your study materials and transform them into interactive quizzes and flashcards, get instant feedback and performance insights with AI-powered learning tools.<br><strong> Study smarter. Perform better.</strong></p>
-            <div class="hero-btns">
+            
+            <p class="hero-desc" data-aos="fade-up" data-aos-delay="200">
+                Lamla AI is a smart exam preparation assistant designed to help you study with intention, not panic. 
+                Upload your study materials and transform them into interactive quizzes and flashcards, get instant 
+                feedback and performance insights with AI-powered learning tools.
+                <br><strong class="highlight-text">Study smarter. Perform better.</strong>
+            </p>
+            
+            <div class="hero-stats" data-aos="fade-up" data-aos-delay="250">
+                <div class="stat-item">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Students</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">250+</span>
+                    <span class="stat-label">Quizzes Generated</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">92%</span>
+                    <span class="stat-label">Success Rate</span>
+                </div>
+            </div>
+            
+            <div class="hero-btns" data-aos="fade-up" data-aos-delay="300">
                 {% if not user.is_authenticated %}
-                    <a href="{% url 'account_signup' %}" class="hero-btn">Get Started</a>
+                    <a href="{% url 'account_signup' %}" class="hero-btn primary">
+                        <span>Get Started Free</span>
+                        <div class="btn-shine"></div>
+                    </a>
                 {% endif %}
-                <a href="#features" class="hero-btn secondary">Explore Features</a>
+                <a href="#features" class="hero-btn secondary">
+                    <span>Explore Features</span>
+                    <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </a>
             </div>
         </div>
-        <div class="hero-illustration desktop-position">
-            <img src="{% static 'slide_analyzer/images/student.jpeg' %}" alt="Study Illustration" class="hero-img">
+        
+        <div class="hero-illustration" data-aos="fade-left" data-aos-delay="400">
+            <div class="image-container">
+                <img src="{% static 'slide_analyzer/images/student.jpeg' %}" alt="Study Illustration" class="hero-img">
+                <div class="image-overlay"></div>
+                <div class="floating-elements">
+                    <div class="floating-icon icon-1">📚</div>
+                    <div class="floating-icon icon-2">🧠</div>
+                    <div class="floating-icon icon-3">⚡</div>
+                </div>
+            </div>
         </div>
-
     </section>
 
     <!-- Features Section -->
     <section id="features" class="features-section">
-        <div class="shape-4"></div>
-        <div class="shape-5"></div>
-        <div class="section-header">
+        <div class="section-bg">
+            <div class="bg-pattern"></div>
+        </div>
+        
+        <div class="section-header" data-aos="fade-up">
+            <div class="section-badge">
+                <span>✨ Features</span>
+            </div>
             <h2>Smart Features for <span class="highlight">Smart Students</span></h2>
             <p>Lamla-AI helps you prepare with purpose using these core features:</p>
         </div>
+        
         <div class="features-grid">
-            <a href="{% url 'custom_quiz' %}" class="feature-card">
-                <div class="feature-icon">📄</div>
+            <a href="{% url 'custom_quiz' %}" class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-glow"></div>
+                <div class="feature-icon">
+                    <span class="icon-emoji">📄</span>
+                    <div class="icon-bg"></div>
+                </div>
                 <h3 class="feature-title">Upload Study Materials</h3>
                 <p class="feature-desc">Upload PDF or text-based materials. Content is extracted to power quiz generation.</p>
-                <div class="feature-hint">Click to explore →</div>
+                <div class="feature-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
             </a>
-            <a href="{% url 'custom_quiz' %}" class="feature-card">
-                <div class="feature-icon">🧠</div>
+            
+            <a href="{% url 'custom_quiz' %}" class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="card-glow"></div>
+                <div class="feature-icon">
+                    <span class="icon-emoji">🧠</span>
+                    <div class="icon-bg"></div>
+                </div>
                 <h3 class="feature-title">AI Quiz Generator</h3>
                 <p class="feature-desc">Automatically generates multiple-choice questions from your materials or typed content. Get instant feedback on your responses.</p>
-                <div class="feature-hint">Click to explore →</div>
+                <div class="feature-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
             </a>
-            <a href="/dashboard/#recent-activity" class="feature-card">
-                <div class="feature-icon">📈</div>
+            
+            <a href="/dashboard/#recent-activity" class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="card-glow"></div>
+                <div class="feature-icon">
+                    <span class="icon-emoji">📈</span>
+                    <div class="icon-bg"></div>
+                </div>
                 <h3 class="feature-title">Performance Tracking</h3>
                 <p class="feature-desc">Tracks your score per quiz and uses color-coded indicators to highlight strong and weak areas.</p>
-                <div class="feature-hint">Click to explore →</div>
+                <div class="feature-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
             </a>
-            <a href="{% url 'custom_quiz' %}" class="feature-card">
-                <div class="feature-icon">📚</div>
+            
+            <a href="{% url 'custom_quiz' %}" class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="card-glow"></div>
+                <div class="feature-icon">
+                    <span class="icon-emoji">📚</span>
+                    <div class="icon-bg"></div>
+                </div>
                 <h3 class="feature-title">Subject + Topic Selection</h3>
                 <p class="feature-desc">Select your subject or topic before quiz generation. Early foundation for syllabus-aware functionality.</p>
-                <div class="feature-hint">Click to explore →</div>
+                <div class="feature-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
             </a>
-            <a href="{% url 'flashcards' %}" class="feature-card">
-                <div class="feature-icon">🃏</div>
+            
+            <a href="{% url 'flashcards' %}" class="feature-card" data-aos="fade-up" data-aos-delay="500">
+                <div class="card-glow"></div>
+                <div class="feature-icon">
+                    <span class="icon-emoji">🃏</span>
+                    <div class="icon-bg"></div>
+                </div>
                 <h3 class="feature-title">Interactive Flashcards</h3>
                 <p class="feature-desc">Create and study with AI-generated flashcards. Perfect for memorization and quick review sessions.</p>
-                <div class="feature-hint">Click to explore →</div>
+                <div class="feature-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
             </a>
-            <a href="{% url 'exam_analyzer' %}" class="feature-card">
-                <div class="feature-icon">🔍</div>
-                <h3 class="feature-title">Exam Analysis</h3>
-                <p class="feature-desc">Analyze your uploaded exams or quizzes for instant feedback, topic breakdown, and personalized study recommendations. Turn your past tests into learning opportunities!</p>
-                <div class="feature-hint">Click to explore →</div>
+            
+            <a href="{% url 'exam_analyzer' %}" class="feature-card" data-aos="fade-up" data-aos-delay="600">
+                <div class="card-glow"></div>
+                <div class="feature-icon">
+                    <span class="icon-emoji">🔍</span>
+                    <div class="icon-bg"></div>
+                </div>
+                <h3 class="feature-title">Exam Pattern Analysis</h3>
+                <p class="feature-desc">Analyze your uploaded exams or quizzes and slides for instant feedback, topic breakdown, and personalized study recommendations.</p>
+                <div class="feature-arrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M7 17L17 7M17 7H7M17 7V17"/>
+                    </svg>
+                </div>
             </a>
         </div>
     </section>
 
     <!-- Newsletter Section -->
-    <section class="newsletter-section">
+    <section class="newsletter-section" data-aos="fade-up">
+        <div class="newsletter-bg">
+            <div class="newsletter-pattern"></div>
+        </div>
+        
         <div class="newsletter-content">
+            <div class="newsletter-icon">
+                <span>📧</span>
+            </div>
             <h2 class="newsletter-title">Stay Ahead with Lamla-AI</h2>
             <p class="newsletter-desc">Subscribe for study tips, feature updates, and exclusive offers. Lamla-AI is your intelligent study assistant that helps you prepare with purpose.</p>
             
             <form class="newsletter-form" method="post" action="{% url 'subscribe_newsletter' %}" id="newsletterForm">
                 {% csrf_token %}
-                <input type="email" class="newsletter-input" name="email" placeholder="Your Email" required aria-label="Email for newsletter">
-                <button type="submit" class="newsletter-btn">Subscribe</button>
+                <div class="input-group">
+                    <input type="email" class="newsletter-input" name="email" placeholder="Enter your email address" required aria-label="Email for newsletter">
+                    <button type="submit" class="newsletter-btn">
+                        <span>Subscribe</span>
+                        <div class="btn-shine"></div>
+                    </button>
+                </div>
             </form>
+            
+            <div class="newsletter-features">
+                <div class="feature-item">
+                    <span class="check-icon">✓</span>
+                    <span>Weekly study tips</span>
+                </div>
+                <div class="feature-item">
+                    <span class="check-icon">✓</span>
+                    <span>Feature updates</span>
+                </div>
+                <div class="feature-item">
+                    <span class="check-icon">✓</span>
+                    <span>Exclusive offers</span>
+                </div>
+            </div>
         </div>
     </section>
 
     <!-- Testimonials Section -->
-    <section class="testimonials-section">
+    <section class="testimonials-section" data-aos="fade-up">
+        <div class="testimonial-bg">
+            <div class="testimonial-pattern"></div>
+        </div>
+        
         <div class="testimonial-content">
+            <div class="testimonial-header">
+                <div class="stars">
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                </div>
+                <span class="rating-text">3.5/5 from 50+ students</span>
+            </div>
+            
             <blockquote class="testimonial-quote">
                 "Lamla-AI helped me turn my lecture slides into practice quizzes and flashcards in seconds. It's an amazing tool for exam preps!"
             </blockquote>
-            <p class="testimonial-user">— Christopher N, Computer Science Student</p>
-            <div class="testimonial-logo-row">
-                <div class="testimonial-logo">UG</div>
-                <div class="testimonial-logo">KNUST</div>
-                <div class="testimonial-logo">UCC</div>
-                <div class="testimonial-logo">UDS</div>
-                <div class="testimonial-logo">UEW</div>
+            
+            <div class="testimonial-author">
+                <div class="author-avatar">
+                    <span>CN</span>
+                </div>
+                <div class="author-info">
+                    <p class="author-name">Christopher N</p>
+                    <p class="author-title">Computer Science Student</p>
+                </div>
+            </div>
+            
+            <div class="testimonial-logos">
+                <div class="logo-item">UG</div>
+                <div class="logo-item">KNUST</div>
+                <div class="logo-item">UCC</div>
+                <div class="logo-item">UDS</div>
+                <div class="logo-item">UEW</div>
             </div>
         </div>
     </section>
 </div>
 
 <style>
-/* Home Page Styles */
+/* Modern CSS Variables */
+:root {
+    --primary-color: #FFD600;
+    --primary-dark: #E6C200;
+    --secondary-color: #1a1a1a;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    --text-muted: #999999;
+    --background: #ffffff;
+    --surface: #f8f9fa;
+    --border: #e5e7eb;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 12px 60px rgba(0, 0, 0, 0.15);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Base Styles */
+* {
+    box-sizing: border-box;
+}
+
 .home-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
 
-        /* Hero Section */
-        .hero {
-            display: flex;
-            align-items: center;
+/* Hero Section */
+.hero {
+    position: relative;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
-    min-height: 80vh;
-    padding: 80px 0;
-    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-    border-radius: 20px;
-    margin-bottom: 60px;
-    position: relative;
+    min-height: 90vh;
+    padding: 100px 0;
+    background: linear-gradient(135deg, #fafbfc 0%, #ffffff 50%, #f8f9fa 100%);
+    border-radius: var(--radius-xl);
+    margin-bottom: 80px;
     overflow: hidden;
 }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-    right: 0;
-    width: 300px;
-    height: 300px;
-    background: rgba(255, 214, 0, 0.1);
-    border-radius: 50%;
-    transform: translate(50%, -50%);
-}
-
-.hero::after {
-    content: '';
-    position: absolute;
-    bottom: -50px;
-    left: -50px;
-    width: 200px;
-    height: 200px;
-    background: rgba(255, 214, 0, 0.08);
-    border-radius: 50%;
-}
-
-.hero .shape-1 {
-    position: absolute;
-    top: 20%;
-    left: 10%;
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 214, 0, 0.15);
-    border-radius: 20px;
-    transform: rotate(45deg);
-    animation: float 6s ease-in-out infinite;
-}
-
-.hero .shape-2 {
-    position: absolute;
-    top: 60%;
-    right: 15%;
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 214, 0, 0.12);
-    border-radius: 50%;
-    animation: float 8s ease-in-out infinite reverse;
-}
-
-.hero .shape-3 {
-    position: absolute;
-    bottom: 20%;
-    left: 20%;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 214, 0, 0.1);
-    border-radius: 8px;
-    transform: rotate(30deg);
-    animation: float 7s ease-in-out infinite;
-}
-
-@keyframes float {
-    0%, 100% {
-        transform: translateY(0px) rotate(45deg);
-    }
-    50% {
-        transform: translateY(-10px) rotate(45deg);
-    }
-}
-
-@keyframes float-reverse {
-    0%, 100% {
-        transform: translateY(0px);
-    }
-    50% {
-        transform: translateY(-8px);
-    }
-}
-
-        .hero-content {
-    flex: 1;
-    max-width: 600px;
-    z-index: 2;
-    position: relative;
-        }
-
-        .hero-title {
-    font-size: 3.5rem;
-            font-weight: 700;
-    margin-bottom: 24px;
-    line-height: 1.1;
-    color: #333;
-}
-
-.hello-yellow {
-    color: #FFD600;
-}
-
-.username-highlight {
-    color: #333;
-        }
-
-        .hero-desc {
-    font-size: 1.25rem;
-    color: #666;
-    margin-bottom: 40px;
-    line-height: 1.6;
-        }
-
-        .hero-btns {
-            display: flex;
-    gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .hero-btn {
-    background: #FFD600;
-    color: #222;
-            border: none;
-            border-radius: 12px;
-    padding: 16px 32px;
-    font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-    box-shadow: 0 4px 15px rgba(255, 214, 0, 0.3);
-}
-
-.hero-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(255, 214, 0, 0.4);
-        }
-
-        .hero-btn.secondary {
-            background: transparent;
-    color: #333;
-    border: 2px solid #333;
-        }
-
-        .hero-btn.secondary:hover {
-    background: #333;
-    color: white;
-}
-
-        .hero-illustration {
-            flex-shrink: 0;
-            margin-left: 40px;
-            z-index: 2;
-            position: relative;
-        }
-        
-        /* Mobile/Desktop visibility classes */
-        .mobile-only {
-            display: none;
-        }
-        
-        .hero-illustration.desktop-position {
-            display: block;
-            flex-shrink: 0;
-            margin-left: 40px;
-            z-index: 2;
-            position: relative;
-        }
-
-.hero-img {
-    max-width: 500px;
-    width: 100%;
-    height: auto;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-}
-
-.hero-img:hover {
-    transform: translateY(-5px);
-}
-
-        /* Features Section */
-.features-section {
-    padding: 80px 0;
-    background: #f8f9fa;
-    border-radius: 20px;
-    margin-bottom: 60px;
-    position: relative;
-    overflow: hidden;
-}
-
-.features-section .shape-4 {
-    position: absolute;
-    top: 10%;
-    right: 5%;
-    width: 120px;
-    height: 120px;
-    background: rgba(255, 214, 0, 0.1);
-    border-radius: 50%;
-}
-
-.features-section .shape-5 {
-    position: absolute;
-    bottom: 10%;
-    left: 5%;
-    width: 100px;
-    height: 100px;
-    background: rgba(255, 214, 0, 0.08);
-    border-radius: 20px;
-    transform: rotate(45deg);
-}
-
-.section-header {
-    text-align: center;
-    margin-bottom: 60px;
-}
-
-.section-header h2 {
-    font-size: 2.5rem;
-            font-weight: 700;
-    color: #333;
-    margin-bottom: 16px;
-}
-
-.section-header .highlight {
-    color: #FFD600;
-}
-
-.section-header p {
-    font-size: 1.2rem;
-    color: #666;
-    max-width: 600px;
-    margin: 0 auto;
-        }
-
-        .features-grid {
-            display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    justify-items: center;
-}
-
-        .feature-card {
-    background: white;
-    border-radius: 16px;
-    padding: 40px 30px;
-    text-align: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-    width: 100%;
-    max-width: 320px;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-}
-
-.feature-card::before {
-    content: '';
+.hero-bg-elements {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, rgba(255, 214, 0, 0.05) 0%, rgba(255, 214, 0, 0.02) 100%);
+    pointer-events: none;
+}
+
+.floating-shape {
+    position: absolute;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, rgba(255, 214, 0, 0.1), rgba(255, 214, 0, 0.05));
+    animation: float 6s ease-in-out infinite;
+}
+
+.shape-1 {
+    top: 15%;
+    left: 8%;
+    width: 80px;
+    height: 80px;
+    animation-delay: 0s;
+}
+
+.shape-2 {
+    top: 60%;
+    right: 12%;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    animation-delay: 2s;
+}
+
+.shape-3 {
+    bottom: 20%;
+    left: 15%;
+    width: 40px;
+    height: 40px;
+    animation-delay: 4s;
+}
+
+.gradient-orb {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 214, 0, 0.15) 0%, rgba(255, 214, 0, 0.05) 50%, transparent 100%);
+    filter: blur(1px);
+}
+
+.orb-1 {
+    top: -10%;
+    right: -5%;
+    width: 300px;
+    height: 300px;
+}
+
+.orb-2 {
+    bottom: -15%;
+    left: -10%;
+    width: 200px;
+    height: 200px;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(5deg); }
+    66% { transform: translateY(5px) rotate(-3deg); }
+}
+
+.hero-content {
+    flex: 1;
+    max-width: 650px;
+    z-index: 2;
+    position: relative;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 214, 0, 0.1);
+    border: 1px solid rgba(255, 214, 0, 0.2);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 24px;
+    backdrop-filter: blur(10px);
+}
+
+.badge-icon {
+    font-size: 1rem;
+}
+
+.hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 32px;
+    position: relative;
+}
+
+.title-line {
+    display: block;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.brand-highlight {
+    display: block;
+    background: linear-gradient(135deg, #FFD600 0%, #FFA500 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+}
+
+.title-underline {
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 120px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), transparent);
+    border-radius: 2px;
+}
+
+.hero-desc {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 32px;
+}
+
+.highlight-text {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.hero-stats {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 40px;
+    padding: 24px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.hero-btns {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.hero-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 32px;
+    border-radius: var(--radius-md);
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+    overflow: hidden;
+    border: 2px solid transparent;
+}
+
+.hero-btn.primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: var(--secondary-color);
+    box-shadow: var(--shadow-md);
+}
+
+.hero-btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.hero-btn.secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+.hero-btn.secondary:hover {
+    background: var(--text-primary);
+    color: white;
+    border-color: var(--text-primary);
+}
+
+.btn-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.hero-btn:hover .btn-shine {
+    left: 100%;
+}
+
+.btn-arrow {
+    width: 16px;
+    height: 16px;
+    transition: var(--transition);
+}
+
+.hero-btn:hover .btn-arrow {
+    transform: translate(2px, -2px);
+}
+
+.hero-illustration {
+    flex-shrink: 0;
+    margin-left: 60px;
+    z-index: 2;
+    position: relative;
+}
+
+.image-container {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+.hero-img {
+    max-width: 500px;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    transition: var(--transition);
+}
+
+.hero-img:hover {
+    transform: translateY(-8px) scale(1.02);
+}
+
+.image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 214, 0, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.floating-elements {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.floating-icon {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: var(--shadow-md);
+    animation: floatIcon 4s ease-in-out infinite;
+}
+
+.icon-1 {
+    top: 20%;
+    right: -10px;
+    animation-delay: 0s;
+}
+
+.icon-2 {
+    top: 60%;
+    left: -15px;
+    animation-delay: 1.5s;
+}
+
+.icon-3 {
+    bottom: 20%;
+    right: 10%;
+    animation-delay: 3s;
+}
+
+@keyframes floatIcon {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+}
+
+/* Features Section */
+.features-section {
+    position: relative;
+    padding: 100px 0;
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    margin-bottom: 80px;
+    overflow: hidden;
+}
+
+.section-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.bg-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle at 25% 25%, rgba(255, 214, 0, 0.05) 0%, transparent 50%),
+                      radial-gradient(circle at 75% 75%, rgba(255, 214, 0, 0.03) 0%, transparent 50%);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 80px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.section-badge {
+    display: inline-block;
+    background: rgba(255, 214, 0, 0.1);
+    border: 1px solid rgba(255, 214, 0, 0.2);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 24px;
+}
+
+.section-header h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.section-header .highlight {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #FFA500 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.section-header p {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 32px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.feature-card {
+    position: relative;
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 40px 32px;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    group: hover;
+}
+
+.card-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 214, 0, 0.05) 0%, transparent 50%);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: var(--transition);
+    pointer-events: none;
 }
 
 .feature-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 40px rgba(255, 214, 0, 0.25);
-    border-color: #FFD600;
+    box-shadow: var(--shadow-xl);
+    border-color: rgba(255, 214, 0, 0.3);
 }
 
-.feature-card:hover::before {
+.feature-card:hover .card-glow {
     opacity: 1;
-}
-
-.feature-card:hover .feature-icon {
-    transform: scale(1.1);
-    box-shadow: 0 8px 25px rgba(255, 214, 0, 0.4);
-}
-
-.feature-card:hover .feature-title {
-    color: #FFD600;
 }
 
 .feature-icon {
+    position: relative;
     width: 80px;
     height: 80px;
-    background: #FFD600;
-    color: #222;
-    border-radius: 16px;
+    margin: 0 auto 24px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: var(--radius-lg);
+    transition: var(--transition);
+}
+
+.icon-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    border-radius: var(--radius-lg);
+    transition: var(--transition);
+}
+
+.icon-emoji {
     font-size: 2.5rem;
-    margin: 0 auto 24px;
-    box-shadow: 0 4px 15px rgba(255, 214, 0, 0.3);
-    transition: all 0.3s ease;
-    position: relative;
     z-index: 1;
+    position: relative;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.feature-card:hover .icon-bg {
+    box-shadow: var(--shadow-lg);
 }
 
 .feature-title {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: 600;
-    color: #222;
+    color: var(--text-primary);
     margin-bottom: 16px;
-    transition: color 0.3s ease;
-    position: relative;
-    z-index: 1;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.feature-card:hover .feature-title {
+    color: var(--primary-color);
 }
 
 .feature-desc {
-    color: #555;
+    color: var(--text-secondary);
     line-height: 1.6;
-    position: relative;
-    z-index: 1;
-}
-
-.feature-hint {
-    color: #FFD600;
-    font-size: 0.9rem;
-    font-weight: 500;
-    margin-top: 16px;
-    opacity: 0.7;
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 1;
-}
-
-.feature-card:hover .feature-hint {
-    opacity: 1;
-    transform: translateX(5px);
-}
-
-        /* Newsletter Section */
-        .newsletter-section {
-    background: white;
-    padding: 60px 0;
-    border-radius: 20px;
-    margin-bottom: 60px;
     text-align: center;
+    margin-bottom: 20px;
+}
+
+.feature-arrow {
+    display: flex;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: var(--transition);
+}
+
+.feature-arrow svg {
+    width: 20px;
+    height: 20px;
+    color: var(--primary-color);
+}
+
+.feature-card:hover .feature-arrow {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Newsletter Section */
+.newsletter-section {
     position: relative;
+    background: white;
+    padding: 80px 0;
+    border-radius: var(--radius-xl);
+    margin-bottom: 80px;
+    text-align: center;
     overflow: hidden;
 }
 
-.newsletter-section::before {
-    content: '';
+.newsletter-bg {
     position: absolute;
-    top: -30px;
-    right: -30px;
-    width: 150px;
-    height: 150px;
-    background: rgba(255, 214, 0, 0.06);
-    border-radius: 50%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
-.newsletter-section::after {
-    content: '';
+.newsletter-pattern {
     position: absolute;
-    bottom: -20px;
-    left: -20px;
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 214, 0, 0.1);
-    border-radius: 15px;
-    transform: rotate(30deg);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 20%, rgba(255, 214, 0, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(255, 214, 0, 0.05) 0%, transparent 50%);
 }
 
 .newsletter-content {
     max-width: 600px;
     margin: 0 auto;
-    padding: 0 20px;
-        }
-
-        .newsletter-title {
-    font-size: 2.2rem;
-            font-weight: 700;
-    color: #333;
-    margin-bottom: 16px;
-        }
-
-        .newsletter-desc {
-    font-size: 1.1rem;
-    color: #666;
-    margin-bottom: 40px;
-    line-height: 1.6;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
 }
 
-        .newsletter-form {
+.newsletter-icon {
+    font-size: 3rem;
+    margin-bottom: 24px;
+}
+
+.newsletter-title {
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+}
+
+.newsletter-desc {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+.newsletter-form {
+    margin-bottom: 32px;
+}
+
+.input-group {
     display: flex;
-    gap: 16px;
-            max-width: 500px;
-            margin: 0 auto;
-        }
+    gap: 12px;
+    max-width: 500px;
+    margin: 0 auto;
+    background: var(--surface);
+    padding: 8px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+}
 
-        .newsletter-input {
-            flex: 1;
+.newsletter-input {
+    flex: 1;
     padding: 16px 20px;
-    border: 2px solid #eee;
-    border-radius: 12px;
-            font-size: 1rem;
-    transition: border-color 0.3s ease;
-        }
+    border: none;
+    background: transparent;
+    font-size: 1rem;
+    color: var(--text-primary);
+    outline: none;
+}
 
-        .newsletter-input:focus {
-            outline: none;
-    border-color: #FFD600;
-        }
+.newsletter-input::placeholder {
+    color: var(--text-muted);
+}
 
-        .newsletter-btn {
-    background: #FFD600;
-    color: #222;
-            border: none;
-    border-radius: 12px;
-    padding: 16px 32px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+.newsletter-btn {
+    position: relative;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: var(--secondary-color);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 16px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    overflow: hidden;
+}
 
-        .newsletter-btn:hover {
-            transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(255, 214, 0, 0.3);
+.newsletter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.newsletter-features {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.check-icon {
+    color: var(--primary-color);
+    font-weight: bold;
 }
 
 /* Testimonials Section */
 .testimonials-section {
-    background: #f8f9fa;
-    padding: 60px 0;
-    border-radius: 20px;
-    text-align: center;
     position: relative;
+    background: var(--surface);
+    padding: 80px 0;
+    border-radius: var(--radius-xl);
+    text-align: center;
     overflow: hidden;
 }
 
-.testimonials-section::before {
-    content: '';
+.testimonial-bg {
     position: absolute;
-    top: 20%;
-    left: 10%;
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 214, 0, 0.12);
-    border-radius: 50%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
-.testimonials-section::after {
-    content: '';
+.testimonial-pattern {
     position: absolute;
-    bottom: 30%;
-    right: 15%;
-    width: 40px;
-    height: 40px;
-    background: rgba(255, 214, 0, 0.08);
-    border-radius: 8px;
-    transform: rotate(45deg);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 30% 30%, rgba(255, 214, 0, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(255, 214, 0, 0.04) 0%, transparent 50%);
 }
 
 .testimonial-content {
     max-width: 800px;
     margin: 0 auto;
-    padding: 0 20px;
-        }
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+}
 
-        .testimonial-quote {
-    font-size: 1.4rem;
-    color: #333;
-            font-style: italic;
-    margin-bottom: 24px;
+.testimonial-header {
+    margin-bottom: 32px;
+}
+
+.stars {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.star {
+    font-size: 1.5rem;
+    animation: twinkle 2s ease-in-out infinite;
+}
+
+.star:nth-child(2) { animation-delay: 0.2s; }
+.star:nth-child(3) { animation-delay: 0.4s; }
+.star:nth-child(4) { animation-delay: 0.6s; }
+.star:nth-child(5) { animation-delay: 0.8s; }
+
+@keyframes twinkle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(0.9); }
+}
+
+.rating-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.testimonial-quote {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    font-style: italic;
     line-height: 1.6;
-            position: relative;
-    padding: 0 40px;
-        }
-
-        .testimonial-quote::before,
-        .testimonial-quote::after {
-    content: '"';
-    font-size: 3rem;
-    color: #FFD600;
-            position: absolute;
-    top: -10px;
-        }
-
-        .testimonial-quote::before {
-    left: 0;
-        }
-
-        .testimonial-quote::after {
-    right: 0;
-        }
-
-        .testimonial-user {
-    font-weight: 600;
-    color: #666;
     margin-bottom: 40px;
-        }
+    position: relative;
+    padding: 0 40px;
+}
 
-        .testimonial-logo-row {
-            display: flex;
-            justify-content: center;
-    gap: 30px;
-            flex-wrap: wrap;
-        }
+.testimonial-quote::before,
+.testimonial-quote::after {
+    content: '"';
+    font-size: 4rem;
+    color: var(--primary-color);
+    position: absolute;
+    top: -20px;
+    font-family: serif;
+    opacity: 0.3;
+}
 
-        .testimonial-logo {
+.testimonial-quote::before {
+    left: 0;
+}
+
+.testimonial-quote::after {
+    right: 0;
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 40px;
+}
+
+.author-avatar {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+}
+
+.author-info {
+    text-align: left;
+}
+
+.author-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.author-title {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.testimonial-logos {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.logo-item {
     background: white;
-    color: #333;
-    padding: 12px 24px;
-    border-radius: 12px;
-            font-weight: 600;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    color: var(--text-primary);
+    padding: 12px 20px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.logo-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 /* Mobile Responsive Design */
 @media (max-width: 768px) {
     .home-container {
-        padding: 0 15px;
-        margin-top: 20px;
+        padding: 0 16px;
     }
-    
+
     .hero {
         flex-direction: column;
         text-align: center;
-        padding: 40px 20px;
+        padding: 60px 24px;
         min-height: auto;
-        margin-bottom: 40px;
-        border-radius: 15px;
+        margin-bottom: 60px;
     }
-    
+
     .hero-content {
-        margin-bottom: 30px;
+        margin-bottom: 40px;
         max-width: 100%;
     }
-    
-    .hero-title {
-        font-size: 2.2rem;
-        line-height: 1.2;
-        margin-bottom: 20px;
+
+    .hero-stats {
+        gap: 20px;
+        padding: 20px 0;
     }
-    
-    .hero-desc {
-        font-size: 1rem;
-        margin-bottom: 30px;
-        line-height: 1.5;
+
+    .stat-number {
+        font-size: 1.3rem;
     }
-    
+
+    .stat-label {
+        font-size: 0.8rem;
+    }
+
     .hero-illustration {
         margin-left: 0;
         order: 2;
-        margin-bottom: 20px;
     }
-    
+
     .hero-content {
         order: 1;
     }
-    
-    /* Mobile layout: show desktop image after content */
-    .desktop-position {
-        display: block;
-        margin: 30px 0 0 0;
-        text-align: center;
-        order: 3;
-    }
-    
+
     .hero-img {
-        max-width: 280px;
-        width: 100%;
-        height: auto;
+        max-width: 300px;
     }
-    
+
     .hero-btns {
         flex-direction: column;
         align-items: center;
-        gap: 15px;
+        gap: 12px;
         width: 100%;
     }
-    
+
     .hero-btn {
         width: 100%;
-        max-width: 280px;
+        max-width: 300px;
         justify-content: center;
         padding: 14px 24px;
         font-size: 1rem;
     }
-    
-    /* Mobile shape adjustments */
-    .hero .shape-1 {
-        width: 50px;
-        height: 50px;
-        top: 10%;
-        left: 5%;
+
+    .floating-shape {
+        display: none;
     }
-    
-    .hero .shape-2 {
-        width: 35px;
-        height: 35px;
-        top: 75%;
-        right: 8%;
+
+    .gradient-orb {
+        display: none;
     }
-    
-    .hero .shape-3 {
-        width: 25px;
-        height: 25px;
-        bottom: 10%;
-        left: 10%;
+
+    .floating-elements {
+        display: none;
     }
-    
-    .features-section .shape-4 {
-        width: 60px;
-        height: 60px;
-        top: 3%;
-        right: 2%;
-    }
-    
-    .features-section .shape-5 {
-        width: 50px;
-        height: 50px;
-        bottom: 3%;
-        left: 2%;
-    }
-    
+
     .features-section {
-        padding: 40px 20px;
-        margin-bottom: 40px;
-        border-radius: 15px;
+        padding: 60px 24px;
+        margin-bottom: 60px;
     }
-    
+
     .section-header {
-        margin-bottom: 40px;
+        margin-bottom: 60px;
     }
-    
-    .section-header h2 {
-        font-size: 1.8rem;
-        margin-bottom: 12px;
-    }
-    
-    .section-header p {
-        font-size: 1rem;
-        padding: 0 10px;
-    }
-    
+
     .features-grid {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 24px;
         padding: 0;
     }
-    
+
     .feature-card {
-        padding: 25px 20px;
+        padding: 32px 24px;
         max-width: 100%;
     }
-    
-    .feature-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 2rem;
-        margin-bottom: 20px;
-    }
-    
-    .feature-title {
-        font-size: 1.2rem;
-        margin-bottom: 12px;
-    }
-    
-    .feature-desc {
-        font-size: 0.95rem;
-        line-height: 1.5;
-    }
-    
+
     .newsletter-section {
-        padding: 40px 20px;
-        margin-bottom: 40px;
-        border-radius: 15px;
+        padding: 60px 24px;
+        margin-bottom: 60px;
     }
-    
-    .newsletter-content {
-        padding: 0;
-    }
-    
-    .newsletter-title {
-        font-size: 1.6rem;
-        margin-bottom: 12px;
-    }
-    
-    .newsletter-desc {
-        font-size: 1rem;
-        margin-bottom: 30px;
-    }
-    
-    .newsletter-form {
+
+    .input-group {
         flex-direction: column;
         gap: 12px;
-        max-width: 100%;
+        padding: 12px;
     }
-    
+
     .newsletter-input,
     .newsletter-btn {
         width: 100%;
-        padding: 14px 16px;
-        font-size: 1rem;
+        padding: 16px 20px;
     }
-    
+
+    .newsletter-features {
+        gap: 16px;
+    }
+
     .testimonials-section {
-        padding: 40px 20px;
-        border-radius: 15px;
+        padding: 60px 24px;
     }
-    
-    .testimonial-content {
-        padding: 0;
-    }
-    
+
     .testimonial-quote {
-        font-size: 1.1rem;
-        padding: 0 15px;
-        margin-bottom: 20px;
+        font-size: 1.2rem;
+        padding: 0 20px;
     }
-    
+
     .testimonial-quote::before,
     .testimonial-quote::after {
-        font-size: 2rem;
-        top: -5px;
+        font-size: 3rem;
+        top: -15px;
     }
-    
-    .testimonial-user {
-        margin-bottom: 30px;
-        font-size: 0.95rem;
-    }
-    
-    .testimonial-logo-row {
+
+    .testimonial-author {
+        flex-direction: column;
         gap: 12px;
-        justify-content: center;
     }
-    
-    .testimonial-logo {
-        padding: 8px 12px;
-        font-size: 0.85rem;
-        border-radius: 8px;
+
+    .author-info {
+        text-align: center;
+    }
+
+    .testimonial-logos {
+        gap: 12px;
+    }
+
+    .logo-item {
+        padding: 8px 16px;
+        font-size: 0.9rem;
     }
 }
 
 @media (max-width: 480px) {
     .home-container {
-        padding: 0 10px;
-        margin-top: 15px;
+        padding: 0 12px;
     }
-    
+
     .hero {
-        padding: 30px 15px;
-        margin-bottom: 30px;
+        padding: 40px 16px;
+        margin-bottom: 40px;
     }
-    
+
     .hero-title {
-        font-size: 1.8rem;
-        line-height: 1.3;
+        font-size: 2rem;
     }
-    
+
     .hero-desc {
-        font-size: 0.95rem;
-        margin-bottom: 25px;
+        font-size: 1rem;
     }
-    
+
     .hero-img {
-        max-width: 240px;
-    }
-    
-    .hero-btn {
         max-width: 250px;
+    }
+
+    .hero-btn {
+        max-width: 280px;
         padding: 12px 20px;
         font-size: 0.95rem;
     }
-    
-    .features-section {
-        padding: 30px 15px;
-        margin-bottom: 30px;
-    }
-    
-    .section-header h2 {
-        font-size: 1.6rem;
-    }
-    
-    .section-header p {
-        font-size: 0.95rem;
-    }
-    
-    .feature-card {
-        padding: 20px 15px;
-    }
-    
-    .feature-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.8rem;
-        margin-bottom: 15px;
-    }
-    
-    .feature-title {
-        font-size: 1.1rem;
-    }
-    
-    .feature-desc {
-        font-size: 0.9rem;
-    }
-    
-    .newsletter-section {
-        padding: 30px 15px;
-        margin-bottom: 30px;
-    }
-    
-    .newsletter-title {
-        font-size: 1.4rem;
-    }
-    
-    .newsletter-desc {
-        font-size: 0.95rem;
-        margin-bottom: 25px;
-    }
-    
-    .newsletter-input,
-    .newsletter-btn {
-        padding: 12px 14px;
-        font-size: 0.95rem;
-    }
-    
-    .testimonials-section {
-        padding: 30px 15px;
-    }
-    
-    .testimonial-quote {
-        font-size: 1rem;
-        padding: 0 10px;
-    }
-    
-    .testimonial-quote::before,
-    .testimonial-quote::after {
-        font-size: 1.8rem;
-    }
-    
-    .testimonial-user {
-        font-size: 0.9rem;
-        margin-bottom: 25px;
-    }
-    
-    .testimonial-logo-row {
-        gap: 8px;
-    }
-    
-    .testimonial-logo {
-        padding: 6px 10px;
-        font-size: 0.8rem;
-    }
-}
 
-@media (max-width: 360px) {
-    .home-container {
-        padding: 0 8px;
-    }
-    
-    .hero {
-        padding: 25px 12px;
-    }
-    
-    .hero-title {
-        font-size: 1.6rem;
-    }
-    
-    .hero-desc {
-        font-size: 0.9rem;
-    }
-    
-    .hero-img {
-        max-width: 200px;
-    }
-    
-    .hero-btn {
-        max-width: 220px;
-        padding: 10px 16px;
-        font-size: 0.9rem;
-    }
-    
     .features-section,
     .newsletter-section,
     .testimonials-section {
-        padding: 25px 12px;
-        margin-bottom: 25px;
+        padding: 40px 16px;
+        margin-bottom: 40px;
     }
-    
-    .section-header h2 {
-        font-size: 1.4rem;
-    }
-    
+
     .feature-card {
-        padding: 18px 12px;
+        padding: 24px 20px;
     }
-    
-    .newsletter-title {
-        font-size: 1.3rem;
+
+    .feature-icon {
+        width: 60px;
+        height: 60px;
     }
-    
+
+    .icon-emoji {
+        font-size: 2rem;
+    }
+
+    .feature-title {
+        font-size: 1.2rem;
+    }
+
     .testimonial-quote {
-        font-size: 0.95rem;
+        font-size: 1.1rem;
+        padding: 0 15px;
     }
 }
-    </style>
 
-    <script>
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    e.preventDefault();
-                    const navbarHeight = document.querySelector('.navbar').offsetHeight;
-                    window.scrollTo({
-                        top: target.offsetTop - navbarHeight - 20,
-                        behavior: 'smooth'
-                    });
-                }
+/* AOS Animation Styles */
+[data-aos] {
+    pointer-events: none;
+}
+
+[data-aos].aos-animate {
+    pointer-events: auto;
+}
+
+/* Custom AOS animations */
+[data-aos="fade-up"] {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+[data-aos="fade-up"].aos-animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+[data-aos="fade-left"] {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+[data-aos="fade-left"].aos-animate {
+    opacity: 1;
+    transform: translateX(0);
+}
+</style>
+
+<!-- AOS Animation Library -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script>
+// Initialize AOS animations
+AOS.init({
+    duration: 800,
+    easing: 'ease-out-cubic',
+    once: true,
+    offset: 100
+});
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            e.preventDefault();
+            const navbarHeight = document.querySelector('.navbar')?.offsetHeight || 0;
+            window.scrollTo({
+                top: target.offsetTop - navbarHeight - 20,
+                behavior: 'smooth'
             });
-        });
-    </script>
+        }
+    });
+});
+
+// Newsletter form enhancement
+const newsletterForm = document.getElementById('newsletterForm');
+if (newsletterForm) {
+    newsletterForm.addEventListener('submit', function(e) {
+        const btn = this.querySelector('.newsletter-btn');
+        const originalText = btn.innerHTML;
+        
+        btn.innerHTML = '<span>Subscribing...</span>';
+        btn.disabled = true;
+        
+        // Reset after form submission (you can customize this based on your backend response)
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }, 2000);
+    });
+}
+
+// Add parallax effect to floating shapes
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const shapes = document.querySelectorAll('.floating-shape');
+    
+    shapes.forEach((shape, index) => {
+        const speed = 0.5 + (index * 0.1);
+        shape.style.transform = `translateY(${scrolled * speed}px)`;
+    });
+});
+
+// Add hover effect to feature cards
+document.querySelectorAll('.feature-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-8px) scale(1.02)';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+    });
+});
+
+// Add typing effect to hero title (optional)
+function typeWriter(element, text, speed = 100) {
+    let i = 0;
+    element.innerHTML = '';
+    
+    function type() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(type, speed);
+        }
+    }
+    
+    type();
+}
+
+// Intersection Observer for animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('animate-in');
+        }
+    });
+}, observerOptions);
+
+// Observe all feature cards
+document.querySelectorAll('.feature-card').forEach(card => {
+    observer.observe(card);
+});
+</script>
+
 {% endblock %}

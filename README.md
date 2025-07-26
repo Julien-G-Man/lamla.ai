@@ -26,7 +26,7 @@ Lamla-AI empowers students to upload their study materials, generate AI-powered 
 ## 🛠️ Tech Stack
 - **Backend:** Django 5, Django REST Framework
 - **Frontend:** Django Templates, Custom CSS
-- **AI Integration:** Google Gemini, OpenAI, Hugging Face (Mistral)
+- **AI Integration:** Azure OpenAI GPT4o-mini, Google Gemini, OpenAI, Hugging Face (Mistral)
 - **Auth:** Django Allauth
 - **Database:** SQLite (default, easy to switch)
 

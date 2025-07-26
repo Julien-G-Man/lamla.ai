@@ -55,3 +55,4 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+.cache_ggshield

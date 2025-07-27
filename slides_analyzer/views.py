@@ -839,10 +839,21 @@ def get_users_data(request):
         try:
             profile = user.profile
             is_deleted = profile.is_deleted
-        except Exception:
-            is_deleted = False
-        if is_deleted:
-            continue  # Skip deleted users
+        except Exception as e:
+            # Log missing profile issue and create one
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"User {user.username} (ID: {user.id}) missing profile: {e}")
+            # Create missing profile
+            from .models import UserProfile
+            profile, created = UserProfile.objects.get_or_create(user=user)
+            if created:
+                logger.info(f"Created missing profile for user {user.username}")
+            is_deleted = profile.is_deleted
+        
+        # Don't skip users - show all users but mark their status
+        # if is_deleted:
+        #     continue  # Skip deleted users
         full_name = f"{user.first_name} {user.last_name}".strip() or user.username
         role = 'Admin' if user.is_staff or user.is_superuser else 'User'
         is_active = user.is_active
@@ -858,6 +869,7 @@ def get_users_data(request):
             'email': user.email,
             'role': role,
             'is_active': is_active,
+            'is_deleted': is_deleted,  # Add deleted status for debugging
             'date_joined': user.date_joined.strftime('%Y-%m-%d %H:%M'),
             'two_fa': two_fa,
         })

@@ -17,7 +17,7 @@ def send_welcome_email_after_confirmation(request, email_address, **kwargs):
     """
     user = email_address.user
     if user and user.email:
-        subject = "Welcome to LAMLA AI! 🎉"
+        subject = "Welcome to LAMLA AI! "
         context = {
             'user': user,
             'site_name': 'LAMLA AI',

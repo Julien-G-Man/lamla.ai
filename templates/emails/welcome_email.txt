@@ -1,12 +1,12 @@
-Welcome to LAMLA AI! 🎉
+Welcome to LAMLA AI! 
 
 Hi {{ user.first_name|default:user.username }},
 
-Welcome to the future of learning! 🚀
+Welcome to the future of learning! 
 
 Thank you for joining LAMLA AI - your personal AI tutor that transforms study materials into interactive learning experiences.
 
-✨ What you can do with LAMLA AI:
+What you can do with LAMLA AI:
 
 • Upload Study Materials: PDFs, PowerPoints, documents, or text
 • Generate Custom Quizzes: Multiple choice and short answer questions

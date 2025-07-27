@@ -174,7 +174,7 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
 
 # Allauth settings
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
 
 # Allauth email configuration

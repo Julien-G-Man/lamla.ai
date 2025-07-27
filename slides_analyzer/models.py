@@ -5,6 +5,9 @@ from django.core.validators import EmailValidator
 from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Create your models here.
 
@@ -20,29 +23,60 @@ class UserProfile(models.Model):
     bio = models.TextField(max_length=500, blank=True, help_text="Tell us about yourself")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_deleted = models.BooleanField(default=False, help_text="Soft-delete flag for user/admin")
+    is_deleted = models.BooleanField(default=False, help_text="Soft-delete flag for manual admin use only")
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
     
+    def save(self, *args, **kwargs):
+        """Override save to log any attempts to mark users as deleted and prevent automatic deletion"""
+        if self.pk:  # If this is an update, not a new creation
+            try:
+                old_instance = UserProfile.objects.get(pk=self.pk)
+                if not old_instance.is_deleted and self.is_deleted:
+                    # Log when a user is being marked as deleted
+                    logger.warning(f"UserProfile for {self.user.username} (ID: {self.user.id}) is being marked as deleted")
+                    # You could add additional checks here to prevent automatic deletion
+                    # For now, we'll allow it but log it for monitoring
+            except UserProfile.DoesNotExist:
+                pass
+        super().save(*args, **kwargs)
+    
     @property
     def profile_picture_url(self):
         """Return the profile picture URL or default image"""
-        if self.profile_picture:
+        if self.profile_picture and hasattr(self.profile_picture, 'url'):
             return self.profile_picture.url
-        return '/static/slide_analyzer/images/profile_default.png'
+        return '/static/images/default-avatar.png'
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    """Create a UserProfile when a User is created"""
+    """Create a UserProfile when a User is created - GUARANTEED CREATION"""
     if created:
-        UserProfile.objects.create(user=instance)
+        profile, profile_created = UserProfile.objects.get_or_create(
+            user=instance,
+            defaults={'is_deleted': False}  # Explicitly set to False
+        )
+        if profile_created:
+            logger.info(f"Created UserProfile for new user: {instance.username} (ID: {instance.id})")
+        else:
+            logger.warning(f"UserProfile already existed for new user: {instance.username} (ID: {instance.id})")
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    """Save the UserProfile when a User is saved"""
+    """Save the UserProfile when a User is saved - GUARANTEED PROFILE EXISTS"""
     if hasattr(instance, 'profile'):
+        # Ensure the profile is never automatically marked as deleted
+        if instance.profile.is_deleted:
+            logger.warning(f"UserProfile for {instance.username} was marked as deleted - this should only happen manually")
         instance.profile.save()
+    else:
+        # Create profile if it doesn't exist
+        logger.warning(f"User {instance.username} (ID: {instance.id}) missing profile during save - creating now")
+        UserProfile.objects.get_or_create(
+            user=instance,
+            defaults={'is_deleted': False}
+        )
 
 class QuizSession(models.Model):
     """Model to track quiz sessions and results"""

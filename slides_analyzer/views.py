@@ -825,47 +825,82 @@ def get_subscribers_data(request):
 
 def get_users_data(request):
     """
-    Return JSON data for all users, including stats.
+    Return JSON data for ALL users - GUARANTEED VISIBILITY FOR ALL USERS
     """
     if not request.user.is_staff:
         return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+    
+    import logging
+    logger = logging.getLogger(__name__)
+    
     from django.contrib.auth.models import User
+    from .models import UserProfile
+    
+    # Get ALL users - no filtering whatsoever
     users = User.objects.all().order_by('-date_joined')
     data = []
     active_count = 0
     inactive_count = 0
+    deleted_count = 0
+    
+    logger.info(f"Processing {users.count()} users for admin dashboard")
+    
     for user in users:
-        # Try to get profile, handle if missing
+        # GUARANTEE that every user has a profile and is shown
         try:
             profile = user.profile
             is_deleted = profile.is_deleted
-        except Exception:
-            is_deleted = False
-        if is_deleted:
-            continue  # Skip deleted users
+        except Exception as e:
+            # Auto-create missing profile with extensive logging
+            logger.error(f"CRITICAL: User {user.username} (ID: {user.id}) missing profile: {e}")
+            profile, created = UserProfile.objects.get_or_create(
+                user=user,
+                defaults={'is_deleted': False}
+            )
+            if created:
+                logger.info(f"AUTO-CREATED missing profile for user {user.username}")
+            is_deleted = profile.is_deleted
+        
+        # NEVER SKIP ANY USER - Show all users regardless of status
         full_name = f"{user.first_name} {user.last_name}".strip() or user.username
         role = 'Admin' if user.is_staff or user.is_superuser else 'User'
         is_active = user.is_active
+        
+        # Count statistics
         if is_active:
             active_count += 1
         else:
             inactive_count += 1
+            
+        if is_deleted:
+            deleted_count += 1
+            logger.warning(f"User {user.username} is marked as deleted but still shown in admin")
+        
         # 2FA placeholder (customize if you have 2FA field)
         two_fa = 'Enabled' if hasattr(user, 'two_fa_enabled') and user.two_fa_enabled else 'Disabled'
+        
+        # Add user to data - GUARANTEED inclusion
         data.append({
             'id': user.id,
             'full_name': full_name,
             'email': user.email,
             'role': role,
             'is_active': is_active,
+            'is_deleted': is_deleted,  # Show deletion status for transparency
+            'status': 'Deleted' if is_deleted else ('Active' if is_active else 'Inactive'),
             'date_joined': user.date_joined.strftime('%Y-%m-%d %H:%M'),
             'two_fa': two_fa,
         })
+    
     stats = {
         'total_users': len(data),
         'active_users': active_count,
         'inactive_users': inactive_count,
+        'deleted_users': deleted_count,
     }
+    
+    logger.info(f"Admin dashboard showing {len(data)} users: {active_count} active, {inactive_count} inactive, {deleted_count} deleted")
+    
     return JsonResponse({'success': True, 'users': data, 'stats': stats})
 
 def toggle_subscription_status(request):
@@ -875,10 +910,104 @@ def download_users_csv(request):
     return HttpResponse('download_users_csv stub')
 
 def delete_user(request):
-    return JsonResponse({'result': 'delete_user stub'})
+    """
+    MANUAL USER DELETION - Only for admin use with full logging and safety checks
+    """
+    if not request.user.is_staff:
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST method required'}, status=405)
+    
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        user_id = request.POST.get('user_id')
+        if not user_id:
+            return JsonResponse({'success': False, 'error': 'User ID required'}, status=400)
+        
+        from django.contrib.auth.models import User
+        from .models import UserProfile
+        
+        user = User.objects.get(id=user_id)
+        
+        # SAFETY CHECK: Prevent deletion of superusers and staff
+        if user.is_superuser:
+            logger.error(f"BLOCKED: Attempt to delete superuser {user.username} by {request.user.username}")
+            return JsonResponse({'success': False, 'error': 'Cannot delete superuser'}, status=403)
+        
+        if user.is_staff and not request.user.is_superuser:
+            logger.error(f"BLOCKED: Non-superuser {request.user.username} attempted to delete staff user {user.username}")
+            return JsonResponse({'success': False, 'error': 'Only superusers can delete staff users'}, status=403)
+        
+        # SOFT DELETE - Mark as deleted instead of actual deletion
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        if profile.is_deleted:
+            return JsonResponse({'success': False, 'error': 'User is already marked as deleted'}, status=400)
+        
+        profile.is_deleted = True
+        profile.save()
+        
+        # LOG THE MANUAL DELETION
+        logger.warning(f"MANUAL USER DELETION: User {user.username} (ID: {user.id}, Email: {user.email}) marked as deleted by admin {request.user.username}")
+        
+        return JsonResponse({
+            'success': True, 
+            'message': f'User {user.username} has been marked as deleted (soft delete)',
+            'action': 'soft_delete'
+        })
+        
+    except User.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+    except Exception as e:
+        logger.error(f"Error in delete_user: {e}")
+        return JsonResponse({'success': False, 'error': 'Internal server error'}, status=500)
 
 def restore_user(request):
-    return JsonResponse({'result': 'restore_user stub'})
+    """
+    RESTORE DELETED USER - Unmark user as deleted with full logging
+    """
+    if not request.user.is_staff:
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST method required'}, status=405)
+    
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        user_id = request.POST.get('user_id')
+        if not user_id:
+            return JsonResponse({'success': False, 'error': 'User ID required'}, status=400)
+        
+        from django.contrib.auth.models import User
+        from .models import UserProfile
+        
+        user = User.objects.get(id=user_id)
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        
+        if not profile.is_deleted:
+            return JsonResponse({'success': False, 'error': 'User is not marked as deleted'}, status=400)
+        
+        profile.is_deleted = False
+        profile.save()
+        
+        # LOG THE RESTORATION
+        logger.info(f"USER RESTORED: User {user.username} (ID: {user.id}, Email: {user.email}) restored by admin {request.user.username}")
+        
+        return JsonResponse({
+            'success': True, 
+            'message': f'User {user.username} has been restored and is now visible',
+            'action': 'restore'
+        })
+        
+    except User.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+    except Exception as e:
+        logger.error(f"Error in restore_user: {e}")
+        return JsonResponse({'success': False, 'error': 'Internal server error'}, status=500)
 
 def toggle_user_status(request):
     return JsonResponse({'result': 'toggle_user_status stub'})

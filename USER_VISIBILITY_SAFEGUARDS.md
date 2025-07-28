@@ -1,6 +1,6 @@
-# User Visibility Safeguards - Complete Protection System
+# BULLETPROOF User Visibility System - Ultimate Protection
 
-## 🛡️ GUARANTEE: New Users Will Always Be Visible in Admin Dashboard
+## 🛡️ ABSOLUTE GUARANTEE: NO USER CAN EVER DISAPPEAR FROM ADMIN DASHBOARD
 
 This document outlines the comprehensive safeguards implemented to ensure that **all new signed-up users will always display in the admin dashboard and can only be deleted manually**.
 
@@ -76,13 +76,20 @@ This document outlines the comprehensive safeguards implemented to ensure that *
 
 ### Management Commands for Maintenance
 ```bash
-# Check and fix all user visibility issues
-python manage.py ensure_user_visibility
+# BULLETPROOF system - comprehensive fix for all issues
+python manage.py bulletproof_users --fix-all
 
-# Auto-restore users marked as deleted
+# Show detailed status of all users
+python manage.py bulletproof_users --show-details
+
+# Restore only deleted users
+python manage.py bulletproof_users --restore-deleted
+
+# Verify all user emails
+python manage.py bulletproof_users --verify-emails
+
+# Legacy commands (still available)
 python manage.py ensure_user_visibility --fix-deleted
-
-# Legacy backfill command
 python manage.py backfill_userprofiles
 ```
 

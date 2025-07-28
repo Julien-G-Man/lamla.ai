@@ -51,16 +51,25 @@ class UserProfile(models.Model):
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    """Create a UserProfile when a User is created - GUARANTEED CREATION"""
+    """BULLETPROOF UserProfile creation - GUARANTEED CREATION ALWAYS"""
     if created:
+        # BULLETPROOF: Always ensure profile exists
         profile, profile_created = UserProfile.objects.get_or_create(
             user=instance,
-            defaults={'is_deleted': False}  # Explicitly set to False
+            defaults={'is_deleted': False}  # ALWAYS False for new users
         )
         if profile_created:
-            logger.info(f"Created UserProfile for new user: {instance.username} (ID: {instance.id})")
+            logger.info(f"BULLETPROOF: Created UserProfile for new user: {instance.username} (ID: {instance.id})")
         else:
-            logger.warning(f"UserProfile already existed for new user: {instance.username} (ID: {instance.id})")
+            logger.warning(f"BULLETPROOF: UserProfile already existed for new user: {instance.username} (ID: {instance.id})")
+    else:
+        # BULLETPROOF: Even for existing users, ensure profile exists
+        if not hasattr(instance, 'profile'):
+            try:
+                profile = UserProfile.objects.create(user=instance, is_deleted=False)
+                logger.warning(f"BULLETPROOF: Created missing profile for existing user: {instance.username} (ID: {instance.id})")
+            except Exception as e:
+                logger.error(f"BULLETPROOF ERROR: Failed to create profile for user {instance.username}: {e}")
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):

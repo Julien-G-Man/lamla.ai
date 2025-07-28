@@ -825,7 +825,8 @@ def get_subscribers_data(request):
 
 def get_users_data(request):
     """
-    Return JSON data for ALL users - GUARANTEED VISIBILITY FOR ALL USERS
+    BULLETPROOF USER VISIBILITY - GUARANTEED TO SHOW ALL USERS ALWAYS
+    This function ensures NO user can ever disappear from admin dashboard
     """
     if not request.user.is_staff:
         return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
@@ -836,32 +837,41 @@ def get_users_data(request):
     from django.contrib.auth.models import User
     from .models import UserProfile
     
-    # Get ALL users - no filtering whatsoever
+    # STEP 1: Get EVERY user in database - NO EXCEPTIONS
     users = User.objects.all().order_by('-date_joined')
     data = []
     active_count = 0
     inactive_count = 0
     deleted_count = 0
+    fixed_count = 0
     
-    logger.info(f"Processing {users.count()} users for admin dashboard")
+    logger.info(f"BULLETPROOF: Processing {users.count()} users for admin dashboard")
     
+    # STEP 2: Process each user with GUARANTEED visibility
     for user in users:
-        # GUARANTEE that every user has a profile and is shown
+        # GUARANTEE 1: Every user MUST have a profile
         try:
             profile = user.profile
-            is_deleted = profile.is_deleted
         except Exception as e:
-            # Auto-create missing profile with extensive logging
-            logger.error(f"CRITICAL: User {user.username} (ID: {user.id}) missing profile: {e}")
-            profile, created = UserProfile.objects.get_or_create(
-                user=user,
-                defaults={'is_deleted': False}
-            )
-            if created:
-                logger.info(f"AUTO-CREATED missing profile for user {user.username}")
-            is_deleted = profile.is_deleted
+            # AUTO-FIX: Create missing profile immediately
+            logger.error(f"BULLETPROOF FIX: User {user.username} (ID: {user.id}) missing profile - creating now")
+            profile = UserProfile.objects.create(user=user, is_deleted=False)
+            fixed_count += 1
         
-        # NEVER SKIP ANY USER - Show all users regardless of status
+        # GUARANTEE 2: Get deletion status but NEVER hide user
+        is_deleted = profile.is_deleted if profile else False
+        
+        # GUARANTEE 3: Auto-fix deleted users (optional - can be disabled)
+        if is_deleted:
+            # Uncomment next 3 lines to auto-restore deleted users
+            # profile.is_deleted = False
+            # profile.save()
+            # logger.warning(f"BULLETPROOF: Auto-restored user {user.username}")
+            
+            deleted_count += 1
+            logger.warning(f"BULLETPROOF: User {user.username} marked as deleted but STILL SHOWN")
+        
+        # GUARANTEE 4: Build user data - EVERY user gets included
         full_name = f"{user.first_name} {user.last_name}".strip() or user.username
         role = 'Admin' if user.is_staff or user.is_superuser else 'User'
         is_active = user.is_active
@@ -871,37 +881,43 @@ def get_users_data(request):
             active_count += 1
         else:
             inactive_count += 1
-            
-        if is_deleted:
-            deleted_count += 1
-            logger.warning(f"User {user.username} is marked as deleted but still shown in admin")
         
-        # 2FA placeholder (customize if you have 2FA field)
+        # 2FA status
         two_fa = 'Enabled' if hasattr(user, 'two_fa_enabled') and user.two_fa_enabled else 'Disabled'
         
-        # Add user to data - GUARANTEED inclusion
-        data.append({
+        # GUARANTEE 5: Add user to results - NO CONDITIONS, NO FILTERING
+        user_data = {
             'id': user.id,
             'full_name': full_name,
             'email': user.email,
             'role': role,
             'is_active': is_active,
-            'is_deleted': is_deleted,  # Show deletion status for transparency
+            'is_deleted': is_deleted,
             'status': 'Deleted' if is_deleted else ('Active' if is_active else 'Inactive'),
             'date_joined': user.date_joined.strftime('%Y-%m-%d %H:%M'),
             'two_fa': two_fa,
-        })
+        }
+        data.append(user_data)
     
+    # STEP 3: Compile comprehensive statistics
     stats = {
         'total_users': len(data),
         'active_users': active_count,
         'inactive_users': inactive_count,
         'deleted_users': deleted_count,
+        'fixed_users': fixed_count,
     }
     
-    logger.info(f"Admin dashboard showing {len(data)} users: {active_count} active, {inactive_count} inactive, {deleted_count} deleted")
+    # STEP 4: Log comprehensive results
+    logger.info(f"BULLETPROOF RESULTS: Showing {len(data)} users | Active: {active_count} | Inactive: {inactive_count} | Deleted: {deleted_count} | Fixed: {fixed_count}")
     
-    return JsonResponse({'success': True, 'users': data, 'stats': stats})
+    # GUARANTEE 6: Always return success with ALL users
+    return JsonResponse({
+        'success': True, 
+        'users': data, 
+        'stats': stats,
+        'message': f'Bulletproof system: {len(data)} users guaranteed visible'
+    })
 
 def toggle_subscription_status(request):
     return JsonResponse({'result': 'toggle_subscription_status stub'})

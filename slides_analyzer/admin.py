@@ -3,13 +3,35 @@ from .models import Question, Quiz, Feedback, Subscription, Contact, UserProfile
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-# Custom User Admin to show more user information
+# BULLETPROOF User Admin - Shows ALL users with comprehensive information
 class CustomUserAdmin(BaseUserAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'last_login')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'profile_status', 'email_verified', 'date_joined', 'last_login')
     list_filter = ('is_staff', 'is_superuser', 'is_active', 'date_joined', 'last_login')
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('-date_joined',)
     readonly_fields = ('date_joined', 'last_login')
+    
+    def profile_status(self, obj):
+        """Show profile status with clear indicators"""
+        try:
+            profile = obj.profile
+            if profile.is_deleted:
+                return "🗑️ Deleted"
+            else:
+                return "✅ Active"
+        except:
+            return "❌ Missing"
+    profile_status.short_description = 'Profile Status'
+    
+    def email_verified(self, obj):
+        """Show email verification status"""
+        try:
+            from allauth.account.models import EmailAddress
+            email_obj = EmailAddress.objects.get(user=obj, email=obj.email)
+            return "✅ Verified" if email_obj.verified else "⚠️ Unverified"
+        except:
+            return "❌ No Record"
+    email_verified.short_description = 'Email Status'
     
     fieldsets = (
         (None, {'fields': ('username', 'password')}),

@@ -233,7 +233,11 @@
             let validMcqCount = 0;
             let validShortCount = 0;
             
+            console.log('DEBUG: Raw MCQ array length:', quizData.mcq.length);
+            console.log('DEBUG: Raw Short array length:', quizData.short.length);
+            
             quizData.mcq.forEach((q, index) => {
+                console.log(`DEBUG: MCQ[${index}]:`, q);
                 if (q && q.question && q.options && Array.isArray(q.options) && q.options.length > 0) {
                     validMcqCount++;
                 } else {
@@ -242,6 +246,7 @@
             });
             
             quizData.short.forEach((q, index) => {
+                console.log(`DEBUG: Short[${index}]:`, q);
                 if (q && q.question) {
                     validShortCount++;
                 } else {
@@ -250,6 +255,15 @@
             });
             
             console.log('DEBUG: Valid MCQ questions:', validMcqCount, 'Valid Short questions:', validShortCount);
+            console.log('DEBUG: Total valid questions:', validMcqCount + validShortCount);
+            
+            // Check if there's a mismatch between array length and valid questions
+            if (validMcqCount !== quizData.mcq.length) {
+                console.error('DEBUG: MCQ mismatch! Array length:', quizData.mcq.length, 'Valid count:', validMcqCount);
+            }
+            if (validShortCount !== quizData.short.length) {
+                console.error('DEBUG: Short mismatch! Array length:', quizData.short.length, 'Valid count:', validShortCount);
+            }
             let currentQuestionIndex = 0;
             let userAnswers = {};
             let flaggedQuestions = {};
@@ -473,9 +487,31 @@
                 document.getElementById('question-status').style.color = '#28a745';
                 document.getElementById('question-status').style.fontWeight = 'bold';
                 
-                // Use recalculated total if there was a mismatch
-                const actualTotalQuestions = recalculatedTotal !== totalQuestions ? recalculatedTotal : totalQuestions;
-                console.log('DEBUG: Using total questions count:', actualTotalQuestions);
+                // Recalculate total based on ACTUAL valid questions only
+                let actualValidMcq = 0;
+                let actualValidShort = 0;
+                
+                quizData.mcq.forEach((q, index) => {
+                    if (q && q.question && q.options && Array.isArray(q.options) && q.options.length > 0) {
+                        actualValidMcq++;
+                    }
+                });
+                
+                quizData.short.forEach((q, index) => {
+                    if (q && q.question) {
+                        actualValidShort++;
+                    }
+                });
+                
+                const actualTotalQuestions = actualValidMcq + actualValidShort;
+                console.log('DEBUG: Completion screen - Valid MCQ:', actualValidMcq, 'Valid Short:', actualValidShort);
+                console.log('DEBUG: Completion screen - Actual total questions:', actualTotalQuestions);
+                console.log('DEBUG: Completion screen - Original total was:', totalQuestions);
+                
+                if (actualTotalQuestions !== totalQuestions) {
+                    console.error('DEBUG: CRITICAL - Total questions mismatch at completion!');
+                    console.error('DEBUG: Original total:', totalQuestions, 'Actual valid total:', actualTotalQuestions);
+                }
                 
                 // Calculate actual answered questions - count only valid answers
                 let answeredCount = 0;
@@ -519,8 +555,8 @@
                         <div style="background: #f8f9fa; border-radius: 10px; padding: 20px; margin: 20px 0;">
                             <h4 style="color: #2C3E50; margin-bottom: 10px;">Summary:</h4>
                             <p style="color: #34495E; margin: 5px 0;">
-                                • MCQ Questions: ${quizData.mcq.length}<br>
-                                • Short Questions: ${quizData.short.length}<br>
+                                • MCQ Questions: ${actualValidMcq}<br>
+                                • Short Questions: ${actualValidShort}<br>
                                 • Total Questions: ${actualTotalQuestions}<br>
                                 • Answered: ${answeredCount}<br>
                                 • Unanswered: ${unansweredCount}
@@ -594,6 +630,8 @@
                     // User is on the final question and clicked "Finish Quiz"
                     // Show completion screen instead of directly submitting
                     console.log('DEBUG: Next button - on final question, showing completion screen');
+                    console.log('DEBUG: Current question index:', currentQuestionIndex, 'Total questions:', totalQuestions);
+                    console.log('DEBUG: This should be the last question (index', totalQuestions - 1, ')');
                     showCompletionScreen();
                 } else {
                     console.error('DEBUG: Next button - unexpected state! currentQuestionIndex:', currentQuestionIndex, 'totalQuestions:', totalQuestions);

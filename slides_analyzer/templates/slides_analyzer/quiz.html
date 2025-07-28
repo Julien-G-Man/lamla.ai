@@ -222,10 +222,38 @@
                 return;
             }
             const totalQuestions = quizData.mcq.length + quizData.short.length;
+            console.log('DEBUG: Total questions calculated:', totalQuestions);
+            
+            // Validate question data integrity
+            let validMcqCount = 0;
+            let validShortCount = 0;
+            
+            quizData.mcq.forEach((q, index) => {
+                if (q && q.question && q.options && Array.isArray(q.options) && q.options.length > 0) {
+                    validMcqCount++;
+                } else {
+                    console.warn('Invalid MCQ question at index', index, ':', q);
+                }
+            });
+            
+            quizData.short.forEach((q, index) => {
+                if (q && q.question) {
+                    validShortCount++;
+                } else {
+                    console.warn('Invalid Short question at index', index, ':', q);
+                }
+            });
+            
+            console.log('DEBUG: Valid MCQ questions:', validMcqCount, 'Valid Short questions:', validShortCount);
             let currentQuestionIndex = 0;
             let userAnswers = {};
             let flaggedQuestions = {};
             let isCompletionScreen = false;
+            
+            // Initialize userAnswers tracking
+            console.log('DEBUG: Initializing quiz with', totalQuestions, 'questions');
+            console.log('DEBUG: MCQ range: 0 to', quizData.mcq.length - 1);
+            console.log('DEBUG: Short range:', quizData.mcq.length, 'to', totalQuestions - 1);
             function renderMath() {
                 if (window.MathJax) {
                     MathJax.typesetPromise();
@@ -363,6 +391,7 @@
                         optionsContainer.appendChild(li);
                         li.querySelector('input[type="radio"]').addEventListener('change', (e) => {
                             userAnswers[currentQuestionIndex] = letter;
+                            console.log('DEBUG: MCQ answer stored for question', currentQuestionIndex + 1, ':', letter);
                             displayQuestion();
                         });
                     });
@@ -372,6 +401,7 @@
                     optionsContainer.appendChild(li);
                     li.querySelector('input').addEventListener('input', (e) => {
                         userAnswers[currentQuestionIndex] = e.target.value;
+                        console.log('DEBUG: Short answer stored for question', currentQuestionIndex + 1, ':', e.target.value);
                     });
                 }
                 renderMath();
@@ -385,9 +415,11 @@
                 
                 // Debug: Log userAnswers and question arrays
                 console.log('DEBUG: userAnswers:', userAnswers);
-                console.log('DEBUG: MCQ questions:', quizData.mcq);
-                console.log('DEBUG: Short questions:', quizData.short);
+                console.log('DEBUG: MCQ questions:', quizData.mcq.length, quizData.mcq);
+                console.log('DEBUG: Short questions:', quizData.short.length, quizData.short);
                 console.log('DEBUG: totalQuestions:', totalQuestions);
+                console.log('DEBUG: userAnswers keys:', Object.keys(userAnswers));
+                console.log('DEBUG: userAnswers values:', Object.values(userAnswers));
                 
                 // Update question display
                 document.getElementById('current-question').textContent = 'Quiz Complete';
@@ -395,15 +427,35 @@
                 document.getElementById('question-status').style.color = '#28a745';
                 document.getElementById('question-status').style.fontWeight = 'bold';
                 
-                // Calculate actual answered questions (only non-empty answers)
+                // Calculate actual answered questions - count only valid answers
                 let answeredCount = 0;
+                let actualAnsweredQuestions = [];
+                let actualUnansweredQuestions = [];
+                
                 for (let i = 0; i < totalQuestions; i++) {
                     const ans = userAnswers[i];
-                    if (typeof ans === 'string' && ans.trim() !== '') {
+                    let isAnswered = false;
+                    
+                    // Check if question is answered (handle both MCQ letters and text answers)
+                    if (ans !== undefined && ans !== null) {
+                        if (typeof ans === 'string' && ans.trim() !== '') {
+                            isAnswered = true;
+                            actualAnsweredQuestions.push(i + 1);
+                        }
+                    }
+                    
+                    if (isAnswered) {
                         answeredCount++;
+                    } else {
+                        actualUnansweredQuestions.push(i + 1);
                     }
                 }
                 const unansweredCount = totalQuestions - answeredCount;
+                
+                // Additional debugging
+                console.log('DEBUG: Answered questions:', actualAnsweredQuestions);
+                console.log('DEBUG: Unanswered questions:', actualUnansweredQuestions);
+                console.log('DEBUG: Final counts - Answered:', answeredCount, 'Unanswered:', unansweredCount);
                 
                 // Show completion message
                 document.getElementById('question-math').innerHTML = `
@@ -417,6 +469,8 @@
                         <div style="background: #f8f9fa; border-radius: 10px; padding: 20px; margin: 20px 0;">
                             <h4 style="color: #2C3E50; margin-bottom: 10px;">Summary:</h4>
                             <p style="color: #34495E; margin: 5px 0;">
+                                • MCQ Questions: ${quizData.mcq.length}<br>
+                                • Short Questions: ${quizData.short.length}<br>
                                 • Total Questions: ${totalQuestions}<br>
                                 • Answered: ${answeredCount}<br>
                                 • Unanswered: ${unansweredCount}

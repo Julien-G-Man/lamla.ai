@@ -183,6 +183,20 @@ def generate_questions(request):
                 quiz_results = generate_questions_from_text(study_text, num_mcq, num_short, subject=subject, difficulty=difficulty)
                 if not quiz_results or (not quiz_results.get('mcq_questions') and not quiz_results.get('short_questions')):
                     error_message = 'No questions could be generated. Please try with different or more detailed content.'
+                else:
+                    # Log the actual generated counts for debugging
+                    actual_mcq_count = len(quiz_results.get('mcq_questions', []))
+                    actual_short_count = len(quiz_results.get('short_questions', []))
+                    logger.info(f"Quiz generation: Requested MCQ={num_mcq}, Short={num_short}. Generated MCQ={actual_mcq_count}, Short={actual_short_count}")
+                    
+                    # Ensure we don't exceed the requested counts
+                    if actual_mcq_count > num_mcq:
+                        logger.warning(f"Generated more MCQ questions ({actual_mcq_count}) than requested ({num_mcq}). Trimming.")
+                        quiz_results['mcq_questions'] = quiz_results['mcq_questions'][:num_mcq]
+                    
+                    if actual_short_count > num_short:
+                        logger.warning(f"Generated more Short questions ({actual_short_count}) than requested ({num_short}). Trimming.")
+                        quiz_results['short_questions'] = quiz_results['short_questions'][:num_short]
             except Exception as e:
                 logger.error(f"Quiz generation error: {e}")
                 error_message = f"Quiz generation failed: {str(e)}"

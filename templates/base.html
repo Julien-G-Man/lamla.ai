@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Lamla AI - Empowering Education with AI{% endblock %}</title>
+    <title>{% block title %}Lamla AI | Level Up Your Exam Game with AI{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Lamla AI - Smart exam preparation assistant with AI-powered quizzes, flashcards, and performance tracking">
     
@@ -108,8 +108,8 @@
             width: 100%;
             height: var(--navbar-height);
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
             border-bottom: 1px solid var(--border-light);
             box-shadow: var(--shadow-navbar);
             display: flex;
@@ -126,9 +126,10 @@
             gap: 16px;
         }
 
+        /* Navbar Hamburger - Perfect X Animation */
         .navbar-hamburger {
-            background: none;
-            border: none;
+            background: white;
+            border: 1px solid var(--border);
             cursor: pointer;
             display: flex;
             flex-direction: column;
@@ -145,30 +146,48 @@
         }
 
         .navbar-hamburger:hover {
-            background: rgba(255, 214, 0, 0.1);
+            background: var(--background-gray);
         }
 
         .navbar-hamburger span {
             display: block;
             width: 24px;
-            height: 3px;
-            margin: 3px 0;
-            background: var(--primary-color);
+            height: 2px;
+            margin: 4px 0;
+            background: var(--text-primary);
             border-radius: 2px;
-            transition: var(--transition);
+            transition: transform 0.3s ease-in-out, opacity 0.2s ease-in-out;
+            transform-origin: center;
         }
 
         .navbar-hamburger.open span:nth-child(1) {
-            transform: translateY(9px) rotate(45deg);
+            transform: translateY(10px) rotate(45deg);
         }
 
         .navbar-hamburger.open span:nth-child(2) {
             opacity: 0;
-            transform: scaleX(0);
+            transform: scale(0);
         }
 
         .navbar-hamburger.open span:nth-child(3) {
-            transform: translateY(-9px) rotate(-45deg);
+            transform: translateY(-10px) rotate(-45deg);
+        }
+
+        /* Adjust for mobile screens */
+        @media (max-width: 480px) {
+            .navbar-hamburger span {
+                width: 20px;
+                height: 2px;
+                margin: 3px 0;
+            }
+
+            .navbar-hamburger.open span:nth-child(1) {
+                transform: translateY(5px) rotate(45deg);
+            }
+
+            .navbar-hamburger.open span:nth-child(3) {
+                transform: translateY(-5px) rotate(-45deg);
+            }
         }
 
         .logo {
@@ -219,26 +238,49 @@
             box-shadow: var(--shadow-lg);
         }
 
-        /* Modern Sidebar - Fixed Mobile Behavior */
+        /* Modern Sidebar - Updated Base Styles */
         .sidebar {
             position: fixed;
             top: var(--navbar-height);
             left: 0;
             width: var(--sidebar-width);
             height: calc(100vh - var(--navbar-height));
-            background: var(--background-white);
+            background-color: var(--background-white) !important;
             border-right: 1px solid var(--border-light);
             box-shadow: var(--shadow-sidebar);
-            z-index: 1500;
+            z-index: 2500;
             display: flex;
             flex-direction: column;
-            transform: translateX(-100%);
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            visibility: hidden;
         }
 
         .sidebar.open {
             transform: translateX(0);
+            visibility: visible;
+        }
+
+        /* For screens where the sidebar can be opened */
+        @media (max-width: 1024px) {
+            #sidebar-overlay:not(.active) {
+                display: none;
+            }
+            
+            #sidebar-overlay.active {
+                display: block;
+            }
+            
+            .sidebar {
+                visibility: hidden;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                visibility: visible;
+                transform: translateX(0);
+            }
         }
 
         .sidebar-content {
@@ -308,7 +350,7 @@
             font-size: 1.1rem;
         }
 
-        /* Sidebar Overlay - For mobile only */
+        /* Sidebar Overlay - Updated */
         #sidebar-overlay {
             position: fixed;
             top: 0;
@@ -316,17 +358,44 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 1400;
+            z-index: 2400;
             opacity: 0;
             visibility: hidden;
             transition: var(--transition);
-            display: none;
         }
 
         #sidebar-overlay.active {
             opacity: 1;
             visibility: visible;
             display: block;
+        }
+
+        /* Hide overlay on desktop */
+        @media (min-width: 1025px) {
+            #sidebar-overlay {
+                display: none !important;
+            }
+        }
+
+        /* For screens where the sidebar can be opened */
+        @media (max-width: 1024px) {
+            #sidebar-overlay:not(.active) {
+                display: none;
+            }
+            
+            #sidebar-overlay.active {
+                display: block;
+            }
+            
+            .sidebar {
+                visibility: hidden;
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                visibility: visible;
+                transform: translateX(0);
+            }
         }
 
         /* Main Content - No resize behavior */
@@ -835,7 +904,7 @@
         @media (max-width: 1024px) {
             /* Show overlay on tablets and mobile */
             #sidebar-overlay {
-                display: block;
+                
             }
         }
 
@@ -1072,7 +1141,7 @@
             </button>
             <a href="{% url 'home' %}" class="logo">
                 <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
-                <span>Lamla.<span style="color: var(--primary-color);">AI</span></span>
+                <span>Lamla.<span style="color: var(--primary-color);">ai</span></span>
             </a>
         </div>
         <div class="navbar-profile">
@@ -1259,7 +1328,7 @@
                     navbarHamburger.classList.add('open');
                     sidebarOverlay.classList.add('active');
                     // Prevent body scroll on mobile when sidebar is open
-                    if (window.innerWidth <= 1024) {
+                    if (window.innerWidth <= 768) {
                         document.body.style.overflow = 'hidden';
                     }
                 }
@@ -1273,9 +1342,9 @@
                 });
 
                 // Add touch event for mobile
-                navbarHamburger.addEventListener('touchstart', function(e) {
+                navbarHamburger.addEventListener('touchend', function(e) {
                     e.preventDefault();
-                    toggleSidebar();
+                    e.stopPropagation();
                 });
 
                 // Close sidebar when clicking overlay

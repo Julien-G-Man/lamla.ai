@@ -1521,7 +1521,7 @@ function subscribeNewsletter() {
     })
     .catch(error => {
         console.error('Error:', error);
-        showNotification('An error occurred. Please try again.', 'error');
+        showNotification('An error occurred. You are likely not signed in. Please sign in and try again', 'error');
         button.innerHTML = originalText;
         button.disabled = false;
     });

@@ -3,6 +3,11 @@
 .env.local
 .env.production
 
+# other files
+frontend
+.cursorrules
+test_azure_openai.py
+
 # Python
 setup_env.py
 __pycache__/

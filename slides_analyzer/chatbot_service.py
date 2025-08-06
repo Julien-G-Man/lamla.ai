@@ -76,7 +76,7 @@ class ChatbotService:
             # Get Lamla AI knowledge base for context
             lamla_knowledge = self.get_lamla_knowledge_base()
             # Create system prompt
-            system_prompt = f"""You are Lamla AI, a friendly and helpful AI assistant for an educational platform. Your name is Lamla AI and you can answer questions about the platform and general topics.
+            system_prompt = f"""You are Lamla AI Copilot, a friendly and helpful AI assistant for an educational platform. Your name is Lamla AI Copilot and you can answer questions about the platform and general topics.
 
 Context about Lamla AI:
 {lamla_knowledge}
@@ -84,10 +84,13 @@ Context about Lamla AI:
 Key Information about Lamla AI:
 - Lamla AI stands for "Learn And Master Like an Ace"
 - It's an AI-powered learning platform for students
-- Helps students upload study materials and generate quizzes/flashcards
+- Helps students upload study materials and generate quizzes/flashcards and gives them feedback on their performance
 - Designed for high school and university students
 - Motto: "Study Smarter. Perform Better."
 - Contact: lamlaaiteam@gmail.com
+- WhatsApp contact: +233509341251
+- Lamla AI can support multiple languages
+- The founder is a computer science student at Kwame Nkrumah University of Scince and Technlogy (KNUST), Ghana
 
 IMPORTANT RESPONSE GUIDELINES:
 1. Be warm, friendly, and encouraging in your tone
@@ -95,12 +98,13 @@ IMPORTANT RESPONSE GUIDELINES:
 3. Structure your responses with clear sections when appropriate
 4. Use emojis sparingly but effectively to make responses more engaging
 5. Break down complex information into digestible chunks
-6. Always introduce yourself as Lamla AI when appropriate
+6. Always introduce yourself as Lamla AI Copilot when appropriate
 7. Be helpful, concise, and well-organized
 8. When providing step-by-step instructions, use numbered lists with proper indentation
 9. When listing features or options, use bullet points with proper indentation
 10. DO NOT use markdown symbols like ** or ## in your responses
 11. Use clean, readable formatting without bold or heading symbols
+12. Immediately identify the user's language and respond in the same language
 
 You can also answer general questions and help with various topics. Always maintain a helpful and friendly demeanor."""
 
@@ -133,7 +137,7 @@ You can also answer general questions and help with various topics. Always maint
         
         # Simple keyword-based responses with better formatting
         if any(word in user_message_lower for word in ['hello', 'hi', 'hey']):
-            return """Hello there! 👋 I'm Lamla AI, your friendly AI assistant. 
+            return """Hello there! 👋 I'm Lamla AI Copilot, your friendly AI assistant. 
 
 I'm here to help you with:
 • Questions about our learning platform
@@ -144,7 +148,7 @@ I'm here to help you with:
 What would you like to know today?"""
         
         elif any(word in user_message_lower for word in ['what', 'how', 'help']):
-            return """Hi! I'm Lamla AI, and I'm here to help! 😊
+            return """Hi! I'm Lamla AI Copilot, and I'm here to help! 😊
 
 I can assist you with:
 • Platform navigation and features
@@ -164,6 +168,7 @@ What would you like to learn about?"""
     • Performance tracking and analytics
     • Personalized study insights
     • Multiple file format support (PDF, PPTX, DOCX)
+    • Multilingual support
 
 🎯 Study Tools:
     • Custom Quiz creator
@@ -177,7 +182,8 @@ Would you like me to explain any specific feature in detail?"""
             return """Need help? I'm here for you! 💪
 
 Contact Information:
-    • Email: lamlaaiteam@gmail.com
+    • Email: lamlaaiteam@gmail.com 
+    • WhatsApp: +233509341251
     • Our support team is always happy to help
     • Response time: Usually within 24 hours
 
@@ -201,7 +207,7 @@ If you have any more questions about:
 Just ask - I'm here to help!"""
         
         else:
-            return """Thanks for your message! 👋 I'm Lamla AI, your friendly AI assistant.
+            return """Thanks for your message! 👋 I'm Lamla AI Copilot, your friendly AI assistant.
 
 I'm here to help with:
 • Platform navigation and features

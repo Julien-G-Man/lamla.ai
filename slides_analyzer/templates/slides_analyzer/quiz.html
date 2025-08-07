@@ -222,20 +222,70 @@
                 return;
             }
             const totalQuestions = quizData.mcq.length + quizData.short.length;
+            console.log('DEBUG: Total questions calculated:', totalQuestions);
+            
+            // Freeze the question data to prevent accidental modification
+            Object.freeze(quizData.mcq);
+            Object.freeze(quizData.short);
+            Object.freeze(quizData);
+            
+            // Validate question data integrity
+            let validMcqCount = 0;
+            let validShortCount = 0;
+            
+            quizData.mcq.forEach((q, index) => {
+                if (q && q.question && q.options && Array.isArray(q.options) && q.options.length > 0) {
+                    validMcqCount++;
+                } else {
+                    console.warn('Invalid MCQ question at index', index, ':', q);
+                }
+            });
+            
+            quizData.short.forEach((q, index) => {
+                if (q && q.question) {
+                    validShortCount++;
+                } else {
+                    console.warn('Invalid Short question at index', index, ':', q);
+                }
+            });
+            
+            console.log('DEBUG: Valid MCQ questions:', validMcqCount, 'Valid Short questions:', validShortCount);
             let currentQuestionIndex = 0;
             let userAnswers = {};
             let flaggedQuestions = {};
             let isCompletionScreen = false;
+            
+            // Initialize userAnswers tracking
+            console.log('DEBUG: Initializing quiz with', totalQuestions, 'questions');
+            console.log('DEBUG: MCQ range: 0 to', quizData.mcq.length - 1);
+            console.log('DEBUG: Short range:', quizData.mcq.length, 'to', totalQuestions - 1);
             function renderMath() {
                 if (window.MathJax) {
                     MathJax.typesetPromise();
                 }
             }
             function getCurrentQuestion() {
+                console.log('DEBUG: getCurrentQuestion called with index:', currentQuestionIndex);
+                console.log('DEBUG: MCQ length:', quizData.mcq.length, 'Short length:', quizData.short.length);
+                
+                if (currentQuestionIndex < 0 || currentQuestionIndex >= totalQuestions) {
+                    console.warn('DEBUG: Question index out of bounds:', currentQuestionIndex, 'Total:', totalQuestions);
+                    return null;
+                }
+                
                 if (currentQuestionIndex < quizData.mcq.length) {
-                    return { ...quizData.mcq[currentQuestionIndex], type: 'mcq' };
+                    const question = quizData.mcq[currentQuestionIndex];
+                    console.log('DEBUG: Returning MCQ question at index:', currentQuestionIndex, question);
+                    return { ...question, type: 'mcq' };
                 } else {
-                    return { ...quizData.short[currentQuestionIndex - quizData.mcq.length], type: 'short' };
+                    const shortIndex = currentQuestionIndex - quizData.mcq.length;
+                    if (shortIndex >= quizData.short.length) {
+                        console.warn('DEBUG: Short question index out of bounds:', shortIndex, 'Short length:', quizData.short.length);
+                        return null;
+                    }
+                    const question = quizData.short[shortIndex];
+                    console.log('DEBUG: Returning Short question at index:', shortIndex, question);
+                    return { ...question, type: 'short' };
                 }
             }
             // Timer logic
@@ -363,6 +413,7 @@
                         optionsContainer.appendChild(li);
                         li.querySelector('input[type="radio"]').addEventListener('change', (e) => {
                             userAnswers[currentQuestionIndex] = letter;
+                            console.log('DEBUG: MCQ answer stored for question', currentQuestionIndex + 1, ':', letter);
                             displayQuestion();
                         });
                     });
@@ -372,6 +423,7 @@
                     optionsContainer.appendChild(li);
                     li.querySelector('input').addEventListener('input', (e) => {
                         userAnswers[currentQuestionIndex] = e.target.value;
+                        console.log('DEBUG: Short answer stored for question', currentQuestionIndex + 1, ':', e.target.value);
                     });
                 }
                 renderMath();
@@ -379,15 +431,41 @@
             }
             
             function showCompletionScreen() {
+                if (isCompletionScreen) {
+                    console.log('DEBUG: showCompletionScreen called but already in completion screen mode');
+                    return;
+                }
+                
+                console.log('DEBUG: showCompletionScreen called, entering completion mode');
                 isCompletionScreen = true;
                 // Hide timer
                 document.querySelector('.timer-container').style.display = 'none';
                 
                 // Debug: Log userAnswers and question arrays
                 console.log('DEBUG: userAnswers:', userAnswers);
-                console.log('DEBUG: MCQ questions:', quizData.mcq);
-                console.log('DEBUG: Short questions:', quizData.short);
+                console.log('DEBUG: MCQ questions:', quizData.mcq.length, quizData.mcq);
+                console.log('DEBUG: Short questions:', quizData.short.length, quizData.short);
                 console.log('DEBUG: totalQuestions:', totalQuestions);
+                
+                // Recalculate totalQuestions to ensure consistency
+                const recalculatedTotal = quizData.mcq.length + quizData.short.length;
+                console.log('DEBUG: Recalculated total:', recalculatedTotal);
+                if (recalculatedTotal !== totalQuestions) {
+                    console.error('DEBUG: MISMATCH! Original total:', totalQuestions, 'Recalculated:', recalculatedTotal);
+                }
+                
+                console.log('DEBUG: userAnswers keys:', Object.keys(userAnswers));
+                console.log('DEBUG: userAnswers values:', Object.values(userAnswers));
+                
+                // Check for any gaps in userAnswers
+                const answeredIndices = Object.keys(userAnswers).map(k => parseInt(k)).sort((a, b) => a - b);
+                console.log('DEBUG: Answered question indices (sorted):', answeredIndices);
+                
+                // Check if there are any questions beyond the expected range
+                const maxIndex = Math.max(...answeredIndices);
+                if (maxIndex >= totalQuestions) {
+                    console.error('DEBUG: Answer index out of range! Max index:', maxIndex, 'Total questions:', totalQuestions);
+                }
                 
                 // Update question display
                 document.getElementById('current-question').textContent = 'Quiz Complete';
@@ -395,15 +473,39 @@
                 document.getElementById('question-status').style.color = '#28a745';
                 document.getElementById('question-status').style.fontWeight = 'bold';
                 
-                // Calculate actual answered questions (only non-empty answers)
+                // Use recalculated total if there was a mismatch
+                const actualTotalQuestions = recalculatedTotal !== totalQuestions ? recalculatedTotal : totalQuestions;
+                console.log('DEBUG: Using total questions count:', actualTotalQuestions);
+                
+                // Calculate actual answered questions - count only valid answers
                 let answeredCount = 0;
-                for (let i = 0; i < totalQuestions; i++) {
+                let actualAnsweredQuestions = [];
+                let actualUnansweredQuestions = [];
+                
+                for (let i = 0; i < actualTotalQuestions; i++) {
                     const ans = userAnswers[i];
-                    if (typeof ans === 'string' && ans.trim() !== '') {
+                    let isAnswered = false;
+                    
+                    // Check if question is answered (handle both MCQ letters and text answers)
+                    if (ans !== undefined && ans !== null) {
+                        if (typeof ans === 'string' && ans.trim() !== '') {
+                            isAnswered = true;
+                            actualAnsweredQuestions.push(i + 1);
+                        }
+                    }
+                    
+                    if (isAnswered) {
                         answeredCount++;
+                    } else {
+                        actualUnansweredQuestions.push(i + 1);
                     }
                 }
-                const unansweredCount = totalQuestions - answeredCount;
+                const unansweredCount = actualTotalQuestions - answeredCount;
+                
+                // Additional debugging
+                console.log('DEBUG: Answered questions:', actualAnsweredQuestions);
+                console.log('DEBUG: Unanswered questions:', actualUnansweredQuestions);
+                console.log('DEBUG: Final counts - Answered:', answeredCount, 'Unanswered:', unansweredCount);
                 
                 // Show completion message
                 document.getElementById('question-math').innerHTML = `
@@ -417,7 +519,9 @@
                         <div style="background: #f8f9fa; border-radius: 10px; padding: 20px; margin: 20px 0;">
                             <h4 style="color: #2C3E50; margin-bottom: 10px;">Summary:</h4>
                             <p style="color: #34495E; margin: 5px 0;">
-                                • Total Questions: ${totalQuestions}<br>
+                                • MCQ Questions: ${quizData.mcq.length}<br>
+                                • Short Questions: ${quizData.short.length}<br>
+                                • Total Questions: ${actualTotalQuestions}<br>
                                 • Answered: ${answeredCount}<br>
                                 • Unanswered: ${unansweredCount}
                             </p>
@@ -466,7 +570,10 @@
                     document.getElementById('flag-question-btn').style.display = 'block';
                 } else if (currentQuestionIndex > 0) {
                     currentQuestionIndex--;
+                    console.log('DEBUG: Previous button - moved to question index:', currentQuestionIndex);
                     displayQuestion();
+                } else {
+                    console.log('DEBUG: Previous button - already at first question');
                 }
             });
             document.getElementById('next-btn').addEventListener('click', () => {
@@ -481,13 +588,19 @@
                     document.getElementById('flag-question-btn').style.display = 'block';
                 } else if (currentQuestionIndex < totalQuestions - 1) {
                     currentQuestionIndex++;
+                    console.log('DEBUG: Next button - moved to question index:', currentQuestionIndex);
                     displayQuestion();
                 } else if (currentQuestionIndex === totalQuestions - 1) {
                     // User is on the final question and clicked "Finish Quiz"
                     // Show completion screen instead of directly submitting
+                    console.log('DEBUG: Next button - on final question, showing completion screen');
                     showCompletionScreen();
+                } else {
+                    console.error('DEBUG: Next button - unexpected state! currentQuestionIndex:', currentQuestionIndex, 'totalQuestions:', totalQuestions);
                 }
             });
+            // Initial question display
+            console.log('DEBUG: Starting quiz, displaying first question');
             displayQuestion();
             // Flag question logic
             document.getElementById('flag-question-btn').addEventListener('click', function() {

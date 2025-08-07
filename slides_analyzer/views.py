@@ -224,6 +224,20 @@ def generate_questions(request):
                 quiz_results = generate_questions_from_text(study_text, num_mcq, num_short, subject=subject, difficulty=difficulty)
                 if not quiz_results or (not quiz_results.get('mcq_questions') and not quiz_results.get('short_questions')):
                     error_message = 'No questions could be generated. Please try with different or more detailed content.'
+                else:
+                    # Log the actual generated counts for debugging
+                    actual_mcq_count = len(quiz_results.get('mcq_questions', []))
+                    actual_short_count = len(quiz_results.get('short_questions', []))
+                    logger.info(f"Quiz generation: Requested MCQ={num_mcq}, Short={num_short}. Generated MCQ={actual_mcq_count}, Short={actual_short_count}")
+                    
+                    # Ensure we don't exceed the requested counts
+                    if actual_mcq_count > num_mcq:
+                        logger.warning(f"Generated more MCQ questions ({actual_mcq_count}) than requested ({num_mcq}). Trimming.")
+                        quiz_results['mcq_questions'] = quiz_results['mcq_questions'][:num_mcq]
+                    
+                    if actual_short_count > num_short:
+                        logger.warning(f"Generated more Short questions ({actual_short_count}) than requested ({num_short}). Trimming.")
+                        quiz_results['short_questions'] = quiz_results['short_questions'][:num_short]
             except Exception as e:
                 logger.error(f"Quiz generation error: {e}")
                 error_message = f"Quiz generation failed: {str(e)}"
@@ -866,48 +880,99 @@ def get_subscribers_data(request):
 
 def get_users_data(request):
     """
-    Return JSON data for all users, including stats.
+    BULLETPROOF USER VISIBILITY - GUARANTEED TO SHOW ALL USERS ALWAYS
+    This function ensures NO user can ever disappear from admin dashboard
     """
     if not request.user.is_staff:
         return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+    
+    import logging
+    logger = logging.getLogger(__name__)
+    
     from django.contrib.auth.models import User
+    from .models import UserProfile
+    
+    # STEP 1: Get EVERY user in database - NO EXCEPTIONS
     users = User.objects.all().order_by('-date_joined')
     data = []
     active_count = 0
     inactive_count = 0
+    deleted_count = 0
+    fixed_count = 0
+    
+    logger.info(f"BULLETPROOF: Processing {users.count()} users for admin dashboard")
+    
+    # STEP 2: Process each user with GUARANTEED visibility
     for user in users:
-        # Try to get profile, handle if missing
+        # GUARANTEE 1: Every user MUST have a profile
         try:
             profile = user.profile
-            is_deleted = profile.is_deleted
-        except Exception:
-            is_deleted = False
+        except Exception as e:
+            # AUTO-FIX: Create missing profile immediately
+            logger.error(f"BULLETPROOF FIX: User {user.username} (ID: {user.id}) missing profile - creating now")
+            profile = UserProfile.objects.create(user=user, is_deleted=False)
+            fixed_count += 1
+        
+        # GUARANTEE 2: Get deletion status but NEVER hide user
+        is_deleted = profile.is_deleted if profile else False
+        
+        # GUARANTEE 3: Auto-fix deleted users (optional - can be disabled)
         if is_deleted:
-            continue  # Skip deleted users
+            # Uncomment next 3 lines to auto-restore deleted users
+            # profile.is_deleted = False
+            # profile.save()
+            # logger.warning(f"BULLETPROOF: Auto-restored user {user.username}")
+            
+            deleted_count += 1
+            logger.warning(f"BULLETPROOF: User {user.username} marked as deleted but STILL SHOWN")
+        
+        # GUARANTEE 4: Build user data - EVERY user gets included
         full_name = f"{user.first_name} {user.last_name}".strip() or user.username
         role = 'Admin' if user.is_staff or user.is_superuser else 'User'
         is_active = user.is_active
+        
+        # Count statistics
         if is_active:
             active_count += 1
         else:
             inactive_count += 1
-        # 2FA placeholder (customize if you have 2FA field)
+        
+        # 2FA status
         two_fa = 'Enabled' if hasattr(user, 'two_fa_enabled') and user.two_fa_enabled else 'Disabled'
-        data.append({
+        
+        # GUARANTEE 5: Add user to results - NO CONDITIONS, NO FILTERING
+        user_data = {
             'id': user.id,
             'full_name': full_name,
             'email': user.email,
             'role': role,
             'is_active': is_active,
+            'is_deleted': is_deleted,
+            'status': 'Deleted' if is_deleted else ('Active' if is_active else 'Inactive'),
             'date_joined': user.date_joined.strftime('%Y-%m-%d %H:%M'),
             'two_fa': two_fa,
-        })
+        }
+        data.append(user_data)
+    
+    # STEP 3: Compile comprehensive statistics
     stats = {
         'total_users': len(data),
         'active_users': active_count,
         'inactive_users': inactive_count,
+        'deleted_users': deleted_count,
+        'fixed_users': fixed_count,
     }
-    return JsonResponse({'success': True, 'users': data, 'stats': stats})
+    
+    # STEP 4: Log comprehensive results
+    logger.info(f"BULLETPROOF RESULTS: Showing {len(data)} users | Active: {active_count} | Inactive: {inactive_count} | Deleted: {deleted_count} | Fixed: {fixed_count}")
+    
+    # GUARANTEE 6: Always return success with ALL users
+    return JsonResponse({
+        'success': True, 
+        'users': data, 
+        'stats': stats,
+        'message': f'Bulletproof system: {len(data)} users guaranteed visible'
+    })
 
 def toggle_subscription_status(request):
     return JsonResponse({'result': 'toggle_subscription_status stub'})
@@ -916,10 +981,104 @@ def download_users_csv(request):
     return HttpResponse('download_users_csv stub')
 
 def delete_user(request):
-    return JsonResponse({'result': 'delete_user stub'})
+    """
+    MANUAL USER DELETION - Only for admin use with full logging and safety checks
+    """
+    if not request.user.is_staff:
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST method required'}, status=405)
+    
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        user_id = request.POST.get('user_id')
+        if not user_id:
+            return JsonResponse({'success': False, 'error': 'User ID required'}, status=400)
+        
+        from django.contrib.auth.models import User
+        from .models import UserProfile
+        
+        user = User.objects.get(id=user_id)
+        
+        # SAFETY CHECK: Prevent deletion of superusers and staff
+        if user.is_superuser:
+            logger.error(f"BLOCKED: Attempt to delete superuser {user.username} by {request.user.username}")
+            return JsonResponse({'success': False, 'error': 'Cannot delete superuser'}, status=403)
+        
+        if user.is_staff and not request.user.is_superuser:
+            logger.error(f"BLOCKED: Non-superuser {request.user.username} attempted to delete staff user {user.username}")
+            return JsonResponse({'success': False, 'error': 'Only superusers can delete staff users'}, status=403)
+        
+        # SOFT DELETE - Mark as deleted instead of actual deletion
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        if profile.is_deleted:
+            return JsonResponse({'success': False, 'error': 'User is already marked as deleted'}, status=400)
+        
+        profile.is_deleted = True
+        profile.save()
+        
+        # LOG THE MANUAL DELETION
+        logger.warning(f"MANUAL USER DELETION: User {user.username} (ID: {user.id}, Email: {user.email}) marked as deleted by admin {request.user.username}")
+        
+        return JsonResponse({
+            'success': True, 
+            'message': f'User {user.username} has been marked as deleted (soft delete)',
+            'action': 'soft_delete'
+        })
+        
+    except User.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+    except Exception as e:
+        logger.error(f"Error in delete_user: {e}")
+        return JsonResponse({'success': False, 'error': 'Internal server error'}, status=500)
 
 def restore_user(request):
-    return JsonResponse({'result': 'restore_user stub'})
+    """
+    RESTORE DELETED USER - Unmark user as deleted with full logging
+    """
+    if not request.user.is_staff:
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'POST method required'}, status=405)
+    
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    try:
+        user_id = request.POST.get('user_id')
+        if not user_id:
+            return JsonResponse({'success': False, 'error': 'User ID required'}, status=400)
+        
+        from django.contrib.auth.models import User
+        from .models import UserProfile
+        
+        user = User.objects.get(id=user_id)
+        profile, created = UserProfile.objects.get_or_create(user=user)
+        
+        if not profile.is_deleted:
+            return JsonResponse({'success': False, 'error': 'User is not marked as deleted'}, status=400)
+        
+        profile.is_deleted = False
+        profile.save()
+        
+        # LOG THE RESTORATION
+        logger.info(f"USER RESTORED: User {user.username} (ID: {user.id}, Email: {user.email}) restored by admin {request.user.username}")
+        
+        return JsonResponse({
+            'success': True, 
+            'message': f'User {user.username} has been restored and is now visible',
+            'action': 'restore'
+        })
+        
+    except User.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'User not found'}, status=404)
+    except Exception as e:
+        logger.error(f"Error in restore_user: {e}")
+        return JsonResponse({'success': False, 'error': 'Internal server error'}, status=500)
 
 def toggle_user_status(request):
     return JsonResponse({'result': 'toggle_user_status stub'})

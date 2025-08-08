@@ -47,14 +47,14 @@ def save_user_profile(sender, instance, **kwargs):
 class QuizSession(models.Model):
     """Model to track quiz sessions and results"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quiz_sessions')
-    subject = models.CharField(max_length=100, blank=True, help_text="Subject/topic of the quiz")
+    subject = models.CharField(max_length=100, blank=True, help_text="Subject/topic of the quiz", db_index=True)
     total_questions = models.IntegerField(default=0)
     correct_answers = models.IntegerField(default=0)
     score_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     duration_minutes = models.IntegerField(default=0, help_text="Time taken in minutes")
     questions_data = models.JSONField(default=dict, help_text="Stored quiz questions and answers")
     user_answers = models.JSONField(default=dict, help_text="User's answers")
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     
     class Meta:
         ordering = ['-created_at']
@@ -93,7 +93,7 @@ class ExamDocument(models.Model):
 class ExamAnalysis(models.Model):
     """Model to store exam analysis results"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='exam_analyses')
-    subject = models.CharField(max_length=100, help_text="Subject being analyzed")
+    subject = models.CharField(max_length=100, help_text="Subject being analyzed", db_index=True)
     documents_analyzed = models.ManyToManyField(ExamDocument, related_name='analyses')
     analysis_data = models.JSONField(default=dict, help_text="Analysis results including trends and predictions")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -102,6 +102,10 @@ class ExamAnalysis(models.Model):
         ordering = ['-created_at']
         verbose_name = "Exam Analysis"
         verbose_name_plural = "Exam Analyses"
+        indexes = [
+            models.Index(fields=['user', '-created_at']),
+            models.Index(fields=['subject', '-created_at']),
+        ]
     
     def __str__(self):
         return f"{self.user.username} - {self.subject} Analysis ({self.created_at.strftime('%Y-%m-%d')})"
@@ -134,13 +138,13 @@ class Question(models.Model):
 
 class QuestionCache(models.Model):
     """Cache for storing generated questions based on content hash"""
-    question_content_hash = models.CharField(max_length=64, unique=True)
+    question_content_hash = models.CharField(max_length=64, unique=True, db_index=True)
     question_text = models.TextField(null=True, blank=True)
     answer = models.TextField(null=True, blank=True)
     question_type = models.CharField(max_length=20, null=True, blank=True)
     options = models.JSONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    last_used = models.DateTimeField(auto_now=True)
+    last_used = models.DateTimeField(auto_now=True, db_index=True)
     times_used = models.IntegerField(default=0)
 
     def __str__(self):

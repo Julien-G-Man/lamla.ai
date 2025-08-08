@@ -27,7 +27,6 @@ urlpatterns = [
     path('terms-of-service/', views.terms_of_service, name='terms_of_service'),
     path('cookie-policy/', views.cookie_policy, name='cookie_policy'),
     path('contact/', views.contact, name='contact'),
-    path('user-profile/', views.user_profile, name='user_profile'),
     path('feedback-analytics/', views.feedback_analytics, name='feedback_analytics'),
     
     # Subscriber Dashboard (Admin only)

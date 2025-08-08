@@ -1365,6 +1365,8 @@ def history(request):
 # ---------------------- helper ----------------------
 # Downloadable Quiz logic
 
+# --- Utility functions ---
+
 def _safe_filename(name: str, max_len: int = 180) -> str:
     """Make a string safe for use as a filename."""
     if not name:
@@ -1374,8 +1376,9 @@ def _safe_filename(name: str, max_len: int = 180) -> str:
     s = re.sub(r'[\\/:"*?<>|]+', '_', s)  # remove unsafe chars
     return s[:max_len] or "Quiz_Results"
 
+
 def _latex_to_plain(s: str) -> str:
-    """Convert LaTeX-style math to human-friendly plain text."""
+    """Convert LaTeX-style math to natural human-readable text."""
     if not s:
         return s
     out = str(s)
@@ -1385,18 +1388,20 @@ def _latex_to_plain(s: str) -> str:
     out = re.sub(r'\\\[(.*?)\\\]', r'\1', out)
     out = re.sub(r'\$\$(.*?)\$\$', r'\1', out, flags=re.S)
 
-    # Fractions
+    # Fractions → {(num)}/{(den)}
     def _frac_repl(m):
-        return f'{{{m.group(1).strip()}}}/{{{m.group(2).strip()}}}'
+        return f'{{({m.group(1).strip()})}}/{{({m.group(2).strip()})}}'
     out = re.sub(r'\\frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}', _frac_repl, out)
 
-    # Square roots
+    # Square roots → √{( ... )}
     def _sqrt_repl(m):
-        return f"sqrt({m.group(1).strip()})"
+        inner = m.group(1).strip()
+        # Handle nested fractions inside sqrt
+        inner = re.sub(r'\{([^{}]+)\}/\{([^{}]+)\}', r'({\1})/({\2})', inner)
+        return f"√{{({inner})}}"
     out = re.sub(r'\\sqrt\{([^{}]+)\}', _sqrt_repl, out)
 
-
-    # Superscripts and subscripts
+    # Superscripts & subscripts
     out = re.sub(r'\^\{([^}]+)\}', lambda m: '^(' + m.group(1) + ')', out)
     out = re.sub(r'\^([A-Za-z0-9])', r'^\(\1\)', out)
     out = re.sub(r'_\{([^}]+)\}', lambda m: '_(' + m.group(1) + ')', out)
@@ -1417,23 +1422,24 @@ def _latex_to_plain(s: str) -> str:
     for k, v in replacements.items():
         out = out.replace(k, v)
 
-    # Remove backslashes before words (e.g., \alpha → alpha)
+    # Remove backslashes before words (\alpha → alpha)
     out = re.sub(r'\\([A-Za-z]+)', r'\1', out)
 
-    # Clean spaces/newlines
+    # Clean up spaces/newlines
     out = re.sub(r'\s+\n', '\n', out)
     out = re.sub(r'\n\s+', '\n', out)
     out = re.sub(r'[ \t]{2,}', ' ', out)
 
     return out.strip()
 
-def download_quiz_text(request):
-    """Download the quiz as TXT, PDF, or DOCX with clean math and proper source info."""
-    quiz_questions = request.session.get('quiz_questions', {})
-    results = request.session.get('quiz_results', {})
-    uploaded_file_name = request.session.get('uploaded_file_name', '')
 
-    if not quiz_questions or not results:
+# --- Main download function ---
+
+def download_quiz_text(request):
+    """Download the quiz as TXT, PDF, or DOCX with proper source info and math formatting."""
+    quiz_questions = request.session.get('quiz_questions', {})
+    uploaded_file_name = request.session.get('uploaded_file_name', '')
+    if not quiz_questions:
         return HttpResponse('No quiz data found.', content_type='text/plain')
 
     subject = quiz_questions.get('subject', 'Quiz')
@@ -1442,7 +1448,7 @@ def download_quiz_text(request):
     ts = datetime.now(tz).strftime('%Y%m%d_%H%M%S')
     filename_base = f"{safe_source}_Lamla.ai_Quiz_{ts}"
 
-    # Header
+    # --- Build the header ---
     lines = [
         'Lamla AI - Quiz',
         '-------------------------',
@@ -1452,7 +1458,7 @@ def download_quiz_text(request):
         ''
     ]
 
-    # Multiple Choice
+    # --- Multiple Choice ---
     mcq = quiz_questions.get('mcq_questions', [])
     if mcq:
         lines.append('Multiple Choice Questions:')
@@ -1466,7 +1472,7 @@ def download_quiz_text(request):
             lines.append(f"   Correct answer: {correct_ans}")
             lines.append('')
 
-    # Short Answer
+    # --- Short Answer ---
     short = quiz_questions.get('short_questions', [])
     if short:
         lines.append('Short Answer Questions:')
@@ -1480,13 +1486,10 @@ def download_quiz_text(request):
     text_content = '\n'.join(lines)
     file_format = request.GET.get('format', 'txt').lower()
 
+    # --- Output Formats ---
     if file_format == 'pdf':
-        try:
-            from reportlab.lib.pagesizes import letter
-            from reportlab.pdfgen import canvas
-        except Exception as e:
-            return HttpResponse(f"PDF export requires reportlab: {e}", content_type='text/plain', status=500)
-
+        from reportlab.lib.pagesizes import letter
+        from reportlab.pdfgen import canvas
         buffer = BytesIO()
         p = canvas.Canvas(buffer, pagesize=letter)
         width, height = letter
@@ -1503,11 +1506,7 @@ def download_quiz_text(request):
         response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
 
     elif file_format == 'docx':
-        try:
-            from docx import Document
-        except Exception as e:
-            return HttpResponse(f"DOCX export requires python-docx: {e}", content_type='text/plain', status=500)
-
+        from docx import Document
         buffer = BytesIO()
         doc = Document()
         for raw_line in lines:

@@ -530,7 +530,15 @@ def perform_exam_analysis(text_content, subject, context=''):
         }
 
 def quiz(request):
-    quiz_questions = request.session.get('quiz_questions')
+    quiz_questions = request.session.get('quiz_questions') or []
+    # force lists if missing
+    mcq = quiz_questions.get('mcq_questions') or []
+    short = quiz_questions.get('short_questions') or []
+    quiz_questions = {
+        'mcq_questions': mcq,
+        'short_questions': short,
+    }
+
     quiz_time = request.session.get('quiz_time', 10)
     
     # Log deployment debugging info

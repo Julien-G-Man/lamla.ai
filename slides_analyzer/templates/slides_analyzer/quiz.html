@@ -197,8 +197,8 @@
         </div>
     </div>
     <input type="hidden" id="csrf_token" value="{{ csrf_token }}">
-    {{ questions.mcq_questions|default:'[]'|json_script:"mcq-questions-json" }}
-    {{ questions.short_questions|default:'[]'|json_script:"short-questions-json" }}
+    {{ questions.mcq_questions|json_script:"mcq-questions-json" }}
+    {{ questions.short_questions|json_script:"short-questions-json" }}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             let mcq = [];
@@ -428,6 +428,11 @@
                 }
                 renderMath();
                 updateFlagUI();
+
+                // dynamic promt text (gpt fix)
+                document.querySelector('.select-one-prompt').textContent =
+                q.type === 'mcq' ? 'Select one:' : 'Type your answer here:';
+
             }
             
             function showCompletionScreen() {
@@ -680,6 +685,7 @@
             });
             document.getElementById('submit-btn').addEventListener('click', function() {
                 clearInterval(timerInterval);
+                document.getElementById('submit-btn').disabled = true;
                 submitQuizAndRedirect();
             });
         });

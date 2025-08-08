@@ -308,29 +308,66 @@
             font-size: 1.1rem;
         }
 
-        /* Sidebar Overlay - For mobile only */
+        /* Mobile Sidebar Overrides */
+        @media (max-width: 1024px) {
+        .sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            width: 80%; /* Take most of the screen but not all */
+            max-width: 320px;
+            height: 100vh;
+            top: 0; /* On mobile, cover from top */
+            z-index: 2000;
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        /* Show overlay when sidebar is open */
         #sidebar-overlay {
+            display: block;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: none;
-            z-index: 1400;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
             opacity: 0;
             visibility: hidden;
-            transition: var(--transition);
+            transition: opacity 0.3s ease;
+            z-index: 1500;
+        }
+
+        #sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Prevent background scroll when sidebar is open */
+        body.sidebar-open {
+            overflow: hidden;
+            touch-action: none;
+            }
+        }
+
+
+        /* Sidebar Overlay - HIdden by default, For mobile only */
+        #sidebar-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1600;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s ease;
             display: none;
         }
 
+        /* Show overlay on tablets & mobile when present in DOM */
         @media (max-width: 1024px) {
-            /* Show the overlay on tablets and mobile */
-            #sidebar-overlay.active {
-                display: block;
-                opacity: 1;
-                background: rgba(0, 0, 0, 0.5); 
-                backdrop-filter: none;
-            }
+            #sidebar-overlay { display: block; }
+            #sidebar-overlay.active { opacity: 1; visibility: visible; }
+            .sidebar { z-index: 2000; } /* ensure sidebar is above overlay */ 
         }
 
         /* Main Content - No resize behavior */
@@ -1040,6 +1077,7 @@
         .chatbot-messages::-webkit-scrollbar-thumb:hover {
             background: rgba(0, 0, 0, 0.3);
         }
+    
     </style>
 
     <!-- Plausible Analytics -->
@@ -1077,14 +1115,14 @@
     </div>
 
     <!-- Modern Navbar -->
-    <header class="navbar">
+    <header class="navbar" role="banner">
         <div class="navbar-left">
-            <button class="navbar-hamburger" id="navbar-hamburger" aria-label="Toggle navigation menu">
+            <button type="button" class="navbar-hamburger" id="navbar-hamburger" aria-label="Toggle navigation menu" aria-controls="sidebar" aria-expanded="false">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
-            <a href="{% url 'home' %}" class="logo">
+            <a href="{% url 'home' %}" class="logo" aria-label="Lamla AI home">
                 <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
                 <span>Lamla.<span style="color: var(--primary-color);">ai</span></span>
             </a>
@@ -1103,9 +1141,9 @@
     </header>
 
     <!-- Modern Sidebar -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar" aria-hidden="true" role="navigation">
         <div class="sidebar-content">
-            <nav class="sidebar-links">
+            <nav class="sidebar-links" aria-label="Main navigation">
                 <a href="{% url 'home' %}" class="sidebar-link">
                     <i class="fas fa-home"></i> Home
                 </a>
@@ -1155,8 +1193,8 @@
         </div>
     </aside>
 
-    <!-- Sidebar Overlay - Only visible on mobile/tablet -->
-    <div id="sidebar-overlay"></div>
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true" tabindex="-1"></div>
 
     <!-- Main Content -->
     <div class="main-content" id="mainContent">
@@ -1169,11 +1207,11 @@
     <!-- Modern Chatbot -->
     {% block chatbot %}
         <div id="chatbot-container" class="chatbot-container">
-            <div id="chatbot-toggle" class="chatbot-toggle">
+            <div id="chatbot-toggle" class="chatbot-toggle" role="button" aria-controls="chatbot-window" aria-expanded="false" tabindex="0">
                 <i class="fas fa-comments"></i>
                 <span class="chatbot-toggle-text">Ask AI</span>
             </div>
-            <div id="chatbot-window" class="chatbot-window">
+            <div id="chatbot-window" class="chatbot-window" role="region" aria-hidden="true">
                 <div class="chatbot-header">
                     <div class="chatbot-header-content">
                         <div class="chatbot-avatar">
@@ -1242,15 +1280,17 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize AOS animations
-            AOS.init({
-                duration: 600,
-                easing: 'ease-out-cubic',
-                once: true,
-                offset: 50
-            });
+            // Initialize AOS animations (safe if AOS present)
+            if (window.AOS) {
+                AOS.init({
+                    duration: 600,
+                    easing: 'ease-out-cubic',
+                    once: true,
+                    offset: 50
+                });
+            }
 
-            // Escape HTML to prevent XSS
+            // Helper: escape HTML for bot content
             function escapeHtml(text) {
                 if (!text) return '';
                 return text
@@ -1261,74 +1301,84 @@
                     .replace(/\'/g, "&#039;");
             }
 
-            // Fixed Hamburger menu functionality
+            // Elements for sidebar
             const navbarHamburger = document.getElementById('navbar-hamburger');
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebar-overlay');
 
-            function toggleSidebar() {
-                const isOpen = sidebar.classList.contains('open');
-                
-                if (isOpen) {
-                    sidebar.classList.remove('open');
-                    navbarHamburger.classList.remove('open');
-                    sidebarOverlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                } else {
-                    sidebar.classList.add('open');
-                    navbarHamburger.classList.add('open');
-                    sidebarOverlay.classList.add('active');
-                    // Prevent body scroll on mobile when sidebar is open
-                    if (window.innerWidth <= 1024) {
-                        document.body.style.overflow = 'hidden';
-                    }
-                }
+            // Safety: require elements
+            function setAria(open) {
+                if (navbarHamburger) navbarHamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (sidebar) sidebar.setAttribute('aria-hidden', open ? 'false' : 'true');
+                if (sidebarOverlay) sidebarOverlay.setAttribute('aria-hidden', open ? 'false' : 'true');
             }
 
-            if (navbarHamburger && sidebar) {
+            function openSidebar() {
+                if (!sidebar || !sidebarOverlay || !navbarHamburger) return;
+                sidebar.classList.add('open');
+                sidebarOverlay.classList.add('active');
+                navbarHamburger.classList.add('open');
+                document.body.classList.add('sidebar-open');
+                if (window.innerWidth <= 1024) document.body.style.overflow = 'hidden';
+                setAria(true);
+            }
+
+            function closeSidebar() {
+                if (!sidebar || !sidebarOverlay || !navbarHamburger) return;
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('active');
+                navbarHamburger.classList.remove('open');
+                document.body.classList.remove('sidebar-open');
+                document.body.style.overflow = '';
+                setAria(false);
+            }
+
+            function toggleSidebar(e) {
+                if (e && e.stopPropagation) e.stopPropagation();
+                if (!sidebar) return;
+                if (sidebar.classList.contains('open')) closeSidebar(); else openSidebar();
+            }
+
+            // Attach a single click handler (no duplicate touchstart to avoid double events)
+            if (navbarHamburger && sidebar && sidebarOverlay) {
                 navbarHamburger.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleSidebar();
+                    // button is type="button" so no default navigation or form submit
+                    toggleSidebar(e);
                 });
 
-                // Add touch event for mobile
-                navbarHamburger.addEventListener('touchstart', function(e) {
-                    e.preventDefault();
-                    toggleSidebar();
-                });
-
-                // Close sidebar when clicking overlay
+                // Overlay click closes
                 sidebarOverlay.addEventListener('click', function() {
-                    toggleSidebar();
+                    closeSidebar();
                 });
 
                 // Close sidebar when clicking outside
                 document.addEventListener('click', function(e) {
-                    if (sidebar.classList.contains('open') && 
-                        !sidebar.contains(e.target) && 
+                    if (sidebar.classList.contains('open') &&
+                        !sidebar.contains(e.target) &&
                         !navbarHamburger.contains(e.target)) {
-                        toggleSidebar();
+                        closeSidebar();
                     }
                 });
 
-                // Handle escape key
+                // Escape key closes
                 document.addEventListener('keydown', function(e) {
                     if (e.key === 'Escape' && sidebar.classList.contains('open')) {
-                        toggleSidebar();
+                        closeSidebar();
                     }
                 });
 
-                // Handle window resize
+                // Handle resize: ensure body overflow cleaned up on desktop sizes
                 window.addEventListener('resize', function() {
-                    if (window.innerWidth > 1024 && sidebar.classList.contains('open')) {
-                        // On desktop, remove body scroll restriction
+                    if (window.innerWidth > 1024) {
                         document.body.style.overflow = '';
                     }
                 });
+
+                // Set initial ARIA
+                setAria(false);
             }
 
-            // Enhanced Chatbot functionality
+            // ---------------- Chatbot logic (kept consolidated) ----------------
             const chatbotToggle = document.getElementById('chatbot-toggle');
             const chatbotWindow = document.getElementById('chatbot-window');
             const chatbotClose = document.getElementById('chatbot-close');
@@ -1341,7 +1391,7 @@
             let isTyping = false;
             let sessionId = 'session_' + Math.random().toString(36).substr(2, 9);
 
-            // Get CSRF token
+            // Get CSRF token helper
             function getCookie(name) {
                 let cookieValue = null;
                 if (document.cookie && document.cookie !== '') {
@@ -1357,61 +1407,60 @@
                 return cookieValue;
             }
 
-            // Toggle chatbot window
-            if (chatbotToggle) {
+            // Chat toggle
+            if (chatbotToggle && chatbotWindow) {
                 chatbotToggle.addEventListener('click', function() {
-                    const isOpen = chatbotWindow.classList.contains('open');
-                    
-                    if (isOpen) {
+                    const open = chatbotWindow.classList.contains('open');
+                    if (open) {
                         chatbotWindow.classList.remove('open');
+                        chatbotWindow.setAttribute('aria-hidden', 'true');
+                        chatbotToggle.setAttribute('aria-expanded', 'false');
                     } else {
                         chatbotWindow.classList.add('open');
+                        chatbotWindow.setAttribute('aria-hidden', 'false');
+                        chatbotToggle.setAttribute('aria-expanded', 'true');
                         loadSuggestions();
                         if (chatbotMessages.children.length === 0) {
                             addWelcomeMessage();
                         }
-                        chatbotInput.focus();
+                        if (chatbotInput) chatbotInput.focus();
                     }
                 });
             }
 
-            // Close chatbot window
             if (chatbotClose) {
                 chatbotClose.addEventListener('click', function() {
                     chatbotWindow.classList.remove('open');
+                    chatbotWindow.setAttribute('aria-hidden', 'true');
+                    chatbotToggle.setAttribute('aria-expanded', 'false');
                 });
             }
 
-            // Send message on Enter key
             if (chatbotInput) {
                 chatbotInput.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
-                        sendMessage();
+                        if (chatbotSend) chatbotSend.click();
                     }
                 });
             }
 
-            // Send message on button click
             if (chatbotSend) {
                 chatbotSend.addEventListener('click', sendMessage);
             }
 
-            // Load suggestions
             function loadSuggestions() {
+                // defensive fetch — if your endpoint exists it will return suggestions
                 fetch('/api/chatbot/suggestions/')
                     .then(response => response.json())
                     .then(data => {
-                        if (data.status === 'success') {
+                        if (data.status === 'success' && Array.isArray(data.suggestions)) {
                             displaySuggestions(data.suggestions);
                         }
                     })
-                    .catch(error => {
-                        console.error('Error loading suggestions:', error);
-                    });
+                    .catch(() => {});
             }
 
-            // Add welcome message
             function addWelcomeMessage() {
                 const welcomeMessage = `Hello there! 👋 I'm Lamla AI Copilot, your friendly study assistant.
 
@@ -1425,39 +1474,35 @@ What would you like to know today?`;
                 addMessage(welcomeMessage, 'bot');
             }
 
-            // Display suggestions
             function displaySuggestions(suggestions) {
+                if (!chatbotSuggestions) return;
                 chatbotSuggestions.innerHTML = '';
                 suggestions.slice(0, 6).forEach(suggestion => {
                     const suggestionElement = document.createElement('div');
                     suggestionElement.className = 'chatbot-suggestion';
                     suggestionElement.textContent = suggestion;
                     suggestionElement.addEventListener('click', function() {
-                        chatbotInput.value = suggestion;
+                        if (chatbotInput) chatbotInput.value = suggestion;
                         sendMessage();
                     });
                     chatbotSuggestions.appendChild(suggestionElement);
                 });
             }
 
-            // Send message
             function sendMessage() {
+                if (!chatbotInput) return;
                 const message = chatbotInput.value.trim();
                 if (!message || isTyping) return;
 
-                // Add user message to chat
                 addMessage(message, 'user');
                 chatbotInput.value = '';
 
-                // Hide suggestions after first message
-                if (chatbotSuggestions.children.length > 0) {
+                if (chatbotSuggestions && chatbotSuggestions.children.length > 0) {
                     chatbotSuggestions.style.display = 'none';
                 }
 
-                // Show typing indicator
                 showTyping();
 
-                // Send to API
                 fetch('/api/chatbot/message/', {
                     method: 'POST',
                     headers: {
@@ -1485,8 +1530,8 @@ What would you like to know today?`;
                 });
             }
 
-            // Add message to chat
             function addMessage(content, type) {
+                if (!chatbotMessages) return;
                 const messageDiv = document.createElement('div');
                 messageDiv.className = `chatbot-message ${type}`;
 
@@ -1510,45 +1555,24 @@ What would you like to know today?`;
                 scrollToBottom();
             }
 
-            // Show typing indicator
             function showTyping() {
                 isTyping = true;
-                chatbotTyping.style.display = 'flex';
-                chatbotSend.disabled = true;
+                if (chatbotTyping) chatbotTyping.style.display = 'flex';
+                if (chatbotSend) chatbotSend.disabled = true;
                 scrollToBottom();
             }
 
-            // Hide typing indicator
             function hideTyping() {
                 isTyping = false;
-                chatbotTyping.style.display = 'none';
-                chatbotSend.disabled = false;
+                if (chatbotTyping) chatbotTyping.style.display = 'none';
+                if (chatbotSend) chatbotSend.disabled = false;
             }
 
-            // Scroll to bottom of messages
             function scrollToBottom() {
                 setTimeout(() => {
-                    chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+                    if (chatbotMessages) chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
                 }, 100);
             }
-
-            // Enhanced Toast notifications
-            {% if messages %}
-                {% for message in messages %}
-                    (function() {
-                        const toast = document.createElement('div');
-                        toast.className = 'toast-message toast-{{ message.tags|default:"info" }}';
-                        toast.textContent = {{ message|stringformat:'s'|escapejs }};
-                        
-                        document.getElementById('toast-container').appendChild(toast);
-                        
-                        // Auto remove after 4 seconds
-                        setTimeout(() => {
-                            toast.remove();
-                        }, 4000);
-                    })();
-                {% endfor %}
-            {% endif %}
 
             // Support request form logic
             const supportForm = document.getElementById('chatbot-support-form');
@@ -1556,18 +1580,23 @@ What would you like to know today?`;
             const supportFormStatus = document.getElementById('supportFormStatus');
 
             window.showSupportForm = function() {
-                chatbotWindow.querySelector('.chatbot-input-container').style.display = 'none';
-                supportForm.style.display = 'block';
+                if (!chatbotWindow) return;
+                const inputContainer = chatbotWindow.querySelector('.chatbot-input-container');
+                if (inputContainer) inputContainer.style.display = 'none';
+                if (supportForm) supportForm.style.display = 'block';
             };
 
             window.hideSupportForm = function() {
-                supportForm.style.display = 'none';
-                chatbotWindow.querySelector('.chatbot-input-container').style.display = 'block';
+                if (!chatbotWindow) return;
+                const inputContainer = chatbotWindow.querySelector('.chatbot-input-container');
+                if (inputContainer) inputContainer.style.display = 'block';
+                if (supportForm) supportForm.style.display = 'none';
             };
 
             if (supportRequestForm) {
                 supportRequestForm.onsubmit = function(e) {
                     e.preventDefault();
+                    if (!supportFormStatus) return;
                     supportFormStatus.textContent = 'Sending...';
                     supportFormStatus.style.color = 'var(--text-muted)';
                     
@@ -1602,23 +1631,28 @@ What would you like to know today?`;
                 };
             }
 
+            // ---------------- UI small helpers ----------------
             // Add active class to current page link
-            const currentPath = window.location.pathname;
-            const sidebarLinks = document.querySelectorAll('.sidebar-link');
-            
-            sidebarLinks.forEach(link => {
-                if (link.getAttribute('href') === currentPath) {
-                    link.classList.add('active');
-                }
-            });
+            try {
+                const currentPath = window.location.pathname;
+                const sidebarLinks = document.querySelectorAll('.sidebar-link');
+                sidebarLinks.forEach(link => {
+                    // Compare raw href path if it's same origin
+                    const href = link.getAttribute('href');
+                    if (href === currentPath) {
+                        link.classList.add('active');
+                    }
+                });
+            } catch (e) {}
 
             // Smooth scroll for anchor links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
-                    const target = document.querySelector(this.getAttribute('href'));
+                    const targetSelector = this.getAttribute('href');
+                    const target = document.querySelector(targetSelector);
                     if (target) {
                         e.preventDefault();
-                        const navbarHeight = document.querySelector('.navbar').offsetHeight;
+                        const navbarHeight = document.querySelector('.navbar') ? document.querySelector('.navbar').offsetHeight : 0;
                         window.scrollTo({
                             top: target.offsetTop - navbarHeight - 20,
                             behavior: 'smooth'
@@ -1627,7 +1661,7 @@ What would you like to know today?`;
                 });
             });
 
-            // Add loading states
+            // Add loading states to forms to prevent double submits
             document.querySelectorAll('form').forEach(form => {
                 form.addEventListener('submit', function() {
                     const submitBtn = this.querySelector('button[type="submit"]');
@@ -1637,50 +1671,22 @@ What would you like to know today?`;
                     }
                 });
             });
+
+            // Toast Notifications from Django messages
+            {% if messages %}
+                {% for message in messages %}
+                    (function() {
+                        const toast = document.createElement('div');
+                        toast.className = 'toast-message toast-{{ message.tags|default:"info" }}';
+                        toast.textContent = {{ message|stringformat:'s'|escapejs }};
+                        document.getElementById('toast-container').appendChild(toast);
+                        setTimeout(() => {
+                            toast.remove();
+                        }, 4000);
+                    })();
+                {% endfor %}
+            {% endif %}
         });
-
-        // Share functionality
-        function shareApp() {
-            const url = window.location.origin;
-            const title = 'Lamla AI - AI-Powered Learning Assistant';
-            const text = 'Check out Lamla AI - an amazing AI-powered learning assistant that generates quizzes and flashcards from your study materials!';
-
-            if (navigator.share) {
-                navigator.share({
-                    title: title,
-                    text: text,
-                    url: url
-                }).catch(console.error);
-            } else {
-                copyToClipboard(url);
-                alert('Link copied to clipboard! Share it with your friends.');
-            }
-        }
-
-        function shareOnWhatsApp() {
-            const url = encodeURIComponent(window.location.origin);
-            const text = encodeURIComponent('Check out Lamla AI - an amazing AI-powered learning assistant! 🚀');
-            window.open(`https://wa.me/?text=${text}%20${url}`, '_blank');
-        }
-
-        function shareOnTwitter() {
-            const url = encodeURIComponent(window.location.origin);
-            const text = encodeURIComponent('Check out Lamla AI - an amazing AI-powered learning assistant! 🚀');
-            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
-        }
-
-        function copyToClipboard(text) {
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(text);
-            } else {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-            }
-        }
     </script>
 
     <!-- Modern Footer -->
@@ -1746,5 +1752,6 @@ What would you like to know today?`;
             </div>
         </div>
     </footer>
+
 </body>
 </html>

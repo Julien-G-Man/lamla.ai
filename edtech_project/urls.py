@@ -31,6 +31,8 @@ urlpatterns = [
     path('home/', views.home, name='home'),  # Allow /home as well
     path('base/', redirect_base_to_home),  # Redirect /base to home
     path('', include('slides_analyzer.urls')),
+    path('profile/', views.user_profile, name='user_profile'),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
 
 if settings.DEBUG or (hasattr(settings, 'MEDIA_URL') and hasattr(settings, 'MEDIA_ROOT') and not hasattr(settings, 'DEFAULT_FILE_STORAGE')):

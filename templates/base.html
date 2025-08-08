@@ -1076,14 +1076,18 @@
             </button>
             <a href="{% url 'home' %}" class="logo">
                 <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
-                <span>Lamla.<span style="color: var(--primary-color);">AI</span></span>
+                <span>Lamla.<span style="color: var(--primary-color);">ai</span></span>
             </a>
         </div>
         <div class="navbar-profile">
             {% if user.is_authenticated and user_profile %}
-                <img src="{{ user_profile.profile_picture_url }}" alt="Profile" class="navbar-profile-pic">
+                <a href="{% url 'user_profile' %}">
+                    <img src="{{ user_profile.profile_picture_url }}" alt="Profile" class="navbar-profile-pic">
+                </a>    
             {% else %}
-                <img src="{% static 'slide_analyzer/images/profile_default.png' %}" alt="Profile" class="navbar-profile-pic">
+                <a href="{% url 'account_login' %}">
+                    <img src="{% static 'slide_analyzer/images/profile_default.png' %}" alt="Profile" class="navbar-profile-pic">
+                </a>    
             {% endif %}
         </div>
     </header>
@@ -1399,7 +1403,7 @@
 
             // Add welcome message
             function addWelcomeMessage() {
-                const welcomeMessage = `Hello there! 👋 I'm Lamla AI, your friendly study assistant.
+                const welcomeMessage = `Hello there! 👋 I'm Lamla AI Copilot, your friendly study assistant.
 
 I'm here to help you with:
 • Questions about our learning platform

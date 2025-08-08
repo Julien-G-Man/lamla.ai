@@ -224,13 +224,21 @@ def generate_questions(request):
         if not uploaded_file_name and 'slide_file' in request.FILES:
             uploaded_file_name = request.FILES['slide_file'].name
         
+        # Log deployment debugging info
+        logger.info(f"Quiz generation request - Text length: {len(study_text)}, MCQ: {num_mcq}, Short: {num_short}, Subject: {subject}")
+        
         if not study_text or len(study_text) < 30:
             error_message = 'Please provide at least 30 characters of study material.'
+            logger.warning(f"Quiz generation failed - insufficient text length: {len(study_text)}")
         else:
             try:
+                logger.info("Calling generate_questions_from_text...")
                 quiz_results = generate_questions_from_text(study_text, num_mcq, num_short, subject=subject, difficulty=difficulty)
+                logger.info(f"Quiz generation completed - Results: {quiz_results}")
+                
                 if not quiz_results or (not quiz_results.get('mcq_questions') and not quiz_results.get('short_questions')):
                     error_message = 'No questions could be generated. Please try with different or more detailed content.'
+                    logger.error(f"Quiz generation returned empty results: {quiz_results}")
                 else:
                     # Log the actual generated counts for debugging
                     actual_mcq_count = len(quiz_results.get('mcq_questions', []))
@@ -246,10 +254,11 @@ def generate_questions(request):
                         logger.warning(f"Generated more Short questions ({actual_short_count}) than requested ({num_short}). Trimming.")
                         quiz_results['short_questions'] = quiz_results['short_questions'][:num_short]
             except Exception as e:
-                logger.error(f"Quiz generation error: {e}")
+                logger.error(f"Quiz generation error: {e}", exc_info=True)
                 error_message = f"Quiz generation failed: {str(e)}"
         
         if error_message:
+            logger.error(f"Quiz generation failed with error: {error_message}")
             return render(request, 'slides_analyzer/custom_quiz.html', {
                 'quiz_results': quiz_results,
                 'error_message': error_message,
@@ -262,9 +271,12 @@ def generate_questions(request):
             })
         
         # Store questions and file name in session and redirect to quiz page
+        logger.info(f"Storing quiz results in session - MCQ: {len(quiz_results.get('mcq_questions', []))}, Short: {len(quiz_results.get('short_questions', []))}")
         request.session['quiz_questions'] = quiz_results
         request.session['quiz_time'] = int(request.POST.get('quiz_time', 10))
         request.session['uploaded_file_name'] = uploaded_file_name
+        
+        logger.info("Quiz generation successful - redirecting to quiz page")
         return redirect('quiz')
     return render(request, 'slides_analyzer/custom_quiz.html')
 
@@ -520,9 +532,21 @@ def perform_exam_analysis(text_content, subject, context=''):
 def quiz(request):
     quiz_questions = request.session.get('quiz_questions')
     quiz_time = request.session.get('quiz_time', 10)
+    
+    # Log deployment debugging info
+    logger.info(f"Quiz view called - Session quiz_questions: {quiz_questions is not None}")
+    logger.info(f"Session keys: {list(request.session.keys())}")
+    
     if not quiz_questions:
+        logger.warning("No quiz questions found in session - redirecting to custom_quiz")
         messages.error(request, 'No quiz has been generated. Please create a quiz first.')
         return redirect('custom_quiz')
+    
+    # Log quiz data for debugging
+    mcq_count = len(quiz_questions.get('mcq_questions', []))
+    short_count = len(quiz_questions.get('short_questions', []))
+    logger.info(f"Rendering quiz with {mcq_count} MCQ and {short_count} short questions")
+    
     return render(request, 'slides_analyzer/quiz.html', {
         'questions': quiz_questions,
         'quiz_time': quiz_time,

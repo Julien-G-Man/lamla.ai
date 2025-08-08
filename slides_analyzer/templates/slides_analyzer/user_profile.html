@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Profile - Lamla AI{% endblock %}
+{% block title %}My Profile - Lamla AI{% endblock %}
 
 {% block content %}
 <div class="profile-container">
@@ -10,7 +10,7 @@
         <div class="profile-avatar-section">
             <div class="profile-avatar">
                 <div class="avatar-ring"></div>
-                <img src="{% static 'slide_analyzer/images/profile_default.png' %}" alt="Profile" class="avatar-image" id="profileImage">
+                <img src="{{ user_profile.profile_picture_url }}" alt="Profile" class="avatar-image" id="profileImage">
                 <div class="avatar-overlay" onclick="document.getElementById('profilePictureInput').click();">
                     <i class="fas fa-camera"></i>
                 </div>
@@ -127,7 +127,7 @@
                                 <i class="fas fa-pen"></i>
                                 Bio
                             </label>
-                            <textarea id="bio" name="bio" rows="4" placeholder="Tell us about yourself...">{{ profile.bio }}</textarea>
+                            <textarea id="bio" name="bio" rows="4" placeholder="Tell us about yourself...">{{ user_profile.bio }}</textarea>
                             <small><i class="fas fa-lightbulb"></i> Share a bit about yourself (optional)</small>
                         </div>
                         
@@ -136,6 +136,10 @@
                                 <i class="fas fa-save"></i>
                                 <span>Save Changes</span>
                                 <div class="btn-shine"></div>
+                            </button>
+                            <button type="reset" class="btn-secondary-modern">
+                                <i class="fas fa-undo"></i>
+                                <span>Reset</span>
                             </button>
                             <a href="/accounts/password/change/" class="btn-secondary-modern">
                                 <i class="fas fa-key"></i>

@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Lamla AI | Level Up Your Exam Game with AI{% endblock %}</title>
+    <title>{% block title %}Lamla AI - Empowering Education with AI{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Lamla AI - Smart exam preparation assistant with AI-powered quizzes, flashcards, and performance tracking">
     
@@ -108,8 +108,8 @@
             width: 100%;
             height: var(--navbar-height);
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-light);
             box-shadow: var(--shadow-navbar);
             display: flex;
@@ -126,10 +126,9 @@
             gap: 16px;
         }
 
-        /* Navbar Hamburger - Perfect X Animation */
         .navbar-hamburger {
-            background: white;
-            border: 1px solid var(--border);
+            background: none;
+            border: none;
             cursor: pointer;
             display: flex;
             flex-direction: column;
@@ -146,48 +145,30 @@
         }
 
         .navbar-hamburger:hover {
-            background: var(--background-gray);
+            background: rgba(255, 214, 0, 0.1);
         }
 
         .navbar-hamburger span {
             display: block;
             width: 24px;
-            height: 2px;
-            margin: 4px 0;
-            background: var(--text-primary);
+            height: 3px;
+            margin: 3px 0;
+            background: var(--primary-color);
             border-radius: 2px;
-            transition: transform 0.3s ease-in-out, opacity 0.2s ease-in-out;
-            transform-origin: center;
+            transition: var(--transition);
         }
 
         .navbar-hamburger.open span:nth-child(1) {
-            transform: translateY(10px) rotate(45deg);
+            transform: translateY(9px) rotate(45deg);
         }
 
         .navbar-hamburger.open span:nth-child(2) {
             opacity: 0;
-            transform: scale(0);
+            transform: scaleX(0);
         }
 
         .navbar-hamburger.open span:nth-child(3) {
-            transform: translateY(-10px) rotate(-45deg);
-        }
-
-        /* Adjust for mobile screens */
-        @media (max-width: 480px) {
-            .navbar-hamburger span {
-                width: 20px;
-                height: 2px;
-                margin: 3px 0;
-            }
-
-            .navbar-hamburger.open span:nth-child(1) {
-                transform: translateY(5px) rotate(45deg);
-            }
-
-            .navbar-hamburger.open span:nth-child(3) {
-                transform: translateY(-5px) rotate(-45deg);
-            }
+            transform: translateY(-9px) rotate(-45deg);
         }
 
         .logo {
@@ -238,49 +219,26 @@
             box-shadow: var(--shadow-lg);
         }
 
-        /* Modern Sidebar - Updated Base Styles */
+        /* Modern Sidebar - Fixed Mobile Behavior */
         .sidebar {
             position: fixed;
             top: var(--navbar-height);
             left: 0;
             width: var(--sidebar-width);
             height: calc(100vh - var(--navbar-height));
-            background-color: var(--background-white) !important;
+            background: var(--background-white);
             border-right: 1px solid var(--border-light);
             box-shadow: var(--shadow-sidebar);
-            z-index: 2500;
+            z-index: 1500;
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
             transform: translateX(-100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            visibility: hidden;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow-y: auto;
         }
 
         .sidebar.open {
             transform: translateX(0);
-            visibility: visible;
-        }
-
-        /* For screens where the sidebar can be opened */
-        @media (max-width: 1024px) {
-            #sidebar-overlay:not(.active) {
-                display: none;
-            }
-            
-            #sidebar-overlay.active {
-                display: block;
-            }
-            
-            .sidebar {
-                visibility: hidden;
-                transform: translateX(-100%);
-            }
-            
-            .sidebar.open {
-                visibility: visible;
-                transform: translateX(0);
-            }
         }
 
         .sidebar-content {
@@ -350,7 +308,7 @@
             font-size: 1.1rem;
         }
 
-        /* Sidebar Overlay - Updated */
+        /* Sidebar Overlay - For mobile only */
         #sidebar-overlay {
             position: fixed;
             top: 0;
@@ -358,44 +316,17 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 2400;
+            z-index: 1400;
             opacity: 0;
             visibility: hidden;
             transition: var(--transition);
+            display: none;
         }
 
         #sidebar-overlay.active {
             opacity: 1;
             visibility: visible;
             display: block;
-        }
-
-        /* Hide overlay on desktop */
-        @media (min-width: 1025px) {
-            #sidebar-overlay {
-                display: none !important;
-            }
-        }
-
-        /* For screens where the sidebar can be opened */
-        @media (max-width: 1024px) {
-            #sidebar-overlay:not(.active) {
-                display: none;
-            }
-            
-            #sidebar-overlay.active {
-                display: block;
-            }
-            
-            .sidebar {
-                visibility: hidden;
-                transform: translateX(-100%);
-            }
-            
-            .sidebar.open {
-                visibility: visible;
-                transform: translateX(0);
-            }
         }
 
         /* Main Content - No resize behavior */
@@ -904,7 +835,7 @@
         @media (max-width: 1024px) {
             /* Show overlay on tablets and mobile */
             #sidebar-overlay {
-                
+                display: block;
             }
         }
 
@@ -1141,13 +1072,15 @@
             </button>
             <a href="{% url 'home' %}" class="logo">
                 <img src="{% static 'slide_analyzer/images/lamla_logo.png' %}" alt="Lamla AI Logo">
-                <span>Lamla.<span style="color: var(--primary-color);">ai</span></span>
+                <span>Lamla.<span style="color: var(--primary-color);">AI</span></span>
             </a>
         </div>
         <div class="navbar-profile">
-            <a href="{% url 'user_profile' %}">
-                 <img src="{% static 'slide_analyzer/images/profile_default.png' %}" alt="Profile" class="navbar-profile-pic">
-            </a>     
+            {% if user.is_authenticated and user_profile %}
+                <img src="{{ user_profile.profile_picture_url }}" alt="Profile" class="navbar-profile-pic">
+            {% else %}
+                <img src="{% static 'slide_analyzer/images/profile_default.png' %}" alt="Profile" class="navbar-profile-pic">
+            {% endif %}
         </div>
     </header>
 
@@ -1220,7 +1153,7 @@
         <div id="chatbot-container" class="chatbot-container">
             <div id="chatbot-toggle" class="chatbot-toggle">
                 <i class="fas fa-comments"></i>
-                <span class="chatbot-toggle-text">Ask AI</span>
+                <span class="chatbot-toggle-text">Ask AI Assistant</span>
             </div>
             <div id="chatbot-window" class="chatbot-window">
                 <div class="chatbot-header">
@@ -1328,7 +1261,7 @@
                     navbarHamburger.classList.add('open');
                     sidebarOverlay.classList.add('active');
                     // Prevent body scroll on mobile when sidebar is open
-                    if (window.innerWidth <= 768) {
+                    if (window.innerWidth <= 1024) {
                         document.body.style.overflow = 'hidden';
                     }
                 }
@@ -1342,9 +1275,9 @@
                 });
 
                 // Add touch event for mobile
-                navbarHamburger.addEventListener('touchend', function(e) {
+                navbarHamburger.addEventListener('touchstart', function(e) {
                     e.preventDefault();
-                    e.stopPropagation();
+                    toggleSidebar();
                 });
 
                 // Close sidebar when clicking overlay
@@ -1787,7 +1720,7 @@ What would you like to know today?`;
         </div>
         
         <div class="footer-bottom">
-            <p>&copy;2025 Lamla AI. All rights reserved.</p>
+            <p>&copy; 2025 Lamla AI. All rights reserved.</p>
             <div class="legal-links">
                 <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
                 <a href="{% url 'terms_of_service' %}">Terms of Service</a>
@@ -1797,6 +1730,3 @@ What would you like to know today?`;
     </footer>
 </body>
 </html>
-
-
-

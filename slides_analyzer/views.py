@@ -13,7 +13,10 @@ from django.views.decorators.http import require_POST
 from django.db import transaction
 from django.utils import timezone
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Prefetch
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+from django.utils.decorators import method_decorator
 from allauth.account.views import LoginView as AllauthLoginView
 from allauth.account.adapter import DefaultAccountAdapter
 import json
@@ -128,13 +131,16 @@ class CustomAccountAdapter(DefaultAccountAdapter):
                 login(request, user)
         return user
 
+@cache_page(60 * 15)  # Cache for 15 minutes
 def home(request):
     return render(request, 'slides_analyzer/home.html')
 
+@login_required
 def dashboard(request):
     context = {}
     if request.user.is_authenticated:
         from .models import QuizSession, ExamAnalysis
+        
         quiz_sessions = list(QuizSession.objects.filter(user=request.user))
         exam_analyses = list(ExamAnalysis.objects.filter(user=request.user))
         all_activities = []
@@ -152,7 +158,47 @@ def dashboard(request):
     return render(request, 'slides_analyzer/dashboard.html', context)
 
 def user_profile(request):
-    return render(request, 'slides_analyzer/user_profile.html')
+    if request.user.is_authenticated:
+        from .models import UserProfile
+        # Get or create user profile
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+        
+        if request.method == 'POST':
+            # Handle profile updates
+            updated = False
+            
+            if 'profile_picture' in request.FILES:
+                profile_pic = request.FILES['profile_picture']
+                # Validate file size (max 5MB)
+                if profile_pic.size > 5 * 1024 * 1024:
+                    messages.error(request, 'Profile picture must be less than 5MB.')
+                    return redirect('user_profile')
+                
+                # Validate file type
+                allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif']
+                if profile_pic.content_type not in allowed_types:
+                    messages.error(request, 'Please upload a valid image file (JPG, PNG, or GIF).')
+                    return redirect('user_profile')
+                
+                profile.profile_picture = profile_pic
+                updated = True
+            
+            bio = request.POST.get('bio', '').strip()
+            if bio != profile.bio:
+                profile.bio = bio
+                updated = True
+            
+            if updated:
+                profile.save()
+                messages.success(request, 'Profile updated successfully!')
+            else:
+                messages.info(request, 'No changes were made to your profile.')
+            
+            return redirect('user_profile')
+            
+        return render(request, 'slides_analyzer/user_profile.html')
+    else:
+        return redirect('account_login')
 
 def upload_slides(request):
     return render(request, 'slides_analyzer/upload.html')
@@ -172,10 +218,12 @@ def generate_questions(request):
         difficulty = request.POST.get('difficulty', 'any')
         error_message = None
         quiz_results = None
+        
         # Store uploaded file name if available
         uploaded_file_name = request.POST.get('uploaded_file_name', '')
         if not uploaded_file_name and 'slide_file' in request.FILES:
             uploaded_file_name = request.FILES['slide_file'].name
+        
         if not study_text or len(study_text) < 30:
             error_message = 'Please provide at least 30 characters of study material.'
         else:
@@ -200,6 +248,7 @@ def generate_questions(request):
             except Exception as e:
                 logger.error(f"Quiz generation error: {e}")
                 error_message = f"Quiz generation failed: {str(e)}"
+        
         if error_message:
             return render(request, 'slides_analyzer/custom_quiz.html', {
                 'quiz_results': quiz_results,
@@ -211,6 +260,7 @@ def generate_questions(request):
                 'study_text': study_text,
                 'uploaded_file_name': uploaded_file_name,
             })
+        
         # Store questions and file name in session and redirect to quiz page
         request.session['quiz_questions'] = quiz_results
         request.session['quiz_time'] = int(request.POST.get('quiz_time', 10))
@@ -547,6 +597,7 @@ def quiz_results(request):
 
             # Save quiz session to database for authenticated users
             if request.user.is_authenticated:
+                from .models import QuizSession
                 total = results['total']
                 correct = results['correct']
                 score_percent = (correct / total * 100) if total else 0

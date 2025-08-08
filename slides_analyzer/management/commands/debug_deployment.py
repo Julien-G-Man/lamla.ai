@@ -46,7 +46,7 @@ class Command(BaseCommand):
         self.stdout.write("\n📋 SETTINGS CHECK:")
         
         # Debug mode
-        debug_status = "✅ ENABLED" if settings.DEBUG else "❌ DISABLED"
+        debug_status = "ENABLED" if settings.DEBUG else "DISABLED"
         self.stdout.write(f"   Debug Mode: {debug_status}")
         
         # Database
@@ -64,9 +64,9 @@ class Command(BaseCommand):
         # Secret key
         secret_key = settings.SECRET_KEY
         if secret_key and len(secret_key) > 10:
-            self.stdout.write(f"   Secret Key: ✅ Set ({len(secret_key)} chars)")
+            self.stdout.write(f"   Secret Key: Set ({len(secret_key)} chars)")
         else:
-            self.stdout.write("   Secret Key: ❌ Not properly set")
+            self.stdout.write("   Secret Key: Not properly set")
 
     def check_api_configurations(self):
         self.stdout.write("\n🔌 API CONFIGURATIONS:")
@@ -76,24 +76,24 @@ class Command(BaseCommand):
         azure_endpoint = getattr(settings, 'AZURE_OPENAI_ENDPOINT', None)
         
         if azure_key and azure_endpoint:
-            self.stdout.write("   Azure OpenAI: ✅ Configured")
+            self.stdout.write("   Azure OpenAI: Configured")
             self.stdout.write(f"   Endpoint: {azure_endpoint}")
         else:
-            self.stdout.write("   Azure OpenAI: ❌ Not configured")
+            self.stdout.write("   Azure OpenAI: Not configured")
         
         # Gemini
         gemini_key = getattr(settings, 'GEMINI_API_KEY', None)
         if gemini_key:
-            self.stdout.write("   Gemini API: ✅ Configured")
+            self.stdout.write("   Gemini API: Configured")
         else:
-            self.stdout.write("   Gemini API: ❌ Not configured")
+            self.stdout.write("   Gemini API: Not configured")
         
         # Hugging Face
         hf_token = getattr(settings, 'HUGGING_FACE_API_TOKEN', None)
         if hf_token:
-            self.stdout.write("   Hugging Face: ✅ Configured")
+            self.stdout.write("   Hugging Face: Configured")
         else:
-            self.stdout.write("   Hugging Face: ❌ Not configured")
+            self.stdout.write("   Hugging Face: Not configured")
 
     def check_database(self):
         self.stdout.write("\n🗄️ DATABASE CHECK:")
@@ -110,9 +110,9 @@ class Command(BaseCommand):
             # Check for missing profiles
             users_without_profiles = User.objects.filter(profile__isnull=True).count()
             if users_without_profiles > 0:
-                self.stdout.write(f"   Users without profiles: {users_without_profiles} ⚠️")
+                self.stdout.write(f"   Users without profiles: {users_without_profiles} (WARNING)")
             else:
-                self.stdout.write("   All users have profiles: ✅")
+                self.stdout.write("   All users have profiles: OK")
             
             # Check QuizSession
             quiz_count = QuizSession.objects.count()
@@ -128,5 +128,5 @@ class Command(BaseCommand):
                 self.stdout.write("   No recent quiz sessions")
                 
         except Exception as e:
-            self.stdout.write(f"   ❌ Database error: {e}")
+            self.stdout.write(f"   Database error: {e}")
             logger.error(f"Database check failed: {e}", exc_info=True) 

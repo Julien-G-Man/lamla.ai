@@ -17,10 +17,10 @@ class QuestionGenerator:
         self.hf_token = getattr(settings, 'HUGGING_FACE_API_TOKEN', None)
         
         # Log API configuration status
-        logger.info(f"Azure OpenAI API Key: {'✓ Set' if self.azure_openai_api_key else '✗ Not set'}")
-        logger.info(f"Azure OpenAI Endpoint: {'✓ Set' if self.azure_openai_endpoint else '✗ Not set'}")
-        logger.info(f"Gemini API Key: {'✓ Set' if self.gemini_api_key else '✗ Not set'}")
-        logger.info(f"Hugging Face Token: {'✓ Set' if self.hf_token else '✗ Not set'}")
+        logger.info(f"Azure OpenAI API Key: {'Set' if self.azure_openai_api_key else 'Not set'}")
+        logger.info(f"Azure OpenAI Endpoint: {'Set' if self.azure_openai_endpoint else 'Not set'}")
+        logger.info(f"Gemini API Key: {'Set' if self.gemini_api_key else 'Not set'}")
+        logger.info(f"Hugging Face Token: {'Set' if self.hf_token else 'Not set'}")
         
         # Prefer Azure OpenAI, then Gemini, then Hugging Face
         if self.azure_openai_api_key and self.azure_openai_endpoint:

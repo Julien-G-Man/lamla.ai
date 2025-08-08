@@ -1,0 +1,861 @@
+{
+  "version": "1.0.1",
+  "timestamp": "C:\\Users\\user\\Desktop\\VSCode\\LAMLA-AI",
+  "files": {
+    "static\\apple-touch-icon.png": {
+      "size": 1367619,
+      "hash": "8e9576b1",
+      "version": "1.0.1"
+    },
+    "static\\slide_analyzer\\css\\main.css": {
+      "size": 21510,
+      "hash": "b7f503c5",
+      "version": "1.0.1"
+    },
+    "static\\slide_analyzer\\images\\incognito.png": {
+      "size": 10997,
+      "hash": "a7a1bcaf",
+      "version": "1.0.1"
+    },
+    "static\\slide_analyzer\\images\\lamla_logo.png": {
+      "size": 1367619,
+      "hash": "8e9576b1",
+      "version": "1.0.1"
+    },
+    "static\\slide_analyzer\\images\\profile_default.png": {
+      "size": 1337,
+      "hash": "17434ee1",
+      "version": "1.0.1"
+    },
+    "static\\slide_analyzer\\images\\student.jpeg": {
+      "size": 9413,
+      "hash": "e08425e8",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\css\\bootstrap-theme.min.css": {
+      "size": 23411,
+      "hash": "2010fa9f",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\css\\bootstrap-theme.min.css.map": {
+      "size": 75600,
+      "hash": "51806092",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\css\\bootstrap-tweaks.css": {
+      "size": 3426,
+      "hash": "64ed6f9f",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\css\\bootstrap.min.css": {
+      "size": 121457,
+      "hash": "7f89537e",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\css\\bootstrap.min.css.map": {
+      "size": 540434,
+      "hash": "cafbda9c",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\css\\default.css": {
+      "size": 1152,
+      "hash": "789dfb57",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\css\\font-awesome-4.0.3.css": {
+      "size": 21658,
+      "hash": "1f9e9d1a",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\css\\prettify.css": {
+      "size": 817,
+      "hash": "a987f723",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\fonts\\fontawesome-webfont.eot": {
+      "size": 38205,
+      "hash": "8b27bc96",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\fonts\\fontawesome-webfont.svg": {
+      "size": 202148,
+      "hash": "83e37a11",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\fonts\\fontawesome-webfont.ttf": {
+      "size": 80652,
+      "hash": "dcb26c72",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\fonts\\fontawesome-webfont.woff": {
+      "size": 44432,
+      "hash": "3293616e",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\fonts\\glyphicons-halflings-regular.eot": {
+      "size": 20127,
+      "hash": "f4769f9b",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\fonts\\glyphicons-halflings-regular.svg": {
+      "size": 108738,
+      "hash": "08eda923",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\fonts\\glyphicons-halflings-regular.ttf": {
+      "size": 45404,
+      "hash": "e18bbf61",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\fonts\\glyphicons-halflings-regular.woff": {
+      "size": 23424,
+      "hash": "fa277232",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\fonts\\glyphicons-halflings-regular.woff2": {
+      "size": 18028,
+      "hash": "448c34a5",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\img\\glyphicons-halflings-white.png": {
+      "size": 8777,
+      "hash": "9bbc6e96",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\img\\glyphicons-halflings.png": {
+      "size": 12762,
+      "hash": "90233c90",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\img\\grid.png": {
+      "size": 1458,
+      "hash": "a4b938cf",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\js\\ajax-form.js": {
+      "size": 3796,
+      "hash": "4e1cdcb7",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\js\\bootstrap.min.js": {
+      "size": 39680,
+      "hash": "2f34b630",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\js\\coreapi-0.1.1.js": {
+      "size": 157600,
+      "hash": "8851fb93",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\js\\csrf.js": {
+      "size": 1793,
+      "hash": "455080a7",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\js\\default.js": {
+      "size": 1268,
+      "hash": "5b08897d",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\js\\jquery-3.7.1.min.js": {
+      "size": 87533,
+      "hash": "2c872dbe",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\js\\load-ajax-form.js": {
+      "size": 59,
+      "hash": "8cdb3a9f",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\js\\prettify-min.js": {
+      "size": 13632,
+      "hash": "709bfcc4",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\docs\\css\\base.css": {
+      "size": 6156,
+      "hash": "e630f8f4",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\docs\\css\\highlight.css": {
+      "size": 1682,
+      "hash": "e0e4d973",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\docs\\css\\jquery.json-view.min.css": {
+      "size": 1307,
+      "hash": "a2e6beeb",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\docs\\img\\favicon.ico": {
+      "size": 5430,
+      "hash": "5195b4d0",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\docs\\img\\grid.png": {
+      "size": 1458,
+      "hash": "a4b938cf",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\docs\\js\\api.js": {
+      "size": 10391,
+      "hash": "18a5ba8a",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\docs\\js\\highlight.pack.js": {
+      "size": 300764,
+      "hash": "479b5f21",
+      "version": "1.0.1"
+    },
+    "static\\rest_framework\\docs\\js\\jquery.json-view.min.js": {
+      "size": 2700,
+      "hash": "b7c2d698",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\autocomplete.css": {
+      "size": 9185,
+      "hash": "d24f10bd",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\base.css": {
+      "size": 22120,
+      "hash": "59d2fb6b",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\changelists.css": {
+      "size": 6878,
+      "hash": "59465e72",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\dark_mode.css": {
+      "size": 2808,
+      "hash": "1215cee2",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\dashboard.css": {
+      "size": 441,
+      "hash": "e90f2068",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\forms.css": {
+      "size": 8525,
+      "hash": "b92b7a3b",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\login.css": {
+      "size": 951,
+      "hash": "a3b47c45",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\nav_sidebar.css": {
+      "size": 2810,
+      "hash": "dd925738",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\responsive.css": {
+      "size": 16565,
+      "hash": "80b7f3c4",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\responsive_rtl.css": {
+      "size": 1991,
+      "hash": "011e68be",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\rtl.css": {
+      "size": 4772,
+      "hash": "b2c68474",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\unusable_password_field.css": {
+      "size": 663,
+      "hash": "b433f2a9",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\widgets.css": {
+      "size": 11991,
+      "hash": "aa8c4283",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\calendar-icons.svg": {
+      "size": 2455,
+      "hash": "93ab098d",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\icon-addlink.svg": {
+      "size": 331,
+      "hash": "073aeb1f",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\icon-alert.svg": {
+      "size": 504,
+      "hash": "034cc7d8",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\icon-calendar.svg": {
+      "size": 1086,
+      "hash": "ac7aea67",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\icon-changelink.svg": {
+      "size": 380,
+      "hash": "7eddb320",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\icon-clock.svg": {
+      "size": 677,
+      "hash": "e1d4dfac",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\icon-deletelink.svg": {
+      "size": 392,
+      "hash": "564ef9dc",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\icon-hidelink.svg": {
+      "size": 784,
+      "hash": "8d245a99",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\icon-no.svg": {
+      "size": 560,
+      "hash": "439e8214",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\icon-unknown-alt.svg": {
+      "size": 655,
+      "hash": "81536e12",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\icon-unknown.svg": {
+      "size": 655,
+      "hash": "a18cb439",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\icon-viewlink.svg": {
+      "size": 581,
+      "hash": "41eb31f7",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\icon-yes.svg": {
+      "size": 436,
+      "hash": "d2f9f035",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\inline-delete.svg": {
+      "size": 537,
+      "hash": "358e965f",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\LICENSE": {
+      "size": 1081,
+      "hash": "2c54f4e1",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\README.txt": {
+      "size": 321,
+      "hash": "9849248c",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\search.svg": {
+      "size": 458,
+      "hash": "7cf54ff7",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\selector-icons.svg": {
+      "size": 3291,
+      "hash": "b4555096",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\sorting-icons.svg": {
+      "size": 1097,
+      "hash": "3a097b59",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\tooltag-add.svg": {
+      "size": 331,
+      "hash": "e59d620a",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\tooltag-arrowright.svg": {
+      "size": 280,
+      "hash": "bbfb788a",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\actions.js": {
+      "size": 8076,
+      "hash": "f1d5653e",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\autocomplete.js": {
+      "size": 1060,
+      "hash": "01591ab2",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\calendar.js": {
+      "size": 9141,
+      "hash": "d64496bb",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\cancel.js": {
+      "size": 884,
+      "hash": "ecc4c5ca",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\change_form.js": {
+      "size": 606,
+      "hash": "9d8ca4f9",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\core.js": {
+      "size": 6208,
+      "hash": "7e257fdf",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\filters.js": {
+      "size": 978,
+      "hash": "0e360b7a",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\inlines.js": {
+      "size": 15628,
+      "hash": "89b3c627",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\jquery.init.js": {
+      "size": 347,
+      "hash": "b7781a08",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\nav_sidebar.js": {
+      "size": 3063,
+      "hash": "3b9190d4",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\popup_response.js": {
+      "size": 532,
+      "hash": "96190d34",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\prepopulate.js": {
+      "size": 1531,
+      "hash": "bd2361df",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\prepopulate_init.js": {
+      "size": 586,
+      "hash": "6cac7f31",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\SelectBox.js": {
+      "size": 4530,
+      "hash": "7d3ce5a9",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\SelectFilter2.js": {
+      "size": 15709,
+      "hash": "737de6c8",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\theme.js": {
+      "size": 1653,
+      "hash": "91cf832f",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\unusable_password_field.js": {
+      "size": 1480,
+      "hash": "017ea86b",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\urlify.js": {
+      "size": 7887,
+      "hash": "ae970a82",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\admin\\DateTimeShortcuts.js": {
+      "size": 19319,
+      "hash": "9f6e209c",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\admin\\RelatedObjectLookups.js": {
+      "size": 9777,
+      "hash": "ed624080",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\jquery\\jquery.js": {
+      "size": 285314,
+      "hash": "12e87d2f",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\jquery\\jquery.min.js": {
+      "size": 87533,
+      "hash": "2c872dbe",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\jquery\\LICENSE.txt": {
+      "size": 1097,
+      "hash": "de877aa6",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\LICENSE.md": {
+      "size": 1124,
+      "hash": "f9414251",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\select2.full.js": {
+      "size": 173566,
+      "hash": "c2afdeda",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\select2.full.min.js": {
+      "size": 79212,
+      "hash": "fcd7500d",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\xregexp\\LICENSE.txt": {
+      "size": 1106,
+      "hash": "b6fd2cee",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\xregexp\\xregexp.js": {
+      "size": 325171,
+      "hash": "a7e08b0c",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\xregexp\\xregexp.min.js": {
+      "size": 163184,
+      "hash": "f1ae4617",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\af.js": {
+      "size": 866,
+      "hash": "4f6fcd73",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\ar.js": {
+      "size": 905,
+      "hash": "65aa8e36",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\az.js": {
+      "size": 721,
+      "hash": "270c257d",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\bg.js": {
+      "size": 968,
+      "hash": "39b8be30",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\bn.js": {
+      "size": 1291,
+      "hash": "6d42b4dd",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\bs.js": {
+      "size": 965,
+      "hash": "91624382",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\ca.js": {
+      "size": 900,
+      "hash": "a166b745",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\cs.js": {
+      "size": 1292,
+      "hash": "4f43e8e7",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\da.js": {
+      "size": 828,
+      "hash": "766346af",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\de.js": {
+      "size": 866,
+      "hash": "8a1c222b",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\dsb.js": {
+      "size": 1017,
+      "hash": "56372c92",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\el.js": {
+      "size": 1182,
+      "hash": "27097f07",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\en.js": {
+      "size": 844,
+      "hash": "cf932ba0",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\es.js": {
+      "size": 922,
+      "hash": "66dbc265",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\et.js": {
+      "size": 801,
+      "hash": "2b96fd98",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\eu.js": {
+      "size": 868,
+      "hash": "adfe5c97",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\fa.js": {
+      "size": 1023,
+      "hash": "3b5bd196",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\fi.js": {
+      "size": 803,
+      "hash": "614ec42a",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\fr.js": {
+      "size": 924,
+      "hash": "05e0542f",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\gl.js": {
+      "size": 924,
+      "hash": "d99b1fed",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\he.js": {
+      "size": 984,
+      "hash": "e420ff6c",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\hi.js": {
+      "size": 1175,
+      "hash": "70640d41",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\hr.js": {
+      "size": 852,
+      "hash": "a2b092cc",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\hsb.js": {
+      "size": 1018,
+      "hash": "fa3b5526",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\hu.js": {
+      "size": 831,
+      "hash": "6ec6039c",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\hy.js": {
+      "size": 1028,
+      "hash": "c7babaee",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\id.js": {
+      "size": 768,
+      "hash": "04debded",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\is.js": {
+      "size": 807,
+      "hash": "3ddd9a6a",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\it.js": {
+      "size": 897,
+      "hash": "be4fe8d3",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\ja.js": {
+      "size": 862,
+      "hash": "170ae885",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\ka.js": {
+      "size": 1195,
+      "hash": "2083264a",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\km.js": {
+      "size": 1088,
+      "hash": "c23089cb",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\ko.js": {
+      "size": 855,
+      "hash": "e7be6c20",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\lt.js": {
+      "size": 944,
+      "hash": "23c7ce90",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\lv.js": {
+      "size": 900,
+      "hash": "08e62128",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\mk.js": {
+      "size": 1038,
+      "hash": "dabbb908",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\ms.js": {
+      "size": 811,
+      "hash": "4ba82c9a",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\nb.js": {
+      "size": 778,
+      "hash": "da2fce14",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\ne.js": {
+      "size": 1357,
+      "hash": "3d79fd3f",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\nl.js": {
+      "size": 904,
+      "hash": "997868a3",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\pl.js": {
+      "size": 947,
+      "hash": "6031b4f1",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\ps.js": {
+      "size": 1049,
+      "hash": "38dfa47a",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\pt-BR.js": {
+      "size": 876,
+      "hash": "e1b29443",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\pt.js": {
+      "size": 878,
+      "hash": "33b4a3b4",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\ro.js": {
+      "size": 938,
+      "hash": "f75cb460",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\ru.js": {
+      "size": 1171,
+      "hash": "934aa95f",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\sk.js": {
+      "size": 1306,
+      "hash": "33d02cef",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\sl.js": {
+      "size": 925,
+      "hash": "131a78bc",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\sq.js": {
+      "size": 903,
+      "hash": "5636b60d",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\sr-Cyrl.js": {
+      "size": 1109,
+      "hash": "f254bb8c",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\sr.js": {
+      "size": 980,
+      "hash": "5ed85a48",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\sv.js": {
+      "size": 786,
+      "hash": "7a9c2f71",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\th.js": {
+      "size": 1074,
+      "hash": "f38c20b0",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\tk.js": {
+      "size": 771,
+      "hash": "7c572a68",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\tr.js": {
+      "size": 775,
+      "hash": "b5a0643d",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\uk.js": {
+      "size": 1156,
+      "hash": "8cede7f4",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\vi.js": {
+      "size": 796,
+      "hash": "097a5b75",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\zh-CN.js": {
+      "size": 768,
+      "hash": "2cff662e",
+      "version": "1.0.1"
+    },
+    "static\\admin\\js\\vendor\\select2\\i18n\\zh-TW.js": {
+      "size": 707,
+      "hash": "04554a22",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\gis\\move_vertex_off.svg": {
+      "size": 1129,
+      "hash": "7a23bf31",
+      "version": "1.0.1"
+    },
+    "static\\admin\\img\\gis\\move_vertex_on.svg": {
+      "size": 1129,
+      "hash": "0047eba2",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\vendor\\select2\\LICENSE-SELECT2.md": {
+      "size": 1124,
+      "hash": "f9414251",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\vendor\\select2\\select2.css": {
+      "size": 17358,
+      "hash": "a2194c26",
+      "version": "1.0.1"
+    },
+    "static\\admin\\css\\vendor\\select2\\select2.min.css": {
+      "size": 14966,
+      "hash": "9f54e641",
+      "version": "1.0.1"
+    },
+    "static\\account\\js\\account.js": {
+      "size": 437,
+      "hash": "b8b2bd93",
+      "version": "1.0.1"
+    },
+    "static\\account\\js\\onload.js": {
+      "size": 495,
+      "hash": "79dcf5a4",
+      "version": "1.0.1"
+    }
+  }
+}

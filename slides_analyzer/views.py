@@ -34,11 +34,23 @@ from .question_generator import generate_questions_from_text
 from .flashcard_generator import generate_flashcards_from_text
 import PyPDF2
 import docx
+
 import io
+from io import BytesIO
+from zoneinfo import ZoneInfo
+from datetime import datetime
+import re
+import textwrap
+import unicodedata
+from urllib.parse import quote
+from django.http import HttpResponse, FileResponse 
+from django.utils import timezone
+from django.views.decorators.http import require_GET, require_http_methods
+
+
 import base64
 from PIL import Image
 import pytesseract
-import re
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.template.loader import render_to_string
@@ -1350,79 +1362,163 @@ def history(request):
         'current_subject': subject_query
     })
 
+# ---------------------- helper ----------------------
+# Downloadable Quiz logic
+
+def _safe_filename(name: str, max_len: int = 180) -> str:
+    """Make a string safe for use as a filename."""
+    if not name:
+        return "Quiz_Results"
+    s = str(name).strip()
+    s = re.sub(r'\s+', '_', s)  # spaces → underscores
+    s = re.sub(r'[\\/:"*?<>|]+', '_', s)  # remove unsafe chars
+    return s[:max_len] or "Quiz_Results"
+
+def _latex_to_plain(s: str) -> str:
+    """Convert LaTeX-style math to human-friendly plain text."""
+    if not s:
+        return s
+    out = str(s)
+
+    # Remove LaTeX math delimiters
+    out = re.sub(r'\\\((.*?)\\\)', r'\1', out)
+    out = re.sub(r'\\\[(.*?)\\\]', r'\1', out)
+    out = re.sub(r'\$\$(.*?)\$\$', r'\1', out, flags=re.S)
+
+    # Fractions
+    def _frac_repl(m):
+        return f'{{{m.group(1).strip()}}}/{{{m.group(2).strip()}}}'
+    out = re.sub(r'\\frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}', _frac_repl, out)
+
+    # Square roots
+    def _sqrt_repl(m):
+        return f"sqrt({m.group(1).strip()})"
+    out = re.sub(r'\\sqrt\{([^{}]+)\}', _sqrt_repl, out)
+
+
+    # Superscripts and subscripts
+    out = re.sub(r'\^\{([^}]+)\}', lambda m: '^(' + m.group(1) + ')', out)
+    out = re.sub(r'\^([A-Za-z0-9])', r'^\(\1\)', out)
+    out = re.sub(r'_\{([^}]+)\}', lambda m: '_(' + m.group(1) + ')', out)
+    out = re.sub(r'_([A-Za-z0-9])', r'_(\1)', out)
+
+    # Common replacements
+    replacements = {
+        r'\\times': '×',
+        r'\\cdot': '·',
+        r'\\left': '',
+        r'\\right': '',
+        r'\\,': ' ',
+        r'\\;': ' ',
+        r'\\!': '',
+        r'\\ ': ' ',
+        r'\\newline': '\n',
+    }
+    for k, v in replacements.items():
+        out = out.replace(k, v)
+
+    # Remove backslashes before words (e.g., \alpha → alpha)
+    out = re.sub(r'\\([A-Za-z]+)', r'\1', out)
+
+    # Clean spaces/newlines
+    out = re.sub(r'\s+\n', '\n', out)
+    out = re.sub(r'\n\s+', '\n', out)
+    out = re.sub(r'[ \t]{2,}', ' ', out)
+
+    return out.strip()
+
 def download_quiz_text(request):
-    """Download the most recent quiz as a text, PDF, or DOCX file."""
+    """Download the quiz as TXT, PDF, or DOCX with clean math and proper source info."""
     quiz_questions = request.session.get('quiz_questions', {})
     results = request.session.get('quiz_results', {})
     uploaded_file_name = request.session.get('uploaded_file_name', '')
+
     if not quiz_questions or not results:
         return HttpResponse('No quiz data found.', content_type='text/plain')
 
-    # Get subject for file naming
     subject = quiz_questions.get('subject', 'Quiz')
-    filename = subject.replace(' ', '_').replace('/', '_').replace('\\', '_') or 'Quiz_Results'
-    lines = []
-    lines.append('Lamla AI - Quiz')
-    lines.append('-------------------------')
-    lines.append(subject)
-    if uploaded_file_name:
-        lines.append(f'Source file: {uploaded_file_name}')
-    lines.append('')
-    # Multiple Choice Questions
+    safe_source = _safe_filename(uploaded_file_name or subject)
+    tz = ZoneInfo('Africa/Accra')
+    ts = datetime.now(tz).strftime('%Y%m%d_%H%M%S')
+    filename_base = f"{safe_source}_Lamla.ai_Quiz_{ts}"
+
+    # Header
+    lines = [
+        'Lamla AI - Quiz',
+        '-------------------------',
+        f"Subject: {subject}",
+        f"Source File: {uploaded_file_name or 'N/A'}",
+        f"Generated: {datetime.now(tz).strftime('%Y-%m-%d %H:%M:%S %Z')}",
+        ''
+    ]
+
+    # Multiple Choice
     mcq = quiz_questions.get('mcq_questions', [])
     if mcq:
         lines.append('Multiple Choice Questions:')
-        for idx, q in enumerate(mcq):
-            lines.append(f"Q{idx+1}: {q.get('question')}")
-            options = q.get('options', [])
-            for opt_idx, opt in enumerate(options):
-                letter = chr(65 + opt_idx)  # A, B, C, ...
-                lines.append(f"   {letter}. {opt}")
+        for idx, q in enumerate(mcq, start=1):
+            qtext = _latex_to_plain(q.get('question', ''))
+            lines.append(f"Question {idx}: {qtext}")
+            for opt_idx, opt in enumerate(q.get('options', [])):
+                letter = chr(65 + opt_idx)
+                lines.append(f"   {letter}. {_latex_to_plain(opt)}")
             correct_ans = q.get('answer', '')
             lines.append(f"   Correct answer: {correct_ans}")
             lines.append('')
-    # Short Answer Questions
+
+    # Short Answer
     short = quiz_questions.get('short_questions', [])
     if short:
         lines.append('Short Answer Questions:')
-        for idx, q in enumerate(short):
-            lines.append(f"Q{idx+1}: {q.get('question')}")
+        for idx, q in enumerate(short, start=1):
+            lines.append(f"Q{idx}: {_latex_to_plain(q.get('question', ''))}")
+            ans = q.get('answer', '')
+            if ans:
+                lines.append(f"   Model answer: {_latex_to_plain(ans)}")
             lines.append('')
-    text_content = '\n'.join(lines)
 
+    text_content = '\n'.join(lines)
     file_format = request.GET.get('format', 'txt').lower()
+
     if file_format == 'pdf':
-        from io import BytesIO
-        from reportlab.lib.pagesizes import letter
-        from reportlab.pdfgen import canvas
+        try:
+            from reportlab.lib.pagesizes import letter
+            from reportlab.pdfgen import canvas
+        except Exception as e:
+            return HttpResponse(f"PDF export requires reportlab: {e}", content_type='text/plain', status=500)
+
         buffer = BytesIO()
         p = canvas.Canvas(buffer, pagesize=letter)
         width, height = letter
         y = height - 40
-        for line in lines:
-            p.drawString(40, y, line)
-            y -= 18
-            if y < 40:
-                p.showPage()
-                y = height - 40
+        for raw_line in lines:
+            for wline in textwrap.wrap(_latex_to_plain(raw_line), width=95):
+                p.drawString(40, y, wline)
+                y -= 16
+                if y < 40:
+                    p.showPage()
+                    y = height - 40
         p.save()
         buffer.seek(0)
-        response = HttpResponse(buffer, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="{filename}.pdf"'
-        return response
+        response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
+
     elif file_format == 'docx':
-        from io import BytesIO
-        from docx import Document
+        try:
+            from docx import Document
+        except Exception as e:
+            return HttpResponse(f"DOCX export requires python-docx: {e}", content_type='text/plain', status=500)
+
         buffer = BytesIO()
         doc = Document()
-        for line in lines:
-            doc.add_paragraph(line)
+        for raw_line in lines:
+            doc.add_paragraph(_latex_to_plain(raw_line))
         doc.save(buffer)
         buffer.seek(0)
-        response = HttpResponse(buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-        response['Content-Disposition'] = f'attachment; filename="{filename}.docx"'
-        return response
-    else:
+        response = HttpResponse(buffer.getvalue(),
+            content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
+    else:  # TXT
         response = HttpResponse(text_content, content_type='text/plain')
-        response['Content-Disposition'] = f'attachment; filename="{filename}.txt"'
-        return response
+
+    response['Content-Disposition'] = f'attachment; filename="{filename_base}.{file_format}"'
+    return response

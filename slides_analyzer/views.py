@@ -219,12 +219,6 @@ def generate_questions(request):
         error_message = None
         quiz_results = None
         
-        # Debug logging
-        print(f"[DEBUG] Generate questions called")
-        print(f"[DEBUG] Study text length: {len(study_text)}")
-        print(f"[DEBUG] Num MCQ: {num_mcq}, Num Short: {num_short}")
-        print(f"[DEBUG] Subject: {subject}, Difficulty: {difficulty}")
-        
         # Store uploaded file name if available
         uploaded_file_name = request.POST.get('uploaded_file_name', '')
         if not uploaded_file_name and 'slide_file' in request.FILES:
@@ -232,20 +226,14 @@ def generate_questions(request):
         
         if not study_text or len(study_text) < 30:
             error_message = 'Please provide at least 30 characters of study material.'
-            print(f"[DEBUG] Error: {error_message}")
         else:
             try:
-                print(f"[DEBUG] Calling generate_questions_from_text...")
                 quiz_results = generate_questions_from_text(study_text, num_mcq, num_short, subject=subject, difficulty=difficulty)
-                print(f"[DEBUG] Quiz results: {quiz_results}")
-                
                 if not quiz_results or (not quiz_results.get('mcq_questions') and not quiz_results.get('short_questions')):
                     error_message = 'No questions could be generated. Please try with different or more detailed content.'
-                    print(f"[DEBUG] Error: {error_message}")
             except Exception as e:
                 logger.error(f"Quiz generation error: {e}")
                 error_message = f"Quiz generation failed: {str(e)}"
-                print(f"[DEBUG] Exception: {e}")
         
         if error_message:
             return render(request, 'slides_analyzer/custom_quiz.html', {
@@ -260,15 +248,9 @@ def generate_questions(request):
             })
         
         # Store questions and file name in session and redirect to quiz page
-        print(f"[DEBUG] Storing quiz results in session")
-        print(f"[DEBUG] MCQ questions: {len(quiz_results.get('mcq_questions', []))}")
-        print(f"[DEBUG] Short questions: {len(quiz_results.get('short_questions', []))}")
-        
         request.session['quiz_questions'] = quiz_results
         request.session['quiz_time'] = int(request.POST.get('quiz_time', 10))
         request.session['uploaded_file_name'] = uploaded_file_name
-        
-        print(f"[DEBUG] Session stored, redirecting to quiz")
         return redirect('quiz')
     return render(request, 'slides_analyzer/custom_quiz.html')
 
@@ -524,19 +506,9 @@ def perform_exam_analysis(text_content, subject, context=''):
 def quiz(request):
     quiz_questions = request.session.get('quiz_questions')
     quiz_time = request.session.get('quiz_time', 10)
-    
-    # Debug logging
-    print(f"[DEBUG] Quiz view called")
-    print(f"[DEBUG] Session quiz_questions: {quiz_questions}")
-    print(f"[DEBUG] Session quiz_time: {quiz_time}")
-    print(f"[DEBUG] Session keys: {list(request.session.keys())}")
-    
     if not quiz_questions:
-        print(f"[DEBUG] No quiz questions found, redirecting to custom_quiz")
         messages.error(request, 'No quiz has been generated. Please create a quiz first.')
         return redirect('custom_quiz')
-    
-    print(f"[DEBUG] Rendering quiz with {len(quiz_questions.get('mcq_questions', []))} MCQ and {len(quiz_questions.get('short_questions', []))} short questions")
     return render(request, 'slides_analyzer/quiz.html', {
         'questions': quiz_questions,
         'quiz_time': quiz_time,

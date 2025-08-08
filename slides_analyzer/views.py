@@ -1388,18 +1388,34 @@ def _latex_to_plain(s: str) -> str:
     out = re.sub(r'\\\[(.*?)\\\]', r'\1', out)
     out = re.sub(r'\$\$(.*?)\$\$', r'\1', out, flags=re.S)
 
-    # Fractions → {(num)}/{(den)}
+    # Fractions → (num)/(den)
     def _frac_repl(m):
-        return f'{{({m.group(1).strip()})}}/{{({m.group(2).strip()})}}'
+        return f"({m.group(1).strip()})/({m.group(2).strip()})"
     out = re.sub(r'\\frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}', _frac_repl, out)
 
-    # Square roots → √{( ... )}
-    def _sqrt_repl(m):
-        inner = m.group(1).strip()
-        # Handle nested fractions inside sqrt
-        inner = re.sub(r'\{([^{}]+)\}/\{([^{}]+)\}', r'({\1})/({\2})', inner)
-        return f"√{{({inner})}}"
-    out = re.sub(r'\\sqrt\{([^{}]+)\}', _sqrt_repl, out)
+    # --- Recursive sqrt handling with superscript nth roots ---
+    def _process_sqrt(m):
+        index = m.group(1)  # e.g. [3] for cube root
+        inner = m.group(2).strip()
+
+        # Process nested sqrts first
+        while re.search(r'\\sqrt(\[[0-9]+\])?\{([^{}]+)\}', inner):
+            inner = re.sub(r'\\sqrt(\[[0-9]+\])?\{([^{}]+)\}', _process_sqrt, inner)
+
+        # Replace fractions inside
+        inner = re.sub(r'\\frac\s*\{([^{}]+)\}\s*\{([^{}]+)\}',
+                       lambda x: f"({x.group(1).strip()})/({x.group(2).strip()})",
+                       inner)
+
+        superscripts = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+
+        if index:  # nth root
+            n = index.strip("[]")
+            n_sup = n.translate(superscripts)
+            return f"{n_sup}√{{{inner}}}"
+        return f"√{{{inner}}}"  # square root
+
+    out = re.sub(r'\\sqrt(\[[0-9]+\])?\{([^{}]+)\}', _process_sqrt, out)
 
     # Superscripts & subscripts
     out = re.sub(r'\^\{([^}]+)\}', lambda m: '^(' + m.group(1) + ')', out)

@@ -89,6 +89,7 @@ Key Information about Lamla AI:
 - Motto: "Study Smarter. Perform Better."
 - Contact: lamlaaiteam@gmail.com
 - WhatsApp contact: +233509341251
+- The current url address is lamla-ai.onrender.com
 - Lamla AI can support multiple languages
 - The founder is a computer science student at Kwame Nkrumah University of Scince and Technlogy (KNUST), Ghana
 

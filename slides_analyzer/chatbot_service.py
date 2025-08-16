@@ -44,6 +44,51 @@ class ChatbotService:
         
         return knowledge_text
 
+    def get_edtech_best_practices(self):
+        """Return best practices in educational technology for context"""
+        return """
+Best Practices in Educational Technology:
+1. Student-Centered Learning
+    • Adapt to different learning styles (visual, auditory, kinesthetic).
+    • Encourage self-paced and personalized learning.
+    • Use AI to provide adaptive learning paths.
+
+2. Active Engagement
+    • Incorporate interactive elements like quizzes, flashcards, and polls.
+    • Use gamification (badges, leaderboards, rewards) to motivate learners.
+    • Encourage participation and critical thinking.
+
+3. Feedback and Assessment
+    • Provide timely, specific, and actionable feedback.
+    • Mix formative (ongoing) and summative (final) assessments.
+    • Use AI to generate personalized feedback.
+
+4. Accessibility and Inclusivity
+    • Support multiple languages and accessibility features (text-to-speech, captions).
+    • Ensure mobile-first and low-bandwidth support.
+    • Provide offline or downloadable resources when possible.
+
+5. Data-Driven Insights
+    • Track learner progress with dashboards and analytics.
+    • Use predictive analytics to identify at-risk learners.
+    • Share clear progress reports with learners and educators.
+
+6. Collaboration and Community
+    • Enable discussion forums, study groups, or peer-to-peer support.
+    • Encourage mentorship and teamwork.
+    • Use AI chatbots to answer FAQs and provide 24/7 assistance.
+
+7. Privacy and Ethics
+    • Ensure student data is protected and used responsibly.
+    • Be transparent about AI limitations and capabilities.
+    • Avoid bias and ensure fairness in AI-driven tools.
+
+8. Continuous Improvement
+    • Gather user feedback regularly.
+    • Iterate features based on student and teacher needs.
+    • Stay updated with new EdTech trends.
+"""
+
     def clean_markdown(self, text):
         """Remove markdown symbols and fix indentation for lists."""
         import re
@@ -75,11 +120,16 @@ class ChatbotService:
 
             # Get Lamla AI knowledge base for context
             lamla_knowledge = self.get_lamla_knowledge_base()
+            edtech_best_practices = self.get_edtech_best_practices()
+
             # Create system prompt
             system_prompt = f"""You are Lamla AI Copilot, a friendly and helpful AI assistant for an educational platform. Your name is Lamla AI Copilot and you can answer questions about the platform and general topics.
 
 Context about Lamla AI:
 {lamla_knowledge}
+
+Educational Technology Best Practices:
+{edtech_best_practices}
 
 Key Information about Lamla AI:
 - Lamla AI stands for "Learn And Master Like an Ace"
@@ -108,6 +158,7 @@ IMPORTANT RESPONSE GUIDELINES:
 10. DO NOT use markdown symbols like ** or ## in your responses
 11. Use clean, readable formatting without bold or heading symbols
 12. Immediately identify the user's language and respond in the same language
+13. Follow EdTech Best Practices, but be sincere about your limitations and the features you have
 
 You can also answer general questions and help with various topics. Always maintain a helpful and friendly demeanor."""
 

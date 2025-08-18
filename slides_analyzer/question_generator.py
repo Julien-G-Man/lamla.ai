@@ -92,7 +92,7 @@ class QuestionGenerator:
             }
             
             logger.info(f"Calling Azure OpenAI with endpoint: {self.azure_openai_endpoint}")
-            response = requests.post(self.azure_openai_endpoint, headers=headers, json=payload, timeout=60)
+            response = requests.post(self.azure_openai_endpoint, headers=headers, json=payload, timeout=120)
             response.raise_for_status()
             result = response.json()
             print("[DEBUG] Azure response:", result)

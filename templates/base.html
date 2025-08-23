@@ -1170,13 +1170,13 @@
                     <i class="fas fa-headset"></i> Contact
                 </a>
                 <a href="{% url 'custom_quiz' %}" class="sidebar-link">
-                    <i class="fas fa-question-circle"></i> Quiz
+                    <i class="fas fa-question-circle"></i> Quiz Mode
                 </a>
                 <a href="{% url 'flashcards' %}" class="sidebar-link">
                     <i class="fas fa-clone"></i> Flashcards
                 </a>
                 <a href="{% url 'exam_analyzer' %}" class="sidebar-link">
-                    <i class="fas fa-chart-bar"></i> Exam Analyzer
+                    <i class="fas fa-chart-bar"></i> Exam Pattern Analysis
                 </a>
                 {% if user.is_authenticated %}
                     <a href="{% url 'history' %}" class="sidebar-link">
@@ -1235,7 +1235,7 @@
                     <div class="chatbot-input-container">
                         <div class="chatbot-input-wrapper">
                             <input type="text" id="chatbot-input" class="chatbot-input"
-                                   placeholder="Ask me anything about studying..." maxlength="500">
+                                   placeholder="Ask me anything about learning..." maxlength="500">
                             <button id="chatbot-send" class="chatbot-send" aria-label="Send message">
                                 <i class="fas fa-paper-plane"></i>
                             </button>

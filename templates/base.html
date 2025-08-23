@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Lamla AI - Empowering Education with AI{% endblock %}</title>
+    <title>{% block title %}Lamla AI - Level Up Your Exam Game With AI{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Lamla AI - Smart exam preparation assistant with AI-powered quizzes, flashcards, and performance tracking">
     
@@ -1130,7 +1130,10 @@
         <div class="navbar-profile">
             {% if user.is_authenticated and user_profile %}
                 <a href="{% url 'user_profile' %}">
-                    <img src="{{ user_profile.profile_picture_url }}" alt="Profile" class="navbar-profile-pic">
+                    <!-- Remove this when you're ready to write a better code for image upload
+                    <img src="{{ user_profile.profile_picture_url }}" alt="Profile" class="navbar-profile-pic"> 
+                    remove this too-->
+                    <img src="{% static 'slide_analyzer/images/profile_default.png' %}" alt="Profile" class="navbar-profile-pic">
                 </a>    
             {% else %}
                 <a href="{% url 'account_login' %}">

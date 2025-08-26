@@ -1,4 +1,5 @@
 import openai
+from openai import OpenAI
 from django.conf import settings
 import logging
 import re
@@ -20,12 +21,21 @@ class ChatbotService:
                     azure_endpoint=settings.AZURE_OPENAI_ENDPOINT
                 )
                 logger.info("Chatbot Service initialized with Azure OpenAI")
-                
+              
+            # Fallback to DeepSeek
+            elif hasattr(settings, 'DEEPSEEK_API_KEY') and settings.DEEPSEEK_API_KEY:
+                self.client = OpenAI(
+                    api_key=settings.DEEPSEEK_API_KEY,
+                    base_url="https://api.deepseek.com/v1"
+                    )
+                self.use_deepseek = True
+                logger.info("Chatbot Service initialized with DeepSeek")
+
             # Fallback to regular OpenAI
             elif hasattr(settings, 'OPENAI_API_KEY') and settings.OPENAI_API_KEY:
                 self.client = openai.OpenAI(api_key=settings.OPENAI_API_KEY)
                 logger.info("Chatbot Service initialized with OpenAI")
-                
+
             else:
                 logger.warning("No OpenAI API key found in settings")
         except Exception as e:
@@ -143,7 +153,8 @@ Key Information about Lamla AI:
 - Lamla AI can support multiple languages
 - The founder is a computer science student at Kwame Nkrumah University of Scince and Technlogy (KNUST), Ghana
 - You were developed in June 2025 in a dorm room
-- Your training data and knowledge of the world at large extends till October 2023, but you have all the updated knowledge of Lamla AI platform
+- Your training data and knowledge of the world at large extends till October 2023, but you have all the updated knowledge of Lamla AI platform till August 2025
+- DeepSeek is a model that excels in advanced coding, mathematics and complex reasoning, it's part of your inbuilt models
 
 IMPORTANT RESPONSE GUIDELINES:
 1. Be warm, friendly, and encouraging in your tone
@@ -170,8 +181,14 @@ You can also answer general questions and help with various topics. Always maint
                     messages.append({"role": role, "content": msg['content']})
             messages.append({"role": "user", "content": user_message})
 
-            # Use the correct Azure deployment name
-            model_name = getattr(settings, 'AZURE_OPENAI_DEPLOYMENT_NAME', 'gpt-4o-mini-deployment')
+            # Include DeepSeek, use as primary model for chatbot
+            model_name = None
+            if hasattr(self, 'use_deepseek') and self.use_deepseek:
+                model_name = 'deepseek-chat'
+            else:
+                # Use the correct Azure deployment name
+                model_name = getattr(settings, 'AZURE_OPENAI_DEPLOYMENT_NAME', 'gpt-4o-mini-deployment')
+
             response = self.client.chat.completions.create(
                 model=model_name,
                 messages=messages,

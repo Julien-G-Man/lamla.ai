@@ -1,4 +1,5 @@
 import os
+from openai import OpenAI
 import requests
 import json
 from typing import Dict, List, Optional
@@ -12,6 +13,7 @@ class QuestionGenerator:
     def __init__(self):
         self.azure_openai_api_key = getattr(settings, 'AZURE_OPENAI_API_KEY', None)
         self.azure_openai_endpoint = getattr(settings, 'AZURE_OPENAI_ENDPOINT', None)
+        self.deepseek_api_key = getattr(settings, 'DEEPSEEK_API_KEY', None) # new DeepSeek API
         self.gemini_api_key = getattr(settings, 'GEMINI_API_KEY', None)
         self.gemini_model = getattr(settings, 'GEMINI_MODEL', 'gemini-1.5-pro')
         self.hf_token = getattr(settings, 'HUGGING_FACE_API_TOKEN', None)
@@ -19,13 +21,17 @@ class QuestionGenerator:
         # Log API configuration status
         logger.info(f"Azure OpenAI API Key: {'Set' if self.azure_openai_api_key else 'Not set'}")
         logger.info(f"Azure OpenAI Endpoint: {'Set' if self.azure_openai_endpoint else 'Not set'}")
+        logger.info(f"DeepSeek API Key: {'Set' if self.deepseek_api_key else 'Note set'}") # new DeepSeek logger
         logger.info(f"Gemini API Key: {'Set' if self.gemini_api_key else 'Not set'}")
         logger.info(f"Hugging Face Token: {'Set' if self.hf_token else 'Not set'}")
         
-        # Prefer Azure OpenAI, then Gemini, then Hugging Face
+        # Prefer Azure OpenAI, then DeepSeek, then Gemini, then Hugging Face
         if self.azure_openai_api_key and self.azure_openai_endpoint:
             self.primary_api = 'azure_openai'
             logger.info("Primary API set to: Azure OpenAI")
+        elif self.deepseek_api:
+            self.primary_api = 'deepseek'  
+            logger.info("Primary API set to: DeepSeek")  # New DeepSeek
         elif self.gemini_api_key:
             self.primary_api = 'gemini'
             logger.info("Primary API set to: Gemini")
@@ -100,6 +106,28 @@ class QuestionGenerator:
         except Exception as e:
             print("[DEBUG] Azure OpenAI API error:", e)
             logger.error(f"Azure OpenAI API error: {e}")
+            raise
+  
+    # Add DeepSeek API   
+    def _call_deepseek_api(self, prompt: str) -> str:
+        """Call DeepSeek API (OpenAI-compatible endpoint)"""
+        try:
+            client = OpenAI(
+                api_key=self.deepseek_api_key,
+                base_url="https://api.deepseek.com/v1"
+            )
+            response = client.chat.completions.create(
+                model="deepseek-chat",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant"},
+                    {"role": "user", "content": prompt}
+                ],
+                max_tokens=5000,
+                temperature=0.7
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            logger.error(f"DeepSeek API error: {e}")
             raise
 
     def _call_huggingface_api(self, prompt: str) -> str:

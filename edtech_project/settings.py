@@ -200,9 +200,18 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesSto
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+#LLM API SETTINGS
+
+# Azure OpenAI API Settings
+AZURE_OPENAI_API_KEY = os.getenv('AZURE_OPENAI_API_KEY')
+AZURE_OPENAI_ENDPOINT = os.getenv('AZURE_OPENAI_ENDPOINT')
+
 # Gemini API Settings
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 GEMINI_MODEL = os.getenv('GEMINI_MODEL', 'models/gemini-1.5-pro-latest')
+
+# DeepSeek API Settings
+DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY', "")
 
 # OpenAI API Settings
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
@@ -286,9 +295,4 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-
-# Azure OpenAI API Settings
-AZURE_OPENAI_API_KEY = os.getenv('AZURE_OPENAI_API_KEY')
-AZURE_OPENAI_ENDPOINT = os.getenv('AZURE_OPENAI_ENDPOINT')
-
 

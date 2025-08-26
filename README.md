@@ -26,7 +26,7 @@ Lamla-AI empowers students to upload their study materials, generate AI-powered 
 ## 🛠️ Tech Stack
 - **Backend:** Django 5, Django REST Framework
 - **Frontend:** Django Templates, Custom CSS
-- **AI Integration:** Azure OpenAI GPT4o-mini, Google Gemini, OpenAI, Hugging Face (Mistral)
+- **AI Integration:** Azure OpenAI GPT4o-mini, DeepSeek, Google Gemini, OpenAI, Hugging Face (Mistral)
 - **Auth:** Django Allauth
 - **Database:** SQLite (default, easy to switch)
 
@@ -72,6 +72,7 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 # API Keys (Get your keys from the links below)
 GEMINI_API_KEY=your_gemini_key
 AZURE_OPENAI_API_KEY=your_azure_openai_key
+DEEPSEEK_API_KEY=your_deepseek_api_key
 AZURE_OPENAI_ENDPOINT=your_azure_openai_endpoint
 HUGGING_FACE_API_TOKEN=your_huggingface_token
 
@@ -82,7 +83,7 @@ GEMINI_MODEL=models/gemini-1.5-pro-latest
 EMAIL_HOST_USER=your-email@gmail.com
 EMAIL_HOST_PASSWORD=your-app-password
 DEFAULT_FROM_EMAIL=noreply@lamla.ai
-ADMIN_EMAIL=admin@lamla.ai
+ADMIN_EMAIL=your_admin@email.com
 ```
 
 **Get your API keys:**
